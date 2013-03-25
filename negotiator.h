@@ -14,8 +14,8 @@ public:
     /**
      * @param managerSocket Must be a connected socket
      */
-    void setManagerSocket(QUdpSocket* managerSocket);
-    QUdpSocket* managerSocket() const;
+    void setManagerSocket(QAbstractSocket *managerSocket);
+    QAbstractSocket *managerSocket() const;
 
     void sendRequest(const QHostAddress& address, quint16 port);
 

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "client.h"
+#include "negotiator.h"
 
 #include <QPointer>
 #include <QMainWindow>
@@ -22,11 +23,13 @@ public:
     Client* client() const;
 
 protected slots:
+    void startClicked();
     void statusChanged();
 
 private:
     Ui::MainWindow *ui;
     QPointer<Client> m_client;
+    Negotiator m_negotiator;
 };
 
 #endif // MAINWINDOW_H

@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(ui->startButton, SIGNAL(clicked()), this, SLOT(startClicked()));
 }
 
 MainWindow::~MainWindow()
@@ -30,12 +31,25 @@ void MainWindow::setClient(Client *client)
 
         // Update methods
         statusChanged();
+
+        // Update variables
+        m_negotiator.setManagerSocket(m_client->managerSocket());
     }
 }
 
 Client *MainWindow::client() const
 {
     return m_client;
+}
+
+void MainWindow::startClicked()
+{
+    Q_ASSERT(m_client);
+    RemoteInfoList remotes = m_client->remoteInfo();
+    Q_ASSERT(!remotes.isEmpty());
+    RemoteInfo remote = remotes.first();
+
+    m_negotiator.sendRequest(remote.peerAddress, remote.peerPort);
 }
 
 void MainWindow::statusChanged()

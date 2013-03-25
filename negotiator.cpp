@@ -3,6 +3,7 @@
 #include <QList>
 #include <QDebug>
 #include <QTimer>
+#include <QDateTime>
 
 #define RANDOM_BETWEEN(min, max) qrand()*(max-min+1)/(RAND_MAX+1)+min
 
@@ -18,12 +19,14 @@ public:
         answerTimer.setSingleShot(true);
         answerTimer.setInterval(5000);
         connect(&answerTimer, SIGNAL(timeout()), this, SLOT(timeout()));
+
+        qsrand(QDateTime::currentMSecsSinceEpoch());
     }
 
     Negotiator* q;
 
     // Properties
-    QUdpSocket* managerSocket;
+    QAbstractSocket* managerSocket;
     QList<QUdpSocket*> sockets;
 
     QTimer answerTimer;
@@ -73,12 +76,12 @@ Negotiator::~Negotiator()
     delete d;
 }
 
-void Negotiator::setManagerSocket(QUdpSocket *managerSocket)
+void Negotiator::setManagerSocket(QAbstractSocket *managerSocket)
 {
     d->managerSocket = managerSocket;
 }
 
-QUdpSocket *Negotiator::managerSocket() const
+QAbstractSocket *Negotiator::managerSocket() const
 {
     return d->managerSocket;
 }
@@ -109,7 +112,9 @@ void Negotiator::sendRequest(const QHostAddress &address, quint16 port)
 
     // Bind random ports
     for(int i=0; i < 10; ++i) {
-        quint16 tempPort = RANDOM_BETWEEN(8000, 65000);
+        int tempPort = RANDOM_BETWEEN(8000, 8100);
+
+        qDebug() << qrand();
 
         QUdpSocket* s = new QUdpSocket(this);
         connect(s, SIGNAL(readyRead()), d, SLOT(readyRead()));

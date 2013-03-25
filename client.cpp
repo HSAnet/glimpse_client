@@ -128,6 +128,10 @@ void Client::Private::onDatagramReady()
 void Client::Private::onLookupFinished(const QHostInfo& host)
 {
     aliveInfo = host;
+
+    if ( !host.addresses().isEmpty() )
+        managerSocket.connectToHost(host.addresses().first(), 16000);
+
     onAliveTimer();
 }
 
@@ -137,7 +141,7 @@ void Client::Private::onAliveTimer()
         aliveInfo.lookupHost("mplane.informatik.hs-augsburg.de", this, SLOT(onLookupFinished(QHostInfo)));
         qDebug() << "Looking up alive host";
     } else {
-        managerSocket.writeDatagram(QByteArray(), aliveInfo.addresses().first(), 16000);
+        managerSocket.write(QByteArray());
         qDebug() << "Alive packet sent";
     }
 }
@@ -222,6 +226,11 @@ Client::Status Client::status() const
 QNetworkAccessManager *Client::networkAccessManager() const
 {
     return d->networkAccessManager;
+}
+
+QAbstractSocket *Client::managerSocket() const
+{
+    return &d->managerSocket;
 }
 
 void Client::setRemoteInfo(const RemoteInfoList &remoteInfo)
