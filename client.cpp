@@ -1,21 +1,32 @@
 #include "client.h"
 #include "discovery.h"
+#include "types.h"
 
 #include <QUdpSocket>
 #include <QBuffer>
-#include <QMetaObject>
-#include <QMetaEnum>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
 #include <QTimer>
+#include <QHostInfo>
 
 #include <qjson/parser.h>
 #include <QDebug>
 
-const QUrl masterUrl = QUrl("https://localhost:8080/register");
+const QUrl masterUrl = QUrl("https://mplane.informatik.hs-augsburg.de:16001/register");
 const quint32 magic = 0x1337;
+const quint8 version = 0;
+
+struct NegotiationPacket {
+    quint16 magic;
+    quint8 version;
+
+    char host[64];
+    quint16 port;
+
+    quint16 ports[10];
+};
 
 class Client::Private : public QObject
 {
@@ -31,7 +42,7 @@ public:
         connect(&managerSocket, SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
         connect(&aliveTimer, SIGNAL(timeout()), this, SLOT(onAliveTimer()));
 
-        aliveTimer.setInterval(45 * 1000);
+        aliveTimer.setInterval(120 * 1000);
         aliveTimer.start();
     }
 
@@ -44,14 +55,17 @@ public:
     Discovery discovery;
     QUdpSocket managerSocket;
     QTimer aliveTimer;
+    QHostInfo aliveInfo;
 
     // Functions
     void setStatus(Client::Status status);
 
     void processDatagram(QBuffer& buffer, const QHostAddress& host, quint16 port);
+    void processNegotiation(const NegotiationPacket& packet);
 
 public slots:
     void onDatagramReady();
+    void onLookupFinished(const QHostInfo &host);
     void onAliveTimer();
     void onDiscoveryFinished();
     void onRegisterFinished();
@@ -70,15 +84,28 @@ void Client::Private::setStatus(Client::Status status)
 void Client::Private::processDatagram(QBuffer& buffer, const QHostAddress &host, quint16 port)
 {
     // TODO: byte order checking
-    quint32 m;
-    buffer.read((char*)&m, sizeof(quint32));
+    NegotiationPacket packet;
+    buffer.read((char*)&packet, sizeof(packet));
 
-    if (m != magic) {
+    if (packet.magic != magic) {
         qDebug() << "Received invalid packet from" << host.toString() << port;
         return;
     }
 
-    qDebug() << "Received valid packet from" << host.toString() << port;
+    if (packet.version != version) {
+        qDebug() << "Packet version is different" << host.toString() << port;
+        return;
+    }
+
+    processNegotiation(packet);
+}
+
+void Client::Private::processNegotiation(const NegotiationPacket &packet)
+{
+    qDebug() << "Received valid packet from" << packet.host << packet.port;
+
+    // Post a alive-packet back and hope it gets through
+    managerSocket.writeDatagram(QByteArray(), QHostAddress(packet.host), packet.port);
 }
 
 void Client::Private::onDatagramReady()
@@ -98,10 +125,21 @@ void Client::Private::onDatagramReady()
     }
 }
 
+void Client::Private::onLookupFinished(const QHostInfo& host)
+{
+    aliveInfo = host;
+    onAliveTimer();
+}
+
 void Client::Private::onAliveTimer()
 {
-    qint64 bytes = managerSocket.writeDatagram((char*)&magic, sizeof(magic), QHostAddress("62.75.147.195"), 34366);
-    qDebug() << "Alive packet with" << bytes << "bytes sent";
+    if (aliveInfo.addresses().isEmpty()) {
+        aliveInfo.lookupHost("mplane.informatik.hs-augsburg.de", this, SLOT(onLookupFinished(QHostInfo)));
+        qDebug() << "Looking up alive host";
+    } else {
+        managerSocket.writeDatagram(QByteArray(), aliveInfo.addresses().first(), 16000);
+        qDebug() << "Alive packet sent";
+    }
 }
 
 void Client::Private::onDiscoveryFinished()
@@ -131,6 +169,8 @@ void Client::Private::onRegisterFinished()
         // Update the remote list
         if (!remotes.isEmpty())
             q->setRemoteInfo(remotes);
+
+        setStatus(Client::Registered);
     } else
         setStatus(Client::Unregistered);
 }
@@ -138,7 +178,8 @@ void Client::Private::onRegisterFinished()
 void Client::Private::onRegisterError(QNetworkReply::NetworkError error)
 {
     setStatus(Client::Unregistered);
-    qDebug() << "Registration error" << error;
+
+    qDebug() << "Registration error" << enumToString(QNetworkReply, "NetworkError", error);
 }
 
 Client::Client(QObject *parent)
@@ -203,7 +244,7 @@ void Client::register_()
     // TODO: Fill data. Available tests, language, etc.
     QByteArray data = "ttl=60&";
 
-    const QMetaObject* meta = &Discovery::staticMetaObject;
+    /*const QMetaObject* meta = &Discovery::staticMetaObject;
     QMetaEnum en = meta->enumerator(meta->indexOfEnumerator("DataType"));
 
     QHashIterator<Discovery::DataType, QVariant> iter(d->discovery.data());
@@ -215,7 +256,7 @@ void Client::register_()
         data.append('=');
         data.append(iter.value().toString());
         data.append('&');
-    }
+    }*/
 
     QNetworkRequest request(masterUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
