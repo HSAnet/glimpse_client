@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QDateTime>
 
-#define RANDOM_BETWEEN(min, max) qrand()*(max-min+1)/(RAND_MAX+1)+min
+#define RANDOM_BETWEEN(min, max) (rand() % (max-min+1)) + min
 
 class Negotiator::Private : public QObject
 {
@@ -113,8 +113,6 @@ void Negotiator::sendRequest(const QHostAddress &address, quint16 port)
     // Bind random ports
     for(int i=0; i < 10; ++i) {
         int tempPort = RANDOM_BETWEEN(8000, 8100);
-
-        qDebug() << qrand();
 
         QUdpSocket* s = new QUdpSocket(this);
         connect(s, SIGNAL(readyRead()), d, SLOT(readyRead()));
