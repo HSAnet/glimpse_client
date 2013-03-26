@@ -1,8 +1,5 @@
 #include "discovery.h"
 
-#define HAVE_UPNP
-#define HAVE_STUN
-
 #include <QHostAddress>
 #include <QFutureWatcher>
 #include <QtConcurrentRun>

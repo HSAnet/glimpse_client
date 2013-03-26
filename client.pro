@@ -3,8 +3,16 @@ CONFIG += link_pkgconfig
 
 QT += network
 
-PKGCONFIG += QJson
-LIBS += -lminiupnpc
+
+unix {
+    DEFINES += HAVE_UPNP HAVE_STUN
+    PKGCONFIG += QJson
+    LIBS += -lminiupnpc
+}
+
+win32 {
+    # hmm
+}
 
 SOURCES += stund/stun.cxx \
            stund/udp.cxx
