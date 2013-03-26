@@ -27,17 +27,7 @@ enum NetworkType
     Network_Ethernet
 };
 
-/*
-QMetaEnum findMetaEnum(const QLatin1String& name, const QMetaObject* meta) {
-    int cnt = meta->enumeratorCount();
-    for(int i=0; i < cnt; ++i) {
-        QMetaEnum e = meta->enumerator(i);
-        if (qstrcmp(e.name(), name.latin1()) == 0)
-            return e;
-    }
-
-    return QMetaEnum();
-}
-*/
+#define enumToString(className, enumName, value) \
+    className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator(enumName)).valueToKey(value)
 
 #endif // TYPES_H

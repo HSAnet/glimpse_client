@@ -15,7 +15,9 @@ win32 {
 }
 
 SOURCES += stund/stun.cxx \
-           stund/udp.cxx
+           stund/udp.cxx \
+    negotiator.cpp \
+    mainwindow.cpp
 
 SOURCES += \
     main.cpp \
@@ -30,5 +32,10 @@ HEADERS += \
     testfactory.h \
     types.h \
     floodtest.h \
-    discovery.h
+    discovery.h \
+    negotiator.h \
+    mainwindow.h
+
+FORMS += \
+    mainwindow.ui
 

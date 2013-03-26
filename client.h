@@ -63,6 +63,8 @@ public:
 
     QNetworkAccessManager* networkAccessManager() const;
 
+    QAbstractSocket* managerSocket() const;
+
     void setRemoteInfo(const RemoteInfoList& remoteInfo);
     RemoteInfoList remoteInfo() const;
 
