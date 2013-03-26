@@ -10,7 +10,9 @@
 #endif // HAVE_UPNP
 
 #ifdef HAVE_STUN
-#include <unistd.h>
+# ifndef Q_OS_WIN
+#  include <unistd.h>
+# endif // Q_OS_WIN
 #include "stund/udp.h"
 #include "stund/stun.h"
 #endif // HAVE_STUN

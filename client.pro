@@ -3,20 +3,24 @@ CONFIG += link_pkgconfig
 
 QT += network
 
+DEFINES += HAVE_STUN
 
 unix {
-    DEFINES += HAVE_UPNP HAVE_STUN
+    DEFINES += HAVE_UPNP
     PKGCONFIG += QJson
     LIBS += -lminiupnpc
-
-    SOURCES += stund/stun.cxx \
-               stund/udp.cxx
 }
 
 win32 {
     QJSONPATH = C:\\Source\\libs\\qjson
     LIBS += -L$$QJSONPATH\\lib -lqjson
     INCLUDEPATH += $$QJSONPATH\\include
+    LIBS += -lws2_32
+}
+
+contains(DEFINES, HAVE_STUN) {
+    SOURCES += stund/stun.cxx \
+               stund/udp.cxx
 }
 
 SOURCES +=  \
