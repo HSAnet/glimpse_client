@@ -8,14 +8,18 @@ unix {
     DEFINES += HAVE_UPNP HAVE_STUN
     PKGCONFIG += QJson
     LIBS += -lminiupnpc
+
+    SOURCES += stund/stun.cxx \
+               stund/udp.cxx
 }
 
 win32 {
-    # hmm
+    QJSONPATH = C:\\Source\\libs\\qjson
+    LIBS += -L$$QJSONPATH\\lib -lqjson
+    INCLUDEPATH += $$QJSONPATH\\include
 }
 
-SOURCES += stund/stun.cxx \
-           stund/udp.cxx \
+SOURCES +=  \
     negotiator.cpp \
     mainwindow.cpp
 
