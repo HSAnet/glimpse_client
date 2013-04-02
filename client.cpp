@@ -133,10 +133,13 @@ void Client::Private::onLookupFinished(const QHostInfo& host)
 {
     aliveInfo = host;
 
-    if ( !host.addresses().isEmpty() )
+    if ( !host.addresses().isEmpty() ) {
         managerSocket.connectToHost(host.addresses().first(), 16000);
-
-    onAliveTimer();
+        onAliveTimer();
+    } else {
+        // Wait some seconds before trying again
+        QTimer::singleShot(5000, this, SLOT(onAliveTimer()));
+    }
 }
 
 void Client::Private::onAliveTimer()
