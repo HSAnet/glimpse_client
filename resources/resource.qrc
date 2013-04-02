@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>resources/tray.png</file>
+        <file>tray.png</file>
     </qresource>
 </RCC>

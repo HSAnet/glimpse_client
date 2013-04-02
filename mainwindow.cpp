@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(startClicked()));
 
-    m_tray.setIcon( QIcon(":/resources/tray.png") );
+    m_tray.setIcon( QIcon(":/tray.png") );
     m_tray.setContextMenu(ui->menu_File);
     m_tray.setToolTip(tr("mPlane client"));
     m_tray.show();
