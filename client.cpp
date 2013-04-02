@@ -12,9 +12,9 @@
 #include <QHostInfo>
 
 #ifdef Q_OS_WIN
-#include <qjson/Parser>
+#include <QJson/Parser>
 #else // Q_OS_WIN
-#include <QJson/parser.h>
+#include <qjson/parser.h>
 #endif // Q_OS_WIN
 #include <QDebug>
 
