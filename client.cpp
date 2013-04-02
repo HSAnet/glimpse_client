@@ -11,7 +11,11 @@
 #include <QTimer>
 #include <QHostInfo>
 
+#ifdef Q_OS_WIN
 #include <qjson/Parser>
+#else // Q_OS_WIN
+#include <QJson/parser.h>
+#endif // Q_OS_WIN
 #include <QDebug>
 
 const QUrl masterUrl = QUrl("https://mplane.informatik.hs-augsburg.de:16001/register");
