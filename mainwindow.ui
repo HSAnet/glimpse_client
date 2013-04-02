@@ -63,13 +63,16 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="actionConnection_is_slow"/>
+    <addaction name="actionConnection_does_not_work"/>
+    <addaction name="separator"/>
     <addaction name="action_Quit"/>
    </widget>
    <addaction name="menu_File"/>
@@ -81,6 +84,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionConnection_is_slow">
+   <property name="text">
+    <string>Connection is slow</string>
+   </property>
+  </action>
+  <action name="actionConnection_does_not_work">
+   <property name="text">
+    <string>Connection does not work</string>
    </property>
   </action>
  </widget>

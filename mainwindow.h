@@ -6,6 +6,8 @@
 
 #include <QPointer>
 #include <QMainWindow>
+#include <QSystemTrayIcon>
+#include <QMenu>
 
 namespace Ui {
 class MainWindow;
@@ -30,6 +32,8 @@ private:
     Ui::MainWindow *ui;
     QPointer<Client> m_client;
     Negotiator m_negotiator;
+    QSystemTrayIcon m_tray;
+    QMenu m_trayMenu;
 };
 
 #endif // MAINWINDOW_H
