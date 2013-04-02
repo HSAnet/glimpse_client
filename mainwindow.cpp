@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "types.h"
+#include "connectiontester.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -8,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(startClicked()));
+    connect(ui->actionConnection_does_not_work, SIGNAL(triggered()), this, SLOT(noConnectionClicked()));
 
     m_tray.setIcon( QIcon(":/tray.png") );
     m_tray.setContextMenu(ui->menu_File);
@@ -55,6 +57,13 @@ void MainWindow::startClicked()
     RemoteInfo remote = remotes.first();
 
     m_negotiator.sendRequest(remote.peerAddress, remote.peerPort);
+}
+
+void MainWindow::noConnectionClicked()
+{
+    ConnectionTester tester;
+    connect(&tester, SIGNAL(message(QString,MessageType)), ui->textEdit, SLOT(append(QString)));
+    tester.start();
 }
 
 void MainWindow::statusChanged()

@@ -25,7 +25,8 @@ contains(DEFINES, HAVE_STUN) {
 
 SOURCES +=  \
     negotiator.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    connectiontester.cpp
 
 SOURCES += \
     main.cpp \
@@ -42,7 +43,8 @@ HEADERS += \
     floodtest.h \
     discovery.h \
     negotiator.h \
-    mainwindow.h
+    mainwindow.h \
+    connectiontester.h
 
 FORMS += \
     mainwindow.ui
