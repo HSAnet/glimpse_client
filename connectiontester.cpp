@@ -18,6 +18,11 @@
 #include <arpa/nameser.h>
 #include <arpa/inet.h>
 #include <resolv.h>
+#elif defined(Q_OS_WIN)
+#include <WinSock2.h>
+#include <IPHlpApi.h>
+#pragma comment(lib, "IPHLPAPI.lib")
+#undef interface
 #endif // Q_OS_LINUX
 
 class ConnectionTester::Private
@@ -72,10 +77,10 @@ void ConnectionTester::Private::checkInterfaces()
             // TODO: What now?
         }
     } else {
-        emit q->message(tr("Some interface is online. Checking ..."), ConnectionTester::Info);
+        //emit q->message(tr("Some interface is online. Checking ..."), ConnectionTester::Info);
 
         QString gw = findDefaultGateway();
-        if ( gw == "0.0.0.0" )
+        if ( gw.isEmpty() || gw == "0.0.0.0" )
             q->message(tr("You don't have a default gateway defined. Please check your DHCP/network settings!"), ConnectionTester::Info);
         else {
             if (!canPing(gw))
@@ -116,6 +121,7 @@ void ConnectionTester::Private::checkSlow()
 QString ConnectionTester::Private::findDefaultGateway() const
 {
     // Inspiration: https://github.com/xbmc/xbmc/blob/8edff7ead55f1a31e55425d47885dc96d3d55105/xbmc/network/linux/NetworkLinux.cpp#L165
+    QString gw;
 
 #ifdef Q_OS_LINUX
     QFile file("/proc/net/route");
@@ -152,7 +158,7 @@ QString ConnectionTester::Private::findDefaultGateway() const
         char buffer[256] = {'\0'};
         if (fread(buffer, sizeof(char), sizeof(buffer), pipe) > 0 && !ferror(pipe))
         {
-            return QString::fromLatin1(buffer).mid(11);
+            gw = QString::fromLatin1(buffer).mid(11);
         }
         else
         {
@@ -160,11 +166,32 @@ QString ConnectionTester::Private::findDefaultGateway() const
         }
         pclose(pipe);
     }
-#elif Q_OS_WIN
+#elif defined(Q_OS_WIN)
+    IP_ADAPTER_INFO* pAdapterInfo = new IP_ADAPTER_INFO;
+
+    ULONG outbufferLength = sizeof(IP_ADAPTER_INFO);
+    if ( ::GetAdaptersInfo(pAdapterInfo, &outbufferLength) == ERROR_BUFFER_OVERFLOW ) {
+        delete pAdapterInfo;
+        pAdapterInfo = (IP_ADAPTER_INFO*)malloc(outbufferLength);
+    }
+
+    if ( ::GetAdaptersInfo(pAdapterInfo, &outbufferLength) == NO_ERROR ) {
+        IP_ADAPTER_INFO* pAdapter = pAdapterInfo;
+        while (pAdapter) {
+            QString temp = QString::fromLatin1(pAdapter->GatewayList.IpAddress.String);
+            if ( temp != "0.0.0.0" )
+                gw = temp;
+
+            pAdapter = pAdapter->Next;
+        }
+    }
+
+    delete pAdapterInfo;
+#elif defined(Q_OS_MAC)
 #error implementation!
 #endif
 
-    return QString();
+    return gw;
 }
 
 QString ConnectionTester::Private::findDefaultDNS() const
@@ -176,6 +203,8 @@ QString ConnectionTester::Private::findDefaultDNS() const
     for(int i=0; i < _res.nscount; ++i) {
         return QString::fromLatin1(inet_ntoa( ((sockaddr_in*)&_res.nsaddr_list[0])->sin_addr ));
     }
+#elif defined(Q_OS_WIN)
+
 #endif
     return QString();
 }
@@ -184,19 +213,20 @@ bool ConnectionTester::Private::canPing(const QString &host) const
 {
     QProcess process;
     QStringList args;
+    args << host;
 
 #ifdef Q_OS_LINUX
     process.setStandardOutputFile("/dev/null");
     process.setStandardErrorFile("/dev/null");
 
-    args << host
-         << "-c" << "1"
-         << "-n"
-         << "-W" << "1";
-#elif Q_OS_MAC
+    args << "-c" << "1" // Amount of pings
+         << "-n" // Don't resolve hostnames
+         << "-W" << "1"; // Timeout
+#elif defined(Q_OS_MAC)
 #error implementation!
-#elif Q_OS_WINDOWS
-#error implementation!
+#elif defined(Q_OS_WIN)
+    args << "-n" << "1" // Amount of pings
+         << "-w" << "1000"; // Timeout
 #endif
 
     process.start("ping", args);
