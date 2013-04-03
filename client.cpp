@@ -11,11 +11,7 @@
 #include <QTimer>
 #include <QHostInfo>
 
-#ifdef Q_OS_WIN
-#include <QJson/Parser>
-#else // Q_OS_WIN
-#include <qjson/parser.h>
-#endif // Q_OS_WIN
+#include <QJsonDocument>
 #include <QDebug>
 
 const QUrl masterUrl = QUrl("https://mplane.informatik.hs-augsburg.de:16001/register");
@@ -160,13 +156,12 @@ void Client::Private::onDiscoveryFinished()
 
 void Client::Private::onRegisterFinished()
 {
-    bool ok = false;
-    QJson::Parser parser;
+    QJsonParseError error;
 
     // Parse the reply data
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
-    QVariant root = parser.parse(reply, &ok);
-    if ( ok ) {
+    QVariant root = QJsonDocument::fromJson(reply->readAll(), &error).toVariant();
+    if ( error.error == QJsonParseError::NoError ) {
         setStatus(Client::Registered);
 
         RemoteInfoList remotes;
@@ -182,8 +177,11 @@ void Client::Private::onRegisterFinished()
             q->setRemoteInfo(remotes);
 
         setStatus(Client::Registered);
-    } else
+    } else {
+        qDebug() << "JSon parser error:" << error.errorString();
+
         setStatus(Client::Unregistered);
+    }
 }
 
 void Client::Private::onRegisterError(QNetworkReply::NetworkError error)
