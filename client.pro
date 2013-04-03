@@ -1,20 +1,20 @@
 TEMPLATE = app
 CONFIG += link_pkgconfig
 
-QT += network
+QT += network widgets concurrent
 
 DEFINES += HAVE_STUN
 
-unix {
+unix:!android: {
     DEFINES += HAVE_UPNP
-    PKGCONFIG += QJson
+    #PKGCONFIG += QJson
     LIBS += -lminiupnpc
 }
 
 win32 {
-    QJSONPATH = C:\\Source\\libs\\qjson
-    LIBS += -L$$QJSONPATH\\lib -lqjson
-    INCLUDEPATH += $$QJSONPATH\\include
+    #QJSONPATH = C:\\Source\\libs\\qjson
+    #LIBS += -L$$QJSONPATH\\lib -lqjson
+    #INCLUDEPATH += $$QJSONPATH\\include
     LIBS += -lws2_32
 }
 
