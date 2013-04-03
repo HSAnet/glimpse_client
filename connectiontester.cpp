@@ -226,6 +226,7 @@ bool ConnectionTester::Private::canPing(const QString &host) const
 #error implementation!
 #elif defined(Q_OS_WIN)
     args << "-n" << "1" // Amount of pings
+         << "-4" // Stay with IPv4 for now
          << "-w" << "1000"; // Timeout
 #endif
 
