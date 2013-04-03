@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    m_tray.hide();
     delete ui;
 }
 
