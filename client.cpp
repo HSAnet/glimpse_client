@@ -11,7 +11,16 @@
 #include <QTimer>
 #include <QHostInfo>
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QJsonDocument>
+#else
+#ifdef Q_OS_WIN
+#include <QJson/Parser>
+#else
+#include <qjson/parser.h>
+#endif
+#endif
+
 #include <QDebug>
 
 const QUrl masterUrl = QUrl("https://mplane.informatik.hs-augsburg.de:16001/register");
@@ -156,12 +165,24 @@ void Client::Private::onDiscoveryFinished()
 
 void Client::Private::onRegisterFinished()
 {
+    bool ok = false;
+    QString errorMessage;
+
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     QJsonParseError error;
 
     // Parse the reply data
-    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     QVariant root = QJsonDocument::fromJson(reply->readAll(), &error).toVariant();
-    if ( error.error == QJsonParseError::NoError ) {
+    ok = (error.error = QJsonParseError::NoError);
+    errorMessage = error.errorString();
+#else
+    QJson::Parser parser;
+    QVariant root = parser.parse(reply, &ok);
+    errorMessage = parser.errorString();
+#endif
+    if ( ok ) {
         setStatus(Client::Registered);
 
         RemoteInfoList remotes;
@@ -178,7 +199,7 @@ void Client::Private::onRegisterFinished()
 
         setStatus(Client::Registered);
     } else {
-        qDebug() << "JSon parser error:" << error.errorString();
+        qDebug() << "JSon parser error:" << errorMessage;
 
         setStatus(Client::Unregistered);
     }
