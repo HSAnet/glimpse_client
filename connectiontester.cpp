@@ -223,7 +223,8 @@ bool ConnectionTester::Private::canPing(const QString &host) const
          << "-n" // Don't resolve hostnames
          << "-W" << "1"; // Timeout
 #elif defined(Q_OS_MAC)
-#error implementation!
+    args << "-c" << "1" // Amount of pings
+         << "-t" << "1"; // Timeout
 #elif defined(Q_OS_WIN)
     args << "-n" << "1" // Amount of pings
          << "-4" // Stay with IPv4 for now
