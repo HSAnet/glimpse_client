@@ -1,6 +1,9 @@
 TEMPLATE = app
 CONFIG += link_pkgconfig
 
+# On osx our application is named like the bundle (in the menu)
+mac:TARGET = mPlane
+
 greaterThan(QT_MAJOR_VERSION, 4): CONFIG += qt5
 
 QT += network
