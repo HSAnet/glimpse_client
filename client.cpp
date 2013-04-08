@@ -175,7 +175,7 @@ void Client::Private::onRegisterFinished()
 
     // Parse the reply data
     QVariant root = QJsonDocument::fromJson(reply->readAll(), &error).toVariant();
-    ok = (error.error = QJsonParseError::NoError);
+    ok = (error.error == QJsonParseError::NoError);
     errorMessage = error.errorString();
 #else
     QJson::Parser parser;
