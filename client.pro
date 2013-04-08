@@ -8,7 +8,7 @@ qt5:QT += widgets concurrent
 
 DEFINES += HAVE_STUN
 
-unix:!android: {
+unix:!android:!mac: {
     DEFINES += HAVE_UPNP
     !qt5:PKGCONFIG += QJson
     LIBS += -lminiupnpc
