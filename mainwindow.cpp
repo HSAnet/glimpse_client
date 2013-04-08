@@ -11,7 +11,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(startClicked()));
     connect(ui->actionConnection_does_not_work, SIGNAL(triggered()), this, SLOT(noConnectionClicked()));
 
+#ifdef Q_OS_MAC
+    m_tray.setIcon( QIcon(":/tray_mac.png") );
+#else // Q_OS_MAC
     m_tray.setIcon( QIcon(":/tray.png") );
+#endif // Q_OS_MAC
     m_tray.setContextMenu(ui->menu_File);
     m_tray.setToolTip(tr("mPlane client"));
     m_tray.show();
