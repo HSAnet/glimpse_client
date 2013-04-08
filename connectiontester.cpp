@@ -46,6 +46,10 @@ public:
     QString findDefaultGateway() const;
     QString findDefaultDNS() const;
     bool canPing(const QString& host) const;
+
+#ifdef Q_OS_MAC
+    QString scutilHelper(const QByteArray &command, const QString& searchKey) const;
+#endif // Q_OS_MAC
 };
 
 void ConnectionTester::Private::checkInterfaces()
@@ -152,26 +156,7 @@ QString ConnectionTester::Private::findDefaultGateway() const
         line = stream.readLine();
     }
 #elif defined(Q_OS_MAC)
-    QProcess sc;
-    QTextStream stream(&sc);
-    sc.start("scutil");
-    sc.waitForStarted();
-    sc.write("show State:/Network/Global/IPv4\n");
-    sc.waitForReadyRead();
-
-    QString line = stream.readLine();
-    while (!line.isEmpty()) {
-        QStringList parts = line.split(':');
-        if ( parts.size() == 2 ) {
-            if ( parts.at(0).trimmed() == "Router" )
-                gw = parts.at(1).trimmed();
-        }
-
-        line = stream.readLine();
-    }
-
-    sc.write("exit\n");
-    sc.waitForFinished();
+    gw = scutilHelper("show State:/Network/Global/IPv4", "Router");
 #elif defined(Q_OS_WIN)
     IP_ADAPTER_INFO* pAdapterInfo = new IP_ADAPTER_INFO;
 
@@ -193,8 +178,6 @@ QString ConnectionTester::Private::findDefaultGateway() const
     }
 
     delete pAdapterInfo;
-#elif defined(Q_OS_MAC)
-#error implementation!
 #endif
 
     return gw;
@@ -210,7 +193,8 @@ QString ConnectionTester::Private::findDefaultDNS() const
         return QString::fromLatin1(inet_ntoa( ((sockaddr_in*)&_res.nsaddr_list[0])->sin_addr ));
     }
 #elif defined(Q_OS_WIN)
-
+#elif defined(Q_OS_MAC)
+    return scutilHelper("show State:/Network/Global/DNS", "0");
 #endif
     return QString();
 }
@@ -245,6 +229,38 @@ bool ConnectionTester::Private::canPing(const QString &host) const
 
     return process.exitCode() == 0;
 }
+
+#ifdef Q_OS_MAC
+QString ConnectionTester::Private::scutilHelper(const QByteArray& command, const QString &searchKey) const
+{
+    QString result;
+
+    QProcess sc;
+    QTextStream stream(&sc);
+    sc.start("scutil");
+    sc.waitForStarted();
+    //sc.write("show State:/Network/Global/IPv4\n");
+    sc.write(command);
+    sc.write("\n");
+    sc.waitForReadyRead();
+
+    QString line = stream.readLine();
+    while (!line.isEmpty()) {
+        QStringList parts = line.split(':');
+        if ( parts.size() == 2 ) {
+            if ( parts.at(0).trimmed() == searchKey )
+                result = parts.at(1).trimmed();
+        }
+
+        line = stream.readLine();
+    }
+
+    sc.write("exit\n");
+    sc.waitForFinished();
+
+    return result;
+}
+#endif // Q_OS_MAC
 
 ConnectionTester::ConnectionTester(QObject *parent)
 : QObject(parent)
