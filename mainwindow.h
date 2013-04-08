@@ -27,6 +27,7 @@ public:
 protected slots:
     void startClicked();
     void noConnectionClicked();
+    void connectionSlowClicked();
     void statusChanged();
 
 private:

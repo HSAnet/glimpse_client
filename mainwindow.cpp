@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(startClicked()));
     connect(ui->actionConnection_does_not_work, SIGNAL(triggered()), this, SLOT(noConnectionClicked()));
+    connect(ui->actionConnection_is_slow, SIGNAL(triggered()), this, SLOT(connectionSlowClicked()));
 
 #ifndef Q_OS_MAC // Mac applications don't use icons
     setWindowIcon(QIcon(":/tray.png"));
@@ -80,6 +81,10 @@ void MainWindow::noConnectionClicked()
     ConnectionTester tester;
     connect(&tester, SIGNAL(message(QString,MessageType)), ui->textEdit, SLOT(append(QString)));
     tester.start();
+}
+
+void MainWindow::connectionSlowClicked()
+{
 }
 
 void MainWindow::statusChanged()
