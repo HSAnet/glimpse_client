@@ -152,20 +152,26 @@ QString ConnectionTester::Private::findDefaultGateway() const
         line = stream.readLine();
     }
 #elif defined(Q_OS_MAC)
-    FILE* pipe = popen("echo \"show State:/Network/Global/IPv4\" | scutil | grep Router", "r");
-    if (pipe)
-    {
-        char buffer[256] = {'\0'};
-        if (fread(buffer, sizeof(char), sizeof(buffer), pipe) > 0 && !ferror(pipe))
-        {
-            gw = QString::fromLatin1(buffer).mid(11);
+    QProcess sc;
+    QTextStream stream(&sc);
+    sc.start("scutil");
+    sc.waitForStarted();
+    sc.write("show State:/Network/Global/IPv4\n");
+    sc.waitForReadyRead();
+
+    QString line = stream.readLine();
+    while (!line.isEmpty()) {
+        QStringList parts = line.split(':');
+        if ( parts.size() == 2 ) {
+            if ( parts.at(0).trimmed() == "Router" )
+                gw = parts.at(1).trimmed();
         }
-        else
-        {
-            qDebug() << "Unable to determine gateway";
-        }
-        pclose(pipe);
+
+        line = stream.readLine();
     }
+
+    sc.write("exit\n");
+    sc.waitForFinished();
 #elif defined(Q_OS_WIN)
     IP_ADAPTER_INFO* pAdapterInfo = new IP_ADAPTER_INFO;
 
@@ -213,7 +219,6 @@ bool ConnectionTester::Private::canPing(const QString &host) const
 {
     QProcess process;
     QStringList args;
-    args << host;
 
 #ifdef Q_OS_LINUX
     process.setStandardOutputFile("/dev/null");
@@ -223,6 +228,7 @@ bool ConnectionTester::Private::canPing(const QString &host) const
          << "-n" // Don't resolve hostnames
          << "-W" << "1"; // Timeout
 #elif defined(Q_OS_MAC)
+    args.clear(); // Apple needs the host name at last
     args << "-c" << "1" // Amount of pings
          << "-t" << "1"; // Timeout
 #elif defined(Q_OS_WIN)
@@ -230,6 +236,9 @@ bool ConnectionTester::Private::canPing(const QString &host) const
          << "-4" // Stay with IPv4 for now
          << "-w" << "1000"; // Timeout
 #endif
+
+    // Hostname is always the last parameter (necessary on osx/android!)
+    args << host;
 
     process.start("ping", args);
     process.waitForFinished();
