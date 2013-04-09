@@ -179,6 +179,8 @@ QString ConnectionTester::Private::findDefaultGateway() const
     }
 
     delete pAdapterInfo;
+#else
+#error Platform gateway code missing!
 #endif
 
     return gw;
@@ -221,6 +223,8 @@ QString ConnectionTester::Private::findDefaultDNS() const
     return dns;
 #elif defined(Q_OS_MAC)
     return scutilHelper("show State:/Network/Global/DNS", "0");
+#else
+#error Platform dns code missing!
 #endif
     return QString();
 }
@@ -245,6 +249,8 @@ bool ConnectionTester::Private::canPing(const QString &host) const
     args << "-n" << "1" // Amount of pings
          << "-4" // Stay with IPv4 for now
          << "-w" << "1000"; // Timeout
+#else
+#error Platform ping code missing!
 #endif
 
     // Hostname is always the last parameter (necessary on osx/android!)
