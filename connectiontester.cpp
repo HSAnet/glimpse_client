@@ -3,6 +3,7 @@
 #include <QNetworkConfigurationManager>
 #include <QNetworkConfiguration>
 #include <QNetworkSession>
+#include <QHostAddress>
 
 #include <QNetworkInterface>
 #include <QCoreApplication>
@@ -193,6 +194,31 @@ QString ConnectionTester::Private::findDefaultDNS() const
         return QString::fromLatin1(inet_ntoa( ((sockaddr_in*)&_res.nsaddr_list[0])->sin_addr ));
     }
 #elif defined(Q_OS_WIN)
+    QString dns;
+    IP_ADAPTER_ADDRESSES* addresses = NULL;
+    ULONG bufferSize = 0;
+    if (::GetAdaptersAddresses(AF_INET, 0, NULL, addresses, &bufferSize) == ERROR_BUFFER_OVERFLOW) {
+        addresses = (IP_ADAPTER_ADDRESSES*)malloc(bufferSize);
+        if (::GetAdaptersAddresses(AF_INET, 0, NULL, addresses, &bufferSize) == NO_ERROR) {
+            IP_ADAPTER_ADDRESSES* addr = addresses;
+            while (addr) {
+                if ( addr->OperStatus == IfOperStatusUp ) {
+                    IP_ADAPTER_DNS_SERVER_ADDRESS* p = addr->FirstDnsServerAddress;
+                    while (p) {
+                        if ( dns.isEmpty() )
+                            dns = QHostAddress(p->Address.lpSockaddr).toString();
+
+                        p = p->Next;
+                    }
+                }
+
+                addr = addr->Next;
+            }
+        }
+    }
+
+    delete addresses;
+    return dns;
 #elif defined(Q_OS_MAC)
     return scutilHelper("show State:/Network/Global/DNS", "0");
 #endif
