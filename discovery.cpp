@@ -17,6 +17,11 @@
 #include "stund/stun.h"
 #endif // HAVE_STUN
 
+#ifndef FALSE
+#define FALSE 0
+#define TRUE 1
+#endif
+
 class Discovery::Private : public QObject
 {
     Q_OBJECT

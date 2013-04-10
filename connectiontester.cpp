@@ -3,6 +3,7 @@
 #include <QNetworkConfigurationManager>
 #include <QNetworkConfiguration>
 #include <QNetworkSession>
+#include <QHostAddress>
 
 #include <QNetworkInterface>
 #include <QCoreApplication>
@@ -46,6 +47,10 @@ public:
     QString findDefaultGateway() const;
     QString findDefaultDNS() const;
     bool canPing(const QString& host) const;
+
+#ifdef Q_OS_MAC
+    QString scutilHelper(const QByteArray &command, const QString& searchKey) const;
+#endif // Q_OS_MAC
 };
 
 void ConnectionTester::Private::checkInterfaces()
@@ -152,20 +157,7 @@ QString ConnectionTester::Private::findDefaultGateway() const
         line = stream.readLine();
     }
 #elif defined(Q_OS_MAC)
-    FILE* pipe = popen("echo \"show State:/Network/Global/IPv4\" | scutil | grep Router", "r");
-    if (pipe)
-    {
-        char buffer[256] = {'\0'};
-        if (fread(buffer, sizeof(char), sizeof(buffer), pipe) > 0 && !ferror(pipe))
-        {
-            gw = QString::fromLatin1(buffer).mid(11);
-        }
-        else
-        {
-            qDebug() << "Unable to determine gateway";
-        }
-        pclose(pipe);
-    }
+    gw = scutilHelper("show State:/Network/Global/IPv4", "Router");
 #elif defined(Q_OS_WIN)
     IP_ADAPTER_INFO* pAdapterInfo = new IP_ADAPTER_INFO;
 
@@ -187,8 +179,8 @@ QString ConnectionTester::Private::findDefaultGateway() const
     }
 
     delete pAdapterInfo;
-#elif defined(Q_OS_MAC)
-#error implementation!
+#else
+#error Platform gateway code missing!
 #endif
 
     return gw;
@@ -204,7 +196,35 @@ QString ConnectionTester::Private::findDefaultDNS() const
         return QString::fromLatin1(inet_ntoa( ((sockaddr_in*)&_res.nsaddr_list[0])->sin_addr ));
     }
 #elif defined(Q_OS_WIN)
+    QString dns;
+    IP_ADAPTER_ADDRESSES* addresses = NULL;
+    ULONG bufferSize = 0;
+    if (::GetAdaptersAddresses(AF_INET, 0, NULL, addresses, &bufferSize) == ERROR_BUFFER_OVERFLOW) {
+        addresses = (IP_ADAPTER_ADDRESSES*)malloc(bufferSize);
+        if (::GetAdaptersAddresses(AF_INET, 0, NULL, addresses, &bufferSize) == NO_ERROR) {
+            IP_ADAPTER_ADDRESSES* addr = addresses;
+            while (addr) {
+                if ( addr->OperStatus == IfOperStatusUp ) {
+                    IP_ADAPTER_DNS_SERVER_ADDRESS* p = addr->FirstDnsServerAddress;
+                    while (p) {
+                        if ( dns.isEmpty() )
+                            dns = QHostAddress(p->Address.lpSockaddr).toString();
 
+                        p = p->Next;
+                    }
+                }
+
+                addr = addr->Next;
+            }
+        }
+    }
+
+    delete addresses;
+    return dns;
+#elif defined(Q_OS_MAC)
+    return scutilHelper("show State:/Network/Global/DNS", "0");
+#else
+#error Platform dns code missing!
 #endif
     return QString();
 }
@@ -213,7 +233,6 @@ bool ConnectionTester::Private::canPing(const QString &host) const
 {
     QProcess process;
     QStringList args;
-    args << host;
 
 #ifdef Q_OS_LINUX
     process.setStandardOutputFile("/dev/null");
@@ -227,18 +246,57 @@ bool ConnectionTester::Private::canPing(const QString &host) const
          << "-w" << "1"; // Timeout
 #endif
 #elif defined(Q_OS_MAC)
-#error implementation!
+    args.clear(); // Apple needs the host name at last
+    args << "-c" << "1" // Amount of pings
+         << "-t" << "1"; // Timeout
 #elif defined(Q_OS_WIN)
     args << "-n" << "1" // Amount of pings
          << "-4" // Stay with IPv4 for now
          << "-w" << "1000"; // Timeout
+#else
+#error Platform ping code missing!
 #endif
+
+    // Hostname is always the last parameter (necessary on osx/android!)
+    args << host;
 
     process.start("ping", args);
     process.waitForFinished();
 
     return process.exitCode() == 0;
 }
+
+#ifdef Q_OS_MAC
+QString ConnectionTester::Private::scutilHelper(const QByteArray& command, const QString &searchKey) const
+{
+    QString result;
+
+    QProcess sc;
+    QTextStream stream(&sc);
+    sc.start("scutil");
+    sc.waitForStarted();
+    //sc.write("show State:/Network/Global/IPv4\n");
+    sc.write(command);
+    sc.write("\n");
+    sc.waitForReadyRead();
+
+    QString line = stream.readLine();
+    while (!line.isEmpty()) {
+        QStringList parts = line.split(':');
+        if ( parts.size() == 2 ) {
+            if ( parts.at(0).trimmed() == searchKey )
+                result = parts.at(1).trimmed();
+        }
+
+        line = stream.readLine();
+    }
+
+    sc.write("exit\n");
+    sc.waitForFinished();
+
+    return result;
+}
+#endif // Q_OS_MAC
 
 ConnectionTester::ConnectionTester(QObject *parent)
 : QObject(parent)

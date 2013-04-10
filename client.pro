@@ -1,6 +1,9 @@
 TEMPLATE = app
 CONFIG += link_pkgconfig
 
+# On osx our application is named like the bundle (in the menu)
+mac:TARGET = mPlane
+
 greaterThan(QT_MAJOR_VERSION, 4): CONFIG += qt5
 
 QT += network
@@ -8,7 +11,7 @@ qt5:QT += widgets concurrent
 
 DEFINES += HAVE_STUN
 
-unix:!android: {
+unix:!android:!mac: {
     DEFINES += HAVE_UPNP
     !qt5:PKGCONFIG += QJson
     LIBS += -lminiupnpc
