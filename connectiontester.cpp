@@ -197,7 +197,7 @@ QString ConnectionTester::Private::findDefaultGateway() const
 QString ConnectionTester::Private::findDefaultDNS() const
 {
     // Inspiration: https://github.com/xbmc/xbmc/blob/8edff7ead55f1a31e55425d47885dc96d3d55105/xbmc/network/linux/NetworkLinux.cpp#L411
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     res_init();
 
     for(int i=0; i < _res.nscount; ++i) {
@@ -221,7 +221,11 @@ bool ConnectionTester::Private::canPing(const QString &host) const
 
     args << "-c" << "1" // Amount of pings
          << "-n" // Don't resolve hostnames
+#ifndef Q_OS_ANDROID
          << "-W" << "1"; // Timeout
+#else
+         << "-w" << "1"; // Timeout
+#endif
 #elif defined(Q_OS_MAC)
 #error implementation!
 #elif defined(Q_OS_WIN)
