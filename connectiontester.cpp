@@ -26,6 +26,10 @@
 #undef interface
 #endif // Q_OS_LINUX
 
+#ifdef Q_OS_ANDROID
+#include <sys/system_properties.h>
+#endif
+
 class ConnectionTester::Private
 {
     Q_DECLARE_TR_FUNCTIONS(ConnectionTester::Private)
@@ -51,6 +55,10 @@ public:
 #ifdef Q_OS_MAC
     QString scutilHelper(const QByteArray &command, const QString& searchKey) const;
 #endif // Q_OS_MAC
+
+#ifdef Q_OS_ANDROID
+    QString propHelper(const QByteArray& property) const;
+#endif // Q_OS_ANDROID
 };
 
 void ConnectionTester::Private::checkInterfaces()
@@ -189,7 +197,9 @@ QString ConnectionTester::Private::findDefaultGateway() const
 QString ConnectionTester::Private::findDefaultDNS() const
 {
     // Inspiration: https://github.com/xbmc/xbmc/blob/8edff7ead55f1a31e55425d47885dc96d3d55105/xbmc/network/linux/NetworkLinux.cpp#L411
-#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
+#if defined(Q_OS_ANDROID)
+    return propHelper("net.dns1");
+#elif defined(Q_OS_LINUX)
     res_init();
 
     for(int i=0; i < _res.nscount; ++i) {
@@ -297,6 +307,19 @@ QString ConnectionTester::Private::scutilHelper(const QByteArray& command, const
     return result;
 }
 #endif // Q_OS_MAC
+
+#ifdef Q_OS_ANDROID
+QString ConnectionTester::Private::propHelper(const QByteArray &property) const
+{
+    // See http://www.netmite.com/android/mydroid/system/core/toolbox/getprop.c
+    QByteArray gw;
+    gw.resize(200);
+
+    __system_property_get(property, gw.data());
+
+    return gw;
+}
+#endif // Q_OS_ANDROID
 
 ConnectionTester::ConnectionTester(QObject *parent)
 : QObject(parent)
