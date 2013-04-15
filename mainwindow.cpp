@@ -68,6 +68,11 @@ Client *MainWindow::client() const
 
 void MainWindow::startClicked()
 {
+    // Don't continue when client is no registered
+    if (m_client->status() != Client::Registered) {
+        return;
+    }
+
     Q_ASSERT(m_client);
     RemoteInfoList remotes = m_client->remoteInfo();
     Q_ASSERT(!remotes.isEmpty());
@@ -89,5 +94,6 @@ void MainWindow::connectionSlowClicked()
 
 void MainWindow::statusChanged()
 {
+    ui->startButton->setEnabled( m_client->status() == Client::Registered );
     ui->statusbar->showMessage( enumToString(Client, "Status", m_client->status()) );
 }
