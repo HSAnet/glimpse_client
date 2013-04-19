@@ -103,6 +103,8 @@ void Discovery::Private::upnpDiscover(Discovery::DiscoveryHash &hash)
 void Discovery::Private::stunDiscover(Discovery::DiscoveryHash &hash)
 {
 #ifdef HAVE_STUN
+    initNetwork();
+
     StunAddress4 stunServerAddr;
     stunParseServerName("stunserver.org", stunServerAddr);
 
