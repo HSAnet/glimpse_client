@@ -139,7 +139,6 @@ void Client::Private::onLookupFinished(const QHostInfo& host)
     aliveInfo = host;
 
     if ( !host.addresses().isEmpty() ) {
-        managerSocket.connectToHost(host.addresses().first(), 16000);
         onAliveTimer();
     } else {
         // Wait some seconds before trying again
@@ -153,7 +152,7 @@ void Client::Private::onAliveTimer()
         aliveInfo.lookupHost("mplane.informatik.hs-augsburg.de", this, SLOT(onLookupFinished(QHostInfo)));
         qDebug() << "Looking up alive host";
     } else {
-        managerSocket.write(QByteArray());
+        managerSocket.writeDatagram(QByteArray(), aliveInfo.addresses().first(), 16000);
         qDebug() << "Alive packet sent";
     }
 }
@@ -236,7 +235,7 @@ Client *Client::instance()
 bool Client::init()
 {
     bool ok = false;
-    ok |= d->managerSocket.bind(34366);
+    ok = d->managerSocket.bind(1337);
 
     // Cheat ...
     d->onAliveTimer();
