@@ -16,11 +16,15 @@ int main(int argc, char* argv[])
     // Initialize the client instance
     Client* client = Client::instance();
 
+    if (!client->init()) {
+        qDebug() << "Client initialization failed";
+        return 1;
+    }
+
     MainWindow mainWindow;
     mainWindow.setClient(client);
     mainWindow.show();
 
-    client->init();
     client->registerWithDiscovery();
 
     return app.exec();
