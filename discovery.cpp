@@ -106,7 +106,7 @@ void Discovery::Private::stunDiscover(Discovery::DiscoveryHash &hash)
     initNetwork();
 
     StunAddress4 stunServerAddr;
-    stunParseServerName("stunserver.org", stunServerAddr);
+    stunParseServerName("stunserver.org", stunServerAddr); // TODO: Don't hardcore urls
 
     bool preserverPort = false;
     bool hairpin = false;
