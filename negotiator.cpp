@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QDateTime>
 
+#define PORTS 10
 #define RANDOM_BETWEEN(min, max) (rand() % (max-min+1)) + min
 
 class Negotiator::Private : public QObject
@@ -32,18 +33,24 @@ public:
     QTimer answerTimer;
 
     // Functions
-    void processDatagram(const QByteArray& datagram);
+    void processDatagram(QUdpSocket* socket, const QByteArray& datagram);
 
 public slots:
     void readyRead();
     void timeout();
 };
 
-void Negotiator::Private::processDatagram(const QByteArray &datagram)
+void Negotiator::Private::processDatagram(QUdpSocket *socket, const QByteArray &datagram)
 {
     qDebug() << "Negotiator received datagram:" << datagram;
 
-    emit q->finished();
+    sockets.removeAll(socket);
+    qDeleteAll(sockets);
+    sockets.clear();
+
+    answerTimer.stop();
+
+    emit q->finished(socket);
 }
 
 void Negotiator::Private::readyRead()
@@ -55,12 +62,15 @@ void Negotiator::Private::readyRead()
 
         socket->readDatagram(datagram.data(), datagram.size());
 
-        processDatagram(datagram);
+        processDatagram(socket, datagram);
     }
 }
 
 void Negotiator::Private::timeout()
 {
+    qDeleteAll(sockets);
+    sockets.clear();
+
     qDebug() << "Negotiaton timed out";
     emit q->error();
 }
@@ -86,7 +96,7 @@ QAbstractSocket *Negotiator::managerSocket() const
     return d->managerSocket;
 }
 
-void Negotiator::sendRequest(const QHostAddress &address, quint16 port)
+void Negotiator::sendRequest(const QHostAddress &address)
 {
     qDeleteAll(d->sockets);
 
@@ -101,18 +111,17 @@ void Negotiator::sendRequest(const QHostAddress &address, quint16 port)
         char host[64];
         quint16 port;
 
-        quint16 ports[10];
+        quint16 ports[PORTS];
     };
 
     NegotiationPacket packet;
     packet.magic = magic;
     packet.version = version;
     qstrcpy(packet.host, address.toString().toLatin1());
-    packet.port = port;
 
     // Bind random ports
-    for(int i=0; i < 10; ++i) {
-        int tempPort = RANDOM_BETWEEN(8000, 8100);
+    for(int i=0; i < PORTS; ++i) {
+        int tempPort = RANDOM_BETWEEN(3000, 65000);
 
         QUdpSocket* s = new QUdpSocket(this);
         connect(s, SIGNAL(readyRead()), d, SLOT(readyRead()));
@@ -122,7 +131,12 @@ void Negotiator::sendRequest(const QHostAddress &address, quint16 port)
 
             qDebug() << "Binding port" << tempPort << "failed, ignoring.";
             continue;
+        } else {
+            qDebug() << "Opened port" << tempPort;
         }
+
+        // Hole punch!
+        s->writeDatagram(QByteArray(), address, tempPort);
 
         // Don't care about unset ports in packet
         packet.ports[i] = tempPort;
@@ -131,7 +145,9 @@ void Negotiator::sendRequest(const QHostAddress &address, quint16 port)
 
     // TODO: What to do when this packet is missing in action?
     d->answerTimer.start();
-    d->managerSocket->write((const char*)&packet, sizeof(packet));
+    QUdpSocket* mgr = qobject_cast<QUdpSocket*>(d->managerSocket);
+    qint64 written = mgr->writeDatagram((const char*)&packet, sizeof(packet), QHostAddress("141.82.59.143"), 16000);
+    qDebug() << "Sent" << written << "bytes to negotation server";
 }
 
 #include "negotiator.moc"

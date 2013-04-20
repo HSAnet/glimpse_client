@@ -17,10 +17,10 @@ public:
     void setManagerSocket(QAbstractSocket *managerSocket);
     QAbstractSocket *managerSocket() const;
 
-    void sendRequest(const QHostAddress& address, quint16 port);
+    void sendRequest(const QHostAddress& address);
 
 signals:
-    void finished();
+    void finished(QUdpSocket* socket);
     void error();
 
 protected:

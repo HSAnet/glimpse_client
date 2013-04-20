@@ -78,7 +78,7 @@ void MainWindow::startClicked()
     Q_ASSERT(!remotes.isEmpty());
     RemoteInfo remote = remotes.first();
 
-    m_negotiator.sendRequest(remote.peerAddress, remote.peerPort);
+    m_negotiator.sendRequest(remote.peerAddress);
 }
 
 void MainWindow::noConnectionClicked()
