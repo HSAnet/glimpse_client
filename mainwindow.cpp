@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(startClicked()));
     connect(ui->actionConnection_does_not_work, SIGNAL(triggered()), this, SLOT(noConnectionClicked()));
     connect(ui->actionConnection_is_slow, SIGNAL(triggered()), this, SLOT(connectionSlowClicked()));
+    connect(ui->action_Quit, SIGNAL(triggered()), qApp, SLOT(quit()));
 
 #ifndef Q_OS_MAC // Mac applications don't use icons
     setWindowIcon(QIcon(":/tray.png"));
