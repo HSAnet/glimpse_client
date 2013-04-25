@@ -87,6 +87,8 @@ void Discovery::Private::upnpDiscover(Discovery::DiscoveryHash &hash)
         FreeUPNPUrls(&urls);
         freeUPNPDevlist(devlist);
     }
+#else
+    Q_UNUSED(hash)
 #endif // HAVE_UPNP
 }
 

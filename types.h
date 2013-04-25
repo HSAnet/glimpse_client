@@ -11,32 +11,10 @@ enum RequestType
 
     // Server requests
     ClientInfoRequest,
+    PeerRequest,
 
     // Client requests
-    PeerResponse
-};
-
-enum Direction
-{
-    Direction_Any,
-    Direction_Master,
-    Direction_Slave
-};
-
-enum PlatformType
-{
-    Platform_Desktop,
-    Platform_Mobile,
-    Platform_Embedded
-};
-
-enum NetworkType
-{
-    Network_Mobile,
-    Network_Cable,
-    Network_DSL,
-    Network_Satellite,
-    Network_Ethernet
+    PeerResponse = 1024
 };
 
 #define enumToString(className, enumName, value) \

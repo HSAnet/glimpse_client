@@ -212,3 +212,9 @@ QVariant ClientInfo::toVariant() const {
   data.insert("remaining-budget", remainingBudget());
   return data;
 }
+
+
+QVariant Request::toVariant() const
+{
+    return QVariant();
+}

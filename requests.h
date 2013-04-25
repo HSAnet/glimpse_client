@@ -99,4 +99,14 @@ protected:
     Private* d;
 };
 
+class Request : public QObject
+{
+    Q_OBJECT
+
+public:
+    QVariant toVariant() const;
+
+protected:
+};
+
 #endif // REQUESTS_H

@@ -1,9 +1,6 @@
 TEMPLATE = app
 CONFIG += link_pkgconfig
 
-# Define our master server. This can be changed for testing
-MASTER_SERVER = "mplane.informatik.hs-augsburg.de"
-
 # On osx our application is named like the bundle (in the menu)
 mac:TARGET = mPlane
 
@@ -11,8 +8,6 @@ greaterThan(QT_MAJOR_VERSION, 4): CONFIG += qt5
 
 QT += network
 qt5:QT += widgets concurrent
-
-DEFINES += MASTER_SERVER=\"$$MASTERSERVER\"
 
 unix:!android:!mac: {
     DEFINES += HAVE_UPNP
@@ -30,21 +25,16 @@ win32 {
 }
 
 SOURCES +=  \
+    main.cpp \
+    client.cpp \
+    discovery.cpp \
     mainwindow.cpp \
     connectiontester.cpp \
     requests.cpp
 
-SOURCES += \
-    main.cpp \
-    client.cpp \
-    floodtest.cpp \
-    discovery.cpp
-
 HEADERS += \
     client.h \
-    testfactory.h \
     types.h \
-    floodtest.h \
     discovery.h \
     mainwindow.h \
     connectiontester.h \

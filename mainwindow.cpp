@@ -69,6 +69,8 @@ void MainWindow::startClicked()
     if (m_client->status() != Client::Registered) {
         return;
     }
+
+    m_client->requestTest();
 }
 
 void MainWindow::noConnectionClicked()

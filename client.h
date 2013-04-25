@@ -40,6 +40,9 @@ public:
 
     QAbstractSocket* managerSocket() const;
 
+public slots:
+    void requestTest();
+
 signals:
     void statusChanged();
 

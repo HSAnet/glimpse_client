@@ -24,7 +24,7 @@
 
 #include <QDebug>
 
-const QUrl masterUrl = QUrl("http://localhost:16001/info");
+const QUrl masterUrl = QUrl("http://localhost:16001");
 
 class Client::Private : public QObject
 {
@@ -59,10 +59,11 @@ public:
 
     void processDatagram(const QByteArray &datagram, const QHostAddress& host, quint16 port);
     void processClientInfoRequest();
-    void processPeerRequest(QDataStream &stream);
+    void processPeerRequest();
 
     void sendClientInfo();
-    void sendPeerRequest(const QHostAddress& host, quint16 port);
+    void sendPeerResponse(const QHostAddress &host, quint16 port);
+    void sendPeerRequest();
 
 public slots:
     void onDatagramReady();
@@ -86,9 +87,15 @@ void Client::Private::processDatagram(const QByteArray& datagram, const QHostAdd
 {
     const RequestType* type = (RequestType*)datagram.constData();
 
+    qDebug() << Q_FUNC_INFO << *type;
+
     switch(*type) {
     case ClientInfoRequest:
         processClientInfoRequest();
+        break;
+
+    case PeerRequest:
+        sendPeerRequest();
         break;
 
     case PeerResponse:
@@ -108,14 +115,9 @@ void Client::Private::processClientInfoRequest()
     discovery.discover();
 }
 
-void Client::Private::processPeerRequest(QDataStream& stream)
+void Client::Private::processPeerRequest()
 {
-    QHostAddress host;
-    quint16 port;
-
-    stream >> host >> port;
-
-    sendPeerRequest(host, port);
+    qDebug() << Q_FUNC_INFO;
 }
 
 void Client::Private::sendClientInfo()
@@ -123,7 +125,10 @@ void Client::Private::sendClientInfo()
     ClientInfo info;
     QByteArray data = QJsonDocument::fromVariant(info.toVariant()).toJson();
 
-    QNetworkRequest request(masterUrl);
+    QUrl url = masterUrl;
+    url.setPath("/info");
+
+    QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
 
     QNetworkReply* reply = networkAccessManager->post(request, data);
@@ -132,11 +137,26 @@ void Client::Private::sendClientInfo()
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRegisterError(QNetworkReply::NetworkError)));
 }
 
-void Client::Private::sendPeerRequest(const QHostAddress &host, quint16 port)
+void Client::Private::sendPeerResponse(const QHostAddress &host, quint16 port)
 {
     RequestType type = PeerResponse;
 
     managerSocket.writeDatagram((const char*)&type, sizeof(type), host, port);
+}
+
+void Client::Private::sendPeerRequest()
+{
+    Request r;
+    QByteArray data = QJsonDocument::fromVariant(r.toVariant()).toJson();
+
+    QUrl url = masterUrl;
+    url.setPath("/request");
+
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
+
+    QNetworkReply* reply = networkAccessManager->post(request, data);
+    reply->ignoreSslErrors();
 }
 
 void Client::Private::onDatagramReady()
@@ -245,6 +265,11 @@ QNetworkAccessManager *Client::networkAccessManager() const
 QAbstractSocket *Client::managerSocket() const
 {
     return &d->managerSocket;
+}
+
+void Client::requestTest()
+{
+    d->sendPeerRequest();
 }
 
 #include "client.moc"
