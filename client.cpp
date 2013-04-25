@@ -1,6 +1,6 @@
 #include "client.h"
 #include "discovery.h"
-#include "types.h"
+#include "requests.h"
 
 #include <QUdpSocket>
 #include <QBuffer>
@@ -10,6 +10,7 @@
 #include <QUrl>
 #include <QTimer>
 #include <QHostInfo>
+#include <QDataStream>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QJsonDocument>
@@ -23,19 +24,7 @@
 
 #include <QDebug>
 
-const QUrl masterUrl = QUrl("https://mplane.informatik.hs-augsburg.de:16001/register");
-const quint32 magic = 0x1337;
-const quint8 version = 0;
-
-struct NegotiationPacket {
-    quint16 magic;
-    quint8 version;
-
-    char host[64];
-    quint16 port;
-
-    quint16 ports[10];
-};
+const QUrl masterUrl = QUrl("http://localhost:16001/info");
 
 class Client::Private : public QObject
 {
@@ -44,7 +33,7 @@ class Client::Private : public QObject
 public:
     Private(Client* q)
     : q(q)
-    , status(Client::Unregistered)
+    , status(Client::Registered)
     , networkAccessManager(new QNetworkAccessManager(q))
     {
         connect(&discovery, SIGNAL(finished()), this, SLOT(onDiscoveryFinished()));
@@ -59,7 +48,6 @@ public:
 
     // Properties
     Client::Status status;
-    RemoteInfoList remoteInfo;
     QNetworkAccessManager* networkAccessManager;
     Discovery discovery;
     QUdpSocket managerSocket;
@@ -69,8 +57,12 @@ public:
     // Functions
     void setStatus(Client::Status status);
 
-    void processDatagram(QBuffer& buffer, const QHostAddress& host, quint16 port);
-    void processNegotiation(const NegotiationPacket& packet);
+    void processDatagram(const QByteArray &datagram, const QHostAddress& host, quint16 port);
+    void processClientInfoRequest();
+    void processPeerRequest(QDataStream &stream);
+
+    void sendClientInfo();
+    void sendPeerRequest(const QHostAddress& host, quint16 port);
 
 public slots:
     void onDatagramReady();
@@ -90,31 +82,61 @@ void Client::Private::setStatus(Client::Status status)
     emit q->statusChanged();
 }
 
-void Client::Private::processDatagram(QBuffer& buffer, const QHostAddress &host, quint16 port)
+void Client::Private::processDatagram(const QByteArray& datagram, const QHostAddress &host, quint16 port)
 {
-    // TODO: byte order checking
-    NegotiationPacket packet;
-    buffer.read((char*)&packet, sizeof(packet));
+    const RequestType* type = (RequestType*)datagram.constData();
 
-    if (packet.magic != magic) {
-        qDebug() << "Received invalid packet from" << host.toString() << port;
-        return;
+    switch(*type) {
+    case ClientInfoRequest:
+        processClientInfoRequest();
+        break;
+
+    case PeerResponse:
+        // TODO: Code
+        break;
+
+    default:
+        qDebug() << "Received unknown request from" << host.toString() << port;
     }
-
-    if (packet.version != version) {
-        qDebug() << "Packet version is different" << host.toString() << port;
-        return;
-    }
-
-    processNegotiation(packet);
 }
 
-void Client::Private::processNegotiation(const NegotiationPacket &packet)
+void Client::Private::processClientInfoRequest()
 {
-    qDebug() << "Received valid packet from" << packet.host << packet.port;
+    qDebug() << Q_FUNC_INFO;
 
-    // Post a alive-packet back and hope it gets through
-    managerSocket.writeDatagram(QByteArray(), QHostAddress(packet.host), packet.port);
+    // Get some information
+    discovery.discover();
+}
+
+void Client::Private::processPeerRequest(QDataStream& stream)
+{
+    QHostAddress host;
+    quint16 port;
+
+    stream >> host >> port;
+
+    sendPeerRequest(host, port);
+}
+
+void Client::Private::sendClientInfo()
+{
+    ClientInfo info;
+    QByteArray data = QJsonDocument::fromVariant(info.toVariant()).toJson();
+
+    QNetworkRequest request(masterUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
+
+    QNetworkReply* reply = networkAccessManager->post(request, data);
+    reply->ignoreSslErrors(); // TODO: Remove the evil
+    connect(reply, SIGNAL(finished()), this, SLOT(onRegisterFinished()));
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRegisterError(QNetworkReply::NetworkError)));
+}
+
+void Client::Private::sendPeerRequest(const QHostAddress &host, quint16 port)
+{
+    RequestType type = PeerResponse;
+
+    managerSocket.writeDatagram((const char*)&type, sizeof(type), host, port);
 }
 
 void Client::Private::onDatagramReady()
@@ -127,10 +149,8 @@ void Client::Private::onDatagramReady()
         quint16 port;
         managerSocket.readDatagram(datagram.data(), datagram.size(), &host, &port);
 
-        // Process the datagram using a buffer
-        QBuffer buffer(&datagram);
-        buffer.open(QIODevice::ReadOnly);
-        processDatagram(buffer, host, port);
+        // Process the datagram
+        processDatagram(datagram, host, port);
     }
 }
 
@@ -139,6 +159,7 @@ void Client::Private::onLookupFinished(const QHostInfo& host)
     aliveInfo = host;
 
     if ( !host.addresses().isEmpty() ) {
+        qDebug() << "Alive host found:" << host.addresses().first();
         onAliveTimer();
     } else {
         // Wait some seconds before trying again
@@ -149,7 +170,7 @@ void Client::Private::onLookupFinished(const QHostInfo& host)
 void Client::Private::onAliveTimer()
 {
     if (aliveInfo.addresses().isEmpty()) {
-        aliveInfo.lookupHost("mplane.informatik.hs-augsburg.de", this, SLOT(onLookupFinished(QHostInfo)));
+        aliveInfo.lookupHost("127.0.0.1", this, SLOT(onLookupFinished(QHostInfo)));
         qDebug() << "Looking up alive host";
     } else {
         managerSocket.writeDatagram(QByteArray(), aliveInfo.addresses().first(), 16000);
@@ -159,49 +180,17 @@ void Client::Private::onAliveTimer()
 
 void Client::Private::onDiscoveryFinished()
 {
-    q->register_();
+   sendClientInfo();
 }
 
 void Client::Private::onRegisterFinished()
 {
-    bool ok = false;
-    QString errorMessage;
-
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    QJsonParseError error;
-
-    // Parse the reply data
-    QVariant root = QJsonDocument::fromJson(reply->readAll(), &error).toVariant();
-    ok = (error.error == QJsonParseError::NoError);
-    errorMessage = error.errorString();
-#else
-    QJson::Parser parser;
-    QVariant root = parser.parse(reply, &ok);
-    errorMessage = parser.errorString();
-#endif
-    if ( ok ) {
+    if (reply->error() == QNetworkReply::NoError)
         setStatus(Client::Registered);
-
-        RemoteInfoList remotes;
-        foreach(const QVariant& entry, root.toList()) {
-            RemoteInfo info;
-            info.peerAddress = QHostAddress(entry.toString());
-
-            remotes.append(info);
-        }
-
-        // Update the remote list
-        if (!remotes.isEmpty())
-            q->setRemoteInfo(remotes);
-
-        setStatus(Client::Registered);
-    } else {
-        qDebug() << "JSon parser error:" << errorMessage;
-
+    else
         setStatus(Client::Unregistered);
-    }
 }
 
 void Client::Private::onRegisterError(QNetworkReply::NetworkError error)
@@ -256,53 +245,6 @@ QNetworkAccessManager *Client::networkAccessManager() const
 QAbstractSocket *Client::managerSocket() const
 {
     return &d->managerSocket;
-}
-
-void Client::setRemoteInfo(const RemoteInfoList &remoteInfo)
-{
-    d->remoteInfo = remoteInfo;
-}
-
-RemoteInfoList Client::remoteInfo() const
-{
-    return d->remoteInfo;
-}
-
-void Client::registerWithDiscovery()
-{
-    d->discovery.discover();
-}
-
-void Client::register_()
-{
-    // TODO: Fill data. Available tests, language, etc.
-    QByteArray data = "ttl=60&";
-
-    /*const QMetaObject* meta = &Discovery::staticMetaObject;
-    QMetaEnum en = meta->enumerator(meta->indexOfEnumerator("DataType"));
-
-    QHashIterator<Discovery::DataType, QVariant> iter(d->discovery.data());
-    while (iter.hasNext()) {
-        iter.next();
-
-        // TODO: escapings
-        data.append(en.valueToKey(iter.key()));
-        data.append('=');
-        data.append(iter.value().toString());
-        data.append('&');
-    }*/
-
-    QNetworkRequest request(masterUrl);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    QNetworkReply* reply = d->networkAccessManager->post(request, data);
-    reply->ignoreSslErrors(); // TODO: Remove the evil
-    connect(reply, SIGNAL(finished()), d, SLOT(onRegisterFinished()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), d, SLOT(onRegisterError(QNetworkReply::NetworkError)));
-}
-
-void Client::unregister()
-{
 }
 
 #include "client.moc"

@@ -55,9 +55,6 @@ void MainWindow::setClient(Client *client)
 
         // Update methods
         statusChanged();
-
-        // Update variables
-        m_negotiator.setManagerSocket(m_client->managerSocket());
     }
 }
 
@@ -72,13 +69,6 @@ void MainWindow::startClicked()
     if (m_client->status() != Client::Registered) {
         return;
     }
-
-    Q_ASSERT(m_client);
-    RemoteInfoList remotes = m_client->remoteInfo();
-    Q_ASSERT(!remotes.isEmpty());
-    RemoteInfo remote = remotes.first();
-
-    m_negotiator.sendRequest(remote.peerAddress);
 }
 
 void MainWindow::noConnectionClicked()

@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include "client.h"
-#include "negotiator.h"
 
 #include <QPointer>
 #include <QMainWindow>
@@ -33,7 +32,6 @@ protected slots:
 private:
     Ui::MainWindow *ui;
     QPointer<Client> m_client;
-    Negotiator m_negotiator;
     QSystemTrayIcon m_tray;
     QMenu m_trayMenu;
 };

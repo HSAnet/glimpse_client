@@ -4,6 +4,18 @@
 #include <QMetaObject>
 #include <QMetaEnum>
 
+// UDP request types
+enum RequestType
+{
+    UnknownRequest = 0,
+
+    // Server requests
+    ClientInfoRequest,
+
+    // Client requests
+    PeerResponse
+};
+
 enum Direction
 {
     Direction_Any,

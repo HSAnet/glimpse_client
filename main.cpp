@@ -25,7 +25,5 @@ int main(int argc, char* argv[])
     mainWindow.setClient(client);
     mainWindow.show();
 
-    client->registerWithDiscovery();
-
     return app.exec();
 }

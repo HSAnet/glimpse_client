@@ -9,14 +9,6 @@
 #include <miniupnpc/upnpcommands.h>
 #endif // HAVE_UPNP
 
-#ifdef HAVE_STUN
-# ifndef Q_OS_WIN
-#  include <unistd.h>
-# endif // Q_OS_WIN
-#include "stund/udp.h"
-#include "stund/stun.h"
-#endif // HAVE_STUN
-
 #ifndef FALSE
 #define FALSE 0
 #define TRUE 1
@@ -42,7 +34,6 @@ public:
     // Functions
     static Discovery::DiscoveryHash discover();
     static void upnpDiscover(Discovery::DiscoveryHash& hash);
-    static void stunDiscover(Discovery::DiscoveryHash& hash);
 
 public slots:
     void discoveryFinished();
@@ -52,7 +43,6 @@ Discovery::DiscoveryHash Discovery::Private::discover()
 {
     Discovery::DiscoveryHash hash;
     upnpDiscover(hash);
-    stunDiscover(hash);
     return hash;
 }
 
@@ -98,22 +88,6 @@ void Discovery::Private::upnpDiscover(Discovery::DiscoveryHash &hash)
         freeUPNPDevlist(devlist);
     }
 #endif // HAVE_UPNP
-}
-
-void Discovery::Private::stunDiscover(Discovery::DiscoveryHash &hash)
-{
-#ifdef HAVE_STUN
-    initNetwork();
-
-    StunAddress4 stunServerAddr;
-    stunParseServerName("stunserver.org", stunServerAddr); // TODO: Don't hardcore urls
-
-    bool preserverPort = false;
-    bool hairpin = false;
-
-    ::NatType stype = stunNatType(stunServerAddr, false, &preserverPort, &hairpin, stunRandomPort(), NULL);
-    hash.insert(Discovery::NatType, stype);
-#endif // HAVE_STUN
 }
 
 void Discovery::Private::discoveryFinished()

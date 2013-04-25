@@ -94,24 +94,25 @@ void ConnectionTester::Private::checkInterfaces()
 
         QString gw = findDefaultGateway();
         if ( gw.isEmpty() || gw == "0.0.0.0" )
-            q->message(tr("You don't have a default gateway defined. Please check your DHCP/network settings!"), ConnectionTester::Info);
+            emit q->message(tr("You don't have a default gateway defined. Please check your DHCP/network settings!"), ConnectionTester::Info);
         else {
             if (!canPing(gw))
-                q->message(tr("You can't access your default gateway!"), ConnectionTester::Info);
+                emit q->message(tr("You can't access your default gateway!"), ConnectionTester::Info);
             else if (!canPing("8.8.8.8"))
-                q->message(tr("Your default gateway does not forward your connections!"), ConnectionTester::Info);
+                emit q->message(tr("Your default gateway does not forward your connections!"), ConnectionTester::Info);
             else if (!canPing("google.com"))
-                q->message(tr("Your DNS resolution seems broken. Internet access works without DNS."), ConnectionTester::Info);
+                emit q->message(tr("Your DNS resolution seems broken. Internet access works without DNS."), ConnectionTester::Info);
             else
-                q->message(tr("Your connection seems to be fine"), ConnectionTester::Info);
+                emit q->message(tr("Your connection seems to be fine"), ConnectionTester::Info);
         }
 
         QString dns = findDefaultDNS();
         if ( dns.isEmpty() )
-            q->message(tr("You don't have a default dns server defined. Please check your DHCP/network settings!"), ConnectionTester::Info);
+            emit q->message(tr("You don't have a default dns server defined. Please check your DHCP/network settings!"), ConnectionTester::Info);
     }
 
-    /*
+    checkSlow();
+
     foreach(const QNetworkConfiguration& config, mgr.allConfigurations()) {
         // Ignore unknown and bluetooth devices
         if (config.bearerType() == QNetworkConfiguration::BearerUnknown ||
@@ -121,7 +122,7 @@ void ConnectionTester::Private::checkInterfaces()
         }
 
         qDebug() << config.bearerTypeName() << config.name() << config.state();
-    }*/
+    }
 }
 
 void ConnectionTester::Private::checkSlow()
@@ -129,6 +130,16 @@ void ConnectionTester::Private::checkSlow()
     QNetworkConfigurationManager mgr;
 
     QNetworkConfiguration config = mgr.defaultConfiguration();
+    if (!config.isValid()) {
+        emit q->message(tr("No default connection found."), ConnectionTester::Info);
+        return;
+    }
+
+    /*qDebug() << config.name() << config.type();
+
+    if (config.bearerType() == QNetworkConfiguration::BearerWLAN) {
+        qDebug() << "WLan: " << config.children().size();
+    }*/
 }
 
 QString ConnectionTester::Private::findDefaultGateway() const

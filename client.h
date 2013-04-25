@@ -12,31 +12,6 @@ class QNetworkAccessManager;
 
 ////////////////////////////////////////////////////////////
 
-class ClientInfo
-{
-public:
-    PlatformType platformType;
-    NetworkType networkType;
-    QLocale locale;
-};
-
-////////////////////////////////////////////////////////////
-
-class RemoteInfo
-{
-public:
-    PlatformType platformType;
-    QHostAddress peerAddress;
-    quint16 peerPort;
-
-    QStringList tests;
-    Direction direction;
-};
-
-typedef QList<RemoteInfo> RemoteInfoList;
-
-////////////////////////////////////////////////////////////
-
 class Client : public QObject
 {
     Q_OBJECT
@@ -64,14 +39,6 @@ public:
     QNetworkAccessManager* networkAccessManager() const;
 
     QAbstractSocket* managerSocket() const;
-
-    void setRemoteInfo(const RemoteInfoList& remoteInfo);
-    RemoteInfoList remoteInfo() const;
-
-public slots:
-    void registerWithDiscovery();
-    void register_();
-    void unregister();
 
 signals:
     void statusChanged();
