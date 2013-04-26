@@ -63,7 +63,7 @@ public:
 
     void sendClientInfo();
     void sendPeerResponse(const QHostAddress &host, quint16 port);
-    void sendPeerRequest();
+    void sendPeerRequest(bool manual = false);
 
 public slots:
     void onDatagramReady();
@@ -144,13 +144,16 @@ void Client::Private::sendPeerResponse(const QHostAddress &host, quint16 port)
     managerSocket.writeDatagram((const char*)&type, sizeof(type), host, port);
 }
 
-void Client::Private::sendPeerRequest()
+void Client::Private::sendPeerRequest(bool manual)
 {
     Request r;
     QByteArray data = QJsonDocument::fromVariant(r.toVariant()).toJson();
 
     QUrl url = masterUrl;
-    url.setPath("/request");
+    if (manual)
+        url.setPath("/manualrequest");
+    else
+        url.setPath("/request");
 
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
@@ -269,7 +272,7 @@ QAbstractSocket *Client::managerSocket() const
 
 void Client::requestTest()
 {
-    d->sendPeerRequest();
+    d->sendPeerRequest(true);
 }
 
 #include "client.moc"
