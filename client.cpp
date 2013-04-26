@@ -24,7 +24,7 @@
 
 #include <QDebug>
 
-const QUrl masterUrl = QUrl("http://localhost:16001");
+const QUrl masterUrl = QUrl("http://mplane.informatik.hs-augsburg.de:16001");
 
 class Client::Private : public QObject
 {
