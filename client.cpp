@@ -43,6 +43,8 @@ public:
         connect(&managerSocket, SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
         connect(&aliveTimer, SIGNAL(timeout()), this, SLOT(onAliveTimer()));
 
+        scheduler.setManagerSocket(&managerSocket);
+
         aliveTimer.setInterval(120 * 1000);
         aliveTimer.start();
     }
