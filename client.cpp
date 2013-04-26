@@ -15,6 +15,7 @@
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QJsonObject>
 #else
 #ifdef Q_OS_WIN
 #include <QJson/Parser>
@@ -252,9 +253,14 @@ void Client::Private::onPeerRequestFinished()
         QJsonDocument document = QJsonDocument::fromJson(reply->readAll(), &error);
 
         if ( error.error == QJsonParseError::NoError ) {
-            QJsonArray root = document.array();
+            QJsonObject root = document.object();
+            bool isMaster = root.value("master").toBool();
+            QString test = root.value("test").toString();
+            QJsonArray peers = root.value("peers").toArray();
 
-            foreach(QJsonValue value, root) {
+            qDebug() << "Test request:" << test << (isMaster ? "master" : "not master");
+
+            foreach(QJsonValue value, peers) {
                 qDebug() << "Received peer:" << value.toString();
 
                 QStringList values = value.toString().split(':');
