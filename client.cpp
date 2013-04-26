@@ -94,6 +94,8 @@ void Client::Private::processDatagram(const QByteArray& datagram, const QHostAdd
 
     qDebug() << Q_FUNC_INFO << *type;
 
+    // TODO: Check master server ip
+
     switch(*type) {
     case ClientInfoRequest:
         processClientInfoRequest();
@@ -144,6 +146,8 @@ void Client::Private::sendClientInfo()
 
 void Client::Private::sendPeerResponse(const QHostAddress &host, quint16 port)
 {
+    qDebug() << Q_FUNC_INFO;
+
     RequestType type = PeerResponse;
 
     managerSocket.writeDatagram((const char*)&type, sizeof(type), host, port);
@@ -164,6 +168,7 @@ void Client::Private::sendPeerRequest(bool manual)
     request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
 
     QNetworkReply* reply = networkAccessManager->post(request, data);
+    reply->setProperty("manual", manual);
     reply->ignoreSslErrors();
     connect(reply, SIGNAL(finished()), this, SLOT(onPeerRequestFinished()));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onPeerRequestError(QNetworkReply::NetworkError)));
@@ -237,6 +242,12 @@ void Client::Private::onPeerRequestFinished()
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
 
     if (reply->error() == QNetworkReply::NoError) {
+        bool manual = reply->property("manual").toBool();
+
+        // TODO: What to do when it was a manual request?
+        if ( manual )
+            return;
+
         QJsonParseError error;
         QJsonDocument document = QJsonDocument::fromJson(reply->readAll(), &error);
 
@@ -245,6 +256,12 @@ void Client::Private::onPeerRequestFinished()
 
             foreach(QJsonValue value, root) {
                 qDebug() << "Received peer:" << value.toString();
+
+                QStringList values = value.toString().split(':');
+                if ( values.size() == 2)
+                    sendPeerResponse(QHostAddress(values.at(0)), values.at(1).toUInt());
+                else
+                    qDebug() << Q_FUNC_INFO << "not an ip with port:" << value.toString();
             }
         } else {
             qDebug() << Q_FUNC_INFO << "Json error:" << error.errorString();
