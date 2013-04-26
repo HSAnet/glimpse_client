@@ -190,7 +190,7 @@ void Client::Private::onLookupFinished(const QHostInfo& host)
 void Client::Private::onAliveTimer()
 {
     if (aliveInfo.addresses().isEmpty()) {
-        aliveInfo.lookupHost("127.0.0.1", this, SLOT(onLookupFinished(QHostInfo)));
+        aliveInfo.lookupHost(masterUrl.host(), this, SLOT(onLookupFinished(QHostInfo)));
         qDebug() << "Looking up alive host";
     } else {
         managerSocket.writeDatagram(QByteArray(), aliveInfo.addresses().first(), 16000);
