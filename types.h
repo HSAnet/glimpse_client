@@ -3,6 +3,8 @@
 
 #include <QMetaObject>
 #include <QMetaEnum>
+#include <QHostAddress>
+#include <QList>
 
 // UDP request types
 enum RequestType

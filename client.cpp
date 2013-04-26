@@ -1,6 +1,7 @@
 #include "client.h"
 #include "discovery.h"
 #include "requests.h"
+#include "testscheduler.h"
 
 #include <QUdpSocket>
 #include <QBuffer>
@@ -56,6 +57,8 @@ public:
     QTimer aliveTimer;
     QHostInfo aliveInfo;
 
+    TestScheduler scheduler;
+
     // Functions
     void setStatus(Client::Status status);
 
@@ -91,27 +94,42 @@ void Client::Private::setStatus(Client::Status status)
 
 void Client::Private::processDatagram(const QByteArray& datagram, const QHostAddress &host, quint16 port)
 {
-    const RequestType* type = (RequestType*)datagram.constData();
+    // Master server
+    if ( host == aliveInfo.addresses().first() ) {
+        const RequestType* type = (RequestType*)datagram.constData();
 
-    qDebug() << Q_FUNC_INFO << *type;
+        qDebug() << Q_FUNC_INFO << *type;
 
-    // TODO: Check master server ip
+        // TODO: Check master server ip
 
-    switch(*type) {
-    case ClientInfoRequest:
-        processClientInfoRequest();
-        break;
+        switch(*type) {
+        case ClientInfoRequest:
+            processClientInfoRequest();
+            break;
 
-    case PeerRequest:
-        sendPeerRequest();
-        break;
+        case PeerRequest:
+            sendPeerRequest();
+            break;
 
-    case PeerResponse:
-        // TODO: Code
-        break;
+        default:
+            qDebug() << "Received unknown request from master" << host.toString() << port;
+        }
+    } else {
+        AbstractTest* currentTest = scheduler.currentTest();
+        if ( currentTest ) {
+            currentTest->processDatagram(datagram, host, port);
+        } else {
+            const RequestType* type = (RequestType*)datagram.constData();
 
-    default:
-        qDebug() << "Received unknown request from" << host.toString() << port;
+            switch(*type) {
+            case PeerResponse:
+                qDebug() << "Received peer response from" << host.toString() << port;
+                break;
+
+            default:
+                qDebug() << "Received invalid datagram from" << host.toString() << port;
+            }
+        }
     }
 }
 
@@ -255,20 +273,29 @@ void Client::Private::onPeerRequestFinished()
         if ( error.error == QJsonParseError::NoError ) {
             QJsonObject root = document.object();
             bool isMaster = root.value("master").toBool();
-            QString test = root.value("test").toString();
+            QString testName = root.value("test").toString();
             QJsonArray peers = root.value("peers").toArray();
 
-            qDebug() << "Test request:" << test << (isMaster ? "master" : "not master");
+            qDebug() << "Test request:" << testName << (isMaster ? "master" : "not master");
+
+            PeerList peerList;
 
             foreach(QJsonValue value, peers) {
                 qDebug() << "Received peer:" << value.toString();
 
                 QStringList values = value.toString().split(':');
-                if ( values.size() == 2)
-                    sendPeerResponse(QHostAddress(values.at(0)), values.at(1).toUInt());
+                if ( values.size() == 2) {
+                    QHostAddress host(values.at(0));
+                    quint16 port = values.at(1).toUInt();
+
+                    peerList.append(Peer(host, port));
+                    sendPeerResponse(host, port);
+                }
                 else
                     qDebug() << Q_FUNC_INFO << "not an ip with port:" << value.toString();
             }
+
+            scheduler.enqueue( TestInfo(testName, peerList, isMaster) );
         } else {
             qDebug() << Q_FUNC_INFO << "Json error:" << error.errorString();
         }

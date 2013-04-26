@@ -30,7 +30,10 @@ SOURCES +=  \
     discovery.cpp \
     mainwindow.cpp \
     connectiontester.cpp \
-    requests.cpp
+    requests.cpp \
+    testfactory.cpp \
+    tests/packettrain.cpp \
+    testscheduler.cpp
 
 HEADERS += \
     client.h \
@@ -38,7 +41,12 @@ HEADERS += \
     discovery.h \
     mainwindow.h \
     connectiontester.h \
-    requests.h
+    requests.h \
+    testfactory.h \
+    tests/packettrain.h \
+    tests/test.h \
+    testscheduler.h \
+    tests/testinfo.h
 
 FORMS += \
     mainwindow.ui
