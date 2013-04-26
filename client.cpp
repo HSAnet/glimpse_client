@@ -14,6 +14,7 @@
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QJsonDocument>
+#include <QJsonArray>
 #else
 #ifdef Q_OS_WIN
 #include <QJson/Parser>
@@ -70,8 +71,12 @@ public slots:
     void onLookupFinished(const QHostInfo &host);
     void onAliveTimer();
     void onDiscoveryFinished();
+
     void onRegisterFinished();
     void onRegisterError(QNetworkReply::NetworkError error);
+
+    void onPeerRequestFinished();
+    void onPeerRequestError(QNetworkReply::NetworkError error);
 };
 
 void Client::Private::setStatus(Client::Status status)
@@ -160,6 +165,8 @@ void Client::Private::sendPeerRequest(bool manual)
 
     QNetworkReply* reply = networkAccessManager->post(request, data);
     reply->ignoreSslErrors();
+    connect(reply, SIGNAL(finished()), this, SLOT(onPeerRequestFinished()));
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onPeerRequestError(QNetworkReply::NetworkError)));
 }
 
 void Client::Private::onDatagramReady()
@@ -214,6 +221,8 @@ void Client::Private::onRegisterFinished()
         setStatus(Client::Registered);
     else
         setStatus(Client::Unregistered);
+
+    reply->deleteLater();
 }
 
 void Client::Private::onRegisterError(QNetworkReply::NetworkError error)
@@ -221,6 +230,35 @@ void Client::Private::onRegisterError(QNetworkReply::NetworkError error)
     setStatus(Client::Unregistered);
 
     qDebug() << "Registration error" << enumToString(QNetworkReply, "NetworkError", error);
+}
+
+void Client::Private::onPeerRequestFinished()
+{
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+
+    if (reply->error() == QNetworkReply::NoError) {
+        QJsonParseError error;
+        QJsonDocument document = QJsonDocument::fromJson(reply->readAll(), &error);
+
+        if ( error.error == QJsonParseError::NoError ) {
+            QJsonArray root = document.array();
+
+            foreach(QJsonValue value, root) {
+                qDebug() << "Received peer:" << value.toString();
+            }
+        } else {
+            qDebug() << Q_FUNC_INFO << "Json error:" << error.errorString();
+        }
+    } else {
+        // Hmm?
+    }
+
+    reply->deleteLater();
+}
+
+void Client::Private::onPeerRequestError(QNetworkReply::NetworkError error)
+{
+    qDebug() << "Peer request error" << enumToString(QNetworkReply, "NetworkError", error);
 }
 
 Client::Client(QObject *parent)
