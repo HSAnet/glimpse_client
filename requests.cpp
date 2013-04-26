@@ -16,13 +16,13 @@ class ClientInfo::Private
 {
 public:
     Private()
-    : deviceType(TYPE)
-    , os(OS)
-    , dataPlanDownlink(0)
+    : dataPlanDownlink(0)
+    , deviceType(TYPE)
     , dataPlanUplink(0)
     , maxAllowedRateUp(0)
     , maxAllowedRateDown(0)
     , userId(0)
+    , os(OS)
     , remainingBudget(0)
     {
     }
