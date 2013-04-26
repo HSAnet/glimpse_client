@@ -47,7 +47,7 @@ void TestScheduler::Private::setStarted(bool started)
     emit q->isStartedChanged(started);
 
     if ( started ) {
-        timer.stop();
+        timer.start();
         emit q->started();
     } else {
         timer.stop();
@@ -57,6 +57,8 @@ void TestScheduler::Private::setStarted(bool started)
 
 void TestScheduler::Private::timeout()
 {
+    qDebug() << Q_FUNC_INFO;
+
     // Don't change the current test if we still run one
     if ( currentTest ) {
         if ( currentTest->isFinished() ) {
@@ -124,8 +126,7 @@ void TestScheduler::enqueue(const TestInfo &info)
 
     d->queue.enqueue(info);
 
-    if ( d->queue.isEmpty() )
-        start();
+    start();
 }
 
 bool TestScheduler::isStarted() const
