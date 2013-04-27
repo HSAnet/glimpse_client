@@ -18,7 +18,7 @@ PacketTrain::~PacketTrain()
 
 bool PacketTrain::initialize(const PeerList &peers, bool master, QUdpSocket *socket)
 {
-    if ( isInitialized || peers.isEmpty() )
+    if ( isInitialized )
         return false;
 
     if ( peers.isEmpty() ) {
