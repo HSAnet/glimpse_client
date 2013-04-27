@@ -5,4 +5,4 @@ SUBDIRS += libclient \
            console \
            desktop
 
-android:SUBDIRS += mobile
+SUBDIRS += mobile

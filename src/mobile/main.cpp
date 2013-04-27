@@ -1,8 +1,15 @@
+#include <QGuiApplication>
+#include <QQuickView>
+#include <QUrl>
 
 int main(int argc, char* argv[])
 {
-    (void)argc;
-    (void)argv;
+    QGuiApplication app(argc, argv);
 
-    return 0;
+    QQuickView view;
+    view.setResizeMode(QQuickView::SizeRootObjectToView);
+    view.setSource( QUrl("qrc:/qml/main.qml") );
+    view.show();
+
+    return app.exec();
 }
