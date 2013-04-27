@@ -62,7 +62,10 @@ bool PacketTrain::stop()
 
 bool PacketTrain::isFinished() const
 {
-    return timer.isActive() || packetCounter > 100;
+    if ( master )
+        return packetCounter > 100;
+    else
+        return !timer.isActive();
 }
 
 void PacketTrain::processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port)
