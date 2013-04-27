@@ -10,6 +10,9 @@
 #elif defined(Q_OS_LINUX)
 #define OS "Linux"
 #define TYPE ClientInfo::Workstation
+#elif defined(Q_OS_MAC)
+#define OS "Mac OS X"
+#define TYPE ClientInfo::Workstation
 #endif
 
 class ClientInfo::Private
