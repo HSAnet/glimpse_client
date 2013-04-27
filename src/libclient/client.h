@@ -33,8 +33,6 @@ public:
         Registered
     };
 
-    bool init();
-
     /// Get the current status
     Status status() const;
 
@@ -45,6 +43,7 @@ public:
     TestScheduler* scheduler() const;
 
 public slots:
+    bool init();
     void requestTest();
 
 signals:
