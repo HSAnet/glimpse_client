@@ -33,7 +33,8 @@ SOURCES +=  \
     requests.cpp \
     testfactory.cpp \
     tests/packettrain.cpp \
-    testscheduler.cpp
+    testscheduler.cpp \
+    networkhelper.cpp
 
 HEADERS += \
     client.h \
@@ -46,7 +47,8 @@ HEADERS += \
     tests/packettrain.h \
     tests/test.h \
     testscheduler.h \
-    tests/testinfo.h
+    tests/testinfo.h \
+    networkhelper.h
 
 FORMS += \
     mainwindow.ui

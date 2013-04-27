@@ -2,6 +2,7 @@
 #include "discovery.h"
 #include "requests.h"
 #include "testscheduler.h"
+#include "networkhelper.h"
 
 #include <QUdpSocket>
 #include <QBuffer>
@@ -229,7 +230,15 @@ void Client::Private::onAliveTimer()
         aliveInfo.lookupHost(masterUrl.host(), this, SLOT(onLookupFinished(QHostInfo)));
         qDebug() << "Looking up alive host";
     } else {
-        managerSocket.writeDatagram(QByteArray(), aliveInfo.addresses().first(), 16000);
+        QHostAddress myIp = NetworkHelper::localIpAddress();
+
+        // Ping the server
+        QByteArray data;
+        QTextStream stream(&data);
+        stream << myIp.toString() << ":1337";
+        stream.flush();
+
+        managerSocket.writeDatagram(data, aliveInfo.addresses().first(), 16000);
         qDebug() << "Alive packet sent";
     }
 }
