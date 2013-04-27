@@ -11,6 +11,8 @@ public:
     TestFactory();
     ~TestFactory();
 
+    QStringList availableTests() const;
+
     AbstractTest* createTest(const QString& name) const;
 };
 
