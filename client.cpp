@@ -1,7 +1,6 @@
 #include "client.h"
 #include "discovery.h"
 #include "requests.h"
-#include "testscheduler.h"
 #include "networkhelper.h"
 
 #include <QUdpSocket>
@@ -367,6 +366,11 @@ QNetworkAccessManager *Client::networkAccessManager() const
 QAbstractSocket *Client::managerSocket() const
 {
     return &d->managerSocket;
+}
+
+TestScheduler *Client::scheduler() const
+{
+    return &d->scheduler;
 }
 
 void Client::requestTest()

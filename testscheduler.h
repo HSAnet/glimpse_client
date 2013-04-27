@@ -9,6 +9,8 @@
 #include <QUuid>
 #include <QUdpSocket>
 
+class TestFactory;
+
 class TestScheduler : public QObject
 {
     Q_OBJECT
@@ -29,6 +31,8 @@ public:
     bool isStarted() const;
 
     AbstractTest* currentTest() const;
+
+    TestFactory* factory() const;
 
 public slots:
     void start();

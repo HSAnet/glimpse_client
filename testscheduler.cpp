@@ -139,6 +139,11 @@ AbstractTest *TestScheduler::currentTest() const
     return d->currentTest;
 }
 
+TestFactory *TestScheduler::factory() const
+{
+    return &d->factory;
+}
+
 void TestScheduler::start()
 {
     d->setStarted(true);

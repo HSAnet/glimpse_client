@@ -1,6 +1,8 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include "testfactory.h"
+#include "testscheduler.h"
 #include "types.h"
 
 #include <QObject>
@@ -39,6 +41,8 @@ public:
     QNetworkAccessManager* networkAccessManager() const;
 
     QAbstractSocket* managerSocket() const;
+
+    TestScheduler* scheduler() const;
 
 public slots:
     void requestTest();
