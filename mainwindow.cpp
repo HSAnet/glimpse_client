@@ -70,6 +70,8 @@ void MainWindow::startClicked()
         return;
     }
 
+    ui->textEdit->append(tr("Requesting manual test"));
+
     m_client->requestTest();
 }
 
