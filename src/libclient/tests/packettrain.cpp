@@ -83,11 +83,11 @@ void PacketTrain::timeout()
         return;
     }
 
-    foreach(const Peer& peer, peers) {
-        QByteArray data;
-        data.resize(2500);
-        data.fill('X');
+    QByteArray data;
+    data.resize(2500);
+    data.fill('X');
 
+    foreach(const Peer& peer, peers) {
         socket->writeDatagram(data, peer.host, peer.port);
     }
 }
