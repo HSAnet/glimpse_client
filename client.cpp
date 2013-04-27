@@ -97,12 +97,10 @@ void Client::Private::setStatus(Client::Status status)
 void Client::Private::processDatagram(const QByteArray& datagram, const QHostAddress &host, quint16 port)
 {
     // Master server
-    if ( host == aliveInfo.addresses().first() ) {
-        const RequestType* type = (RequestType*)datagram.constData();
+    if ( aliveInfo.addresses().contains(host) ) {
+        const RequestType* type = (const RequestType*)datagram.constData();
 
         qDebug() << Q_FUNC_INFO << *type;
-
-        // TODO: Check master server ip
 
         switch(*type) {
         case ClientInfoRequest:
