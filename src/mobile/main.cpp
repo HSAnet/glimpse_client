@@ -11,6 +11,7 @@ int main(int argc, char* argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterUncreatableType<Client>("mplane", 1, 0, "Client", "This is a singleton");
+    qmlRegisterUncreatableType<TestScheduler>("mplane", 1, 0, "TestScheduler", "uncreatable type");
 
     QQuickView view;
 

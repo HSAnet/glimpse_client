@@ -11,7 +11,6 @@ class TestScheduler::Private : public QObject
 public:
     Private(TestScheduler* q)
     : q(q)
-    , isStarted(false)
     , currentTest(NULL)
     , managerSocket(NULL)
     {
@@ -23,7 +22,6 @@ public:
     TestScheduler* q;
 
     // Properties
-    bool isStarted;
     AbstractTest* currentTest;
 
     QUdpSocket* managerSocket;
@@ -44,8 +42,6 @@ void TestScheduler::Private::setStarted(bool started)
     if ( timer.isActive() == started )
         return;
 
-    emit q->isStartedChanged(started);
-
     if ( started ) {
         timer.start();
         emit q->started();
@@ -53,6 +49,8 @@ void TestScheduler::Private::setStarted(bool started)
         timer.stop();
         emit q->stopped();
     }
+
+    emit q->isStartedChanged(started);
 }
 
 void TestScheduler::Private::timeout()
@@ -131,7 +129,7 @@ void TestScheduler::enqueue(const TestInfo &info)
 
 bool TestScheduler::isStarted() const
 {
-    return d->isStarted;
+    return d->timer.isActive();
 }
 
 AbstractTest *TestScheduler::currentTest() const

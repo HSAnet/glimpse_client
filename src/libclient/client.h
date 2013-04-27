@@ -19,6 +19,7 @@ class Client : public QObject
     Q_OBJECT
     Q_ENUMS(Status)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
+    Q_PROPERTY(TestScheduler* scheduler READ scheduler CONSTANT)
 
     explicit Client(QObject *parent = 0);
     ~Client();
