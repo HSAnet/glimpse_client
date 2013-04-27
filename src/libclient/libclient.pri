@@ -3,12 +3,16 @@ QT += network
 INCLUDEPATH += $$PWD
 
 win32 {
-    CONFIG(release, debug|release):LIBS += -L../libclient/release
-    else: LIBS += -L../libclient/debug
+    CONFIG(release, debug|release):BUILDCONFIG = "release"
+    else:BUILDCONFIG = "debug"
 
-    LIBS += -lclient
+    LIBS += -L../libclient/$$BUILDCONFIG -lclient
+    PRE_TARGETDEPS = ../libclient/$$BUILDCONFIG/client.lib
 }
-else:LIBS += ../libclient/libclient.a
+else {
+    LIBS += ../libclient/libclient.a
+    PRE_TARGETDEPS = ../libclient/libclient.a
+}
 
 linux:!android:LIBS += -lminiupnpc
 win32:LIBS += -lws2_32

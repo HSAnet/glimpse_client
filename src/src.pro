@@ -3,6 +3,9 @@ CONFIG += ordered
 
 SUBDIRS += libclient \
            console \
-           desktop
+           desktop \
+           mobile
 
-SUBDIRS += mobile
+console.depends = libclient
+desktop.depends = libclient
+mobile.depends = libclient
