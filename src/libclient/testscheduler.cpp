@@ -86,15 +86,15 @@ void TestScheduler::Private::timeout()
         return;
     }
 
+    currentTest = test;
+    emit q->currentTestChanged(test);
+
     if ( !test->start() ) {
         qDebug() << "Failed to start" << info.name;
         test->uninitialize();
         delete test;
         return;
     }
-
-    currentTest = test;
-    emit q->currentTestChanged(test);
 }
 
 TestScheduler::TestScheduler(QObject *parent)

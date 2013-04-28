@@ -16,7 +16,29 @@ Rectangle {
         }
     }
 
+    function packetCountChanged(packetCount) {
+        packetText.text = qsTr("Packets: %1 / 100").arg(packetCount);
+    }
+
+    Connections {
+        target: client.scheduler
+        onCurrentTestChanged: {
+            if ( !currentTest )
+                //loader.sourceComponent = undefined;
+                return;
+            else {
+                var params = {
+                    "test": currentTest,
+                    "color": "white"
+                }
+
+                loader.setSource(currentTest.name + ".qml", params);
+            }
+        }
+    }
+
     Text {
+        id: statusText
         anchors {
             top: parent.top
             topMargin: 10
@@ -24,6 +46,17 @@ Rectangle {
         }
 
         text: client.status == Client.Registered ? qsTr("Registered") : qsTr("Unregistered")
+    }
+
+    Loader {
+        id: loader
+        anchors {
+            top: statusText.bottom
+            left: parent.left
+            right: parent.right
+            bottom: startButton.top
+            margins: 10
+        }
     }
 
     Text {

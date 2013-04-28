@@ -11,5 +11,6 @@ RESOURCES += \
     resources/resource.qrc
 
 OTHER_FILES += \
-    resources/qml/main.qml
+    resources/qml/main.qml \
+    resources/qml/packettrain.qml
 

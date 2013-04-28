@@ -9,10 +9,13 @@
 #include <QHostAddress>
 #include <QUdpSocket>
 
-class AbstractTest
+class AbstractTest : public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(QString name READ name CONSTANT)
+
 public:
-    virtual ~AbstractTest() {}
+    virtual QString name() const = 0;
 
     virtual bool initialize(const PeerList& peers, bool master, QUdpSocket* socket) = 0;
     virtual void uninitialize() = 0;

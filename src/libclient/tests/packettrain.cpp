@@ -3,8 +3,7 @@
 #include <QDebug>
 
 PacketTrain::PacketTrain(QObject *parent)
-: QObject(parent)
-, isInitialized(false)
+: isInitialized(false)
 , packetCounter(0)
 {
     connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
@@ -14,6 +13,11 @@ PacketTrain::PacketTrain(QObject *parent)
 
 PacketTrain::~PacketTrain()
 {
+}
+
+QString PacketTrain::name() const
+{
+    return "packettrain";
 }
 
 bool PacketTrain::initialize(const PeerList &peers, bool master, QUdpSocket *socket)
@@ -63,22 +67,24 @@ bool PacketTrain::stop()
 bool PacketTrain::isFinished() const
 {
     if ( master )
-        return packetCounter > 100;
+        return packetCounter >= 100;
     else
         return !timer.isActive();
 }
 
 void PacketTrain::processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port)
 {
-    if ( master )
-        ++packetCounter;
+    if ( master ) {
+        emit packetCountChanged(++packetCounter);
+    }
 
-    qDebug() << Q_FUNC_INFO << host.toString() << port;
+    //qDebug() << Q_FUNC_INFO << host.toString() << port << packetCounter << "asdfff";
 }
 
 void PacketTrain::timeout()
 {
-    if ( packetCounter++ > 100 ) {
+    emit packetCountChanged(++packetCounter);
+    if ( packetCounter > 100 ) {
         stop();
         return;
     }

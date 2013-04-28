@@ -7,17 +7,21 @@
 #include <QStringList>
 #include <QTimer>
 
-class PacketTrain : public QObject
-                  , public AbstractTest
+class PacketTrain : public AbstractTest
 {
     Q_OBJECT
     Q_INTERFACES(AbstractTest)
+    Q_PROPERTY(int packetCount READ packetCount NOTIFY packetCountChanged)
 
 public:
     explicit PacketTrain(QObject *parent = 0);
     ~PacketTrain();
 
+    int packetCount() const { return packetCounter; }
+
     // AbstractTest overrides
+    QString name() const;
+
     bool initialize(const PeerList &peers, bool master, QUdpSocket* socket);
     void uninitialize();
 
@@ -26,6 +30,9 @@ public:
     bool isFinished() const;
 
     void processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port);
+
+signals:
+    void packetCountChanged(int packetCount);
 
 private slots:
     void timeout();
