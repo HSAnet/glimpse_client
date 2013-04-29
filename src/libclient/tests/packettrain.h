@@ -21,6 +21,7 @@ public:
 
     // AbstractTest overrides
     QString name() const;
+    bool isMaster() const;
 
     bool initialize(const PeerList &peers, bool master, QUdpSocket* socket);
     void uninitialize();

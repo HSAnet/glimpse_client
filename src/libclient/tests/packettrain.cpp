@@ -20,6 +20,11 @@ QString PacketTrain::name() const
     return "packettrain";
 }
 
+bool PacketTrain::isMaster() const
+{
+    return master;
+}
+
 bool PacketTrain::initialize(const PeerList &peers, bool master, QUdpSocket *socket)
 {
     if ( isInitialized )

@@ -13,9 +13,11 @@ class AbstractTest : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(bool isMaster READ isMaster CONSTANT)
 
 public:
     virtual QString name() const = 0;
+    virtual bool isMaster() const = 0;
 
     virtual bool initialize(const PeerList& peers, bool master, QUdpSocket* socket) = 0;
     virtual void uninitialize() = 0;

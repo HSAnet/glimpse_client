@@ -23,6 +23,6 @@ Rectangle {
 
     Text {
         anchors.centerIn: parent
-        text: qsTr("Packet %1 / 100 received").arg(test.packetCount)
+        text: qsTr("Packet %1 / 100 %2").arg(test.packetCount).arg(test.isMaster ? "received" : "sent")
     }
 }
