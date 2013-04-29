@@ -8,7 +8,7 @@ PacketTrain::PacketTrain(QObject *parent)
 {
     connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
 
-    timer.setInterval(100);
+    timer.setInterval(2);
 }
 
 PacketTrain::~PacketTrain()
@@ -84,7 +84,7 @@ void PacketTrain::processDatagram(const QByteArray &datagram, const QHostAddress
 void PacketTrain::timeout()
 {
     emit packetCountChanged(++packetCounter);
-    if ( packetCounter > 100 ) {
+    if ( packetCounter >= 100 ) {
         stop();
         return;
     }
