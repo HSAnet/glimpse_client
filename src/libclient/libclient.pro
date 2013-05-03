@@ -2,7 +2,7 @@ TEMPLATE = lib
 TARGET = client
 CONFIG += staticlib
 
-QT += network concurrent
+QT += network concurrent qml
 
 linux:!android:DEFINES += HAVE_UPNP
 
@@ -14,7 +14,8 @@ SOURCES +=  \
     testfactory.cpp \
     tests/packettrain.cpp \
     testscheduler.cpp \
-    networkhelper.cpp
+    networkhelper.cpp \
+    tests/natporttimes.cpp
 
 HEADERS += \
     client.h \
@@ -27,7 +28,8 @@ HEADERS += \
     tests/test.h \
     testscheduler.h \
     tests/testinfo.h \
-    networkhelper.h
+    networkhelper.h \
+    tests/natporttimes.h
 
 OTHER_FILES += \
     libclient.pri
