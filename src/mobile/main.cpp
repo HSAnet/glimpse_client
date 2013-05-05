@@ -8,6 +8,10 @@
 #include <QtQml>
 #include <QUrl>
 
+#ifdef Q_OS_ANDROID
+#include "statusbarhelper.h"
+#endif // Q_OS_ANDROID
+
 int main(int argc, char* argv[])
 {
     QGuiApplication app(argc, argv);
@@ -23,6 +27,9 @@ int main(int argc, char* argv[])
 
     QQmlContext* rootContext = view.rootContext();
     rootContext->setContextProperty("client", Client::instance());
+#ifdef Q_OS_ANDROID
+    rootContext->setContextProperty("statusBar", new StatusBarHelper(&view));
+#endif // Q_OS_ANDROID
 
     view.setResizeMode(QQuickView::SizeRootObjectToView);
     view.setSource( QUrl("qrc:/qml/main.qml") );

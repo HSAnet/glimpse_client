@@ -35,6 +35,13 @@ Rectangle {
                 loader.setSource(currentTest.name + ".qml", params);
             }
         }
+
+        onIsStartedChanged: {
+            if ( isStarted )
+                statusBar.showIcon();
+            else
+                statusBar.hideIcon();
+        }
     }
 
     Text {
