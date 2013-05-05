@@ -231,7 +231,37 @@ QString ClientInfo::localIp() const
     return d->localIp;
 }
 
-QVariant Request::toVariant() const
+
+class ManualRequest::Private
 {
-    return QVariant();
+public:
+    QUuid deviceId;
+};
+
+ManualRequest::ManualRequest()
+: d(new Private)
+{
 }
+
+ManualRequest::~ManualRequest()
+{
+    delete d;
+}
+
+QVariant ManualRequest::toVariant() const {
+  QVariantMap data;
+  data.insert("device-id", deviceId());
+  return data;
+}
+
+QUuid ManualRequest::deviceId() const {
+  return d->deviceId;
+}
+
+void ManualRequest::setDeviceId(const QUuid& deviceId) {
+  if (d->deviceId != deviceId) {
+    d->deviceId = deviceId;
+    emit deviceIdChanged(deviceId);
+  }
+}
+

@@ -102,14 +102,27 @@ protected:
     Private* d;
 };
 
-class Request : public QObject
+class ManualRequest : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QUuid deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
 
 public:
+    ManualRequest();
+    ~ManualRequest();
+
     QVariant toVariant() const;
 
+    QUuid deviceId() const;
+
+    void setDeviceId(const QUuid& deviceId);
+
+signals:
+    void deviceIdChanged(const QUuid& deviceId);
+
 protected:
+    class Private;
+    Private* d;
 };
 
 #endif // REQUESTS_H

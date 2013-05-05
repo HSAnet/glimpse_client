@@ -178,7 +178,7 @@ void Client::Private::sendPeerResponse(const QHostAddress &host, quint16 port)
 
 void Client::Private::sendPeerRequest(bool manual)
 {
-    Request r;
+    ManualRequest r;
     QByteArray data = QJsonDocument::fromVariant(r.toVariant()).toJson();
 
     QUrl url = masterUrl;
