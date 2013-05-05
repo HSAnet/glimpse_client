@@ -36,6 +36,8 @@ public:
     }
 
     static void registerClass(const char* className);
+    jclass findClass(const QByteArray& className) const;
+    jobject createInstance(jclass clazz) const;
     jobject createInstance(const QByteArray& className) const;
 
 protected:

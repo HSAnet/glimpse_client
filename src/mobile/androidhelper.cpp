@@ -52,15 +52,21 @@ void Java::registerClass(const char *className)
         registeredClasses.append(className);
 }
 
-jobject Java::createInstance(const QByteArray &className) const
+jclass Java::findClass(const QByteArray &className) const
 {
-    jclass clazz = classMap.value(className);
-    if ( !clazz )
-        return NULL;
+    return classMap.value(className);
+}
 
+jobject Java::createInstance(jclass clazz) const
+{
     jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
     if ( !constructor )
         return NULL;
 
     return env->NewGlobalRef( env->NewObject(clazz, constructor) );
+}
+
+jobject Java::createInstance(const QByteArray &className) const
+{
+    return createInstance(findClass(className));
 }
