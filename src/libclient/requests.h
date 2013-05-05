@@ -51,6 +51,7 @@ public:
 
     QVariant toVariant() const;
 
+    QString localIp() const;
     int dataPlanDownlink() const;
     QString upnpInfos() const;
     DeviceType deviceType() const;
@@ -65,6 +66,7 @@ public:
     QString os() const;
     int remainingBudget() const;
 
+    void setLocalIp(const QString& localIp);
     void setDataPlanDownlink(int dataPlanDownlink);
     void setUpnpInfos(const QString& upnpInfos);
     void setDeviceType(DeviceType deviceType);
@@ -80,6 +82,7 @@ public:
     void setRemainingBudget(int remainingBudget);
 
 signals:
+    void localIpChanged(const QString& localIp);
     void dataPlanDownlinkChanged(int dataPlanDownlink);
     void upnpInfosChanged(const QString& upnpInfos);
     void deviceTypeChanged(DeviceType deviceType);

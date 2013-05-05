@@ -22,11 +22,20 @@ public:
     virtual bool initialize(const PeerList& peers, bool master, QUdpSocket* socket) = 0;
     virtual void uninitialize() = 0;
 
-    virtual bool start() = 0;
-    virtual bool stop() = 0;
     virtual bool isFinished() const = 0;
 
     virtual void processDatagram(const QByteArray& datagram, const QHostAddress& host, quint16 port) = 0;
+
+public slots:
+    virtual bool start() = 0;
+    virtual bool stop() = 0;
+
+    virtual QVariant data(int role) const = 0;
+
+signals:
+    void started();
+    void stopped();
+    void finished(); // called before stopped()!
 };
 
 Q_DECLARE_INTERFACE(AbstractTest, "de.hs-augsburg.mplane.AbstractTest")

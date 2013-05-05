@@ -30,6 +30,7 @@ public:
     {
     }
 
+    QString localIp;
     int dataPlanDownlink;
     QString upnpInfos;
     ClientInfo::DeviceType deviceType;
@@ -188,7 +189,15 @@ void ClientInfo::setOs(const QString& os) {
 }
 
 int ClientInfo::remainingBudget() const {
-  return d->remainingBudget;
+    return d->remainingBudget;
+}
+
+void ClientInfo::setLocalIp(const QString &localIp)
+{
+    if (d->localIp != localIp) {
+        d->localIp = localIp;
+        emit localIpChanged(localIp);
+    }
 }
 
 void ClientInfo::setRemainingBudget(int remainingBudget) {
@@ -200,6 +209,7 @@ void ClientInfo::setRemainingBudget(int remainingBudget) {
 
 QVariant ClientInfo::toVariant() const {
   QVariantMap data;
+  data.insert("local-ip", localIp());
   data.insert("data-plan-downlink", dataPlanDownlink());
   data.insert("upnp-infos", upnpInfos());
   data.insert("device-type", enumToString(ClientInfo, "DeviceType", deviceType()));
@@ -216,6 +226,10 @@ QVariant ClientInfo::toVariant() const {
   return data;
 }
 
+QString ClientInfo::localIp() const
+{
+    return d->localIp;
+}
 
 QVariant Request::toVariant() const
 {

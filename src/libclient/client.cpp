@@ -148,7 +148,11 @@ void Client::Private::processPeerRequest()
 
 void Client::Private::sendClientInfo()
 {
+    QHostAddress myIp = NetworkHelper::localIpAddress();
+    QString localIp = QString("%1:%2").arg(myIp.toString()).arg(1337);
+
     ClientInfo info;
+    info.setLocalIp(localIp);
     QByteArray data = QJsonDocument::fromVariant(info.toVariant()).toJson();
 
     QUrl url = masterUrl;

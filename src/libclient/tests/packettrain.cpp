@@ -7,8 +7,12 @@ PacketTrain::PacketTrain(QObject *parent)
 , packetCounter(0)
 {
     connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
+    connect(&timeouter, SIGNAL(timeout()), this, SLOT(stop()));
 
-    timer.setInterval(2);
+    timer.setInterval(10);
+
+    timeouter.setInterval(2000);
+    timeouter.setSingleShot(true);
 }
 
 PacketTrain::~PacketTrain()
@@ -50,6 +54,8 @@ bool PacketTrain::start()
 {
     qDebug() << Q_FUNC_INFO;
 
+    timeouter.start();
+
     // Master waits for incoming packets
     if ( master ) {
         return true;
@@ -83,7 +89,15 @@ void PacketTrain::processDatagram(const QByteArray &datagram, const QHostAddress
         emit packetCountChanged(++packetCounter);
     }
 
+    timeouter.start();
+
     //qDebug() << Q_FUNC_INFO << host.toString() << port << packetCounter << "asdfff";
+}
+
+QVariant PacketTrain::data(int role) const
+{
+    Q_UNUSED(role)
+    return QVariant();
 }
 
 void PacketTrain::timeout()

@@ -32,6 +32,8 @@ public:
 
     void processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port);
 
+    QVariant data(int role) const;
+
 signals:
     void packetCountChanged(int packetCount);
 
@@ -46,6 +48,7 @@ protected:
 
     int packetCounter;
     QTimer timer;
+    QTimer timeouter;
 };
 
 #endif // PACKETTRAIN_H
