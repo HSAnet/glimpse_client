@@ -1,7 +1,8 @@
 import simplejson
 import re
 
-className = "ClientInfo"
+className = "ManualRequest"
+inputFile = "manualrequest.json"
 
 variables = list()
 properties = list()
@@ -87,7 +88,7 @@ def renderProperty(key, value):
         )
 
 def main():
-    with file("data.json", "r") as f:
+    with file(inputFile, "r") as f:
         root = simplejson.load(f)
 
         jsoncode.append(
