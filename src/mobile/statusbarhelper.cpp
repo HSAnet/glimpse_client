@@ -10,6 +10,12 @@ StatusBarHelper::StatusBarHelper(QObject *parent)
     m_hideIcon = env->GetMethodID(m_class, "hideIcon", "()V");
 }
 
+StatusBarHelper::~StatusBarHelper()
+{
+    Java env;
+    env->DeleteGlobalRef(m_instance);
+}
+
 void StatusBarHelper::showIcon()
 {
     Java env;
