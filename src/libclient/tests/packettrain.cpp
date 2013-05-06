@@ -109,7 +109,7 @@ void PacketTrain::timeout()
     }
 
     QByteArray data;
-    data.resize(2500);
+    data.resize(512);
     data.fill('X');
 
     foreach(const Peer& peer, peers) {
