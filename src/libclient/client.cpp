@@ -119,7 +119,7 @@ void Client::Private::processDatagram(const QByteArray& datagram, const QHostAdd
         if ( currentTest ) {
             currentTest->processDatagram(datagram, host, port);
         } else {
-            const RequestType* type = (RequestType*)datagram.constData();
+            const RequestType* type = (const RequestType*)datagram.constData();
 
             switch(*type) {
             case PeerResponse:
