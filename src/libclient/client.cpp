@@ -45,7 +45,7 @@ public:
 
         scheduler.setManagerSocket(&managerSocket);
 
-        aliveTimer.setInterval(120 * 1000);
+        aliveTimer.setInterval(20 * 1000);
         aliveTimer.start();
     }
 
