@@ -1,5 +1,7 @@
 import QtQuick 2.0
 import mplane 1.0
+import QtQuick.Controls 1.0
+import QtQuick.Window 2.0
 
 Rectangle {
     id: root
@@ -99,16 +101,12 @@ Rectangle {
         }
     }
 
-    Text {
+    Button {
         id: startButton
         anchors.centerIn: parent
         text: qsTr("Start test")
-        visible: !scheduler.isStarted
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: client.requestTest()
-        }
+        visible: !scheduler.isStarted       
+        onClicked: client.requestTest()
     }
 
     Text {
