@@ -1,5 +1,7 @@
 import QtQuick 2.0
 import mplane 1.0
+import QtQuick.Controls 1.0
+import QtQuick.Window 2.0
 
 Rectangle {
     id: root
@@ -16,8 +18,18 @@ Rectangle {
         }
     }
 
+    Component.onDestruction: {
+        statusBar.hideIcon();
+    }
+
     function packetCountChanged(packetCount) {
         packetText.text = qsTr("Packets: %1 / 100").arg(packetCount);
+    }
+
+    Binding {
+        target: statusBar
+        property: "visible"
+        value: client.scheduler.isStarted
     }
 
     Connections {
@@ -35,12 +47,31 @@ Rectangle {
                 loader.setSource(currentTest.name + ".qml", params);
             }
         }
+    }
 
-        onIsStartedChanged: {
-            if ( isStarted )
-                statusBar.showIcon();
-            else
-                statusBar.hideIcon();
+    Text {
+        id: iconText
+
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            bottom: parent.bottom
+            bottomMargin: 10
+        }
+
+        text: "ICON"
+        font.family: "Sans Serif"
+        font.pointSize: 30
+
+        MouseArea {
+            property int waas: 1;
+
+            anchors.fill: parent
+            onClicked: {
+                statusBar.message = qsTr("Clicked %1 times").arg(waas);
+                console.log(qsTr("message: %1").arg(statusBar.message));
+
+                statusBar.visible = waas++ % 2;
+            }
         }
     }
 
@@ -66,16 +97,12 @@ Rectangle {
         }
     }
 
-    Text {
+    Button {
         id: startButton
         anchors.centerIn: parent
         text: qsTr("Start test")
-        visible: !scheduler.isStarted
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: client.requestTest()
-        }
+        visible: !scheduler.isStarted       
+        onClicked: client.requestTest()
     }
 
     Text {

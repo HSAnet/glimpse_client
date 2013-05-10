@@ -18,15 +18,18 @@ public class StatusBarHelper {
 		Log.i("mplane", "constructor");
 	}
 	
+	public String title = "mPlane is testing";
+	public String message = "I am currently testing your connection";
+	
 	public void showIcon() {
 		Log.i("mplane", "showIcon");
 		
 		Notification notification = new Notification(R.drawable.statusicon, null, System.currentTimeMillis());
-		//notification.flags |= Notification.FLAG_ONGOING_EVENT;
-		notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;
+		notification.flags |= Notification.FLAG_ONGOING_EVENT;
+		//notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;
 		
 		PendingIntent pendingIntent = PendingIntent.getActivity(QtActivity.instance, 0, new Intent(), 0);
-		notification.setLatestEventInfo(QtActivity.instance, "wtf", "what", pendingIntent);
+		notification.setLatestEventInfo(QtActivity.instance, title, message, pendingIntent);
 	
 		((NotificationManager)QtActivity.instance.getSystemService(Context.NOTIFICATION_SERVICE)).notify(1, notification);
 		
@@ -34,6 +37,8 @@ public class StatusBarHelper {
 	}
 	
 	public void hideIcon() {
+		Log.i("mplane", "notification removed");
 		((NotificationManager)QtActivity.instance.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(1);
+		Log.i("mplane", "really.");
 	}
 }
