@@ -9,6 +9,7 @@ class StatusBarHelper : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString message READ message WRITE setMessage NOTIFY messageChanged)
+    Q_PROPERTY(bool visible READ isVisible WRITE setVisible NOTIFY visibleChanged)
 
 public:
     explicit StatusBarHelper(QObject *parent = 0);
@@ -17,12 +18,16 @@ public:
     void setMessage(const QString& message);
     QString message() const;
 
-public slots:
-    void showIcon();
-    void hideIcon();
+    void setVisible(bool visible);
+    bool isVisible() const;
 
 signals:
     void messageChanged(const QString& message);
+    void visibleChanged(bool visible);
+
+protected:
+    void showIcon();
+    void hideIcon();
 
 protected:
     jclass m_class;
@@ -31,6 +36,7 @@ protected:
     jmethodID m_hideIcon;
 
     jfieldID m_message;
+    bool m_isVisible;
 };
 
 #endif // STATUSBARHELPER_H

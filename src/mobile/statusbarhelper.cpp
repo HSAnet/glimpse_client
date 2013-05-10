@@ -2,6 +2,7 @@
 
 StatusBarHelper::StatusBarHelper(QObject *parent)
 : QObject(parent)
+, m_isVisible(false)
 {
     Java env;
     m_class = env.findClass("de/hsaugsburg/informatik/mplane/StatusBarHelper");
@@ -32,7 +33,7 @@ void StatusBarHelper::hideIcon()
 void StatusBarHelper::setMessage(const QString &message)
 {
     Java env;
-    jstring str = (jstring)env->NewLocalRef(env->NewString((const jchar*)message.constData(), message.size()));
+    jstring str = env->NewString((const jchar*)message.constData(), message.size());
     env->SetObjectField(m_instance, m_message, str);
     env->DeleteLocalRef(str);
 
@@ -47,6 +48,25 @@ QString StatusBarHelper::message() const
     QString msg = QString::fromUtf16(chars, env->GetStringLength(str));
     env->ReleaseStringChars(str, chars);
     return msg;
+}
+
+void StatusBarHelper::setVisible(bool visible)
+{
+    if (visible != m_isVisible) {
+        m_isVisible = visible;
+
+        if ( visible )
+            showIcon();
+        else
+            hideIcon();
+
+        emit visibleChanged(visible);
+    }
+}
+
+bool StatusBarHelper::isVisible() const
+{
+    return m_isVisible;
 }
 
 namespace {

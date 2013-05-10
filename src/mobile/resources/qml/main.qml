@@ -26,6 +26,12 @@ Rectangle {
         packetText.text = qsTr("Packets: %1 / 100").arg(packetCount);
     }
 
+    Binding {
+        target: statusBar
+        property: "visible"
+        value: client.scheduler.isStarted
+    }
+
     Connections {
         target: client.scheduler
         onCurrentTestChanged: {
@@ -40,13 +46,6 @@ Rectangle {
 
                 loader.setSource(currentTest.name + ".qml", params);
             }
-        }
-
-        onIsStartedChanged: {
-            if ( isStarted )
-                statusBar.showIcon();
-            else
-                statusBar.hideIcon();
         }
     }
 
@@ -71,10 +70,7 @@ Rectangle {
                 statusBar.message = qsTr("Clicked %1 times").arg(waas);
                 console.log(qsTr("message: %1").arg(statusBar.message));
 
-                if ( waas++ % 2 )
-                    statusBar.showIcon();
-                else
-                    statusBar.hideIcon();
+                statusBar.visible = waas++ % 2;
             }
         }
     }
