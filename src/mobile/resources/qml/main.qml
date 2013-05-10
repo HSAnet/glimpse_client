@@ -18,10 +18,6 @@ Rectangle {
         }
     }
 
-    Component.onDestruction: {
-        statusBar.hideIcon();
-    }
-
     function packetCountChanged(packetCount) {
         packetText.text = qsTr("Packets: %1 / 100").arg(packetCount);
     }
