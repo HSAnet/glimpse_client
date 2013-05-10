@@ -16,6 +16,10 @@ Rectangle {
         }
     }
 
+    Component.onDestruction: {
+        statusBar.hideIcon();
+    }
+
     function packetCountChanged(packetCount) {
         packetText.text = qsTr("Packets: %1 / 100").arg(packetCount);
     }
@@ -41,6 +45,35 @@ Rectangle {
                 statusBar.showIcon();
             else
                 statusBar.hideIcon();
+        }
+    }
+
+    Text {
+        id: iconText
+
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            bottom: parent.bottom
+            bottomMargin: 10
+        }
+
+        text: "ICON"
+        font.family: "Sans Serif"
+        font.pointSize: 30
+
+        MouseArea {
+            property int waas: 1;
+
+            anchors.fill: parent
+            onClicked: {
+                statusBar.message = qsTr("Clicked %1 times").arg(waas);
+                console.log(qsTr("message: %1").arg(statusBar.message));
+
+                if ( waas++ % 2 )
+                    statusBar.showIcon();
+                else
+                    statusBar.hideIcon();
+            }
         }
     }
 
