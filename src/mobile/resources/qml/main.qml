@@ -78,17 +78,12 @@ Rectangle {
             switch(status) {
             case WebRequester.Running:
                 statusText.text = qsTr("Requesting test ...");
-                startButton.enabled = false;
                 break;
 
             case WebRequester.Error:
                 statusText.text = qsTr("Error: %1").arg(errorString());
-
-            default:
-                startButton.enabled = true;
+                break;
             }
-
-            console.log("Status changed: " + status);
         }
     }
 
@@ -96,7 +91,8 @@ Rectangle {
         id: startButton
         anchors.centerIn: parent
         text: qsTr("Start test")
-        visible: !scheduler.isStarted       
+        visible: !scheduler.isStarted
+        enabled: !manualRequest.running
         onClicked: manualRequest.start();
     }
 
