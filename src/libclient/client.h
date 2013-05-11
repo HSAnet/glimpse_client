@@ -1,6 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include "settings.h"
 #include "testfactory.h"
 #include "testscheduler.h"
 #include "types.h"
@@ -20,6 +21,7 @@ class Client : public QObject
     Q_ENUMS(Status)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(TestScheduler* scheduler READ scheduler CONSTANT)
+    Q_PROPERTY(Settings* settings READ settings CONSTANT)
 
     explicit Client(QObject *parent = 0);
     ~Client();
@@ -42,6 +44,8 @@ public:
     QAbstractSocket* managerSocket() const;
 
     TestScheduler* scheduler() const;
+
+    Settings* settings() const;
 
 public slots:
     bool init();

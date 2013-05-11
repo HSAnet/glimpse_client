@@ -15,7 +15,8 @@ SOURCES +=  \
     tests/packettrain.cpp \
     testscheduler.cpp \
     networkhelper.cpp \
-    tests/natporttimes.cpp
+    tests/natporttimes.cpp \
+    settings.cpp
 
 HEADERS += \
     client.h \
@@ -29,7 +30,8 @@ HEADERS += \
     testscheduler.h \
     tests/testinfo.h \
     networkhelper.h \
-    tests/natporttimes.h
+    tests/natporttimes.h \
+    settings.h
 
 OTHER_FILES += \
     libclient.pri

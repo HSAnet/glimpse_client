@@ -7,6 +7,10 @@
 
 int main(int argc, char* argv[])
 {
+    QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
+    QCoreApplication::setOrganizationName("HS Augsburg");
+    QCoreApplication::setApplicationName("mPlaneClient");
+
 #ifdef Q_OS_ANDROID
     QApplication::setStyle(QStyleFactory::create("android"));
 #endif // Q_OS_ANDROID

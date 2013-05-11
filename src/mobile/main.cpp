@@ -14,11 +14,16 @@
 
 int main(int argc, char* argv[])
 {
+    QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
+    QCoreApplication::setOrganizationName("HS Augsburg");
+    QCoreApplication::setApplicationName("mPlaneClient");
+
     QGuiApplication app(argc, argv);
 
     qmlRegisterUncreatableType<AbstractTest>("mplane", 1, 0, "AbstractTest", "abstract class");
     qmlRegisterUncreatableType<Client>("mplane", 1, 0, "Client", "This is a singleton");
     qmlRegisterUncreatableType<TestScheduler>("mplane", 1, 0, "TestScheduler", "uncreatable type");
+    qmlRegisterType<Settings>("mplane", 1, 0, "Settings");
 
     QQuickView view;
 

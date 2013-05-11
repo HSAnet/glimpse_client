@@ -38,7 +38,6 @@ public:
     : q(q)
     , status(Client::Registered)
     , networkAccessManager(new QNetworkAccessManager(q))
-    , deviceId(QUuid::createUuid())
     {
         connect(&discovery, SIGNAL(finished()), this, SLOT(onDiscoveryFinished()));
         connect(&managerSocket, SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
@@ -60,9 +59,8 @@ public:
     QTimer aliveTimer;
     QHostInfo aliveInfo;
 
-    QUuid deviceId;
-
     TestScheduler scheduler;
+    Settings settings;
 
     // Functions
     void setStatus(Client::Status status);
@@ -155,7 +153,7 @@ void Client::Private::sendClientInfo()
     QString localIp = QString("%1:%2").arg(myIp.toString()).arg(1337);
 
     ClientInfo info;
-    info.setDeviceId(deviceId);
+    info.setDeviceId(settings.deviceId());
     info.setLocalIp(localIp);
     QByteArray data = QJsonDocument::fromVariant(info.toVariant()).toJson();
 
@@ -183,7 +181,7 @@ void Client::Private::sendPeerResponse(const QHostAddress &host, quint16 port)
 void Client::Private::sendPeerRequest(bool manual)
 {
     ManualRequest r;
-    r.setDeviceId(deviceId);
+    r.setDeviceId(settings.deviceId());
     QByteArray data = QJsonDocument::fromVariant(r.toVariant()).toJson();
 
     QUrl url = masterUrl;
@@ -354,6 +352,8 @@ bool Client::init()
     bool ok = false;
     ok = d->managerSocket.bind(1337);
 
+    d->settings.init();
+
     // Cheat ...
     d->onAliveTimer();
 
@@ -378,6 +378,11 @@ QAbstractSocket *Client::managerSocket() const
 TestScheduler *Client::scheduler() const
 {
     return &d->scheduler;
+}
+
+Settings *Client::settings() const
+{
+    return &d->settings;
 }
 
 void Client::requestTest()
