@@ -8,6 +8,12 @@ Rectangle {
     width: 480
     height: 800
 
+    SystemPalette {
+        id: sysPal
+    }
+
+    color: sysPal.window
+
     property variant scheduler: client.scheduler
 
     Component.onCompleted: {
@@ -16,10 +22,6 @@ Rectangle {
             console.log("Unable to initialize client");
             Qt.quit();
         }
-    }
-
-    Component.onDestruction: {
-        statusBar.hideIcon();
     }
 
     function packetCountChanged(packetCount) {
@@ -49,7 +51,7 @@ Rectangle {
         }
     }
 
-    Text {
+    Label {
         id: iconText
 
         anchors {
@@ -75,7 +77,7 @@ Rectangle {
         }
     }
 
-    Text {
+    Label {
         id: statusText
         anchors {
             top: parent.top
@@ -105,7 +107,7 @@ Rectangle {
         onClicked: client.requestTest()
     }
 
-    Text {
+    Label {
         id: activeText
 
         anchors.centerIn: parent

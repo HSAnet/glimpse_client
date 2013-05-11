@@ -14,6 +14,8 @@ StatusBarHelper::StatusBarHelper(QObject *parent)
 
 StatusBarHelper::~StatusBarHelper()
 {
+    hideIcon();
+
     Java env;
     env->DeleteGlobalRef(m_instance);
 }
