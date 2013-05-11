@@ -73,7 +73,7 @@ QHostAddress NetworkHelper::localIpAddress()
 #else
     foreach(const QHostAddress& addr, interfaceAddressList) {
         if ( addr.protocol() != QAbstractSocket::IPv4Protocol )
-            continue;
+            interfaceAddressList.removeAll(addr);
 
         if ( addr.toString().startsWith("127.") )
             interfaceAddressList.removeAll(addr);
