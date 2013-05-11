@@ -15,6 +15,35 @@
 #define TYPE ClientInfo::Workstation
 #endif
 
+class Request::Private
+{
+public:
+    QUuid deviceId;
+};
+
+Request::Request()
+: d(new Private)
+{
+}
+
+Request::~Request()
+{
+    delete d;
+}
+
+void Request::setDeviceId(const QUuid& deviceId)
+{
+    if ( d->deviceId != deviceId ) {
+        d->deviceId = deviceId;
+        emit deviceIdChanged(deviceId);
+    }
+}
+
+QUuid Request::deviceId() const
+{
+    return d->deviceId;
+}
+
 class ClientInfo::Private
 {
 public:
@@ -86,17 +115,6 @@ void ClientInfo::setDeviceType(DeviceType deviceType) {
   if (d->deviceType != deviceType) {
     d->deviceType = deviceType;
     emit deviceTypeChanged(deviceType);
-  }
-}
-
-QUuid ClientInfo::deviceId() const {
-  return d->deviceId;
-}
-
-void ClientInfo::setDeviceId(const QUuid& deviceId) {
-  if (d->deviceId != deviceId) {
-    d->deviceId = deviceId;
-    emit deviceIdChanged(deviceId);
   }
 }
 
@@ -235,7 +253,6 @@ QString ClientInfo::localIp() const
 class ManualRequest::Private
 {
 public:
-    QUuid deviceId;
 };
 
 ManualRequest::ManualRequest()
@@ -253,15 +270,3 @@ QVariant ManualRequest::toVariant() const {
   data.insert("device-id", deviceId());
   return data;
 }
-
-QUuid ManualRequest::deviceId() const {
-  return d->deviceId;
-}
-
-void ManualRequest::setDeviceId(const QUuid& deviceId) {
-  if (d->deviceId != deviceId) {
-    d->deviceId = deviceId;
-    emit deviceIdChanged(deviceId);
-  }
-}
-

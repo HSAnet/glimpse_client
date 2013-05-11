@@ -9,9 +9,24 @@
 class Request : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QUuid deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
 
 public:
+    Request();
+    ~Request();
+
     virtual QVariant toVariant() const = 0;
+
+    void setDeviceId(const QUuid& deviceId);
+    QUuid deviceId() const;
+
+signals:
+    void deviceIdChanged(const QUuid& deviceId);
+
+protected:
+    class Private;
+    friend class Private;
+    Private* d;
 };
 
 class ClientInfo : public Request
@@ -22,7 +37,6 @@ class ClientInfo : public Request
     Q_PROPERTY(int dataPlanDownlink READ dataPlanDownlink WRITE setDataPlanDownlink NOTIFY dataPlanDownlinkChanged)
     Q_PROPERTY(QString upnpInfos READ upnpInfos WRITE setUpnpInfos NOTIFY upnpInfosChanged)
     Q_PROPERTY(DeviceType deviceType READ deviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
-    Q_PROPERTY(QUuid deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
     Q_PROPERTY(QString dataPlanName READ dataPlanName WRITE setDataPlanName NOTIFY dataPlanNameChanged)
     Q_PROPERTY(QString provider READ provider WRITE setProvider NOTIFY providerChanged)
     Q_PROPERTY(ProviderTechnology providerTechnology READ providerTechnology WRITE setProviderTechnology NOTIFY providerTechnologyChanged)
@@ -64,7 +78,6 @@ public:
     int dataPlanDownlink() const;
     QString upnpInfos() const;
     DeviceType deviceType() const;
-    QUuid deviceId() const;
     QString dataPlanName() const;
     QString provider() const;
     ProviderTechnology providerTechnology() const;
@@ -79,7 +92,6 @@ public:
     void setDataPlanDownlink(int dataPlanDownlink);
     void setUpnpInfos(const QString& upnpInfos);
     void setDeviceType(DeviceType deviceType);
-    void setDeviceId(const QUuid& deviceId);
     void setDataPlanName(const QString& dataPlanName);
     void setProvider(const QString& provider);
     void setProviderTechnology(ProviderTechnology providerTechnology);
@@ -115,20 +127,12 @@ class ManualRequest : public Request
 {
     Q_OBJECT
     Q_CLASSINFO("path", "/manualrequest")
-    Q_PROPERTY(QUuid deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
 
 public:
     ManualRequest();
     ~ManualRequest();
 
     QVariant toVariant() const;
-
-    QUuid deviceId() const;
-
-    void setDeviceId(const QUuid& deviceId);
-
-signals:
-    void deviceIdChanged(const QUuid& deviceId);
 
 protected:
     class Private;
