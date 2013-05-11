@@ -24,10 +24,6 @@ Rectangle {
         }
     }
 
-    function packetCountChanged(packetCount) {
-        packetText.text = qsTr("Packets: %1 / 100").arg(packetCount);
-    }
-
     Binding {
         target: statusBar
         property: "visible"
@@ -47,32 +43,6 @@ Rectangle {
                 }
 
                 loader.setSource(currentTest.name + ".qml", params);
-            }
-        }
-    }
-
-    Label {
-        id: iconText
-
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            bottom: parent.bottom
-            bottomMargin: 10
-        }
-
-        text: "ICON"
-        font.family: "Sans Serif"
-        font.pointSize: 30
-
-        MouseArea {
-            property int waas: 1;
-
-            anchors.fill: parent
-            onClicked: {
-                statusBar.message = qsTr("Clicked %1 times").arg(waas);
-                console.log(qsTr("message: %1").arg(statusBar.message));
-
-                statusBar.visible = waas++ % 2;
             }
         }
     }
@@ -99,12 +69,35 @@ Rectangle {
         }
     }
 
+    WebRequester {
+        id: manualRequest
+        request: TestRequest {
+        }
+
+        onStatusChanged: {
+            switch(status) {
+            case WebRequester.Running:
+                statusText.text = qsTr("Requesting test ...");
+                startButton.enabled = false;
+                break;
+
+            case WebRequester.Error:
+                statusText.text = qsTr("Error: %1").arg(errorString());
+
+            default:
+                startButton.enabled = true;
+            }
+
+            console.log("Status changed: " + status);
+        }
+    }
+
     Button {
         id: startButton
         anchors.centerIn: parent
         text: qsTr("Start test")
         visible: !scheduler.isStarted       
-        onClicked: client.requestTest()
+        onClicked: manualRequest.start();
     }
 
     Label {
