@@ -64,8 +64,6 @@ void WebRequester::Private::requestFinished()
                 errorString = replyError;
                 setStatus(WebRequester::Error);
             }
-
-            setStatus(WebRequester::Finished);
         } else {
             errorString = error.errorString();
             setStatus(WebRequester::Error);
@@ -153,6 +151,8 @@ void WebRequester::start()
 
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
+
+    d->setStatus(Running);
 
     QNetworkReply* reply = Client::instance()->networkAccessManager()->post(request, data);
     reply->ignoreSslErrors();
