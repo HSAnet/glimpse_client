@@ -142,6 +142,9 @@ void WebRequester::start()
         return;
     }
 
+    // Fill remaining request data
+    d->request->setDeviceId(Client::instance()->settings()->deviceId());
+
     QMetaClassInfo classInfo = d->request->metaObject()->classInfo(pathIdx);
 
     QByteArray data = QJsonDocument::fromVariant(d->request->toVariant()).toJson();
