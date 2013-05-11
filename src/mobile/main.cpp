@@ -1,5 +1,6 @@
 #include "client.h"
 #include "tests/test.h"
+#include "webrequester.h"
 
 #include <QGuiApplication>
 #include <QQuickView>
@@ -23,7 +24,12 @@ int main(int argc, char* argv[])
     qmlRegisterUncreatableType<AbstractTest>("mplane", 1, 0, "AbstractTest", "abstract class");
     qmlRegisterUncreatableType<Client>("mplane", 1, 0, "Client", "This is a singleton");
     qmlRegisterUncreatableType<TestScheduler>("mplane", 1, 0, "TestScheduler", "uncreatable type");
+
+    qmlRegisterUncreatableType<Request>("mplane", 1, 0, "Request", "abstract class");
+    qmlRegisterType<ClientInfo>("mplane", 1, 0, "ClientInfoRequest");
+    qmlRegisterType<ManualRequest>("mplane", 1, 0, "TestRequest");
     qmlRegisterType<Settings>("mplane", 1, 0, "Settings");
+    qmlRegisterType<WebRequester>("mplane", 1, 0, "WebRequester");
 
     QQuickView view;
 

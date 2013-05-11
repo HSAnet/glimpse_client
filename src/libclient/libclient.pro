@@ -16,7 +16,8 @@ SOURCES +=  \
     testscheduler.cpp \
     networkhelper.cpp \
     tests/natporttimes.cpp \
-    settings.cpp
+    settings.cpp \
+    webrequester.cpp
 
 HEADERS += \
     client.h \
@@ -31,7 +32,8 @@ HEADERS += \
     tests/testinfo.h \
     networkhelper.h \
     tests/natporttimes.h \
-    settings.h
+    settings.h \
+    webrequester.h
 
 OTHER_FILES += \
     libclient.pri

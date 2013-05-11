@@ -6,9 +6,18 @@
 #include <QObject>
 #include <QUuid>
 
-class ClientInfo : public QObject
+class Request : public QObject
 {
     Q_OBJECT
+
+public:
+    virtual QVariant toVariant() const = 0;
+};
+
+class ClientInfo : public Request
+{
+    Q_OBJECT
+    Q_CLASSINFO("path", "/info")
     Q_ENUMS(DeviceType ProviderTechnology)
     Q_PROPERTY(int dataPlanDownlink READ dataPlanDownlink WRITE setDataPlanDownlink NOTIFY dataPlanDownlinkChanged)
     Q_PROPERTY(QString upnpInfos READ upnpInfos WRITE setUpnpInfos NOTIFY upnpInfosChanged)
@@ -102,9 +111,10 @@ protected:
     Private* d;
 };
 
-class ManualRequest : public QObject
+class ManualRequest : public Request
 {
     Q_OBJECT
+    Q_CLASSINFO("path", "/manualrequest")
     Q_PROPERTY(QUuid deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
 
 public:
