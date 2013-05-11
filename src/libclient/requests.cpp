@@ -21,8 +21,9 @@ public:
     QUuid deviceId;
 };
 
-Request::Request()
-: d(new Private)
+Request::Request(QObject *parent)
+: QObject(parent)
+, d(new Private)
 {
 }
 
@@ -75,8 +76,9 @@ public:
     int remainingBudget;
 };
 
-ClientInfo::ClientInfo()
-: d(new Private)
+ClientInfo::ClientInfo(QObject *parent)
+: Request(parent)
+, d(new Private)
 {
 }
 
@@ -255,8 +257,9 @@ class ManualRequest::Private
 public:
 };
 
-ManualRequest::ManualRequest()
-: d(new Private)
+ManualRequest::ManualRequest(QObject *parent)
+: Request(parent)
+, d(new Private)
 {
 }
 

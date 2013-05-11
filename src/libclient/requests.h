@@ -12,7 +12,7 @@ class Request : public QObject
     Q_PROPERTY(QUuid deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
 
 public:
-    Request();
+    explicit Request(QObject* parent = 0);
     ~Request();
 
     virtual QVariant toVariant() const = 0;
@@ -48,7 +48,7 @@ class ClientInfo : public Request
     Q_PROPERTY(int remainingBudget READ remainingBudget WRITE setRemainingBudget NOTIFY remainingBudgetChanged)
 
 public:
-    ClientInfo();
+    ClientInfo(QObject* parent = 0);
     ~ClientInfo();
 
     enum DeviceType
@@ -129,7 +129,7 @@ class ManualRequest : public Request
     Q_CLASSINFO("path", "/manualrequest")
 
 public:
-    ManualRequest();
+    ManualRequest(QObject* parent = 0);
     ~ManualRequest();
 
     QVariant toVariant() const;
