@@ -36,7 +36,7 @@ class Client::Private : public QObject
 public:
     Private(Client* q)
     : q(q)
-    , status(Client::Registered)
+    , status(Client::Unregistered)
     , networkAccessManager(new QNetworkAccessManager(q))
     {
         connect(&discovery, SIGNAL(finished()), this, SLOT(onDiscoveryFinished()));
@@ -61,6 +61,8 @@ public:
 
     TestScheduler scheduler;
     Settings settings;
+
+    QHostAddress lastLocalIp;
 
     // Functions
     void setStatus(Client::Status status);
@@ -112,6 +114,10 @@ void Client::Private::processDatagram(const QByteArray& datagram, const QHostAdd
             sendPeerRequest();
             break;
 
+        case RegisteredClientResponse:
+            setStatus(Client::Registered);
+            break;
+
         default:
             qDebug() << "Received unknown request from master" << host.toString() << port;
         }
@@ -137,6 +143,8 @@ void Client::Private::processDatagram(const QByteArray& datagram, const QHostAdd
 void Client::Private::processClientInfoRequest()
 {
     qDebug() << Q_FUNC_INFO;
+
+    setStatus(Client::Unregistered);
 
     // Get some information
     discovery.discover();
@@ -236,10 +244,15 @@ void Client::Private::onAliveTimer()
     } else {
         QHostAddress myIp = NetworkHelper::localIpAddress();
 
+        bool isNewIp = myIp != lastLocalIp;
+        lastLocalIp = myIp;
+
         // Ping the server
         QByteArray data;
         QTextStream stream(&data);
         stream << myIp.toString() << ":1337";
+        if ( isNewIp )
+            stream << ":new";
         stream.flush();
 
         managerSocket.writeDatagram(data, aliveInfo.addresses().first(), 16000);

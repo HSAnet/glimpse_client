@@ -14,6 +14,7 @@ enum RequestType
     // Server requests
     ClientInfoRequest,
     PeerRequest,
+    RegisteredClientResponse,
 
     // Client requests
     PeerResponse = 1024
