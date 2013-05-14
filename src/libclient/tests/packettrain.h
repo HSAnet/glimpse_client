@@ -49,6 +49,7 @@ protected:
     int packetCounter;
     QTimer timer;
     QTimer timeouter;
+    bool running;
 };
 
 #endif // PACKETTRAIN_H

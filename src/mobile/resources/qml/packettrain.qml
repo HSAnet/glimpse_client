@@ -1,28 +1,19 @@
 import QtQuick 2.0
 
-Rectangle {
+Item {
     id: root
 
     width: 400
     height: 400
-    color: "gray"
 
+    property string title: qsTr("Packet train")
+    property string subtitle: qsTr("Testing ...")
     property QtObject test
-
-    Text {
-        anchors {
-            top: parent.top
-            topMargin: 10
-            horizontalCenter: parent.horizontalCenter
-        }
-
-        text: qsTr("Packet train")
-        font.bold: true
-        font.pointSize: 16
-    }
 
     Text {
         anchors.centerIn: parent
         text: qsTr("Packet %1 / 100 %2").arg(test.packetCount).arg(test.isMaster ? "received" : "sent")
+        color: "white"
+        font.pointSize: 30
     }
 }

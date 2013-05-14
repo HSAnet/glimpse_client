@@ -2,17 +2,14 @@ import QtQuick 2.0
 import mplane 1.0
 import QtQuick.Controls 1.0
 import QtQuick.Window 2.0
+import "android"
 
 Rectangle {
     id: root
     width: 480
     height: 800
 
-    SystemPalette {
-        id: sysPal
-    }
-
-    color: sysPal.window
+    color: "#212126"
 
     property variant scheduler: client.scheduler
 
@@ -38,34 +35,103 @@ Rectangle {
                 return;
             else {
                 var params = {
-                    "test": currentTest,
-                    "color": "white"
+                    "test": currentTest
                 }
 
-                loader.setSource(currentTest.name + ".qml", params);
+                pageStack.push({item:Qt.resolvedUrl(currentTest.name + ".qml"), properties:params});
             }
         }
     }
 
-    Label {
-        id: statusText
-        anchors {
-            top: parent.top
-            topMargin: 10
-            horizontalCenter: parent.horizontalCenter
+    BorderImage {
+        id: title
+        border.bottom: 9
+        source: "android/images/toolbar.png"
+        width: parent.width
+        height: 100
+        z: 1
+
+        BackButton {
+            id: backButton
         }
 
-        text: client.status == Client.Registered ? qsTr("Registered") : qsTr("Unregistered")
+        Text {
+            id: applicationTitle
+            font.pixelSize: 42
+            Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
+            x: backButton.x + backButton.width + 20
+            anchors.verticalCenter: parent.verticalCenter
+            color: "white"
+            /*text: {
+                var title = pageStack.currentItem.title;
+                if (title)
+                    return title;
+                else
+                    return "mPlane";
+            }*/
+        }
+
+        Text {
+            id: statusText
+            font.pixelSize: 20
+            x: applicationTitle.x + 30
+            anchors.top: applicationTitle.bottom
+            anchors.topMargin: -5
+            color: "lightgray"
+            /*text: {
+                var subtitle = pageStack.currentItem.subtitle;
+                if (subtitle)
+                    return subtitle;
+                else
+                    return client.status == Client.Registered ? qsTr("Registered") : qsTr("Unregistered")
+            }*/
+        }
     }
 
-    Loader {
-        id: loader
+    StackView {
+        id: pageStack
         anchors {
-            top: statusText.bottom
+            top: title.bottom
             left: parent.left
             right: parent.right
-            bottom: startButton.top
-            margins: 10
+            bottom: parent.bottom
+        }
+
+        onCurrentItemChanged: {
+            applicationTitle.text = currentItem.title;
+            statusText.text = currentItem.subtitle;
+        }
+
+        initialItem: ListView {
+            property string title: "mPlane"
+            property string subtitle: client.status == Client.Registered ? qsTr("Registered") : qsTr("Unregistered")
+
+            model: ListModel {
+                ListElement {
+                    title: "Manual tests"
+                    page: "Tests.qml"
+                }
+
+                ListElement {
+                    title: "Settings"
+                    page: "Settings.qml"
+                }
+            }
+
+            delegate: AndroidDelegate {
+                text: title
+                onClicked: pageStack.push(Qt.resolvedUrl(page))
+            }
+
+            footer: Button {
+                id: startButton
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Start test")
+                visible: !scheduler.isStarted
+                enabled: !manualRequest.running
+                onClicked: manualRequest.start()
+                style: ButtonStyle {}
+            }
         }
     }
 
@@ -85,15 +151,6 @@ Rectangle {
                 break;
             }
         }
-    }
-
-    Button {
-        id: startButton
-        anchors.centerIn: parent
-        text: qsTr("Start test")
-        visible: !scheduler.isStarted
-        enabled: !manualRequest.running
-        onClicked: manualRequest.start();
     }
 
     Label {

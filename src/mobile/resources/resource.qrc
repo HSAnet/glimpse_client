@@ -2,5 +2,22 @@
     <qresource prefix="/">
         <file>qml/main.qml</file>
         <file>qml/packettrain.qml</file>
+        <file>qml/android/AndroidDelegate.qml</file>
+        <file>qml/android/ButtonStyle.qml</file>
+        <file>qml/android/images/button_default.png</file>
+        <file>qml/android/images/button_pressed.png</file>
+        <file>qml/android/BackButton.qml</file>
+        <file>qml/android/ProgressBarStyle.qml</file>
+        <file>qml/android/SliderStyle.qml</file>
+        <file>qml/android/TabViewStyle.qml</file>
+        <file>qml/android/TextFieldStyle.qml</file>
+        <file>qml/android/images/navigation_next_item.png</file>
+        <file>qml/android/images/navigation_previous_item.png</file>
+        <file>qml/android/images/tab_selected.png</file>
+        <file>qml/android/images/tabs_standard.png</file>
+        <file>qml/android/images/textinput.png</file>
+        <file>qml/android/images/toolbar.png</file>
+        <file>qml/Settings.qml</file>
+        <file>qml/Tests.qml</file>
     </qresource>
 </RCC>

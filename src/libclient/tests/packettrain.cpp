@@ -5,6 +5,7 @@
 PacketTrain::PacketTrain(QObject *parent)
 : isInitialized(false)
 , packetCounter(0)
+, running(false)
 {
     connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
     connect(&timeouter, SIGNAL(timeout()), this, SLOT(stop()));
@@ -54,6 +55,8 @@ bool PacketTrain::start()
 {
     qDebug() << Q_FUNC_INFO;
 
+    running = true;
+
     timeouter.start();
 
     // Master waits for incoming packets
@@ -71,12 +74,16 @@ bool PacketTrain::stop()
 {
     qDebug() << Q_FUNC_INFO;
 
+    running = false;
+
     timer.stop();
     return true;
 }
 
 bool PacketTrain::isFinished() const
 {
+    return running;
+
     if ( master )
         return packetCounter >= 100;
     else
@@ -86,7 +93,7 @@ bool PacketTrain::isFinished() const
 void PacketTrain::processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port)
 {
     if ( master ) {
-        emit packetCountChanged(++packetCounter);
+        emit packetCountChanged(packetCounter++);
     }
 
     timeouter.start();
@@ -102,8 +109,8 @@ QVariant PacketTrain::data(int role) const
 
 void PacketTrain::timeout()
 {
-    emit packetCountChanged(++packetCounter);
-    if ( packetCounter >= 100 ) {
+    emit packetCountChanged(packetCounter);
+    if ( packetCounter++ >= 100 ) {
         stop();
         return;
     }
