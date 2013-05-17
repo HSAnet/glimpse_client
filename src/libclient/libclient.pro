@@ -4,7 +4,7 @@ CONFIG += staticlib
 
 QT += network concurrent qml
 
-linux:!android:DEFINES += HAVE_UPNP
+!win32:include(../../3rdparty/miniupnpc.pri)
 
 SOURCES +=  \
     client.cpp \
