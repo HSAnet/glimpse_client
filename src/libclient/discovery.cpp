@@ -82,6 +82,19 @@ void Discovery::Private::upnpDiscover(Discovery::DiscoveryHash &hash)
                 hash.insert(LinkLayerMaxDownload, downlink);
                 hash.insert(LinkLayerMaxUpload, uplink);
             }
+
+            char status[100];
+            unsigned int uptime = 0;
+            char lastConnectionError[128];
+            if (UPNPCOMMAND_SUCCESS == UPNP_GetStatusInfo(urls.controlURL,
+                                                          data.CIF.servicetype,
+                                                          status,
+                                                          &uptime,
+                                                          lastConnectionError)) {
+                hash.insert(Status, status);
+                hash.insert(Uptime, uptime);
+                hash.insert(LastConnectionError, lastConnectionError);
+            }
         }
 
         FreeUPNPUrls(&urls);

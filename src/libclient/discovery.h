@@ -26,7 +26,10 @@ public:
         LinkLayerMaxUpload,
         LinkLayerMaxDownload,
         ConnectionType,
-        NatType
+        NatType,
+        Status,
+        Uptime,
+        LastConnectionError
     };
 
     typedef QHash<DataType, QVariant> DiscoveryHash;
