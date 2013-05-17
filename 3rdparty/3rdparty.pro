@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
 
-SUBDIRS += miniupnp.pro
+mac|android:SUBDIRS += miniupnp.pro
 
 OTHER_FILES += miniupnpc.pri
