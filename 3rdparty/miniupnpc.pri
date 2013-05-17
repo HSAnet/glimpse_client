@@ -1,4 +1,6 @@
-DEFINES += HAVE_UPNP sun
+DEFINES += HAVE_UPNP
+linux:DEFINES += sun # Atleast needed for android
+mac:DEFINES += _DARWIN_C_SOURCE
 
 INCLUDEPATH += $$PWD/miniupnp
 
