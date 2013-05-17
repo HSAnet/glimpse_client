@@ -21,6 +21,16 @@ Rectangle {
         }
     }
 
+    // Implements back key navigation
+    Keys.onReleased: {
+        if (event.key === Qt.Key_Back) {
+            if (pageStack.depth > 1) {
+                pageStack.pop();
+                event.accepted = true;
+            } else { Qt.quit(); }
+        }
+    }
+
     Binding {
         target: statusBar
         property: "visible"
@@ -151,31 +161,5 @@ Rectangle {
                 break;
             }
         }
-    }
-
-    Label {
-        id: activeText
-
-        anchors.centerIn: parent
-
-        RotationAnimation {
-            target: activeText
-            direction: RotationAnimation.Clockwise
-            from: 0
-            to: 360
-            duration: 1000
-            loops: Animation.Infinite
-            alwaysRunToEnd: true
-            running: scheduler.isStarted
-        }
-
-        Behavior on scale {
-            NumberAnimation {
-                duration: 500
-            }
-        }
-
-        scale: scheduler.isStarted ? 1.0 : 0.0
-        text: qsTr("Testing")
     }
 }
