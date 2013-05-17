@@ -1,4 +1,10 @@
 android/bin
 android/gen
 android/libs
-
+android/.*
+android/Makefile
+android/build.xml
+android/java.pro
+android/libjava.so
+android/local.properties
+*.pro.user*
