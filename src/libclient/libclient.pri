@@ -8,6 +8,9 @@ win32 {
 
     LIBS += -L../libclient/$$BUILDCONFIG -lclient
     PRE_TARGETDEPS = ../libclient/$$BUILDCONFIG/client.lib
+
+    # For upnp
+    LIBS += -lIphlpapi
 }
 else {
     LIBS += ../libclient/libclient.a

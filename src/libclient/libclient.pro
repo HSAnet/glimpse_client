@@ -4,7 +4,7 @@ CONFIG += staticlib
 
 QT += network concurrent qml
 
-!win32:include(../../3rdparty/miniupnpc.pri)
+include(../../3rdparty/miniupnpc.pri)
 
 SOURCES +=  \
     client.cpp \

@@ -1,12 +1,14 @@
-DEFINES += HAVE_UPNP
+DEFINES += HAVE_UPNP STATICLIB
 
 android:DEFINES += sun # Atleast needed for android
 mac:DEFINES += _DARWIN_C_SOURCE
+win32:DEFINES += _CRT_SECURE_NO_WARNINGS
 
 linux:LIBS += -lminiupnpc
 
-android|mac {
+android|mac|win32 {
     INCLUDEPATH += $$PWD/miniupnp
+    win32:INCLUDEPATH += $$PWD/miniupnp_windows_fixes
 
     HEADERS += \
         $$PWD/miniupnp/miniupnpc/bsdqueue.h \
@@ -36,14 +38,14 @@ android|mac {
     #    $$PWD/miniupnp/miniupnpc/miniupnpcmodule.c \
         $$PWD/miniupnp/miniupnpc/miniwget.c \
         $$PWD/miniupnp/miniupnpc/minixml.c \
-        $$PWD/miniupnp/miniupnpc/minixmlvalid.c \
+    #    $$PWD/miniupnp/miniupnpc/minixmlvalid.c \
         $$PWD/miniupnp/miniupnpc/portlistingparse.c \
         $$PWD/miniupnp/miniupnpc/receivedata.c \
     #    $$PWD/miniupnp/miniupnpc/testigddescparse.c \
     #    $$PWD/miniupnp/miniupnpc/testminiwget.c \
     #    $$PWD/miniupnp/miniupnpc/testminixml.c \
     #    $$PWD/miniupnp/miniupnpc/testupnpreplyparse.c \
-        $$PWD/miniupnp/miniupnpc/upnpc.c \
+    #    $$PWD/miniupnp/miniupnpc/upnpc.c \
         $$PWD/miniupnp/miniupnpc/upnpcommands.c \
         $$PWD/miniupnp/miniupnpc/upnperrors.c \
         $$PWD/miniupnp/miniupnpc/upnpreplyparse.c \
