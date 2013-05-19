@@ -6,8 +6,8 @@ import "android"
 
 Rectangle {
     id: root
-    width: 480
-    height: 800
+    width: 768
+    height: 1200
 
     color: "#212126"
 

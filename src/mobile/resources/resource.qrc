@@ -21,5 +21,8 @@
         <file>qml/Tests.qml</file>
         <file>qml/android/Spinner.qml</file>
         <file>qml/android/images/spinner_black_76.png</file>
+        <file>qml/images/card_background.png</file>
+        <file>qml/images/connectiontester_fail.png</file>
+        <file>qml/images/connectiontester_ok.png</file>
     </qresource>
 </RCC>

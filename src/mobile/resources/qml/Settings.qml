@@ -9,7 +9,7 @@ Rectangle {
     id: root
     width: 400
     height: 500
-    color: "lightgray"
+    color: "#e5e5e5"
 
     property string title: qsTr("Settings")
     property string subtitle: qsTr("all you want to change")
@@ -28,12 +28,17 @@ Rectangle {
         onStarted: model.clear()
     }
 
-    Rectangle {
+    BorderImage {
         id: card
-        color: "white"
+
+        source: "images/card_background.png"
+        horizontalTileMode: BorderImage.Repeat
+        verticalTileMode: BorderImage.Repeat
         border {
-            width: 2
-            color: "#626262"
+            left: 15
+            right: 15
+            top: 15
+            bottom: 15
         }
 
         anchors {
@@ -42,25 +47,32 @@ Rectangle {
             right: parent.right
             margins: 20
         }
-        height: 200
+        height: 530
 
         ColumnLayout {
             Component.onCompleted: tester.start()
 
             anchors.fill: parent
+            anchors.margins: 10
 
             spacing: 20
 
             Text {
                 Layout.fillWidth: true
-                text: "Connection tests"
+                text: "Connection"
+                font.family: "Roboto Light"
+                color: "#707070"
+                font.pixelSize: 50
             }
 
             ListView {
                 id: listView
-                spacing: 10
-                height: 500
+                //spacing: 10
+                height: 300
+                anchors.leftMargin: 20
                 Layout.fillWidth: true
+                Layout.fillHeight: true
+                interactive: false
 
                 model: ConnectionTesterModel {
                     connectionTester: ConnectionTester {
@@ -68,37 +80,73 @@ Rectangle {
                     }
                 }
 
+                add: Transition {
+                    NumberAnimation {
+                        properties: "opacity"
+                        from: 0.0
+                        to: 1.0
+                        duration: 250
+                    }
+                }
+
                 delegate: Item {
                     width: ListView.view.width
                     height: 70
 
-                    RowLayout {
-                        anchors.fill: parent
+                    Text {
+                        anchors {
+                            left: parent.left
+                            leftMargin: 15
+                            verticalCenter: parent.verticalCenter
+                        }
+
+                        text: model.testName
+                        font.pointSize: 20
+                        font.family: "Roboto Light"
+                    }
+
+                    Item {
+                        anchors {
+                            right: checkMark.left
+                            rightMargin: 10
+                            verticalCenter: parent.verticalCenter
+                        }
+
+                        height: 50
+                        width: Math.max(70, resultText.width)
 
                         Text {
-                            Layout.fillWidth: true
-                            text: model.testName
-                            font.pointSize: 18
+                            id: resultText
+                            anchors.centerIn: parent
+                            text: if (typeof(model.testResult) == "number") return model.testResult + " ms"; else return model.testResult;
+                            font.pointSize: 17
+                            font.family: "Roboto Light"
+                            color: "#707070"
+                            visible: model.testFinished && typeof(model.testResult) != "boolean"
+                        }
+                    }
+
+                    Image {
+                        id: checkMark
+
+                        anchors {
+                            right: parent.right
+                            rightMargin: 10
+                            verticalCenter: parent.verticalCenter
                         }
 
-                        Item {
-                            height: 70
-                            width: Math.max(70, resultText.width)
+                        source: model.testSuccess ? "images/connectiontester_ok.png" : "images/connectiontester_fail.png"
+                        visible: model.testFinished
+                    }
 
-                            Spinner {
-                                width: 65
-                                anchors.centerIn: parent
-                                running: !model.testFinished
-                            }
-
-                            Text {
-                                id: resultText
-                                anchors.centerIn: parent
-                                text: if (typeof(model.testResult) == "number") return model.testResult + " ms"; else return model.testResult;
-                                font.pointSize: 18
-                                visible: model.testFinished
-                            }
+                    Spinner {
+                        width: 65
+                        anchors {
+                            right: parent.right
+                            rightMargin: 10
+                            verticalCenter: parent.verticalCenter
                         }
+                        running: !model.testFinished
                     }
                 }
             }

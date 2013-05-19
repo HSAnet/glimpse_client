@@ -70,7 +70,8 @@ public:
         TestNameRole = Qt::UserRole + 1,
         TestTypeRole,
         TestFinishedRole,
-        TestResultRole
+        TestResultRole,
+        TestSuccessRole
     };
 
     void setConnectionTester(ConnectionTester* connectionTester);

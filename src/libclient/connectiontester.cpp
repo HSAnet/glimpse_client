@@ -386,6 +386,7 @@ QHash<int, QByteArray> ConnectionTesterModel::roleNames() const
     roleNames.insert(TestTypeRole, "testType");
     roleNames.insert(TestFinishedRole, "testFinished");
     roleNames.insert(TestResultRole, "testResult");
+    roleNames.insert(TestSuccessRole, "testSuccess");
     return roleNames;
 }
 
@@ -405,6 +406,18 @@ QVariant ConnectionTesterModel::data(const QModelIndex &index, int role) const
     const RowData& data = m_rows.at(index.row());
     switch(role) {
     case TestNameRole:
+        {
+            switch(data.testType) {
+            case ConnectionTester::ActiveInterface: return tr("Online state");
+            case ConnectionTester::DefaultGateway: return tr("Gateway");
+            case ConnectionTester::DefaultDns: return tr("DNS");
+            case ConnectionTester::PingDefaultGateway: return tr("Access Gateway");
+            case ConnectionTester::PingGoogleDnsServer: return tr("Access IP");
+            case ConnectionTester::PingGoogleDomain: return tr("Access Google");
+            default:
+                break;
+            }
+        }
         return enumToString(ConnectionTester, "TestType", data.testType);
     case TestTypeRole:
         return (int)data.testType;
@@ -412,6 +425,8 @@ QVariant ConnectionTesterModel::data(const QModelIndex &index, int role) const
         return QVariant::fromValue(data.finished);
     case TestResultRole:
         return data.result;
+    case TestSuccessRole:
+        return QVariant::fromValue(data.success);
 
     default:
         break;
