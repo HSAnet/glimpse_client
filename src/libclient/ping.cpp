@@ -200,4 +200,9 @@ void Ping::stop()
     d->process.kill();
 }
 
+void Ping::waitForFinished()
+{
+    d->process.waitForFinished(1000);
+}
+
 #include "ping.moc"

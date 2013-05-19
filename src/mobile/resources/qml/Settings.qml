@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.0
 import "android"
 
 Rectangle {
+    id: root
     width: 400
     height: 500
     color: "lightgray"
@@ -43,6 +44,67 @@ Rectangle {
         }
         height: 200
 
+        ColumnLayout {
+            Component.onCompleted: tester.start()
+
+            anchors.fill: parent
+
+            spacing: 20
+
+            Text {
+                Layout.fillWidth: true
+                text: "Connection tests"
+            }
+
+            ListView {
+                id: listView
+                spacing: 10
+                height: 500
+                Layout.fillWidth: true
+
+                model: ConnectionTesterModel {
+                    connectionTester: ConnectionTester {
+                        id: tester
+                    }
+                }
+
+                delegate: Item {
+                    width: ListView.view.width
+                    height: 70
+
+                    RowLayout {
+                        anchors.fill: parent
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: model.testName
+                            font.pointSize: 18
+                        }
+
+                        Item {
+                            height: 70
+                            width: Math.max(70, resultText.width)
+
+                            Spinner {
+                                width: 65
+                                anchors.centerIn: parent
+                                running: !model.testFinished
+                            }
+
+                            Text {
+                                id: resultText
+                                anchors.centerIn: parent
+                                text: if (typeof(model.testResult) == "number") return model.testResult + " ms"; else return model.testResult;
+                                font.pointSize: 18
+                                visible: model.testFinished
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /*
         ColumnLayout {
             id: layout
             anchors {
@@ -92,6 +154,23 @@ Rectangle {
                 model: ListModel {
                     id: model
                 }
+
+                add: Transition {
+                    NumberAnimation {
+                        property: "scale"
+                        from: 0.0
+                        to: 1.0
+                        duration: 250
+                    }
+                }
+
+                remove: Transition {
+                    NumberAnimation {
+                        property: "x"
+                        to: mapFromItem(root, root.width, 0).x
+                        duration: 500
+                    }
+                }
             }
 
             Text {
@@ -100,7 +179,7 @@ Rectangle {
                 color: "gray"
                 text: qsTr("Average: %1 ms").arg(pinger.averagePingTime)
             }
-        }
+        }*/
     }
 
 

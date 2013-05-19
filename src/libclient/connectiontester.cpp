@@ -1,9 +1,14 @@
 #include "connectiontester.h"
+#include "ping.h"
+#include "types.h"
 
 #include <QNetworkConfigurationManager>
 #include <QNetworkConfiguration>
 #include <QNetworkSession>
 #include <QHostAddress>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QtConcurrentRun>
 
 #include <QNetworkInterface>
 #include <QCoreApplication>
@@ -39,18 +44,21 @@ public:
     : q(q)
     , result(ConnectionTester::Offline)
     {
+        connect(&watcher, SIGNAL(started()), q, SIGNAL(started()));
+        connect(&watcher, SIGNAL(finished()), q, SIGNAL(finished()));
     }
 
     ConnectionTester* q;
 
     ConnectionTester::ResultType result;
+    QFutureWatcher<void> watcher;
 
     void checkInterfaces();
     void checkSlow();
 
     QString findDefaultGateway() const;
     QString findDefaultDNS() const;
-    bool canPing(const QString& host) const;
+    bool canPing(const QString& host, int* averagePing = 0) const;
 
 #ifdef Q_OS_MAC
     QString scutilHelper(const QByteArray &command, const QString& searchKey) const;
@@ -63,77 +71,23 @@ public:
 
 void ConnectionTester::Private::checkInterfaces()
 {
-    QNetworkConfigurationManager mgr;
-
-    if ( !mgr.isOnline() ) {
-        qDebug() << "Offline. Checking why ...";
-
-        emit q->message(tr("Offline."), ConnectionTester::Info);
-
-        QList<QNetworkConfiguration> configs;
-        foreach(const QNetworkConfiguration config, mgr.allConfigurations(QNetworkConfiguration::Active)) {
-            QNetworkSession session(config);
-            QNetworkInterface iface = session.interface();
-            if ( !iface.isValid() )
-                qDebug() << config.name() << "invalid interface";
-            else {
-                // Ignore loopback devices
-                if ( !iface.flags().testFlag(QNetworkInterface::IsLoopBack) )
-                    configs.append(config);
-            }
-        }
-
-        if ( configs.isEmpty() )
-            emit q->message(tr("There are no active network devices. Please check your cables!"), ConnectionTester::Info);
-        else {
-            // There is some interface, now we have to check routings and dns
-            // TODO: What now?
-        }
-    } else {
-        //emit q->message(tr("Some interface is online. Checking ..."), ConnectionTester::Info);
-
-        QString gw = findDefaultGateway();
-        if ( gw.isEmpty() || gw == "0.0.0.0" )
-            emit q->message(tr("You don't have a default gateway defined. Please check your DHCP/network settings!"), ConnectionTester::Info);
-        else {
-            if (!canPing(gw))
-                emit q->message(tr("You can't access your default gateway!"), ConnectionTester::Info);
-            else if (!canPing("8.8.8.8"))
-                emit q->message(tr("Your default gateway does not forward your connections!"), ConnectionTester::Info);
-            else if (!canPing("google.com"))
-                emit q->message(tr("Your DNS resolution seems broken. Internet access works without DNS."), ConnectionTester::Info);
-            else
-                emit q->message(tr("Your connection seems to be fine"), ConnectionTester::Info);
-        }
-
-        QString dns = findDefaultDNS();
-        if ( dns.isEmpty() )
-            emit q->message(tr("You don't have a default dns server defined. Please check your DHCP/network settings!"), ConnectionTester::Info);
-    }
-
-    checkSlow();
-
-    foreach(const QNetworkConfiguration& config, mgr.allConfigurations()) {
-        // Ignore unknown and bluetooth devices
-        if (config.bearerType() == QNetworkConfiguration::BearerUnknown ||
-            config.bearerType() == QNetworkConfiguration::BearerBluetooth )
-        {
-            continue;
-        }
-
-        qDebug() << config.bearerTypeName() << config.name() << config.state();
-    }
+    q->checkOnline();
+    q->findDefaultGateway();
+    q->findDefaultDNS();
+    q->canPingGateway();
+    q->canPingGoogleDnsServer();
+    q->canPingGoogleDomain();
 }
 
 void ConnectionTester::Private::checkSlow()
 {
-    QNetworkConfigurationManager mgr;
+    /*QNetworkConfigurationManager mgr;
 
     QNetworkConfiguration config = mgr.defaultConfiguration();
     if (!config.isValid()) {
         emit q->message(tr("No default connection found."), ConnectionTester::Info);
         return;
-    }
+    }*/
 
     /*qDebug() << config.name() << config.type();
 
@@ -250,41 +204,25 @@ QString ConnectionTester::Private::findDefaultDNS() const
     return QString();
 }
 
-bool ConnectionTester::Private::canPing(const QString &host) const
+bool ConnectionTester::Private::canPing(const QString &host, int* averagePing) const
 {
-    QProcess process;
-    QStringList args;
+    Ping ping;
+    ping.setHost(host);
+    ping.setAmount(1);
+    ping.start();
+    ping.waitForFinished();
 
-#ifdef Q_OS_LINUX
-    process.setStandardOutputFile("/dev/null");
-    process.setStandardErrorFile("/dev/null");
+    // Return the average ping if the caller wants to know it
+    if ( averagePing && ping.exitStatus() == Ping::Normal ) {
+        ping.setAmount(4);
+        ping.start();
+        ping.waitForFinished();
 
-    args << "-c" << "1" // Amount of pings
-         << "-n" // Don't resolve hostnames
-#ifndef Q_OS_ANDROID
-         << "-W" << "1"; // Timeout
-#else
-         << "-w" << "1"; // Timeout
-#endif
-#elif defined(Q_OS_MAC)
-    args.clear(); // Apple needs the host name at last
-    args << "-c" << "1" // Amount of pings
-         << "-t" << "1"; // Timeout
-#elif defined(Q_OS_WIN)
-    args << "-n" << "1" // Amount of pings
-         << "-4" // Stay with IPv4 for now
-         << "-w" << "1000"; // Timeout
-#else
-#error Platform ping code missing!
-#endif
+        *averagePing = ping.averagePingTime();
+        return true;
+    }
 
-    // Hostname is always the last parameter (necessary on osx/android!)
-    args << host;
-
-    process.start("ping", args);
-    process.waitForFinished();
-
-    return process.exitCode() == 0;
+    return ping.exitStatus() == Ping::Normal;
 }
 
 #ifdef Q_OS_MAC
@@ -336,6 +274,7 @@ ConnectionTester::ConnectionTester(QObject *parent)
 : QObject(parent)
 , d(new Private(this))
 {
+    qRegisterMetaType<TestType>();
 }
 
 ConnectionTester::~ConnectionTester()
@@ -345,10 +284,177 @@ ConnectionTester::~ConnectionTester()
 
 void ConnectionTester::start()
 {
-    d->checkInterfaces();
+    QFuture<void> future = QtConcurrent::run(d, &ConnectionTester::Private::checkInterfaces);
+    d->watcher.setFuture(future);
 }
 
 ConnectionTester::ResultType ConnectionTester::result() const
 {
     return d->result;
+}
+
+bool ConnectionTester::checkOnline()
+{
+    emit checkStarted(ActiveInterface);
+    QNetworkConfigurationManager mgr;
+    bool online = mgr.isOnline();
+    emit checkFinished(ActiveInterface, online, QVariant::fromValue(online));
+    return online;
+}
+
+QString ConnectionTester::findDefaultGateway()
+{
+    emit checkStarted(DefaultGateway);
+    QString gw = d->findDefaultGateway();
+    emit checkFinished(DefaultGateway, !gw.isNull()&&gw!="0.0.0.0", gw);
+    return gw;
+}
+
+QString ConnectionTester::findDefaultDNS()
+{
+    emit checkStarted(DefaultDns);
+    QString dns = d->findDefaultDNS();
+    emit checkFinished(DefaultDns, !dns.isNull(), dns);
+    return dns;
+}
+
+bool ConnectionTester::canPingGateway()
+{
+    return canPing(PingDefaultGateway, d->findDefaultGateway());
+}
+
+bool ConnectionTester::canPingGoogleDnsServer()
+{
+    return canPing(PingGoogleDnsServer, "8.8.8.8");
+}
+
+bool ConnectionTester::canPingGoogleDomain()
+{
+    return canPing(PingGoogleDomain, "google.com");
+}
+
+bool ConnectionTester::canPing(ConnectionTester::TestType testType, const QString &host)
+{
+    int avgPing = 0;
+    emit checkStarted(testType);
+    bool success = d->canPing(host, &avgPing);
+    emit checkFinished(testType, success, QVariant::fromValue(avgPing));
+    return success;
+}
+
+ConnectionTesterModel::ConnectionTesterModel(QObject *parent)
+: QAbstractListModel(parent)
+, m_connectionTester(NULL)
+{
+}
+
+ConnectionTesterModel::~ConnectionTesterModel()
+{
+}
+
+void ConnectionTesterModel::setConnectionTester(ConnectionTester *connectionTester)
+{
+    if (m_connectionTester == connectionTester)
+        return;
+
+    if (m_connectionTester) {
+        disconnect(m_connectionTester, SIGNAL(started()), this, SLOT(onStarted()));
+        disconnect(m_connectionTester, SIGNAL(finished()), this, SLOT(onFinished()));
+        disconnect(m_connectionTester, SIGNAL(checkStarted(ConnectionTester::TestType)), this, SLOT(onCheckStarted(ConnectionTester::TestType)));
+        disconnect(m_connectionTester, SIGNAL(checkFinished(ConnectionTester::TestType,bool,QVariant)), this, SLOT(onCheckFinished(ConnectionTester::TestType,bool,QVariant)));
+    }
+
+    m_connectionTester = connectionTester;
+
+    if (m_connectionTester) {
+        connect(m_connectionTester, SIGNAL(started()), this, SLOT(onStarted()));
+        connect(m_connectionTester, SIGNAL(finished()), this, SLOT(onFinished()));
+        connect(m_connectionTester, SIGNAL(checkStarted(ConnectionTester::TestType)), this, SLOT(onCheckStarted(ConnectionTester::TestType)));
+        connect(m_connectionTester, SIGNAL(checkFinished(ConnectionTester::TestType,bool,QVariant)), this, SLOT(onCheckFinished(ConnectionTester::TestType,bool,QVariant)));
+    }
+}
+
+ConnectionTester *ConnectionTesterModel::connectionTester() const
+{
+    return m_connectionTester;
+}
+
+QHash<int, QByteArray> ConnectionTesterModel::roleNames() const
+{
+    QHash<int, QByteArray> roleNames;
+    roleNames.insert(TestNameRole, "testName");
+    roleNames.insert(TestTypeRole, "testType");
+    roleNames.insert(TestFinishedRole, "testFinished");
+    roleNames.insert(TestResultRole, "testResult");
+    return roleNames;
+}
+
+int ConnectionTesterModel::rowCount(const QModelIndex &parent) const
+{
+    if (parent.isValid())
+        return 0;
+
+    return m_rows.size();
+}
+
+QVariant ConnectionTesterModel::data(const QModelIndex &index, int role) const
+{
+    if ( index.row() < 0 || index.row() >= m_rows.size() )
+        return QVariant();
+
+    const RowData& data = m_rows.at(index.row());
+    switch(role) {
+    case TestNameRole:
+        return enumToString(ConnectionTester, "TestType", data.testType);
+    case TestTypeRole:
+        return (int)data.testType;
+    case TestFinishedRole:
+        return QVariant::fromValue(data.finished);
+    case TestResultRole:
+        return data.result;
+
+    default:
+        break;
+    }
+
+    return QVariant();
+}
+
+void ConnectionTesterModel::onStarted()
+{
+    beginResetModel();
+    m_rows.clear();
+    endResetModel();
+}
+
+void ConnectionTesterModel::onCheckStarted(ConnectionTester::TestType testType)
+{
+    int pos = m_rows.size();
+    beginInsertRows(QModelIndex(), pos, pos);
+    {
+        RowData data;
+        data.testType = testType;
+        data.success = false;
+        data.finished = false;
+
+        m_rows.append(data);
+    }
+    endInsertRows();
+}
+
+void ConnectionTesterModel::onCheckFinished(ConnectionTester::TestType testType, bool success, const QVariant &result)
+{
+    Q_UNUSED(testType);
+
+    RowData& data = m_rows.last();
+    data.success = success;
+    data.result = result;
+    data.finished = true;
+
+    QModelIndex idx = index(m_rows.size()-1);
+    emit dataChanged(idx, idx);
+}
+
+void ConnectionTesterModel::onFinished()
+{
 }
