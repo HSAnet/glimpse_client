@@ -2,22 +2,16 @@
 #define CONNECTIONTESTER_H
 
 #include <QObject>
+#include <QAbstractListModel>
 
 class ConnectionTester : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(MessageType)
+    Q_ENUMS(ResultType TestType)
 
 public:
     explicit ConnectionTester(QObject *parent = 0);
     ~ConnectionTester();
-
-    enum MessageType
-    {
-        Info,
-        Warning,
-        Error
-    };
 
     enum ResultType
     {
@@ -26,17 +20,89 @@ public:
         Offline // No device is up
     };
 
-    void start();
+    enum TestType
+    {
+        ActiveInterface,
+        // If interface is up
+        DefaultGateway,
+        DefaultDns,
+        PingDefaultGateway,
+        PingGoogleDnsServer,
+        PingGoogleDomain
+    };
+
+    Q_INVOKABLE void start();
     ResultType result() const;
 
+    Q_INVOKABLE bool checkOnline();
+    Q_INVOKABLE QString findDefaultGateway();
+    Q_INVOKABLE QString findDefaultDNS();
+    Q_INVOKABLE bool canPingGateway();
+    Q_INVOKABLE bool canPingGoogleDnsServer();
+    Q_INVOKABLE bool canPingGoogleDomain();
+
 signals:
-    void message(const QString& message, MessageType type);
+    void started();
+    void checkStarted(ConnectionTester::TestType testType);
+    void checkFinished(ConnectionTester::TestType testType, bool success, const QVariant& result);
     void finished();
+
+protected:
+    bool canPing(TestType testType, const QString& host);
 
 private:
     class Private;
     Private* d;
     friend class Private;
 };
+
+class ConnectionTesterModel : public QAbstractListModel
+{
+    Q_OBJECT
+    Q_PROPERTY(ConnectionTester* connectionTester READ connectionTester WRITE setConnectionTester NOTIFY connectionTesterChanged)
+
+public:
+    ConnectionTesterModel(QObject* parent = 0);
+    ~ConnectionTesterModel();
+
+    enum Roles
+    {
+        TestNameRole = Qt::UserRole + 1,
+        TestTypeRole,
+        TestFinishedRole,
+        TestResultRole
+    };
+
+    void setConnectionTester(ConnectionTester* connectionTester);
+    ConnectionTester* connectionTester() const;
+
+    // QAbstractListModel overrides
+    QHash<int, QByteArray> roleNames() const;
+    int rowCount(const QModelIndex &parent) const;
+    QVariant data(const QModelIndex &index, int role) const;
+
+signals:
+    void connectionTesterChanged(ConnectionTester* connectionTester);
+
+private slots:
+    void onStarted();
+    void onCheckStarted(ConnectionTester::TestType testType);
+    void onCheckFinished(ConnectionTester::TestType testType, bool success, const QVariant& result);
+    void onFinished();
+
+protected:
+    struct RowData {
+        ConnectionTester::TestType testType;
+        bool success;
+        bool finished;
+        QVariant result;
+    };
+
+protected:
+    ConnectionTester* m_connectionTester;
+    QList<RowData> m_rows;
+};
+
+Q_DECLARE_METATYPE(ConnectionTester::TestType)
 
 #endif // CONNECTIONTESTER_H
