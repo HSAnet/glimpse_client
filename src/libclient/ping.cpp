@@ -177,7 +177,7 @@ void Ping::start()
 #ifndef Q_OS_ANDROID
          << "-W" << QString::number(d->timeout);
 #else
-         << "-w" << QString::number(d->timeout);
+         /*<< "-w" << QString::number(d->timeout)*/;
 #endif
 #elif defined(Q_OS_MAC)
     args << "-c" << QString::number(d->amount)
