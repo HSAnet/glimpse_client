@@ -279,6 +279,7 @@ ConnectionTester::ConnectionTester(QObject *parent)
 
 ConnectionTester::~ConnectionTester()
 {
+    d->watcher.waitForFinished();
     delete d;
 }
 

@@ -24,5 +24,8 @@
         <file>qml/images/card_background.png</file>
         <file>qml/images/connectiontester_fail.png</file>
         <file>qml/images/connectiontester_ok.png</file>
+        <file>qml/Card.qml</file>
+        <file>qml/images/maximize.png</file>
+        <file>qml/images/minimize.png</file>
     </qresource>
 </RCC>
