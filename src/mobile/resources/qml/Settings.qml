@@ -62,6 +62,16 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: pinger.start()
                 }
+
+                Spinner {
+                    anchors {
+                        right: parent.right
+                        top: parent.top
+                    }
+
+                    width: parent.height
+                    running: pinger.status == Ping.Running
+                }
             }
 
             GridView {

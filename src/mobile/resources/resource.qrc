@@ -19,5 +19,7 @@
         <file>qml/android/images/toolbar.png</file>
         <file>qml/Settings.qml</file>
         <file>qml/Tests.qml</file>
+        <file>qml/android/Spinner.qml</file>
+        <file>qml/android/images/spinner_black_76.png</file>
     </qresource>
 </RCC>

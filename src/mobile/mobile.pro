@@ -36,4 +36,5 @@ OTHER_FILES += \
     resources/qml/android/images/button_pressed.png \
     resources/qml/android/images/button_default.png \
     resources/qml/Settings.qml \
-    resources/qml/Tests.qml
+    resources/qml/Tests.qml \
+    resources/qml/android/Spinner.qml
