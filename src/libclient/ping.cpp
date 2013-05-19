@@ -74,7 +74,7 @@ void Ping::Private::readyRead()
 #if defined(Q_OS_WIN)
     // Antwort von 193.99.144.80: Bytes=32 Zeit=32ms TTL=245
     re.setPattern("=(\\d+)ms");
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     // 64 bytes from 193.99.144.80: icmp_seq=0 ttl=245 time=32.031 ms
     re.setPattern("time=(\\d+).*ms");
 #else
