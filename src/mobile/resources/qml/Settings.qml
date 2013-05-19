@@ -101,7 +101,7 @@ Rectangle {
                         }
 
                         text: model.testName
-                        font.pointSize: 20
+                        font.pixelSize: 30
                         font.family: "Roboto Light"
                     }
 
@@ -119,7 +119,7 @@ Rectangle {
                             id: resultText
                             anchors.centerIn: parent
                             text: if (typeof(model.testResult) == "number") return model.testResult + " ms"; else return model.testResult;
-                            font.pointSize: 17
+                            font.pixelSize: 20
                             font.family: "Roboto Light"
                             color: "#707070"
                             visible: model.testFinished && typeof(model.testResult) != "boolean"
