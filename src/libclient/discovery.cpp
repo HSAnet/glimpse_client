@@ -87,7 +87,7 @@ void Discovery::Private::upnpDiscover(Discovery::DiscoveryHash &hash)
             unsigned int uptime = 0;
             char lastConnectionError[128];
             if (UPNPCOMMAND_SUCCESS == UPNP_GetStatusInfo(urls.controlURL,
-                                                          data.CIF.servicetype,
+                                                          data.first.servicetype,
                                                           status,
                                                           &uptime,
                                                           lastConnectionError)) {
