@@ -1,6 +1,7 @@
 #include "client.h"
 #include "tests/test.h"
 #include "webrequester.h"
+#include "ping.h"
 
 #include <QGuiApplication>
 #include <QQuickView>
@@ -30,6 +31,7 @@ int main(int argc, char* argv[])
     qmlRegisterType<ManualRequest>("mplane", 1, 0, "TestRequest");
     qmlRegisterType<Settings>("mplane", 1, 0, "Settings");
     qmlRegisterType<WebRequester>("mplane", 1, 0, "WebRequester");
+    qmlRegisterType<Ping>("mplane", 1, 0, "Ping");
 
     QQuickView view;
 
