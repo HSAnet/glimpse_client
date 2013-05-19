@@ -157,7 +157,10 @@ void Client::Private::processPeerRequest()
 
 void Client::Private::sendClientInfo()
 {
-    QHostAddress myIp = NetworkHelper::localIpAddress();
+    Discovery::DiscoveryHash upnpData = discovery.data();
+
+    QHostAddress myIp = upnpData.contains(Discovery::LanIpAddress) ? QHostAddress(upnpData.value(Discovery::LanIpAddress).toString())
+                                                                   : NetworkHelper::localIpAddress();
     QString localIp = QString("%1:%2").arg(myIp.toString()).arg(1337);
 
     ClientInfo info;
