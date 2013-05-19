@@ -74,6 +74,7 @@ public:
     int userId;
     QString os;
     int remainingBudget;
+    QVariantMap upnp;
 };
 
 ClientInfo::ClientInfo(QObject *parent)
@@ -212,6 +213,11 @@ int ClientInfo::remainingBudget() const {
     return d->remainingBudget;
 }
 
+QVariantMap ClientInfo::upnp() const
+{
+    return d->upnp;
+}
+
 void ClientInfo::setLocalIp(const QString &localIp)
 {
     if (d->localIp != localIp) {
@@ -225,6 +231,14 @@ void ClientInfo::setRemainingBudget(int remainingBudget) {
     d->remainingBudget = remainingBudget;
     emit remainingBudgetChanged(remainingBudget);
   }
+}
+
+void ClientInfo::setUpnp(const QVariantMap &upnp)
+{
+    if (d->upnp != upnp) {
+        d->upnp = upnp;
+        emit upnpChanged(upnp);
+    }
 }
 
 QVariant ClientInfo::toVariant() const {
@@ -243,6 +257,7 @@ QVariant ClientInfo::toVariant() const {
   data.insert("user-id", userId());
   data.insert("os", os());
   data.insert("remaining-budget", remainingBudget());
+  data.insert("upnp", upnp());
   return data;
 }
 

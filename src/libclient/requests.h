@@ -87,6 +87,7 @@ public:
     int userId() const;
     QString os() const;
     int remainingBudget() const;
+    QVariantMap upnp() const;
 
     void setLocalIp(const QString& localIp);
     void setDataPlanDownlink(int dataPlanDownlink);
@@ -101,6 +102,7 @@ public:
     void setUserId(int userId);
     void setOs(const QString& os);
     void setRemainingBudget(int remainingBudget);
+    void setUpnp(const QVariantMap &upnp);
 
 signals:
     void localIpChanged(const QString& localIp);
@@ -117,6 +119,7 @@ signals:
     void userIdChanged(int userId);
     void osChanged(const QString& os);
     void remainingBudgetChanged(int remainingBudget);
+    void upnpChanged(const QVariantMap& upnp);
 
 protected:
     class Private;

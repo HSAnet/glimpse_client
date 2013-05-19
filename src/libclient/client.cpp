@@ -163,9 +163,23 @@ void Client::Private::sendClientInfo()
                                                                    : NetworkHelper::localIpAddress();
     QString localIp = QString("%1:%2").arg(myIp.toString()).arg(1337);
 
+    // Prepare upnp data
+    QVariantMap upnp;
+    QHashIterator<Discovery::DataType, QVariant> iter(upnpData);
+    while ( iter.hasNext() ) {
+        iter.next();
+
+        QString name = enumToString(Discovery, "DataType", iter.key());
+        name = name.replace(QRegExp("([A-Z])"), "-\\1").toLower();
+        name.remove(0, 1);
+
+        upnp.insert(name, iter.value());
+    }
+
     ClientInfo info;
     info.setDeviceId(settings.deviceId());
     info.setLocalIp(localIp);
+    info.setUpnp(upnp);
     QByteArray data = QJsonDocument::fromVariant(info.toVariant()).toJson();
 
     QUrl url = masterUrl;
@@ -265,7 +279,9 @@ void Client::Private::onAliveTimer()
 
 void Client::Private::onDiscoveryFinished()
 {
-   sendClientInfo();
+    qDebug() << "UPNP discovery finished:" << discovery.data();
+
+    sendClientInfo();
 }
 
 void Client::Private::onRegisterFinished()
