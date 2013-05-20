@@ -118,6 +118,57 @@ Rectangle {
             }
 
             Card {
+                id: card3
+                title: "UPNP Discovery"
+                width: ListView.view.width
+
+                Component.onCompleted: discovery.discover()
+
+                Item {
+                    Discovery {
+                        id: discovery
+
+                        onStarted: upnpModel.clear()
+                        onFinished: {
+                            upnpModel.append( {"title":qsTr("LAN IP: %1").arg(discovery.lanIpAddress)} );
+                            upnpModel.append( {"title":qsTr("External IP: %1").arg(discovery.externalIpAddress)} );
+                            upnpModel.append( {"title":qsTr("Link layer max. download: %1 kbit/s").arg(discovery.linkLayerMaxDownload/1000)} );
+                            upnpModel.append( {"title":qsTr("Link layer max. upload: %1 kbit/s").arg(discovery.linkLayerMaxUpload/1000)} );
+                        }
+                    }
+                }
+
+                ListView {
+                    width: parent.width
+                    height: card3.expanded ? 150 : 0
+                    interactive: false
+                    spacing: 5
+
+                    model: ListModel {
+                        id: upnpModel
+                    }
+
+                    delegate: Text {
+                        text: model.title
+                        font.pixelSize: 20
+                        font.family: "Roboto Light"
+                        color: "#707070"
+                    }
+
+                    Spinner {
+                        anchors {
+                            right: parent.right
+                            bottom: parent.bottom
+                            margins: 30
+                        }
+
+                        width: 65
+                        running: discovery.running
+                    }
+                }
+            }
+
+            Card {
                 id: card2
                 title: qsTr("Pinging")
                 width: ListView.view.width
@@ -127,7 +178,7 @@ Rectangle {
                 Item {
                     Ping {
                         id: ping
-                        host: "mplane0.informatik.hs-augsburg.de"
+                        host: "mplane.informatik.hs-augsburg.de"
                         amount: 20
 
                         onStarted: listModel.clear()

@@ -115,6 +115,8 @@ Discovery::Discovery(QObject *parent)
 : QObject(parent)
 , d(new Private(this))
 {
+    connect(&d->watcher, SIGNAL(started()), this, SIGNAL(runningChanged()));
+    connect(&d->watcher, SIGNAL(finished()), this, SIGNAL(runningChanged()));
 }
 
 Discovery::~Discovery()
@@ -122,14 +124,65 @@ Discovery::~Discovery()
     delete d;
 }
 
+bool Discovery::isRunning() const
+{
+    return d->watcher.isRunning();
+}
+
 Discovery::DiscoveryHash Discovery::data() const
 {
     return d->data;
 }
 
+QString Discovery::externalIpAddress() const
+{
+    return d->data.value(ExternalIpAddress).toString();
+}
+
+QString Discovery::lanIpAddress() const
+{
+    return d->data.value(LanIpAddress).toString();
+}
+
+int Discovery::linkLayerMaxUpload() const
+{
+    return d->data.value(LinkLayerMaxUpload).toInt();
+}
+
+int Discovery::linkLayerMaxDownload() const
+{
+    return d->data.value(LinkLayerMaxDownload).toInt();
+}
+
+QString Discovery::connectionType() const
+{
+    return d->data.value(ConnectionType).toString();
+}
+
+QString Discovery::natType() const
+{
+    return d->data.value(NatType).toString();
+}
+
+QString Discovery::status() const
+{
+    return d->data.value(Status).toString();
+}
+
+int Discovery::uptime() const
+{
+    return d->data.value(Uptime).toInt();
+}
+
+QString Discovery::lastConnectionError() const
+{
+    return d->data.value(LastConnectionError).toString();
+}
+
 void Discovery::discover()
 {
     d->data.clear();
+    emit started();
     d->watcher.setFuture( QtConcurrent::run(Discovery::Private::discover) );
 }
 

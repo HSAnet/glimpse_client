@@ -3,6 +3,7 @@
 #include "webrequester.h"
 #include "ping.h"
 #include "connectiontester.h"
+#include "discovery.h"
 
 #include <QGuiApplication>
 #include <QQuickView>
@@ -35,6 +36,7 @@ int main(int argc, char* argv[])
     qmlRegisterType<Ping>("mplane", 1, 0, "Ping");
     qmlRegisterType<ConnectionTester>("mplane", 1, 0, "ConnectionTester");
     qmlRegisterType<ConnectionTesterModel>("mplane", 1, 0, "ConnectionTesterModel");
+    qmlRegisterType<Discovery>("mplane", 1, 0, "Discovery");
 
     QQuickView view;
 
