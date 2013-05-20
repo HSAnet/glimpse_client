@@ -5,6 +5,8 @@ BorderImage {
     id: root
 
     property string title: "title"
+    property bool expanded: true
+
     default property alias contents: contentArea.children
 
     source: "images/card_background.png"
@@ -17,7 +19,18 @@ BorderImage {
         bottom: 15
     }
 
-    height: layout.height
+    property int minHeight: titleText.height + 2*layout.anchors.margins
+
+    height: expanded ? Math.max(layout.height, minHeight) : minHeight
+
+    Behavior on height {
+        NumberAnimation {
+            easing.overshoot: 0.952
+            easing.type: Easing.OutBack
+            duration: 150
+
+        }
+    }
 
     ColumnLayout {
         id: layout
@@ -30,6 +43,7 @@ BorderImage {
         //spacing: 10
 
         Text {
+            id: titleText
             Layout.fillWidth: true
             text: root.title
             font.family: "Roboto Light"
@@ -37,10 +51,15 @@ BorderImage {
             font.pixelSize: 50
 
             Image {
-                source: "images/maximize.png"
+                source: !root.expanded ? "images/minimize.png" : "images/maximize.png"
                 anchors {
                     right: parent.right
                     verticalCenter: parent.verticalCenter
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.expanded = !root.expanded
                 }
             }
         }
@@ -52,6 +71,7 @@ BorderImage {
                 right: parent.right
             }
 
+            clip: true
             height: childrenRect.height
         }
     }

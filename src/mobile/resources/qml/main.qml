@@ -123,7 +123,7 @@ Rectangle {
                 }
 
                 ListElement {
-                    title: "Settings"
+                    title: "Connection tests"
                     page: "Settings.qml"
                 }
             }
