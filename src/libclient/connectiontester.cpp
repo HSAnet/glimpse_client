@@ -35,15 +35,18 @@
 #include <sys/system_properties.h>
 #endif
 
-class ConnectionTester::Private
+class ConnectionTester::Private : public QObject
 {
-    Q_DECLARE_TR_FUNCTIONS(ConnectionTester::Private)
+    Q_OBJECT
 
 public:
     Private(ConnectionTester* q)
     : q(q)
     , result(ConnectionTester::Offline)
     {
+        connect(&watcher, SIGNAL(started()), q, SIGNAL(runningChanged()));
+        connect(&watcher, SIGNAL(finished()), q, SIGNAL(runningChanged()));
+
         connect(&watcher, SIGNAL(started()), q, SIGNAL(started()));
         connect(&watcher, SIGNAL(finished()), q, SIGNAL(finished()));
     }
@@ -283,6 +286,11 @@ ConnectionTester::~ConnectionTester()
     delete d;
 }
 
+bool ConnectionTester::isRunning() const
+{
+    return d->watcher.isRunning();
+}
+
 void ConnectionTester::start()
 {
     QFuture<void> future = QtConcurrent::run(d, &ConnectionTester::Private::checkInterfaces);
@@ -474,3 +482,5 @@ void ConnectionTesterModel::onCheckFinished(ConnectionTester::TestType testType,
 void ConnectionTesterModel::onFinished()
 {
 }
+
+#include "connectiontester.moc"

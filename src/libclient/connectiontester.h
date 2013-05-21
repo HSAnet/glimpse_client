@@ -8,6 +8,7 @@ class ConnectionTester : public QObject
 {
     Q_OBJECT
     Q_ENUMS(ResultType TestType)
+    Q_PROPERTY(bool running READ isRunning NOTIFY runningChanged)
 
 public:
     explicit ConnectionTester(QObject *parent = 0);
@@ -31,6 +32,8 @@ public:
         PingGoogleDomain
     };
 
+    bool isRunning() const;
+
     Q_INVOKABLE void start();
     ResultType result() const;
 
@@ -42,6 +45,8 @@ public:
     Q_INVOKABLE bool canPingGoogleDomain();
 
 signals:
+    void runningChanged();
+
     void started();
     void checkStarted(ConnectionTester::TestType testType);
     void checkFinished(ConnectionTester::TestType testType, bool success, const QVariant& result);

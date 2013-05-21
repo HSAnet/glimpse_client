@@ -11,8 +11,14 @@ Rectangle {
     height: 500
     color: "#e5e5e5"
 
-    property string title: qsTr("Manual tests")
-    property string subtitle: qsTr("running your choice")
+    property string title: qsTr("NO INTERNET")
+    property string subtitle: qsTr("checking your connection ...")
+
+    Binding {
+        target: statusBar
+        property: "visible"
+        value: tester.running || discovery.running || ping.status == Ping.Running
+    }
 
     ListView {
         anchors.fill: parent
