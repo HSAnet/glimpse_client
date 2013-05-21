@@ -17,7 +17,14 @@ Item {
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: qsTr("Download speed: %1 kbyte/s").arg(test.averageDownloadSpeed / 1024)
+            text: qsTr("Average speed: %1 kbyte/s").arg(test.averageDownloadSpeed / 1024)
+            color: "white"
+            font.pixelSize: 40
+        }
+
+        Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: qsTr("Maximum speed: %1 kbyte/s").arg(test.maximumDownloadSpeed / 1024)
             color: "white"
             font.pixelSize: 40
         }
