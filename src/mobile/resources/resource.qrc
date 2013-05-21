@@ -28,5 +28,6 @@
         <file>qml/images/maximize.png</file>
         <file>qml/images/minimize.png</file>
         <file>qml/CardListDelegate.qml</file>
+        <file>qml/speedtest.qml</file>
     </qresource>
 </RCC>

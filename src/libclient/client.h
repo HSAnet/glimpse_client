@@ -50,6 +50,8 @@ public:
 public slots:
     bool init();
     void requestTest();
+    // TODO: REMOVE THIS!!!!
+    void speedTest();
 
 signals:
     void statusChanged();

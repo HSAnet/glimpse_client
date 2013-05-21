@@ -422,4 +422,10 @@ void Client::requestTest()
     d->sendPeerRequest(true);
 }
 
+void Client::speedTest()
+{
+    TestInfo info("speedtest", PeerList(), true);
+    d->scheduler.enqueue(info);
+}
+
 #include "client.moc"

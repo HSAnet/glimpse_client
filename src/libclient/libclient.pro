@@ -18,7 +18,8 @@ SOURCES +=  \
     tests/natporttimes.cpp \
     settings.cpp \
     webrequester.cpp \
-    ping.cpp
+    ping.cpp \
+    tests/speedtest.cpp
 
 HEADERS += \
     client.h \
@@ -35,7 +36,8 @@ HEADERS += \
     tests/natporttimes.h \
     settings.h \
     webrequester.h \
-    ping.h
+    ping.h \
+    tests/speedtest.h
 
 OTHER_FILES += \
     libclient.pri
