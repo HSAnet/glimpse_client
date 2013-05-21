@@ -126,7 +126,24 @@ Rectangle {
                     target: exitItem
                     property: "x"
                     from: 0
-                    to: -enterItem.width
+                    to: -exitItem.width
+                    duration: 100
+                }
+            }
+
+            property Component popTransition: StackViewTransition {
+                PropertyAnimation {
+                    target: enterItem
+                    property: "x"
+                    from: -enterItem.width
+                    to: 0
+                    duration: 100
+                }
+                PropertyAnimation {
+                    target: exitItem
+                    property: "x"
+                    from: 0
+                    to: exitItem.width
                     duration: 100
                 }
             }
