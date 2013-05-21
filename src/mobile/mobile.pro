@@ -38,4 +38,5 @@ OTHER_FILES += \
     resources/qml/Settings.qml \
     resources/qml/Tests.qml \
     resources/qml/android/Spinner.qml \
-    resources/qml/Card.qml
+    resources/qml/Card.qml \
+    resources/qml/CardListDelegate.qml

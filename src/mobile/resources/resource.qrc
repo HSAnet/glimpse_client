@@ -27,5 +27,6 @@
         <file>qml/Card.qml</file>
         <file>qml/images/maximize.png</file>
         <file>qml/images/minimize.png</file>
+        <file>qml/CardListDelegate.qml</file>
     </qresource>
 </RCC>

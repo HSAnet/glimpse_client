@@ -30,7 +30,7 @@ Rectangle {
 
                 ListView {
                     id: listView
-                    height: card.expanded ? 440 : 0
+                    height: card.expanded ? 330 : 0
                     anchors {
                         left: parent.left
                         right: parent.right
@@ -54,65 +54,12 @@ Rectangle {
                         }
                     }
 
-                    delegate: Item {
-                        width: ListView.view.width
-                        height: 70
-
-                        Text {
-                            anchors {
-                                left: parent.left
-                                leftMargin: 15
-                                verticalCenter: parent.verticalCenter
-                            }
-
-                            text: model.testName
-                            font.pixelSize: 30
-                            font.family: "Roboto Light"
-                        }
-
-                        Item {
-                            anchors {
-                                right: checkMark.left
-                                rightMargin: 10
-                                verticalCenter: parent.verticalCenter
-                            }
-
-                            height: 50
-                            width: Math.max(70, resultText.width)
-
-                            Text {
-                                id: resultText
-                                anchors.centerIn: parent
-                                text: if (typeof(model.testResult) == "number") return model.testResult + " ms"; else return model.testResult;
-                                font.pixelSize: 20
-                                font.family: "Roboto Light"
-                                color: "#707070"
-                                visible: model.testFinished && typeof(model.testResult) != "boolean"
-                            }
-                        }
-
-                        Image {
-                            id: checkMark
-
-                            anchors {
-                                right: parent.right
-                                rightMargin: 10
-                                verticalCenter: parent.verticalCenter
-                            }
-
-                            source: model.testSuccess ? "images/connectiontester_ok.png" : "images/connectiontester_fail.png"
-                            visible: model.testFinished
-                        }
-
-                        Spinner {
-                            width: 65
-                            anchors {
-                                right: parent.right
-                                rightMargin: 10
-                                verticalCenter: parent.verticalCenter
-                            }
-                            running: !model.testFinished
-                        }
+                    delegate: CardListDelegate {
+                        leftText: model.testName
+                        rightText: if (typeof(model.testResult) == "number") return model.testResult + " ms"; else return model.testResult;
+                        showSpinner: !model.testFinished
+                        showCheckmark: model.testFinished
+                        checkmark: model.testSuccess
                     }
                 }
             }
@@ -131,20 +78,21 @@ Rectangle {
                         onStarted: upnpModel.clear()
                         onFinished: {
                             if ( hasData ) {
-                                upnpModel.append( {"title":qsTr("Router Model: %1").arg(discovery.modelName)} );
-                                upnpModel.append( {"title":qsTr("Router Manufacturer: %1").arg(discovery.manufacturer)} );
-                                upnpModel.append( {"title":qsTr("LAN IP: %1").arg(discovery.lanIpAddress)} );
-                                upnpModel.append( {"title":qsTr("Public IP: %1").arg(discovery.externalIpAddress)} );
-                                upnpModel.append( {"title":qsTr("Link layer max. download: %1 kbit/s").arg(discovery.linkLayerMaxDownload/1000)} );
-                                upnpModel.append( {"title":qsTr("Link layer max. upload: %1 kbit/s").arg(discovery.linkLayerMaxUpload/1000)} );
+                                upnpModel.append( {"title":qsTr("Router Model"), "value":discovery.modelName} );
+                                upnpModel.append( {"title":qsTr("Router Manufacturer"), "value":discovery.manufacturer} );
+                                upnpModel.append( {"title":qsTr("LAN IP"), "value":discovery.lanIpAddress} );
+                                upnpModel.append( {"title":qsTr("Public IP"), "value":discovery.externalIpAddress} );
+                                upnpModel.append( {"title":qsTr("Link layer max. download"), "value":qsTr("%1 kbit/s").arg(discovery.linkLayerMaxDownload/1000)} );
+                                upnpModel.append( {"title":qsTr("Link layer max. upload"), "value":qsTr("%1 kbit/s").arg(discovery.linkLayerMaxUpload/1000)} );
                             }
                         }
                     }
                 }
 
                 ListView {
-                    width: parent.width
-                    height: card3.expanded ? 190 : 0
+                    x: 20
+                    width: parent.width-20
+                    height: card3.expanded ? 350 : 0
                     interactive: false
                     spacing: 5
 
@@ -152,11 +100,9 @@ Rectangle {
                         id: upnpModel
                     }
 
-                    delegate: Text {
-                        text: model.title
-                        font.pixelSize: 20
-                        font.family: "Roboto Light"
-                        color: "#707070"
+                    delegate: CardListDelegate {
+                        leftText: model.title
+                        rightText: model.value
                     }
 
                     Spinner {
