@@ -60,7 +60,7 @@ void TestScheduler::Private::timeout()
     // Don't change the current test if we still run one
     if ( currentTest ) {
         if ( currentTest->isFinished() ) {
-            delete currentTest;
+            //delete currentTest;
             currentTest = NULL;
             emit q->currentTestChanged(NULL);
         } else {
