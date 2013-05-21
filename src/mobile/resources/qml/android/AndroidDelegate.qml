@@ -47,7 +47,7 @@ import QtQuick 2.1
 Item {
     id: root
     width: parent.width
-    height: 88
+    height: 100
 
     property alias text: textitem.text
     signal clicked
@@ -61,7 +61,7 @@ Item {
     Text {
         id: textitem
         color: "white"
-        font.pixelSize: 32
+        font.pixelSize: 45
         text: modelData
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left

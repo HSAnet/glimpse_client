@@ -130,17 +130,21 @@ Rectangle {
 
                         onStarted: upnpModel.clear()
                         onFinished: {
-                            upnpModel.append( {"title":qsTr("LAN IP: %1").arg(discovery.lanIpAddress)} );
-                            upnpModel.append( {"title":qsTr("External IP: %1").arg(discovery.externalIpAddress)} );
-                            upnpModel.append( {"title":qsTr("Link layer max. download: %1 kbit/s").arg(discovery.linkLayerMaxDownload/1000)} );
-                            upnpModel.append( {"title":qsTr("Link layer max. upload: %1 kbit/s").arg(discovery.linkLayerMaxUpload/1000)} );
+                            if ( hasData ) {
+                                upnpModel.append( {"title":qsTr("Router Model: %1").arg(discovery.modelName)} );
+                                upnpModel.append( {"title":qsTr("Router Manufacturer: %1").arg(discovery.manufacturer)} );
+                                upnpModel.append( {"title":qsTr("LAN IP: %1").arg(discovery.lanIpAddress)} );
+                                upnpModel.append( {"title":qsTr("Public IP: %1").arg(discovery.externalIpAddress)} );
+                                upnpModel.append( {"title":qsTr("Link layer max. download: %1 kbit/s").arg(discovery.linkLayerMaxDownload/1000)} );
+                                upnpModel.append( {"title":qsTr("Link layer max. upload: %1 kbit/s").arg(discovery.linkLayerMaxUpload/1000)} );
+                            }
                         }
                     }
                 }
 
                 ListView {
                     width: parent.width
-                    height: card3.expanded ? 150 : 0
+                    height: card3.expanded ? 190 : 0
                     interactive: false
                     spacing: 5
 
@@ -164,6 +168,22 @@ Rectangle {
 
                         width: 65
                         running: discovery.running
+                    }
+
+                    Row {
+                        visible: !discovery.running && !discovery.hasData
+
+                        Image {
+                            source: "images/connectiontester_fail.png"
+                        }
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: qsTr("No UPNP data found")
+                            font.pixelSize: 20
+                            font.family: "Roboto Light"
+                            color: "#707070"
+                        }
                     }
                 }
             }

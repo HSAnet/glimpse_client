@@ -58,7 +58,7 @@ Rectangle {
         border.bottom: 9
         source: "android/images/toolbar.png"
         width: parent.width
-        height: 100
+        height: 140
         z: 1
 
         BackButton {
@@ -67,10 +67,11 @@ Rectangle {
 
         Text {
             id: applicationTitle
-            font.pixelSize: 42
+            font.pixelSize: 55
             Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
             x: backButton.x + backButton.width + 20
             anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: -20
             color: "white"
             /*text: {
                 var title = pageStack.currentItem.title;
@@ -83,7 +84,7 @@ Rectangle {
 
         Text {
             id: statusText
-            font.pixelSize: 20
+            font.pixelSize: 35
             x: applicationTitle.x + 30
             anchors.top: applicationTitle.bottom
             anchors.topMargin: -5

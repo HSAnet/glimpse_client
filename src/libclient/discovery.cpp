@@ -1,5 +1,6 @@
 #include "discovery.h"
 
+#include <QStringList>
 #include <QHostAddress>
 #include <QFutureWatcher>
 #include <QtConcurrentRun>
@@ -7,6 +8,7 @@
 #ifdef HAVE_UPNP
 #include <miniupnpc/miniupnpc.h>
 #include <miniupnpc/upnpcommands.h>
+#include <miniupnpc/miniwget.h>
 #endif // HAVE_UPNP
 
 #ifndef FALSE
@@ -44,6 +46,23 @@ Discovery::DiscoveryHash Discovery::Private::discover()
     Discovery::DiscoveryHash hash;
     upnpDiscover(hash);
     return hash;
+}
+
+QStringList GetValuesFromNameValueList(struct NameValueParserData * pdata,
+                                       const char * Name)
+{
+    QStringList ret;
+    struct NameValue * nv;
+
+    for (nv = pdata->head.lh_first;
+        (nv != NULL);
+        nv = nv->entries.le_next)
+    {
+        if(strcmp(nv->name, Name) == 0)
+            ret.append(nv->value);
+    }
+
+    return ret;
 }
 
 void Discovery::Private::upnpDiscover(Discovery::DiscoveryHash &hash)
@@ -95,6 +114,25 @@ void Discovery::Private::upnpDiscover(Discovery::DiscoveryHash &hash)
                 hash.insert(Uptime, uptime);
                 hash.insert(LastConnectionError, lastConnectionError);
             }
+
+            int bufferSize = 0;
+            if (char* buffer = (char*)miniwget(urls.rootdescURL, &bufferSize, NULL)) {
+                NameValueParserData pdata;
+                ParseNameValue(buffer, bufferSize, &pdata);
+                free(buffer); buffer = NULL;
+
+                QStringList modelName = GetValuesFromNameValueList(&pdata, "modelName");
+                if ( !modelName.isEmpty() )
+                    hash.insert(ModelName, modelName.last());
+
+                QStringList manufacturer = GetValuesFromNameValueList(&pdata, "manufacturer");
+                if ( !manufacturer.isEmpty() )
+                    hash.insert(Manufacturer, manufacturer.last());
+
+                QStringList friendlyName = GetValuesFromNameValueList(&pdata, "friendlyName");
+                if ( !friendlyName.isEmpty() )
+                    hash.insert(FriendlyName, friendlyName.last());
+            }
         }
 
         FreeUPNPUrls(&urls);
@@ -127,6 +165,11 @@ Discovery::~Discovery()
 bool Discovery::isRunning() const
 {
     return d->watcher.isRunning();
+}
+
+bool Discovery::hasData() const
+{
+    return !d->data.isEmpty();
 }
 
 Discovery::DiscoveryHash Discovery::data() const
@@ -177,6 +220,21 @@ int Discovery::uptime() const
 QString Discovery::lastConnectionError() const
 {
     return d->data.value(LastConnectionError).toString();
+}
+
+QString Discovery::modelName() const
+{
+    return d->data.value(ModelName).toString();
+}
+
+QString Discovery::manufacturer() const
+{
+    return d->data.value(Manufacturer).toString();
+}
+
+QString Discovery::friendlyName() const
+{
+    return d->data.value(FriendlyName).toString();
 }
 
 void Discovery::discover()

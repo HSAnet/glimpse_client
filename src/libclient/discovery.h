@@ -15,6 +15,7 @@ class Discovery : public QObject
     Q_OBJECT
     Q_ENUMS(DataType)
     Q_PROPERTY(bool running READ isRunning NOTIFY runningChanged)
+    Q_PROPERTY(bool hasData READ hasData NOTIFY finished)
     Q_PROPERTY(QString externalIpAddress READ externalIpAddress NOTIFY finished)
     Q_PROPERTY(QString lanIpAddress READ lanIpAddress NOTIFY finished)
     Q_PROPERTY(int linkLayerMaxUpload READ linkLayerMaxUpload NOTIFY finished)
@@ -24,6 +25,9 @@ class Discovery : public QObject
     Q_PROPERTY(QString status READ status NOTIFY finished)
     Q_PROPERTY(int uptime READ uptime NOTIFY finished)
     Q_PROPERTY(QString lastConnectionError READ lastConnectionError NOTIFY finished)
+    Q_PROPERTY(QString modelName READ modelName NOTIFY finished)
+    Q_PROPERTY(QString manufacturer READ manufacturer NOTIFY finished)
+    Q_PROPERTY(QString friendlyName READ friendlyName NOTIFY finished)
 
 public:
     explicit Discovery(QObject *parent = 0);
@@ -39,12 +43,17 @@ public:
         NatType,
         Status,
         Uptime,
-        LastConnectionError
+        LastConnectionError,
+
+        ModelName,
+        Manufacturer,
+        FriendlyName
     };
 
     typedef QHash<DataType, QVariant> DiscoveryHash;
 
     bool isRunning() const;
+    bool hasData() const;
 
     /// @returns the discovered data
     DiscoveryHash data() const;
@@ -58,6 +67,10 @@ public:
     QString status() const;
     int uptime() const;
     QString lastConnectionError() const;
+
+    QString modelName() const;
+    QString manufacturer() const;
+    QString friendlyName() const;
 
 public slots:
     void discover();
