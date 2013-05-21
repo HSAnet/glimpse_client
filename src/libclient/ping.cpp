@@ -192,6 +192,7 @@ void Ping::start()
 
     args << d->host;
 
+    d->process.kill();
     d->process.start("ping", args);
 }
 
