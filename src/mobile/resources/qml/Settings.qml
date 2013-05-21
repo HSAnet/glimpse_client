@@ -14,6 +14,8 @@ Rectangle {
     property string title: qsTr("NO INTERNET")
     property string subtitle: qsTr("checking your connection ...")
 
+    Component.onDestruction: statusBar.visible = false
+
     Binding {
         target: statusBar
         property: "visible"
