@@ -16,6 +16,11 @@ class AbstractTest : public QObject
     Q_PROPERTY(bool isMaster READ isMaster CONSTANT)
 
 public:
+    explicit AbstractTest(QObject* parent = 0)
+    : QObject(parent)
+    {
+    }
+
     virtual QString name() const = 0;
     virtual bool isMaster() const = 0;
 
