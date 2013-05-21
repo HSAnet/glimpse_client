@@ -108,58 +108,54 @@ Rectangle {
             bottom: parent.bottom
         }
 
+        delegate: StackViewDelegate {
+            function transitionFinished(properties)
+            {
+                properties.exitItem.x = 0
+            }
+
+            property Component pushTransition: StackViewTransition {
+                PropertyAnimation {
+                    target: enterItem
+                    property: "x"
+                    from: enterItem.width
+                    to: 0
+                    duration: 100
+                }
+                PropertyAnimation {
+                    target: exitItem
+                    property: "x"
+                    from: 0
+                    to: -enterItem.width
+                    duration: 100
+                }
+            }
+        }
+
         onCurrentItemChanged: {
             applicationTitle.text = currentItem.title;
             statusText.text = currentItem.subtitle;
         }
 
         initialItem: ListView {
-            property string title: "mPlane"
+            property string title: "Glimpse"
             property string subtitle: client.status == Client.Registered ? qsTr("Registered") : qsTr("Unregistered")
 
             model: ListModel {
                 ListElement {
-                    title: "Manual tests"
-                    page: "Tests.qml"
+                    title: "NO INTERNET"
+                    page: "Settings.qml"
                 }
 
                 ListElement {
-                    title: "Connection tests"
-                    page: "Settings.qml"
+                    title: "Manual tests"
+                    page: "Tests.qml"
                 }
             }
 
             delegate: AndroidDelegate {
                 text: title
                 onClicked: pageStack.push(Qt.resolvedUrl(page))
-            }
-
-            footer: Button {
-                id: startButton
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: qsTr("Start test")
-                visible: !scheduler.isStarted
-                enabled: !manualRequest.running
-                onClicked: manualRequest.start()
-                style: ButtonStyle {}
-            }
-        }
-    }
-
-    WebRequester {
-        id: manualRequest
-        request: TestRequest {
-        }
-
-        onStatusChanged: {
-            switch(status) {
-            case WebRequester.Running:
-                statusText.text = qsTr("Requesting test ...");
-                break;
-
-            case WebRequester.Error:
-                statusText.text = qsTr("Error: %1").arg(errorString());
-                break;
             }
         }
     }
