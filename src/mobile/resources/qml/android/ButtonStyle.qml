@@ -19,7 +19,7 @@ ButtonStyle {
                 text: control.text
                 anchors.centerIn: parent
                 color: "white"
-                font.pixelSize: 23
+                font.pixelSize: 30
                 renderType: Text.NativeRendering
             }
         }
