@@ -14,6 +14,41 @@
 
 #ifdef Q_OS_ANDROID
 #include "statusbarhelper.h"
+#else
+#include <QSystemTrayIcon>
+
+class DesktopStatusBarHelper : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(bool visible READ isVisible WRITE setVisible NOTIFY visibleChanged)
+
+public:
+    DesktopStatusBarHelper(QObject* parent = 0)
+    : QObject(parent)
+    {
+        m_icon.setIcon( QIcon(":/tray.png") );
+        m_icon.show();
+    }
+
+    void setVisible(bool visible) {
+        if ( m_visible != visible ) {
+            m_visible = visible;
+            emit visibleChanged(visible);
+        }
+    }
+
+    bool isVisible() const {
+        return m_visible;
+    }
+
+signals:
+    void visibleChanged(bool visible);
+
+protected:
+    bool m_visible;
+    QSystemTrayIcon m_icon;
+};
+
 #endif // Q_OS_ANDROID
 
 int main(int argc, char* argv[])
@@ -47,6 +82,8 @@ int main(int argc, char* argv[])
     rootContext->setContextProperty("client", Client::instance());
 #ifdef Q_OS_ANDROID
     rootContext->setContextProperty("statusBar", new StatusBarHelper(&view));
+#else
+    rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(&view));
 #endif // Q_OS_ANDROID
 
     view.setResizeMode(QQuickView::SizeRootObjectToView);
@@ -55,3 +92,5 @@ int main(int argc, char* argv[])
 
     return app.exec();
 }
+
+#include "main.moc"

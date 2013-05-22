@@ -9,6 +9,8 @@ android {
                statusbarhelper.h
     SOURCES += androidhelper.cpp \
                statusbarhelper.cpp
+} else {
+    QT += widgets
 }
 
 SOURCES += \

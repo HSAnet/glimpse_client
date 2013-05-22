@@ -29,5 +29,6 @@
         <file>qml/images/minimize.png</file>
         <file>qml/CardListDelegate.qml</file>
         <file>qml/speedtest.qml</file>
+        <file>tray.png</file>
     </qresource>
 </RCC>
