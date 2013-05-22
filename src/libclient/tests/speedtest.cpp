@@ -47,7 +47,10 @@ void SpeedTest::Private::downloadProgress(qint64 bytesReceived, qint64 bytesTota
     if ( time.isNull() )
         time.restart();
     else {
-        averageDownloadSpeed = bytesReceived*1000 / time.elapsed();
+        qint64 packetCount = bytesReceived / 1452;
+        qint64 realBytesReceived = packetCount * 1500; // TODO: Check if this is really the packet size
+
+        averageDownloadSpeed = realBytesReceived*1000 / time.elapsed();
         emit q->averageDownloadSpeedChanged(averageDownloadSpeed);
 
         if ( averageDownloadSpeed > maximumDownloadSpeed ) {
@@ -63,7 +66,8 @@ void SpeedTest::Private::downloadProgress(qint64 bytesReceived, qint64 bytesTota
 void SpeedTest::Private::readyRead()
 {
     // Clear buffers, so we read all to nowhere
-    reply->readAll();
+    QByteArray data = reply->readAll();
+    //qDebug() << data.size();
 }
 
 void SpeedTest::Private::finished()
