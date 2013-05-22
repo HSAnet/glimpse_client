@@ -107,6 +107,13 @@ QVariant PacketTrain::data(int role) const
     return QVariant();
 }
 
+QVariant PacketTrain::result() const
+{
+    QVariantMap values;
+    values.insert("received-packets", packetCounter);
+    return values;
+}
+
 void PacketTrain::timeout()
 {
     emit packetCountChanged(packetCounter);

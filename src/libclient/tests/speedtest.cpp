@@ -138,6 +138,18 @@ void SpeedTest::processDatagram(const QByteArray &datagram, const QHostAddress &
     Q_UNUSED(port);
 }
 
+QVariant SpeedTest::result() const
+{
+    QVariantMap values;
+    values.insert("average-download-speed", d->averageDownloadSpeed);
+    values.insert("maximum-download-speed", d->maximumDownloadSpeed);
+    values.insert("download-progress", d->progress);
+    // FIXME: Don't use hardcoded values
+    values.insert("file-size", 12*1024*1024);
+    values.insert("packet-count", 12*1024*1024 / 1452);
+    return values;
+}
+
 bool SpeedTest::start()
 {
     if ( d->isRunning )

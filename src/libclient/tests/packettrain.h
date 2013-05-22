@@ -34,6 +34,8 @@ public:
 
     QVariant data(int role) const;
 
+    QVariant result() const;
+
 signals:
     void packetCountChanged(int packetCount);
 

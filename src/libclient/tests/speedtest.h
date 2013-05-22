@@ -29,6 +29,8 @@ public:
 
     void processDatagram(const QByteArray& datagram, const QHostAddress& host, quint16 port);
 
+    QVariant result() const;
+
 public slots:
     bool start();
     bool stop();

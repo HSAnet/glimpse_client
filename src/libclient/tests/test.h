@@ -31,6 +31,8 @@ public:
 
     virtual void processDatagram(const QByteArray& datagram, const QHostAddress& host, quint16 port) = 0;
 
+    virtual QVariant result() const = 0;
+
 public slots:
     virtual bool start() = 0;
     virtual bool stop() = 0;
