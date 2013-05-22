@@ -3,7 +3,8 @@
 #include <QDebug>
 
 PacketTrain::PacketTrain(QObject *parent)
-: isInitialized(false)
+: AbstractTest(parent)
+, isInitialized(false)
 , packetCounter(0)
 , running(false)
 {
