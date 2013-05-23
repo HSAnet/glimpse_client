@@ -36,17 +36,24 @@ Item {
             ListElement {
                 title: "Speedtest"
                 testName: "speedtest"
+                local: true
             }
 
             ListElement {
                 title: "Packet train"
                 testName: "packettrain"
+                local: false
             }
         }
 
         delegate: AndroidDelegate {
             text: title
-            onClicked: manualRequest.start()
+            onClicked: {
+                if ( model.local )
+                    client.speedTest();
+                else
+                    manualRequest.start()
+            }
         }
     }
 }

@@ -45,6 +45,7 @@ private slots:
 protected:
     bool isInitialized;
     PeerList peers;
+    QVariantList respondingPeers;
     bool master;
     QUdpSocket* socket;
 

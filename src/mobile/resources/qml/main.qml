@@ -174,13 +174,6 @@ Rectangle {
                 text: title
                 onClicked: pageStack.push(Qt.resolvedUrl(page))
             }
-
-            footer: Button {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: "Speedtest!"
-                style: ButtonStyle {}
-                onClicked: client.speedTest()
-            }
         }
     }
 }

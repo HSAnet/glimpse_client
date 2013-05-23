@@ -13,7 +13,7 @@ PacketTrain::PacketTrain(QObject *parent)
 
     timer.setInterval(10);
 
-    timeouter.setInterval(2000);
+    timeouter.setInterval(5000);
     timeouter.setSingleShot(true);
 }
 
@@ -93,6 +93,10 @@ bool PacketTrain::isFinished() const
 
 void PacketTrain::processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port)
 {
+    QString peer = Peer(host, port).toString();
+    if ( !respondingPeers.contains(peer) )
+        respondingPeers.append(peer);
+
     if ( master ) {
         emit packetCountChanged(packetCounter++);
     }
@@ -111,7 +115,9 @@ QVariant PacketTrain::data(int role) const
 QVariant PacketTrain::result() const
 {
     QVariantMap values;
-    values.insert("received-packets", packetCounter);
+    values.insert("master", master);
+    values.insert(master ? "received-packets" : "sent-packets", packetCounter);
+    values.insert("responding-peers", respondingPeers);
     return values;
 }
 

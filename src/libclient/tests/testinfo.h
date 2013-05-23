@@ -11,6 +11,10 @@ struct Peer
     {
     }
 
+    QString toString() {
+        return QString("%1:%2").arg(host.toString()).arg(port);
+    }
+
     QHostAddress host;
     quint16 port;
 };
