@@ -8,6 +8,7 @@ Rectangle {
     id: root
     width: 768
     height: 1200
+    clip: true
 
     color: "#212126"
 
@@ -22,7 +23,14 @@ Rectangle {
     }
 
     // Implements back key navigation
+    focus: true
+    Keys.enabled: true
     Keys.onReleased: {
+        if (event.key === Qt.Key_Plus)
+            root.scale += 0.1
+        if (event.key === Qt.Key_Minus)
+            root.scale -= 0.1
+
         if (event.key === Qt.Key_Back) {
             if (pageStack.depth > 1) {
                 pageStack.pop();

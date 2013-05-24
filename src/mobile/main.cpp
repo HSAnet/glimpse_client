@@ -16,6 +16,8 @@
 #include "statusbarhelper.h"
 #else
 #include <QSystemTrayIcon>
+#include <QMenu>
+#include <QApplication>
 
 class DesktopStatusBarHelper : public QObject
 {
@@ -26,6 +28,13 @@ public:
     DesktopStatusBarHelper(QObject* parent = 0)
     : QObject(parent)
     {
+        m_menu.addAction(tr("Speedtest"), Client::instance(), SLOT(speedTest()));
+
+#ifndef Q_OS_MAC
+        m_menu.addSeparator();
+        m_menu.addAction(tr("Quit"), qApp, SLOT(quit()));
+#endif
+        m_icon.setContextMenu(&m_menu);
         m_icon.setIcon( QIcon(":/tray.png") );
         m_icon.show();
     }
@@ -47,9 +56,30 @@ signals:
 protected:
     bool m_visible;
     QSystemTrayIcon m_icon;
+    QMenu m_menu;
 };
 
 #endif // Q_OS_ANDROID
+
+class Time : public QObject
+{
+    Q_OBJECT
+
+public:
+    Time(QObject* parent = 0) : QObject(parent) {
+    }
+
+    Q_INVOKABLE int restart() {
+        return time.restart();
+    }
+
+    Q_INVOKABLE int elapsed() const {
+        return time.elapsed();
+    }
+
+protected:
+    QTime time;
+};
 
 int main(int argc, char* argv[])
 {
@@ -57,7 +87,11 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationName("HS Augsburg");
     QCoreApplication::setApplicationName("mPlaneClient");
 
+#ifdef Q_OS_ANDROID
     QGuiApplication app(argc, argv);
+#else
+    QApplication app(argc, argv);
+#endif
 
     qmlRegisterUncreatableType<AbstractTest>("mplane", 1, 0, "AbstractTest", "abstract class");
     qmlRegisterUncreatableType<Client>("mplane", 1, 0, "Client", "This is a singleton");
@@ -72,6 +106,7 @@ int main(int argc, char* argv[])
     qmlRegisterType<ConnectionTester>("mplane", 1, 0, "ConnectionTester");
     qmlRegisterType<ConnectionTesterModel>("mplane", 1, 0, "ConnectionTesterModel");
     qmlRegisterType<Discovery>("mplane", 1, 0, "Discovery");
+    qmlRegisterType<Time>("mplane", 1, 0, "Time");
 
     QQuickView view;
 
