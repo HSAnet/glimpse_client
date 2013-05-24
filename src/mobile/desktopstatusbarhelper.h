@@ -3,6 +3,7 @@
 
 #include <QSystemTrayIcon>
 #include <QMenu>
+#include <QApplication>
 
 #include "client.h"
 
