@@ -4,6 +4,8 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 
+#include "client.h"
+
 class DesktopStatusBarHelper : public QObject
 {
     Q_OBJECT
