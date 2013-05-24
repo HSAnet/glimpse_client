@@ -11,6 +11,9 @@ android {
                statusbarhelper.cpp
 } else {
     QT += widgets
+
+    HEADERS += desktopstatusbarhelper.h
+    SOURCES += desktopstatusbarhelper.cpp
 }
 
 SOURCES += \
