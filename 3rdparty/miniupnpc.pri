@@ -1,12 +1,13 @@
 DEFINES += HAVE_UPNP STATICLIB
 
 android:DEFINES += sun # Atleast needed for android
+else:linux:DEFINES += _GNU_SOURCE
 mac:DEFINES += _DARWIN_C_SOURCE
 win32:DEFINES += _CRT_SECURE_NO_WARNINGS
 
-linux:LIBS += -lminiupnpc
+#linux:LIBS += -lminiupnpc
 
-android|mac|win32 {
+android|mac|win32|linux {
     INCLUDEPATH += $$PWD/miniupnp
     win32:INCLUDEPATH += $$PWD/miniupnp_windows_fixes
 
