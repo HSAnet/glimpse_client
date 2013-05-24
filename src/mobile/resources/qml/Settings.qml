@@ -36,6 +36,56 @@ Rectangle {
                 title: "Checking Connection"
                 width: ListView.view.width
 
+                Behavior on x {
+                    NumberAnimation {
+                        duration: 100
+                    }
+                }
+
+                opacity: (width-Math.abs(x))/width
+
+                Item {
+                    SequentialAnimation {
+                        id: moveAnimation
+
+                        property real v
+
+                        NumberAnimation {
+                            id: moveAnimationCard
+
+                            target: card
+                            property: "x"
+                            to: v > 0 ? card.width : -card.width
+                            duration: 150
+                        }
+
+                        ScriptAction {
+                            script: {
+                                card.visible = false;
+                                card.height = 0;
+                            }
+                        }
+                    }
+                }
+
+                MouseArea {
+                    property Time timer: Time {}
+
+                    anchors.fill: parent
+                    drag.target: card
+                    drag.axis: Drag.XAxis
+                    onPressed: timer.restart()
+                    onReleased: {
+                        var v = card.x*1000 / timer.elapsed();
+                        if ( Math.abs(v) > 500 ) {
+                            moveAnimation.v = v;
+                            moveAnimation.start();
+                        } else {
+                            card.x = 0;
+                        }
+                    }
+                }
+
                 ListView {
                     id: listView
                     height: card.expanded ? 330 : 0
