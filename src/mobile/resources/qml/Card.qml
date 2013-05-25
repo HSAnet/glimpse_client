@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.0
+import mplane 1.0
 
 BorderImage {
     id: root
@@ -29,6 +30,48 @@ BorderImage {
             easing.type: Easing.OutBack
             duration: 150
 
+        }
+    }
+
+    Item {
+        ParallelAnimation {
+            id: moveAnimation
+
+            property real v
+
+            NumberAnimation {
+                id: moveAnimationCard
+
+                target: root
+                property: "x"
+                to: v > 0 ? root.width : -root.width
+                duration: 150
+            }
+
+            ScriptAction {
+                script: {
+                    root.visible = false;
+                    root.height = 0;
+                }
+            }
+        }
+    }
+
+    MouseArea {
+        property Time timer: Time {}
+
+        anchors.fill: parent
+        drag.target: root
+        drag.axis: Drag.XAxis
+        onPressed: timer.restart()
+        onReleased: {
+            var v = root.x*1000 / timer.elapsed();
+            if ( Math.abs(v) > 500 ) {
+                moveAnimation.v = v;
+                moveAnimation.start();
+            } else {
+                root.x = 0;
+            }
         }
     }
 
