@@ -1,4 +1,6 @@
 import QtQuick 2.0
+import QtQuick.Controls 1.0
+import "android"
 
 Item {
     id: root
@@ -34,6 +36,17 @@ Item {
             text: qsTr("Progress: %1 %").arg(test.progress * 100)
             color: "white"
             font.pixelSize: 40
+        }
+
+        Item {
+            height: 100
+        }
+
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            style: ButtonStyle {}
+            text: qsTr("Cancel")
+            onClicked: test.stop()
         }
     }
 }
