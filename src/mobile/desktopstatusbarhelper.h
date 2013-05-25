@@ -18,12 +18,18 @@ public:
     {
         m_menu.addAction(tr("Speedtest"), Client::instance(), SLOT(speedTest()));
 
+        QIcon icon;
 #ifndef Q_OS_MAC
         m_menu.addSeparator();
         m_menu.addAction(tr("Quit"), qApp, SLOT(quit()));
+
+        icon.addPixmap(QPixmap(":/tray.png"));
+#else
+        icon.addPixmap(QPixmap(":/logo_mac.png"));
+        icon.addPixmap(QPixmap(":/logo_mac_active.png"), QIcon::Selected);
 #endif
         m_icon.setContextMenu(&m_menu);
-        m_icon.setIcon( QIcon(":/tray.png") );
+        m_icon.setIcon(icon);
         m_icon.show();
     }
 

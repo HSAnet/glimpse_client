@@ -23,7 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QIcon trayIcon;
 #ifdef Q_OS_MAC
-    trayIcon.addFile(":/tray_mac.png");
+    trayIcon.addPixmap(QPixmap(":/tray_mac.png"));
+    trayIcon.addPixmap(QPixmap(":/tray_mac_active.png"), QIcon::Selected);
 #else // Q_OS_MAC
     trayIcon.addFile(":/tray.png");
 #endif // Q_OS_MAC

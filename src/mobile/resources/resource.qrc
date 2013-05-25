@@ -30,5 +30,7 @@
         <file>qml/CardListDelegate.qml</file>
         <file>qml/speedtest.qml</file>
         <file>tray.png</file>
+        <file>logo_mac_active.png</file>
+        <file>logo_mac.png</file>
     </qresource>
 </RCC>
