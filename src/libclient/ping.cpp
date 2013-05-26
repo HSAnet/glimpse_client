@@ -192,7 +192,7 @@ void Ping::start()
 #endif
 #elif defined(Q_OS_MAC)
     args << "-c" << QString::number(d->amount)
-         << "-t" << QString::number(d->timeout);
+         << "-t" << QString::number(d->timeout * d->amount);
 #elif defined(Q_OS_WIN)
     args << "-n" << QString::number(d->amount)
          << "-4" // ipv4
