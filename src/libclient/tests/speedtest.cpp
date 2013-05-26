@@ -74,6 +74,9 @@ void SpeedTest::Private::finished()
 {
     isRunning = false;
     reply->deleteLater();
+
+    emit q->finished();
+    emit q->stopped();
 }
 
 SpeedTest::SpeedTest(QObject *parent)
@@ -127,7 +130,7 @@ void SpeedTest::uninitialize()
 
 bool SpeedTest::isFinished() const
 {
-    return d->isRunning;
+    return !d->isRunning;
 }
 
 void SpeedTest::processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port)
