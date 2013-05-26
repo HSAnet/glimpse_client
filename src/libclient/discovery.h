@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QHash>
+#include <QVariant>
 
 /**
  * The Discovery class
@@ -71,6 +72,8 @@ public:
     QString modelName() const;
     QString manufacturer() const;
     QString friendlyName() const;
+
+    Q_INVOKABLE QVariant result() const;
 
 public slots:
     void discover();

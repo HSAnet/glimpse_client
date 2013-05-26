@@ -8,6 +8,7 @@
 #include <QStringList>
 #include <QHostAddress>
 #include <QUdpSocket>
+#include <QJsonDocument>
 
 class AbstractTest : public QObject
 {
@@ -24,6 +25,10 @@ public:
         connect(this, SIGNAL(stopped()), this, SIGNAL(finishedChanged()));
     }
 
+    Q_INVOKABLE QString resultString() {
+        return QJsonDocument::fromVariant(result()).toJson();
+    }
+
     virtual QString name() const = 0;
     virtual bool isMaster() const = 0;
 
@@ -34,7 +39,7 @@ public:
 
     virtual void processDatagram(const QByteArray& datagram, const QHostAddress& host, quint16 port) = 0;
 
-    virtual QVariant result() const = 0;
+    Q_INVOKABLE virtual QVariant result() const = 0;
 
 public slots:
     virtual bool start() = 0;

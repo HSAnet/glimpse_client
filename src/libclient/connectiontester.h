@@ -82,6 +82,8 @@ public:
     void setConnectionTester(ConnectionTester* connectionTester);
     ConnectionTester* connectionTester() const;
 
+    Q_INVOKABLE QVariant result() const;
+
     // QAbstractListModel overrides
     QHash<int, QByteArray> roleNames() const;
     int rowCount(const QModelIndex &parent) const;

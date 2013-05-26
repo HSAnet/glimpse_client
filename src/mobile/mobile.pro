@@ -45,4 +45,5 @@ OTHER_FILES += \
     resources/qml/android/Spinner.qml \
     resources/qml/Card.qml \
     resources/qml/CardListDelegate.qml \
-    resources/qml/speedtest.qml
+    resources/qml/speedtest.qml \
+    resources/qml/ResultPage.qml

@@ -388,6 +388,24 @@ ConnectionTester *ConnectionTesterModel::connectionTester() const
     return m_connectionTester;
 }
 
+QVariant ConnectionTesterModel::result() const
+{
+    // Prepare upnp data
+    QVariantMap upnp;
+    QListIterator<RowData> iter(m_rows);
+    while ( iter.hasNext() ) {
+        const RowData& row = iter.next();
+
+        QString name = enumToString(ConnectionTester, "TestType", row.testType);
+        name = name.replace(QRegExp("([A-Z])"), "-\\1").toLower();
+        name.remove(0, 1);
+
+        upnp.insert(name, row.result);
+    }
+
+    return upnp;
+}
+
 QHash<int, QByteArray> ConnectionTesterModel::roleNames() const
 {
     QHash<int, QByteArray> roleNames;

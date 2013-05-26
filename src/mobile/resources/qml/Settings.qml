@@ -28,6 +28,28 @@ Rectangle {
         spacing: 10
 
         model: VisualItemModel {
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                style: ButtonStyle {}
+                text: qsTr("View results")
+                visible: !(tester.running || discovery.running)
+                onClicked: {
+                    var results = [testerModel.result(),
+                                   discovery.result(),
+                                   ping.result()];
+
+                    var params = {
+                        item: Qt.resolvedUrl("ResultPage.qml"),
+                        properties: {
+                            subtitle: qsTr("Multiple results"),
+                            resultText: JSON.stringify(results, null, "   ")
+                        }
+                    }
+
+                    pageStack.push(params);
+                }
+            }
+
             Card {
                 Component.onCompleted: tester.start()
 
@@ -56,6 +78,7 @@ Rectangle {
                     interactive: false
 
                     model: ConnectionTesterModel {
+                        id: testerModel
                         connectionTester: ConnectionTester {
                             id: tester
                         }

@@ -1,4 +1,5 @@
 #include "discovery.h"
+#include "types.h"
 
 #include <QStringList>
 #include <QHostAddress>
@@ -235,6 +236,24 @@ QString Discovery::manufacturer() const
 QString Discovery::friendlyName() const
 {
     return d->data.value(FriendlyName).toString();
+}
+
+QVariant Discovery::result() const
+{
+    // Prepare upnp data
+    QVariantMap upnp;
+    QHashIterator<Discovery::DataType, QVariant> iter(d->data);
+    while ( iter.hasNext() ) {
+        iter.next();
+
+        QString name = enumToString(Discovery, "DataType", iter.key());
+        name = name.replace(QRegExp("([A-Z])"), "-\\1").toLower();
+        name.remove(0, 1);
+
+        upnp.insert(name, iter.value());
+    }
+
+    return upnp;
 }
 
 void Discovery::discover()

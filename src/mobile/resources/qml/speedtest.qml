@@ -59,6 +59,24 @@ Item {
                 NumberAnimation { duration: 150 }
             }
         }
+
+        Button {
+            style: ButtonStyle {}
+            anchors.horizontalCenter: parent.horizontalCenter
+            visible: test.finished
+            text: qsTr("View result")
+            onClicked: {
+                var params = {
+                    item: Qt.resolvedUrl("ResultPage.qml"),
+                    properties: {
+                        subtitle: qsTr("%1 result").arg(root.title),
+                        resultText: root.test.resultString()
+                    }
+                }
+
+                pageStack.push(params);
+            }
+        }
     }
 }
 

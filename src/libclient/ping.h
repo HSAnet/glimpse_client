@@ -2,6 +2,7 @@
 #define PING_H
 
 #include <QObject>
+#include <QVariant>
 
 class Ping : public QObject
 {
@@ -46,6 +47,8 @@ public:
 
     QList<int> pingTime() const;
     int averagePingTime() const;
+
+    Q_INVOKABLE QVariant result() const;
 
 public slots:
     void start();

@@ -32,5 +32,6 @@
         <file>tray.png</file>
         <file>logo_mac_active.png</file>
         <file>logo_mac.png</file>
+        <file>qml/ResultPage.qml</file>
     </qresource>
 </RCC>

@@ -168,6 +168,17 @@ int Ping::averagePingTime() const
     return qRound( time / (double)d->pingTime.size() );
 }
 
+QVariant Ping::result() const
+{
+    QVariantList result;
+    foreach(int pingTime, d->pingTime)
+        result.append(pingTime);
+
+    QVariantMap map;
+    map.insert("ping-times", result);
+    return map;
+}
+
 void Ping::start()
 {
     QStringList args;
