@@ -14,11 +14,14 @@ class AbstractTest : public QObject
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(bool isMaster READ isMaster CONSTANT)
+    Q_PROPERTY(bool finished READ isFinished NOTIFY finishedChanged)
 
 public:
     explicit AbstractTest(QObject* parent = 0)
     : QObject(parent)
     {
+        connect(this, SIGNAL(started()), this, SIGNAL(finishedChanged()));
+        connect(this, SIGNAL(stopped()), this, SIGNAL(finishedChanged()));
     }
 
     virtual QString name() const = 0;
@@ -43,6 +46,8 @@ signals:
     void started();
     void stopped();
     void finished(); // called before stopped()!
+
+    void finishedChanged();
 };
 
 Q_DECLARE_INTERFACE(AbstractTest, "de.hs-augsburg.mplane.AbstractTest")

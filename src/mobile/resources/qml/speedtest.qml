@@ -17,6 +17,11 @@ Item {
         anchors.centerIn: parent
         spacing: 10
 
+        Spinner {
+            anchors.horizontalCenter: parent.horizontalCenter
+            running: !test.finished
+        }
+
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("Average speed: %1 kbyte/s").arg(test.averageDownloadSpeed / 1024)
@@ -47,6 +52,12 @@ Item {
             style: ButtonStyle {}
             text: qsTr("Cancel")
             onClicked: test.stop()
+
+            scale: test.finished ? 0.0 : 1.0
+
+            Behavior on scale {
+                NumberAnimation { duration: 150 }
+            }
         }
     }
 }
