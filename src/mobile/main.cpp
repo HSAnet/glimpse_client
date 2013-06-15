@@ -14,6 +14,7 @@
 
 #ifdef Q_OS_ANDROID
 #include "statusbarhelper.h"
+#include "androidimageprovider.h"
 #else
 #include <QApplication>
 #include "desktopstatusbarhelper.h"
@@ -74,6 +75,7 @@ int main(int argc, char* argv[])
     QQmlContext* rootContext = view.rootContext();
     rootContext->setContextProperty("client", Client::instance());
 #ifdef Q_OS_ANDROID
+    engine->addImageProvider("android", new AndroidImageProvider);
     rootContext->setContextProperty("statusBar", new StatusBarHelper(&view));
 #else
     rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(&view));
