@@ -31,6 +31,9 @@ QImage AndroidImageProvider::requestImage(const QString &id, QSize *size, const 
     jobject bm = env->CallObjectMethod(m_instance, m_loadApplicationIcon, packageName);
     env->DeleteLocalRef(packageName);
 
+    if (bm == NULL)
+        return QImage();
+
     jint width = env->CallIntMethod(bm, m_getWidth);
     jint height = env->CallIntMethod(bm, m_getHeight);
 
