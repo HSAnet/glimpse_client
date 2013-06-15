@@ -15,6 +15,14 @@ public:
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);
 
 protected:
+    struct CleanupInfo {
+        jintArray pixels;
+        jint* realPixels;
+    };
+
+    static void cleanupHandler(void* info);
+
+protected:
     jobject m_instance;
     jmethodID m_loadApplicationIcon;
 

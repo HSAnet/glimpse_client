@@ -38,15 +38,29 @@ QImage AndroidImageProvider::requestImage(const QString &id, QSize *size, const 
     jint height = env->CallIntMethod(bm, m_getHeight);
 
     jintArray pixels = env->NewIntArray(width * height);
-
     env->CallVoidMethod(bm, m_getPixels, pixels, 0, width, 0, 0, width, height);
 
     jint* realPixels = env->GetIntArrayElements(pixels, NULL);
 
-    QImage image((uchar*)realPixels, width, height, QImage::Format_ARGB32);
+    CleanupInfo* cleanupInfo = new CleanupInfo;
+    cleanupInfo->pixels = (jintArray)env->NewGlobalRef(pixels);
+    cleanupInfo->realPixels = realPixels;
+
+    QImage image((uchar*)realPixels, width, height, QImage::Format_ARGB32, cleanupHandler, (void*)cleanupInfo);
     env->DeleteLocalRef(pixels);
     env->DeleteLocalRef(bm);
     return image;
+}
+
+void AndroidImageProvider::cleanupHandler(void *info)
+{
+    CleanupInfo* cleanupInfo = reinterpret_cast<CleanupInfo*>(info);
+
+    Java env;
+    env->ReleaseIntArrayElements(cleanupInfo->pixels, cleanupInfo->realPixels, 0);
+    env->DeleteGlobalRef(cleanupInfo->pixels);
+
+    delete cleanupInfo;
 }
 
 namespace {
