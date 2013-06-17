@@ -22,7 +22,6 @@ AndroidImageProvider::~AndroidImageProvider()
 
 QImage AndroidImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
-    Q_UNUSED(size);
     Q_UNUSED(requestedSize);
 
     Java env;
@@ -36,6 +35,9 @@ QImage AndroidImageProvider::requestImage(const QString &id, QSize *size, const 
 
     jint width = env->CallIntMethod(bm, m_getWidth);
     jint height = env->CallIntMethod(bm, m_getHeight);
+
+    if (size)
+        *size = QSize(width, height);
 
     jintArray pixels = env->NewIntArray(width * height);
     env->CallVoidMethod(bm, m_getPixels, pixels, 0, width, 0, 0, width, height);
