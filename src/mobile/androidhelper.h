@@ -6,8 +6,6 @@
 
 JavaVM* javaVM();
 
-extern jclass StatusBarHelperClass;
-
 class Java
 {
 public:
@@ -19,21 +17,12 @@ public:
         detach();
     }
 
-    JNIEnv* operator ->() const {
-        return env;
-    }
+    JNIEnv* operator ->() const;
 
-    bool attach() {
-        return (valid = javaVM()->AttachCurrentThread(&env, 0)) >= 0;
-    }
+    bool attach();
+    void detach();
 
-    void detach() {
-        javaVM()->DetachCurrentThread();
-    }
-
-    bool isValid() const {
-        return valid;
-    }
+    bool isValid() const;
 
     static void registerClass(const char* className);
     jclass findClass(const QByteArray& className) const;

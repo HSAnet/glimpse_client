@@ -11,8 +11,6 @@ namespace {
     static QHash<QByteArray, jclass> classMap;
 }
 
-jclass StatusBarHelperClass = NULL;
-
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*)
 {
     g_vm = vm;
@@ -46,6 +44,26 @@ JavaVM* javaVM()
     return g_vm;
 }
 
+bool Java::attach()
+{
+    return (valid = javaVM()->AttachCurrentThread(&env, 0)) >= 0;
+}
+
+void Java::detach()
+{
+    javaVM()->DetachCurrentThread();
+}
+
+bool Java::isValid() const
+{
+    return valid;
+}
+
+JNIEnv *Java::operator ->() const
+{
+    return env;
+}
+
 void Java::registerClass(const char *className)
 {
     if (!registeredClasses.contains(className))
@@ -59,6 +77,9 @@ jclass Java::findClass(const QByteArray &className) const
 
 jobject Java::createInstance(jclass clazz) const
 {
+    if ( clazz == NULL )
+        return NULL;
+
     jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
     if ( !constructor )
         return NULL;
