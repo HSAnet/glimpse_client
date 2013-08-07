@@ -7,10 +7,12 @@ include(../libclient/libclient.pri)
 android {
     HEADERS += androidhelper.h \
                statusbarhelper.h \
-               androidimageprovider.h
+               androidimageprovider.h \
+               androidprocessmodel.h
     SOURCES += androidhelper.cpp \
                statusbarhelper.cpp \
-               androidimageprovider.cpp
+               androidimageprovider.cpp \
+               androidprocessmodel.cpp
 } else {
     QT += widgets
 

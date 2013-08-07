@@ -15,6 +15,7 @@
 #ifdef Q_OS_ANDROID
 #include "statusbarhelper.h"
 #include "androidimageprovider.h"
+#include "androidprocessmodel.h"
 #else
 #include <QApplication>
 #include "desktopstatusbarhelper.h"
@@ -66,6 +67,10 @@ int main(int argc, char* argv[])
     qmlRegisterType<ConnectionTesterModel>("mplane", 1, 0, "ConnectionTesterModel");
     qmlRegisterType<Discovery>("mplane", 1, 0, "Discovery");
     qmlRegisterType<Time>("mplane", 1, 0, "Time");
+
+#ifdef Q_OS_ANDROID
+    qmlRegisterType<AndroidProcessModel>("mplane", 1, 0, "ProcessModel");
+#endif // Q_OS_ANDROID
 
     QQuickView view;
 
