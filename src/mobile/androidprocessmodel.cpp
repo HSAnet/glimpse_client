@@ -19,7 +19,7 @@ public:
         processHelperClass = env.findClass("de/hsaugsburg/informatik/mplane/ProcessHelper");
         runningProcesses = env->GetMethodID(processHelperClass, "runningProcesses", "()Ljava/util/List;");
 
-        jclass processInfoClass = env.findClass("de/hsaugsburg/informatik/mplane/ProcessHelper/ProcessInfo");
+        jclass processInfoClass = env.findClass("de/hsaugsburg/informatik/mplane/ProcessHelper$ProcessInfo");
         displayName = env->GetFieldID(processInfoClass, "displayName", "Ljava/lang/String;");
         packageName = env->GetFieldID(processInfoClass, "packageName", "Ljava/lang/String;");
 
@@ -129,7 +129,7 @@ void AndroidProcessModel::reload()
 namespace {
     static int init_AndroidProcessModel() {
         Java::registerClass("de/hsaugsburg/informatik/mplane/ProcessHelper");
-        Java::registerClass("de/hsaugsburg/informatik/mplane/ProcessHelper/ProcessInfo");
+        Java::registerClass("de/hsaugsburg/informatik/mplane/ProcessHelper$ProcessInfo");
         Java::registerClass("java/util/List");
         return 1;
     }
