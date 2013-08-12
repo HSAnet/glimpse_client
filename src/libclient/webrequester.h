@@ -2,6 +2,7 @@
 #define WEBREQUESTER_H
 
 #include "requests.h"
+#include "response.h"
 
 #include <QObject>
 #include <QJsonObject>
@@ -12,6 +13,7 @@ class WebRequester : public QObject
     Q_ENUMS(Status)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(Request* request READ request WRITE setRequest NOTIFY requestChanged)
+    Q_PROPERTY(Response* response READ response WRITE setResponse NOTIFY responseChanged)
     Q_PROPERTY(bool running READ isRunning NOTIFY statusChanged)
 
 public:
@@ -30,6 +32,9 @@ public:
     void setRequest(Request* request);
     Request* request() const;
 
+    void setResponse(Response* response);
+    Response *response() const;
+
     bool isRunning() const;
 
     Q_INVOKABLE QString errorString() const;
@@ -43,6 +48,11 @@ public slots:
 signals:
     void statusChanged(Status status);
     void requestChanged(Request* request);
+    void responseChanged(Response* response);
+
+    void started();
+    void finished();
+    void error();
 
 protected:
     class Private;

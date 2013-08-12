@@ -33,5 +33,9 @@
         <file>logo_mac_active.png</file>
         <file>logo_mac.png</file>
         <file>qml/ResultPage.qml</file>
+        <file>qml/Slow.qml</file>
+        <file>qml/UserRegistration.qml</file>
+        <file>qml/DeviceRegistration.qml</file>
+        <file>qml/Login.qml</file>
     </qresource>
 </RCC>

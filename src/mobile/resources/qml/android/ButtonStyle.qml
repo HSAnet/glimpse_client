@@ -4,8 +4,8 @@ import QtQuick.Controls.Styles 1.0
 
 ButtonStyle {
     panel: Item {
-        implicitHeight: 50
-        implicitWidth: 320
+        implicitHeight: 80
+        implicitWidth: 520
         BorderImage {
             anchors.fill: parent
             antialiasing: true
@@ -19,7 +19,7 @@ ButtonStyle {
                 text: control.text
                 anchors.centerIn: parent
                 color: "white"
-                font.pixelSize: 30
+                font.pixelSize: 50
                 renderType: Text.NativeRendering
             }
         }

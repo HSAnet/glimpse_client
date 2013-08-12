@@ -58,8 +58,16 @@ int main(int argc, char* argv[])
     qmlRegisterUncreatableType<TestScheduler>("mplane", 1, 0, "TestScheduler", "uncreatable type");
 
     qmlRegisterUncreatableType<Request>("mplane", 1, 0, "Request", "abstract class");
-    qmlRegisterType<ClientInfo>("mplane", 1, 0, "ClientInfoRequest");
+    qmlRegisterType<RegisterDeviceRequest>("mplane", 1, 0, "RegisterDeviceRequest");
     qmlRegisterType<ManualRequest>("mplane", 1, 0, "TestRequest");
+    qmlRegisterType<UserRegisterRequest>("mplane", 1, 0, "UserRegisterRequest");
+    qmlRegisterType<LoginRequest>("mplane", 1, 0, "LoginRequest");
+
+    qmlRegisterUncreatableType<Response>("mplane", 1, 0, "Response", "abstract class");
+    qmlRegisterType<RegisterUserResponse>("mplane", 1, 0, "UserRegisterResponse");
+    qmlRegisterType<LoginResponse>("mplane", 1, 0, "LoginResponse");
+    qmlRegisterType<RegisterDeviceResponse>("mplane", 1, 0, "RegisterDeviceResponse");
+
     qmlRegisterType<Settings>("mplane", 1, 0, "Settings");
     qmlRegisterType<WebRequester>("mplane", 1, 0, "WebRequester");
     qmlRegisterType<Ping>("mplane", 1, 0, "Ping");

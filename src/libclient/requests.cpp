@@ -3,22 +3,23 @@
 // TODO: Adjust types
 #if defined(Q_OS_WIN)
 #define OS "Windows"
-#define TYPE ClientInfo::Workstation
+#define TYPE RegisterDeviceRequest::Workstation
 #elif defined(Q_OS_ANDROID)
 #define OS "Android"
-#define TYPE ClientInfo::Phone
+#define TYPE RegisterDeviceRequest::Phone
 #elif defined(Q_OS_LINUX)
 #define OS "Linux"
-#define TYPE ClientInfo::Workstation
+#define TYPE RegisterDeviceRequest::Workstation
 #elif defined(Q_OS_MAC)
 #define OS "Mac OS X"
-#define TYPE ClientInfo::Workstation
+#define TYPE RegisterDeviceRequest::Workstation
 #endif
 
 class Request::Private
 {
 public:
     QUuid deviceId;
+    QString sessionId;
 };
 
 Request::Request(QObject *parent)
@@ -45,225 +46,177 @@ QUuid Request::deviceId() const
     return d->deviceId;
 }
 
-class ClientInfo::Private
+void Request::setSessionId(const QString &sessionId)
+{
+    if ( d->sessionId != sessionId ) {
+        d->sessionId = sessionId;
+        emit sessionIdChanged(sessionId);
+    }
+}
+
+QString Request::sessionId() const
+{
+    return d->sessionId;
+}
+
+class RegisterDeviceRequest::Private
 {
 public:
     Private()
     : dataPlanDownlink(0)
     , deviceType(TYPE)
     , dataPlanUplink(0)
-    , maxAllowedRateUp(0)
-    , maxAllowedRateDown(0)
-    , userId(0)
-    , os(OS)
-    , remainingBudget(0)
     {
     }
 
-    QString localIp;
-    int dataPlanDownlink;
-    QString upnpInfos;
-    ClientInfo::DeviceType deviceType;
-    QUuid deviceId;
     QString dataPlanName;
+    RegisterDeviceRequest::ProviderTechnology providerTechnology;
+    QString deviceName;
+    QString platform;
+    RegisterDeviceRequest::DeviceType deviceType;
     QString provider;
-    ClientInfo::ProviderTechnology providerTechnology;
+    int maxAllowedTraffic;
+    int dataPlanDownlink;
     int dataPlanUplink;
-    int maxAllowedRateUp;
-    int maxAllowedRateDown;
-    int userId;
-    QString os;
-    int remainingBudget;
-    QVariantMap upnp;
+    QUuid deviceId;
 };
 
-ClientInfo::ClientInfo(QObject *parent)
+RegisterDeviceRequest::RegisterDeviceRequest(QObject *parent)
 : Request(parent)
 , d(new Private)
 {
 }
 
-ClientInfo::~ClientInfo()
+RegisterDeviceRequest::~RegisterDeviceRequest()
 {
     delete d;
 }
 
-int ClientInfo::dataPlanDownlink() const {
-  return d->dataPlanDownlink;
-}
-
-void ClientInfo::setDataPlanDownlink(int dataPlanDownlink) {
-  if (d->dataPlanDownlink != dataPlanDownlink) {
-    d->dataPlanDownlink = dataPlanDownlink;
-    emit dataPlanDownlinkChanged(dataPlanDownlink);
-  }
-}
-
-QString ClientInfo::upnpInfos() const {
-  return d->upnpInfos;
-}
-
-void ClientInfo::setUpnpInfos(const QString& upnpInfos) {
-  if (d->upnpInfos != upnpInfos) {
-    d->upnpInfos = upnpInfos;
-    emit upnpInfosChanged(upnpInfos);
-  }
-}
-
-ClientInfo::DeviceType ClientInfo::deviceType() const {
-  return d->deviceType;
-}
-
-void ClientInfo::setDeviceType(DeviceType deviceType) {
-  if (d->deviceType != deviceType) {
-    d->deviceType = deviceType;
-    emit deviceTypeChanged(deviceType);
-  }
-}
-
-QString ClientInfo::dataPlanName() const {
+QString RegisterDeviceRequest::dataPlanName() const {
   return d->dataPlanName;
 }
 
-void ClientInfo::setDataPlanName(const QString& dataPlanName) {
+void RegisterDeviceRequest::setDataPlanName(const QString& dataPlanName) {
   if (d->dataPlanName != dataPlanName) {
     d->dataPlanName = dataPlanName;
     emit dataPlanNameChanged(dataPlanName);
   }
 }
 
-QString ClientInfo::provider() const {
-  return d->provider;
-}
-
-void ClientInfo::setProvider(const QString& provider) {
-  if (d->provider != provider) {
-    d->provider = provider;
-    emit providerChanged(provider);
-  }
-}
-
-ClientInfo::ProviderTechnology ClientInfo::providerTechnology() const {
+RegisterDeviceRequest::ProviderTechnology RegisterDeviceRequest::providerTechnology() const {
   return d->providerTechnology;
 }
 
-void ClientInfo::setProviderTechnology(ProviderTechnology providerTechnology) {
+void RegisterDeviceRequest::setProviderTechnology(ProviderTechnology providerTechnology) {
   if (d->providerTechnology != providerTechnology) {
     d->providerTechnology = providerTechnology;
     emit providerTechnologyChanged(providerTechnology);
   }
 }
 
-int ClientInfo::dataPlanUplink() const {
+QString RegisterDeviceRequest::deviceName() const {
+  return d->deviceName;
+}
+
+void RegisterDeviceRequest::setDeviceName(const QString& deviceName) {
+  if (d->deviceName != deviceName) {
+    d->deviceName = deviceName;
+    emit deviceNameChanged(deviceName);
+  }
+}
+
+QString RegisterDeviceRequest::platform() const {
+  return d->platform;
+}
+
+void RegisterDeviceRequest::setPlatform(const QString& platform) {
+  if (d->platform != platform) {
+    d->platform = platform;
+    emit platformChanged(platform);
+  }
+}
+
+RegisterDeviceRequest::DeviceType RegisterDeviceRequest::deviceType() const {
+  return d->deviceType;
+}
+
+void RegisterDeviceRequest::setDeviceType(DeviceType deviceType) {
+  if (d->deviceType != deviceType) {
+    d->deviceType = deviceType;
+    emit deviceTypeChanged(deviceType);
+  }
+}
+
+QString RegisterDeviceRequest::provider() const {
+  return d->provider;
+}
+
+void RegisterDeviceRequest::setProvider(const QString& provider) {
+  if (d->provider != provider) {
+    d->provider = provider;
+    emit providerChanged(provider);
+  }
+}
+
+int RegisterDeviceRequest::maxAllowedTraffic() const {
+  return d->maxAllowedTraffic;
+}
+
+void RegisterDeviceRequest::setMaxAllowedTraffic(int maxAllowedTraffic) {
+  if (d->maxAllowedTraffic != maxAllowedTraffic) {
+    d->maxAllowedTraffic = maxAllowedTraffic;
+    emit maxAllowedTrafficChanged(maxAllowedTraffic);
+  }
+}
+
+int RegisterDeviceRequest::dataPlanDownlink() const {
+  return d->dataPlanDownlink;
+}
+
+void RegisterDeviceRequest::setDataPlanDownlink(int dataPlanDownlink) {
+  if (d->dataPlanDownlink != dataPlanDownlink) {
+    d->dataPlanDownlink = dataPlanDownlink;
+    emit dataPlanDownlinkChanged(dataPlanDownlink);
+  }
+}
+
+int RegisterDeviceRequest::dataPlanUplink() const {
   return d->dataPlanUplink;
 }
 
-void ClientInfo::setDataPlanUplink(int dataPlanUplink) {
+void RegisterDeviceRequest::setDataPlanUplink(int dataPlanUplink) {
   if (d->dataPlanUplink != dataPlanUplink) {
     d->dataPlanUplink = dataPlanUplink;
     emit dataPlanUplinkChanged(dataPlanUplink);
   }
 }
 
-int ClientInfo::maxAllowedRateUp() const {
-  return d->maxAllowedRateUp;
-}
+/*QUuid RegisterDeviceRequest::deviceId() const {
+  return d->deviceId;
+}*/
 
-void ClientInfo::setMaxAllowedRateUp(int maxAllowedRateUp) {
-  if (d->maxAllowedRateUp != maxAllowedRateUp) {
-    d->maxAllowedRateUp = maxAllowedRateUp;
-    emit maxAllowedRateUpChanged(maxAllowedRateUp);
+/*void RegisterDeviceRequest::setDeviceId(const QUuid& deviceId) {
+  if (d->deviceId != deviceId) {
+    d->deviceId = deviceId;
+    emit deviceIdChanged(deviceId);
   }
-}
+}*/
 
-int ClientInfo::maxAllowedRateDown() const {
-  return d->maxAllowedRateDown;
-}
-
-void ClientInfo::setMaxAllowedRateDown(int maxAllowedRateDown) {
-  if (d->maxAllowedRateDown != maxAllowedRateDown) {
-    d->maxAllowedRateDown = maxAllowedRateDown;
-    emit maxAllowedRateDownChanged(maxAllowedRateDown);
-  }
-}
-
-int ClientInfo::userId() const {
-  return d->userId;
-}
-
-void ClientInfo::setUserId(int userId) {
-  if (d->userId != userId) {
-    d->userId = userId;
-    emit userIdChanged(userId);
-  }
-}
-
-QString ClientInfo::os() const {
-  return d->os;
-}
-
-void ClientInfo::setOs(const QString& os) {
-  if (d->os != os) {
-    d->os = os;
-    emit osChanged(os);
-  }
-}
-
-int ClientInfo::remainingBudget() const {
-    return d->remainingBudget;
-}
-
-QVariantMap ClientInfo::upnp() const
-{
-    return d->upnp;
-}
-
-void ClientInfo::setLocalIp(const QString &localIp)
-{
-    if (d->localIp != localIp) {
-        d->localIp = localIp;
-        emit localIpChanged(localIp);
-    }
-}
-
-void ClientInfo::setRemainingBudget(int remainingBudget) {
-  if (d->remainingBudget != remainingBudget) {
-    d->remainingBudget = remainingBudget;
-    emit remainingBudgetChanged(remainingBudget);
-  }
-}
-
-void ClientInfo::setUpnp(const QVariantMap &upnp)
-{
-    if (d->upnp != upnp) {
-        d->upnp = upnp;
-        emit upnpChanged(upnp);
-    }
-}
-
-QVariant ClientInfo::toVariant() const {
+QVariant RegisterDeviceRequest::toVariant() const {
   QVariantMap data;
-  data.insert("local-ip", localIp());
-  data.insert("data-plan-downlink", dataPlanDownlink());
-  data.insert("upnp-infos", upnpInfos());
-  data.insert("device-type", enumToString(ClientInfo, "DeviceType", deviceType()));
-  data.insert("device-id", deviceId());
-  data.insert("data-plan-name", dataPlanName());
+  data.insert("data_plan_name", dataPlanName());
+  data.insert("provider_technology", enumToString(RegisterDeviceRequest, "ProviderTechnology", providerTechnology()));
+  data.insert("session_id", sessionId());
+  data.insert("device_name", deviceName());
+  data.insert("platform", platform());
+  data.insert("device_type", enumToString(RegisterDeviceRequest, "DeviceType", deviceType()));
   data.insert("provider", provider());
-  data.insert("provider-technology", enumToString(ClientInfo, "ProviderTechnology", providerTechnology()));
-  data.insert("data-plan-uplink", dataPlanUplink());
-  data.insert("max-allowed-rate-up", maxAllowedRateUp());
-  data.insert("max-allowed-rate-down", maxAllowedRateDown());
-  data.insert("user-id", userId());
-  data.insert("os", os());
-  data.insert("remaining-budget", remainingBudget());
-  data.insert("upnp", upnp());
+  data.insert("max_allowed_traffic", maxAllowedTraffic());
+  data.insert("data_plan_downlink", dataPlanDownlink());
+  data.insert("data_plan_uplink", dataPlanUplink());
+  data.insert("device_id", deviceId());
+  data.insert("session_id", sessionId());
   return data;
-}
-
-QString ClientInfo::localIp() const
-{
-    return d->localIp;
 }
 
 
@@ -285,6 +238,161 @@ ManualRequest::~ManualRequest()
 
 QVariant ManualRequest::toVariant() const {
   QVariantMap data;
-  data.insert("device-id", deviceId());
+  data.insert("device_id", deviceId());
+  return data;
+}
+
+
+class UserRegisterRequest::Private
+{
+public:
+    Private()
+    : homeCountry(QLocale::system().country())
+    , xpLevel(0)
+    {
+    }
+
+    QString nameLast;
+    QLocale::Country homeCountry;
+    QString mail;
+    QString nameFirst;
+    QString password;
+    int xpLevel;
+};
+
+UserRegisterRequest::UserRegisterRequest(QObject *parent)
+: Request(parent)
+, d(new Private)
+{
+}
+
+UserRegisterRequest::~UserRegisterRequest()
+{
+    delete d;
+}
+
+QString UserRegisterRequest::nameLast() const {
+  return d->nameLast;
+}
+
+void UserRegisterRequest::setNameLast(const QString& nameLast) {
+  if (d->nameLast != nameLast) {
+    d->nameLast = nameLast;
+    emit nameLastChanged(nameLast);
+  }
+}
+
+QLocale::Country UserRegisterRequest::homeCountry() const {
+  return d->homeCountry;
+}
+
+void UserRegisterRequest::setHomeCountry(QLocale::Country homeCountry) {
+  if (d->homeCountry != homeCountry) {
+    d->homeCountry = homeCountry;
+    emit homeCountryChanged(homeCountry);
+  }
+}
+
+QString UserRegisterRequest::userId() const {
+  return d->mail;
+}
+
+void UserRegisterRequest::setUserId(const QString& mail) {
+  if (d->mail != mail) {
+    d->mail = mail;
+    emit mailChanged(mail);
+  }
+}
+
+QString UserRegisterRequest::nameFirst() const {
+  return d->nameFirst;
+}
+
+void UserRegisterRequest::setNameFirst(const QString& nameFirst) {
+  if (d->nameFirst != nameFirst) {
+    d->nameFirst = nameFirst;
+    emit nameFirstChanged(nameFirst);
+  }
+}
+
+QString UserRegisterRequest::password() const {
+  return d->password;
+}
+
+void UserRegisterRequest::setPassword(const QString& password) {
+  if (d->password != password) {
+    d->password = password;
+    emit passwordChanged(password);
+  }
+}
+
+int UserRegisterRequest::xpLevel() const {
+  return d->xpLevel;
+}
+
+void UserRegisterRequest::setXpLevel(int xpLevel) {
+  if (d->xpLevel != xpLevel) {
+    d->xpLevel = xpLevel;
+    emit xpLevelChanged(xpLevel);
+  }
+}
+
+QVariant UserRegisterRequest::toVariant() const {
+  QVariantMap data;
+  data.insert("name_last", nameLast());
+  data.insert("home_country", QLocale::system().bcp47Name());
+  data.insert("user_id", userId());
+  data.insert("name_first", nameFirst());
+  data.insert("password", password());
+  data.insert("xp_level", xpLevel());
+  return data;
+}
+
+
+class LoginRequest::Private
+{
+public:
+    QString password;
+    QString userId;
+};
+
+LoginRequest::LoginRequest(QObject *parent)
+: Request(parent)
+, d(new Private)
+{
+}
+
+LoginRequest::~LoginRequest()
+{
+    delete d;
+}
+
+QString LoginRequest::password() const {
+  return d->password;
+}
+
+void LoginRequest::setPassword(const QString& password) {
+  if (d->password != password) {
+    d->password = password;
+    emit passwordChanged(password);
+  }
+}
+
+QString LoginRequest::userId() const {
+  return d->userId;
+}
+
+void LoginRequest::setUserId(const QString& userId) {
+  if (d->userId != userId) {
+    d->userId = userId;
+    emit userIdChanged(userId);
+  }
+}
+
+QVariant LoginRequest::toVariant() const {
+  QVariantMap data;
+  data.insert("password", password());
+  data.insert("user_id", userId());
+  data.insert("device_id", deviceId());
   return data;
 }

@@ -19,7 +19,8 @@ SOURCES +=  \
     settings.cpp \
     webrequester.cpp \
     ping.cpp \
-    tests/speedtest.cpp
+    tests/speedtest.cpp \
+    response.cpp
 
 HEADERS += \
     client.h \
@@ -37,7 +38,8 @@ HEADERS += \
     settings.h \
     webrequester.h \
     ping.h \
-    tests/speedtest.h
+    tests/speedtest.h \
+    response.h
 
 OTHER_FILES += \
     libclient.pri

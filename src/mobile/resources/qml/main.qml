@@ -162,13 +162,18 @@ Rectangle {
             statusText.text = currentItem.subtitle;
         }
 
-        initialItem: ListView {
+        /*initialItem: ListView {
             property string title: "Glimpse"
             property string subtitle: client.status == Client.Registered ? qsTr("Registered") : qsTr("Unregistered")
 
             model: ListModel {
                 ListElement {
-                    title: "NO INTERNET"
+                    title: "Internet is not working"
+                    page: "Settings.qml"
+                }
+
+                ListElement {
+                    title: "Internet is slow"
                     page: "Settings.qml"
                 }
 
@@ -181,6 +186,57 @@ Rectangle {
             delegate: AndroidDelegate {
                 text: title
                 onClicked: pageStack.push(Qt.resolvedUrl(page))
+            }
+        }*/
+
+        initialItem: Item {
+            property string title: "Glimpse"
+            property string subtitle: "Master server offline."
+
+            Column {
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                    margins: 20
+                }
+
+                spacing: 50
+
+                Button {
+                    text: "Registration"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    style: ButtonStyle {}
+                    onClicked: pageStack.push(Qt.resolvedUrl("UserRegistration.qml"))
+                }
+
+                Button {
+                    text: "Login"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    style: ButtonStyle {}
+                    onClicked: pageStack.push(Qt.resolvedUrl("Login.qml"))
+                }
+
+                Button {
+                    text: "Internet is not working"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    style: ButtonStyle {}
+                    onClicked: pageStack.push(Qt.resolvedUrl("Settings.qml"))
+                }
+
+                Button {
+                    text: "Internet is slow"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    style: ButtonStyle {}
+                    onClicked: pageStack.push(Qt.resolvedUrl("Slow.qml"))
+                }
+
+                Button {
+                    text: "Speedtest"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    style: ButtonStyle {}
+                    onClicked: client.speedTest()
+                }
             }
         }
     }

@@ -7,7 +7,7 @@
 #include <QJsonDocument>
 
 namespace {
-    const QUrl masterUrl = QUrl("http://mplane.informatik.hs-augsburg.de:16001");
+    const QUrl masterUrl = QUrl("https://141.82.49.82:5105");
 }
 
 class WebRequester::Private : public QObject
@@ -26,6 +26,7 @@ public:
     // Properties
     WebRequester::Status status;
     QPointer<Request> request;
+    QPointer<Response> response;
     QString errorString;
 
     QJsonObject jsonData;
@@ -42,6 +43,11 @@ void WebRequester::Private::setStatus(WebRequester::Status status)
     if ( this->status != status ) {
         this->status = status;
         emit q->statusChanged(status);
+
+        switch(status) {
+        case Finished: emit q->finished(); break;
+        case Error: emit q->error(); break;
+        }
     }
 }
 
@@ -59,7 +65,16 @@ void WebRequester::Private::requestFinished()
             QString replyError = root.value("error").toString();
             if ( replyError.isEmpty() ) {
                 jsonData = root;
-                setStatus(WebRequester::Finished);
+
+                if ( !response.isNull() ) {
+                    if ( response->fillFromVariant( root.toVariantMap() ) )
+                        setStatus(WebRequester::Finished);
+                    else
+                        setStatus(WebRequester::Error);
+                } else {
+                    qWarning() << "No response object set";
+                    setStatus(WebRequester::Finished);
+                }
             } else {
                 errorString = replyError;
                 setStatus(WebRequester::Error);
@@ -105,6 +120,19 @@ Request *WebRequester::request() const
     return d->request;
 }
 
+void WebRequester::setResponse(Response *response)
+{
+    if ( d->response != response ) {
+        d->response = response;
+        emit responseChanged(response);
+    }
+}
+
+Response *WebRequester::response() const
+{
+    return d->response;
+}
+
 bool WebRequester::isRunning() const
 {
     return (d->status == Running);
@@ -142,8 +170,11 @@ void WebRequester::start()
         return;
     }
 
+    d->setStatus(Running);
+
     // Fill remaining request data
     d->request->setDeviceId(Client::instance()->settings()->deviceId());
+    d->request->setSessionId(Client::instance()->settings()->sessionId());
 
     QMetaClassInfo classInfo = d->request->metaObject()->classInfo(pathIdx);
 
@@ -154,8 +185,6 @@ void WebRequester::start()
 
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
-
-    d->setStatus(Running);
 
     QNetworkReply* reply = Client::instance()->networkAccessManager()->post(request, data);
     reply->ignoreSslErrors();

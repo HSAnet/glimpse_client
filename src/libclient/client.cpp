@@ -27,7 +27,7 @@
 
 #include <QDebug>
 
-const QUrl masterUrl = QUrl("http://mplane.informatik.hs-augsburg.de:16001");
+const QUrl masterUrl = QUrl("https://141.82.49.82:5105");
 
 class Client::Private : public QObject
 {
@@ -176,10 +176,9 @@ void Client::Private::sendClientInfo()
         upnp.insert(name, iter.value());
     }
 
-    ClientInfo info;
+    RegisterDeviceRequest info;
     info.setDeviceId(settings.deviceId());
-    info.setLocalIp(localIp);
-    info.setUpnp(upnp);
+    //info.setUpnp(upnp);
     QByteArray data = QJsonDocument::fromVariant(info.toVariant()).toJson();
 
     QUrl url = masterUrl;

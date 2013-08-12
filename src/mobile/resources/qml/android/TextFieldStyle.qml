@@ -3,7 +3,7 @@ import QtQuick.Controls 1.0
 import QtQuick.Controls.Styles 1.0
 
 TextFieldStyle {
-    textColor: "white"
+    //textColor: "white"
     font.pixelSize: 28
     background: Item {
         implicitHeight: 50
