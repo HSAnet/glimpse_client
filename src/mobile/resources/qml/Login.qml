@@ -25,28 +25,24 @@ ListView {
             id: response
         }
 
-        onStatusChanged: {
-            switch(status) {
-            case WebRequester.Running:
-                request.userId = mailField.text;
-                request.password = passwordField.text;
+        onStarted: {
+            request.userId = mailField.text;
+            request.password = passwordField.text;
 
-                // Store these values for later use
-                client.settings.userId = request.userId
-                client.settings.password = request.password
+            // Store these values for later use
+            client.settings.userId = request.userId
+            client.settings.password = request.password
 
-                console.log("Login sent")
-                break;
-            }
+            console.log("Login sent")
         }
 
         onError: {
             console.log("Login error: " + requester.errorString())
             errorLabel.text = requester.errorString();
         }
+
         onFinished: {
-            console.log("Login finished, session_id: " + response.sessionId)
-            client.settings.sessionId = response.sessionId;
+            console.log("Login finished")
 
             if ( response.registeredDevice ) {
                 console.log("Device is already registered");

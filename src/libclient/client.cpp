@@ -65,8 +65,6 @@ public:
     QHostAddress lastLocalIp;
 
     // Functions
-    void setStatus(Client::Status status);
-
     void processDatagram(const QByteArray &datagram, const QHostAddress& host, quint16 port);
     void processClientInfoRequest();
     void processPeerRequest();
@@ -88,15 +86,6 @@ public slots:
     void onPeerRequestError(QNetworkReply::NetworkError error);
 };
 
-void Client::Private::setStatus(Client::Status status)
-{
-    if ( this->status == status )
-        return;
-
-    this->status = status;
-    emit q->statusChanged();
-}
-
 void Client::Private::processDatagram(const QByteArray& datagram, const QHostAddress &host, quint16 port)
 {
     // Master server
@@ -115,7 +104,7 @@ void Client::Private::processDatagram(const QByteArray& datagram, const QHostAdd
             break;
 
         case RegisteredClientResponse:
-            setStatus(Client::Registered);
+            q->setStatus(Client::Registered);
             break;
 
         default:
@@ -144,7 +133,7 @@ void Client::Private::processClientInfoRequest()
 {
     qDebug() << Q_FUNC_INFO;
 
-    setStatus(Client::Unregistered);
+    q->setStatus(Client::Unregistered);
 
     // Get some information
     discovery.discover();
@@ -288,16 +277,16 @@ void Client::Private::onRegisterFinished()
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
 
     if (reply->error() == QNetworkReply::NoError)
-        setStatus(Client::Registered);
+        q->setStatus(Client::Registered);
     else
-        setStatus(Client::Unregistered);
+        q->setStatus(Client::Unregistered);
 
     reply->deleteLater();
 }
 
 void Client::Private::onRegisterError(QNetworkReply::NetworkError error)
 {
-    setStatus(Client::Unregistered);
+    q->setStatus(Client::Unregistered);
 
     qDebug() << "Registration error" << enumToString(QNetworkReply, "NetworkError", error);
 }
@@ -389,6 +378,15 @@ bool Client::init()
     d->onAliveTimer();
 
     return ok;
+}
+
+void Client::setStatus(Client::Status status)
+{
+    if ( d->status == status )
+        return;
+
+    d->status = status;
+    emit statusChanged();
 }
 
 Client::Status Client::status() const

@@ -20,6 +20,8 @@ Rectangle {
             console.log("Unable to initialize client");
             Qt.quit();
         }
+
+        loginRequester.autoLogin();
     }
 
     // Implements back key navigation
@@ -61,6 +63,78 @@ Rectangle {
         }
     }
 
+    WebRequester {
+        id: loginRequester
+
+        function autoLogin() {
+            if ( client.settings.userId.length > 0 && client.settings.password.length > 0 )
+                loginRequester.start();
+        }
+
+        request: LoginRequest {
+            userId: client.settings.userId
+            password: client.settings.password
+            deviceId: client.settings.deviceId
+        }
+
+        response: LoginResponse {
+            id: loginResponse
+        }
+
+        onStarted: console.log("Autologin started")
+
+        onError: {
+            console.log("Autologin failed")
+        }
+
+        onFinished: {
+            console.log("Autologin finished")
+
+            if ( loginResponse.registeredDevice ) {
+                console.log("Device is already registered");
+                pageStack.pop();
+            }
+            else {
+                var properties = {
+                    item: Qt.resolvedUrl("DeviceRegistration.qml")
+                }
+
+                console.log("Pushing device registration")
+
+                pageStack.push(properties);
+            }
+        }
+    }
+
+    Connections {
+        target: client
+        onStatusChanged: {
+            if (client.status == Client.Registered) {
+                console.log("Fetching config from server");
+                configRequester.start();
+            }
+        }
+    }
+
+    WebRequester {
+        id: configRequester
+
+        request: GetConfigRequest {
+        }
+
+        response: GetConfigResponse {
+            id: response
+        }
+
+        onError: console.log("Error fetching config")
+        onFinished: {
+            console.log("Successfully fetched config")
+
+            console.log("Controller: " + response.controllerAddress)
+            console.log("keepalive_schedule " + response.keepaliveSchedule)
+        }
+    }
+
     BorderImage {
         id: title
         border.bottom: 9
@@ -97,13 +171,6 @@ Rectangle {
             anchors.top: applicationTitle.bottom
             anchors.topMargin: -5
             color: "lightgray"
-            /*text: {
-                var subtitle = pageStack.currentItem.subtitle;
-                if (subtitle)
-                    return subtitle;
-                else
-                    return client.status == Client.Registered ? qsTr("Registered") : qsTr("Unregistered")
-            }*/
         }
     }
 
@@ -162,36 +229,9 @@ Rectangle {
             statusText.text = currentItem.subtitle;
         }
 
-        /*initialItem: ListView {
-            property string title: "Glimpse"
-            property string subtitle: client.status == Client.Registered ? qsTr("Registered") : qsTr("Unregistered")
-
-            model: ListModel {
-                ListElement {
-                    title: "Internet is not working"
-                    page: "Settings.qml"
-                }
-
-                ListElement {
-                    title: "Internet is slow"
-                    page: "Settings.qml"
-                }
-
-                ListElement {
-                    title: "Manual tests"
-                    page: "Tests.qml"
-                }
-            }
-
-            delegate: AndroidDelegate {
-                text: title
-                onClicked: pageStack.push(Qt.resolvedUrl(page))
-            }
-        }*/
-
         initialItem: Item {
             property string title: "Glimpse"
-            property string subtitle: "Master server offline."
+            property string subtitle: client.status == Client.Registered ? qsTr("Logged in") : qsTr("Please log in")
 
             Column {
                 anchors {

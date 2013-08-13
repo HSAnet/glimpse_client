@@ -45,6 +45,7 @@ void WebRequester::Private::setStatus(WebRequester::Status status)
         emit q->statusChanged(status);
 
         switch(status) {
+        case Running: emit q->started(); break;
         case Finished: emit q->finished(); break;
         case Error: emit q->error(); break;
         }
@@ -67,8 +68,10 @@ void WebRequester::Private::requestFinished()
                 jsonData = root;
 
                 if ( !response.isNull() ) {
-                    if ( response->fillFromVariant( root.toVariantMap() ) )
+                    if ( response->fillFromVariant( root.toVariantMap() ) ) {
+                        response->finished();
                         setStatus(WebRequester::Finished);
+                    }
                     else
                         setStatus(WebRequester::Error);
                 } else {

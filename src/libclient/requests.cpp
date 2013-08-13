@@ -396,3 +396,20 @@ QVariant LoginRequest::toVariant() const {
   data.insert("device_id", deviceId());
   return data;
 }
+
+
+GetConfigRequest::GetConfigRequest(QObject *parent)
+: Request(parent)
+{
+}
+
+GetConfigRequest::~GetConfigRequest()
+{
+}
+
+QVariant GetConfigRequest::toVariant() const
+{
+    QVariantMap map;
+    map.insert("session_id", sessionId());
+    return map;
+}

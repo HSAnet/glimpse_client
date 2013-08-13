@@ -19,7 +19,7 @@ class Client : public QObject
 {
     Q_OBJECT
     Q_ENUMS(Status)
-    Q_PROPERTY(int status READ status NOTIFY statusChanged)
+    Q_PROPERTY(Status status READ status WRITE setStatus NOTIFY statusChanged)
     Q_PROPERTY(TestScheduler* scheduler READ scheduler CONSTANT)
     Q_PROPERTY(Settings* settings READ settings CONSTANT)
 
@@ -37,6 +37,7 @@ public:
     };
 
     /// Get the current status
+    void setStatus(Status status);
     Status status() const;
 
     QNetworkAccessManager* networkAccessManager() const;

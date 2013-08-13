@@ -57,16 +57,23 @@ int main(int argc, char* argv[])
     qmlRegisterUncreatableType<Client>("mplane", 1, 0, "Client", "This is a singleton");
     qmlRegisterUncreatableType<TestScheduler>("mplane", 1, 0, "TestScheduler", "uncreatable type");
 
+    // Common objects
+    qmlRegisterType<TimingInformation>("mplane", 1, 0, "TimingInformation");
+
+    // Requests
     qmlRegisterUncreatableType<Request>("mplane", 1, 0, "Request", "abstract class");
     qmlRegisterType<RegisterDeviceRequest>("mplane", 1, 0, "RegisterDeviceRequest");
     qmlRegisterType<ManualRequest>("mplane", 1, 0, "TestRequest");
     qmlRegisterType<UserRegisterRequest>("mplane", 1, 0, "UserRegisterRequest");
     qmlRegisterType<LoginRequest>("mplane", 1, 0, "LoginRequest");
+    qmlRegisterType<GetConfigRequest>("mplane", 1, 0, "GetConfigRequest");
 
+    // Responses
     qmlRegisterUncreatableType<Response>("mplane", 1, 0, "Response", "abstract class");
     qmlRegisterType<RegisterUserResponse>("mplane", 1, 0, "UserRegisterResponse");
     qmlRegisterType<LoginResponse>("mplane", 1, 0, "LoginResponse");
     qmlRegisterType<RegisterDeviceResponse>("mplane", 1, 0, "RegisterDeviceResponse");
+    qmlRegisterType<GetConfigResponse>("mplane", 1, 0, "GetConfigResponse");
 
     qmlRegisterType<Settings>("mplane", 1, 0, "Settings");
     qmlRegisterType<WebRequester>("mplane", 1, 0, "WebRequester");

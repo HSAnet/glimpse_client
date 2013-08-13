@@ -208,4 +208,16 @@ protected:
     Private* d;
 };
 
+class GetConfigRequest : public Request
+{
+    Q_OBJECT
+    Q_CLASSINFO("path", "/get_config")
+
+public:
+    GetConfigRequest(QObject* parent = 0);
+    ~GetConfigRequest();
+
+    QVariant toVariant() const;
+};
+
 #endif // REQUESTS_H
