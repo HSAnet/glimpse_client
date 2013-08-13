@@ -6,15 +6,28 @@ TextFieldStyle {
     //textColor: "white"
     font.pixelSize: 28
     background: Item {
-        implicitHeight: 50
-        implicitWidth: 320
+        implicitHeight: 92
+        implicitWidth: 652
         BorderImage {
-            source: "images/textinput.png"
+            source: "../images/input.png"
             border.left: 8
             border.right: 8
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
+
+            visible: !control.activeFocus
+        }
+
+        BorderImage {
+            source: "../images/input_active.png"
+            border.left: 8
+            border.right: 8
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            visible: control.activeFocus
         }
     }
 }

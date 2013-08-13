@@ -45,7 +45,7 @@ public:
 
         scheduler.setManagerSocket(&managerSocket);
 
-        aliveTimer.setInterval(20 * 1000);
+        aliveTimer.setInterval(30 * 1000);
         aliveTimer.start();
     }
 
@@ -247,20 +247,22 @@ void Client::Private::onAliveTimer()
         aliveInfo.lookupHost(masterUrl.host(), this, SLOT(onLookupFinished(QHostInfo)));
         qDebug() << "Looking up alive host";
     } else {
-        QHostAddress myIp = NetworkHelper::localIpAddress();
+        QString sessionId = settings.sessionId();
+        if (sessionId.isEmpty())
+            return;
 
-        bool isNewIp = myIp != lastLocalIp;
-        lastLocalIp = myIp;
+        QStringList srcIp;
+        srcIp.append( NetworkHelper::localIpAddress().toString() );
 
-        // Ping the server
-        QByteArray data;
-        QTextStream stream(&data);
-        stream << myIp.toString() << ":1337";
-        if ( isNewIp )
-            stream << ":new";
-        stream.flush();
+        QVariantMap map;
+        map.insert("type", "keepalive");
+        map.insert("session_id", sessionId);
+        map.insert("src_ip", srcIp);
+        map.insert("src_port", 1337);
 
-        managerSocket.writeDatagram(data, aliveInfo.addresses().first(), 16000);
+        QByteArray data = QJsonDocument::fromVariant(map).toJson();
+
+        managerSocket.writeDatagram(data, aliveInfo.addresses().first(), 5105);
         qDebug() << "Alive packet sent";
     }
 }
