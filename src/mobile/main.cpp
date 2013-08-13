@@ -5,6 +5,8 @@
 #include "connectiontester.h"
 #include "discovery.h"
 
+#include "qtquick2applicationviewer.h"
+
 #include <QGuiApplication>
 #include <QQuickView>
 #include <QQmlContext>
@@ -87,23 +89,19 @@ int main(int argc, char* argv[])
     qmlRegisterType<AndroidProcessModel>("mplane", 1, 0, "ProcessModel");
 #endif // Q_OS_ANDROID
 
-    QQuickView view;
-
-    QQmlEngine* engine = view.engine();
-    QObject::connect(engine, SIGNAL(quit()), &app, SLOT(quit()));
+    QtQuick2ApplicationViewer view;
 
     QQmlContext* rootContext = view.rootContext();
     rootContext->setContextProperty("client", Client::instance());
 #ifdef Q_OS_ANDROID
-    engine->addImageProvider("android", new AndroidImageProvider);
+    view.engine()->addImageProvider("android", new AndroidImageProvider);
     rootContext->setContextProperty("statusBar", new StatusBarHelper(&view));
 #else
     rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(&view));
 #endif // Q_OS_ANDROID
 
-    view.setResizeMode(QQuickView::SizeRootObjectToView);
-    view.setSource( QUrl("qrc:/qml/main.qml") );
-    view.show();
+    view.setMainQmlFile(QStringLiteral("qml/main.qml"));
+    view.showExpanded();
 
     return app.exec();
 }

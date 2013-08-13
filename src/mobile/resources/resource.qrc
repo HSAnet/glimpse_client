@@ -1,41 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/main.qml</file>
-        <file>qml/packettrain.qml</file>
-        <file>qml/android/AndroidDelegate.qml</file>
-        <file>qml/android/ButtonStyle.qml</file>
-        <file>qml/android/images/button_default.png</file>
-        <file>qml/android/images/button_pressed.png</file>
-        <file>qml/android/BackButton.qml</file>
-        <file>qml/android/ProgressBarStyle.qml</file>
-        <file>qml/android/SliderStyle.qml</file>
-        <file>qml/android/TabViewStyle.qml</file>
-        <file>qml/android/TextFieldStyle.qml</file>
-        <file>qml/android/images/navigation_next_item.png</file>
-        <file>qml/android/images/navigation_previous_item.png</file>
-        <file>qml/android/images/tab_selected.png</file>
-        <file>qml/android/images/tabs_standard.png</file>
-        <file>qml/android/images/textinput.png</file>
-        <file>qml/android/images/toolbar.png</file>
-        <file>qml/Settings.qml</file>
-        <file>qml/Tests.qml</file>
-        <file>qml/android/Spinner.qml</file>
-        <file>qml/android/images/spinner_black_76.png</file>
-        <file>qml/images/card_background.png</file>
-        <file>qml/images/connectiontester_fail.png</file>
-        <file>qml/images/connectiontester_ok.png</file>
-        <file>qml/Card.qml</file>
-        <file>qml/images/maximize.png</file>
-        <file>qml/images/minimize.png</file>
-        <file>qml/CardListDelegate.qml</file>
-        <file>qml/speedtest.qml</file>
         <file>tray.png</file>
         <file>logo_mac_active.png</file>
         <file>logo_mac.png</file>
-        <file>qml/ResultPage.qml</file>
-        <file>qml/Slow.qml</file>
-        <file>qml/UserRegistration.qml</file>
-        <file>qml/DeviceRegistration.qml</file>
-        <file>qml/Login.qml</file>
     </qresource>
 </RCC>
