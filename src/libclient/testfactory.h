@@ -5,7 +5,7 @@
 
 #include <QString>
 
-class TestFactory
+class CLIENT_API TestFactory
 {
 public:
     TestFactory();

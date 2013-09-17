@@ -15,7 +15,7 @@ class QNetworkAccessManager;
 
 ////////////////////////////////////////////////////////////
 
-class Client : public QObject
+class CLIENT_API Client : public QObject
 {
     Q_OBJECT
     Q_ENUMS(Status)

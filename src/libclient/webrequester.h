@@ -1,7 +1,7 @@
 #ifndef WEBREQUESTER_H
 #define WEBREQUESTER_H
 
-#include "requests.h"
+#include "network/requests/request.h"
 #include "response.h"
 
 #include <QObject>

@@ -1,6 +1,7 @@
 #include "client.h"
 #include "discovery.h"
-#include "requests.h"
+#include "network/requests/registerdevicerequest.h"
+#include "network/requests/manualrequest.h"
 #include "networkhelper.h"
 
 #include <QUdpSocket>

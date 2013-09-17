@@ -10,7 +10,7 @@
 #include <QUdpSocket>
 #include <QJsonDocument>
 
-class AbstractTest : public QObject
+class CLIENT_API AbstractTest : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)

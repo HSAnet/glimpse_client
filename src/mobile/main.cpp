@@ -4,6 +4,7 @@
 #include "ping.h"
 #include "connectiontester.h"
 #include "discovery.h"
+#include "network/requests/requests.h"
 
 #include "qtquick2applicationviewer.h"
 

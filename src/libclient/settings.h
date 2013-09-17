@@ -1,6 +1,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include "export.h"
+
 #include <QObject>
 #include <QSettings>
 #include <QUuid>
@@ -10,7 +12,7 @@
  *
  * TODO: Currently we store plain passwords, this has to be changed!
  */
-class Settings : public QObject
+class CLIENT_API Settings : public QObject
 {
     Q_OBJECT
     Q_ENUMS(StorageType)

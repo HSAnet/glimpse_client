@@ -1,10 +1,11 @@
 #ifndef CONNECTIONTESTER_H
 #define CONNECTIONTESTER_H
 
+#include "export.h"
 #include <QObject>
 #include <QAbstractListModel>
 
-class ConnectionTester : public QObject
+class CLIENT_API ConnectionTester : public QObject
 {
     Q_OBJECT
     Q_ENUMS(ResultType TestType)

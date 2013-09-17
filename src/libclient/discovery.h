@@ -1,6 +1,7 @@
 #ifndef DISCOVERY_H
 #define DISCOVERY_H
 
+#include "export.h"
 #include <QObject>
 #include <QHash>
 #include <QVariant>
@@ -11,7 +12,7 @@
  * Discovers information about the local network such as
  * DSL connectivity speed, public ip address ...
  */
-class Discovery : public QObject
+class CLIENT_API Discovery : public QObject
 {
     Q_OBJECT
     Q_ENUMS(DataType)

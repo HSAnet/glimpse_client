@@ -11,7 +11,7 @@
 
 class TestFactory;
 
-class TestScheduler : public QObject
+class CLIENT_API TestScheduler : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool isStarted READ isStarted NOTIFY isStartedChanged)

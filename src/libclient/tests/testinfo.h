@@ -1,9 +1,10 @@
 #ifndef TESTINFO_H
 #define TESTINFO_H
 
+#include "export.h"
 #include <QHostAddress>
 
-struct Peer
+struct CLIENT_API Peer
 {
     Peer(const QHostAddress& host, quint16 port)
     : host(host)
@@ -21,7 +22,7 @@ struct Peer
 
 typedef QList<Peer> PeerList;
 
-class TestInfo
+class CLIENT_API TestInfo
 {
 public:
     TestInfo(const QString& name, const PeerList& peers, bool isMaster)
