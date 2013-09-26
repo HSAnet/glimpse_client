@@ -54,6 +54,7 @@ int main(int argc, char* argv[])
     QGuiApplication app(argc, argv);
 #else
     QApplication app(argc, argv);
+    app.setQuitOnLastWindowClosed(true);
 #endif
 
     qmlRegisterUncreatableType<AbstractTest>("mplane", 1, 0, "AbstractTest", "abstract class");
@@ -104,7 +105,14 @@ int main(int argc, char* argv[])
     view.setMainQmlFile(QStringLiteral("qml/main.qml"));
     view.showExpanded();
 
-    return app.exec();
+    int returnCode = app.exec();
+
+    // Cleanly shutdown
+    Client::instance()->deleteLater();
+    QTimer::singleShot(1, &app, SLOT(quit()));
+    app.exec();
+
+    return returnCode;
 }
 
 #include "main.moc"
