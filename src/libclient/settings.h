@@ -5,7 +5,6 @@
 #include "response.h"
 
 #include <QObject>
-#include <QSettings>
 #include <QUuid>
 
 /**
@@ -55,7 +54,6 @@ signals:
     void sessionIdChanged(const QString& sessionId);
 
 protected:
-    QSettings settings;
     class Private;
     Private* d;
 };
