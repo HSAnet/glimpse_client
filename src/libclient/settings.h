@@ -2,6 +2,7 @@
 #define SETTINGS_H
 
 #include "export.h"
+#include "response.h"
 
 #include <QObject>
 #include <QSettings>
@@ -20,6 +21,7 @@ class CLIENT_API Settings : public QObject
     Q_PROPERTY(QString userId READ userId WRITE setUserId NOTIFY userIdChanged)
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
     Q_PROPERTY(QString sessionId READ sessionId WRITE setSessionId NOTIFY sessionIdChanged)
+    Q_PROPERTY(GetConfigResponse* config READ config CONSTANT)
 
 public:
     explicit Settings(QObject *parent = 0);
@@ -44,6 +46,8 @@ public:
     void setSessionId(const QString& sessionId);
     QString sessionId() const;
 
+    GetConfigResponse* config() const;
+
 signals:
     void deviceIdChanged(const QUuid& deviceId);
     void userIdChanged(const QString& userId);
@@ -52,6 +56,8 @@ signals:
 
 protected:
     QSettings settings;
+    class Private;
+    Private* d;
 };
 
 #endif // SETTINGS_H

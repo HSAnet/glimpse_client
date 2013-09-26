@@ -70,6 +70,7 @@ public:
     TimingInformation(QObject* parent = 0);
 
     bool fillFromVariant(const QVariantMap &variant);
+    QVariant toVariant() const;
 
     QString type() const;
     int interval() const;
@@ -95,6 +96,7 @@ public:
     GetConfigResponse(QObject* parent = 0);
 
     bool fillFromVariant(const QVariantMap &variant);
+    QVariant toVariant() const;
     void finished();
 
     QString controllerAddress() const;

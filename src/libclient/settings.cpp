@@ -2,13 +2,23 @@
 
 #include <QDebug>
 
+class Settings::Private
+{
+public:
+    GetConfigResponse config;
+    QSettings settings;
+};
+
 Settings::Settings(QObject *parent)
 : QObject(parent)
+, d(new Private)
 {
 }
 
 Settings::~Settings()
 {
+    d->settings.setValue("config", d->config.toVariant());
+    delete d;
 }
 
 Settings::StorageType Settings::init()
@@ -21,6 +31,8 @@ Settings::StorageType Settings::init()
 
         return NewSettings;
     } else {
+        d->config.fillFromVariant( qvariant_cast<QVariantMap>(d->settings.value("config")) );
+
         qDebug() << "Loaded existing settings for this device";
         return ExistingSettings;
     }
@@ -76,4 +88,9 @@ void Settings::setSessionId(const QString &sessionId)
 QString Settings::sessionId() const
 {
     return settings.value("session-id").toString();
+}
+
+GetConfigResponse *Settings::config() const
+{
+    return &d->config;
 }

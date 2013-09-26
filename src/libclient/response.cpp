@@ -84,6 +84,14 @@ bool TimingInformation::fillFromVariant(const QVariantMap &variant)
     return true;
 }
 
+QVariant TimingInformation::toVariant() const
+{
+    QVariantMap map;
+    map.insert("type", m_type);
+    map.insert("interval", m_interval);
+    return map;
+}
+
 QString TimingInformation::type() const
 {
     return m_type;
@@ -113,6 +121,17 @@ bool GetConfigResponse::fillFromVariant(const QVariantMap &variant)
 
     emit responseChanged();
     return true;
+}
+
+QVariant GetConfigResponse::toVariant() const
+{
+    QVariantMap map;
+    map.insert("controller_address", m_controllerAddress);
+    map.insert("fetch_task_schedule", m_fetchTaskSchedule->toVariant());
+    map.insert("keepalive_address", m_keepaliveAddress);
+    map.insert("keepalive_schedule", m_keepaliveSchedule->toVariant());
+    map.insert("update_config_schedule", m_updateConfigSchedule->toVariant());
+    return map;
 }
 
 void GetConfigResponse::finished()

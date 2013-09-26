@@ -122,9 +122,7 @@ Rectangle {
         request: GetConfigRequest {
         }
 
-        response: GetConfigResponse {
-            id: response
-        }
+        response: client.settings.config
 
         onError: console.log("Error fetching config")
         onFinished: {
