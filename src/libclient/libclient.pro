@@ -30,7 +30,13 @@ SOURCES +=  \
     network/requests/registerdevicerequest.cpp \
     network/requests/manualrequest.cpp \
     network/requests/loginrequest.cpp \
-    network/requests/getconfigrequest.cpp
+    network/requests/getconfigrequest.cpp \
+    timing/timingfactory.cpp \
+    timing/timing.cpp \
+    timing/periodictiming.cpp \
+    timing/onofftiming.cpp \
+    timing/immediatetiming.cpp \
+    timing/calendartiming.cpp
 
 HEADERS += \
     export.h \
@@ -56,7 +62,13 @@ HEADERS += \
     network/requests/manualrequest.h \
     network/requests/loginrequest.h \
     network/requests/getconfigrequest.h \
-    network/requests/requests.h
+    network/requests/requests.h \
+    timing/timingfactory.h \
+    timing/timing.h \
+    timing/periodictiming.h \
+    timing/onofftiming.h \
+    timing/immediatetiming.h \
+    timing/calendartiming.h
 
 OTHER_FILES += \
     libclient.pri
