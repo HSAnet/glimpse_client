@@ -36,7 +36,10 @@ SOURCES +=  \
     timing/periodictiming.cpp \
     timing/onofftiming.cpp \
     timing/immediatetiming.cpp \
-    timing/calendartiming.cpp
+    timing/calendartiming.cpp \
+    scheduler/schedulerstorage.cpp \
+    scheduler/schedulermodel.cpp \
+    scheduler/scheduler.cpp
 
 HEADERS += \
     export.h \
@@ -68,7 +71,10 @@ HEADERS += \
     timing/periodictiming.h \
     timing/onofftiming.h \
     timing/immediatetiming.h \
-    timing/calendartiming.h
+    timing/calendartiming.h \
+    scheduler/schedulerstorage.h \
+    scheduler/schedulermodel.h \
+    scheduler/scheduler.h
 
 OTHER_FILES += \
     libclient.pri

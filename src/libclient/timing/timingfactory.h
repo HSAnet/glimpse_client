@@ -3,7 +3,7 @@
 
 #include "timing.h"
 
-class TimingFactory
+class CLIENT_API TimingFactory
 {
 public:
     static TimingPtr timingFromVariant(const QVariant& variant);

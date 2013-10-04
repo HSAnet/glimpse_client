@@ -3,7 +3,7 @@
 
 #include "timing.h"
 
-class ImmediateTiming : public Timing
+class CLIENT_API ImmediateTiming : public Timing
 {
 public:
     ImmediateTiming();
