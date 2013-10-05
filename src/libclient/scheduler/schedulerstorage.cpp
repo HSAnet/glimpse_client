@@ -115,3 +115,5 @@ void SchedulerStorage::loadData()
         d->scheduler->enqueue(test);
     }
 }
+
+#include "schedulerstorage.moc"
