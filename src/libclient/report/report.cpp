@@ -53,6 +53,6 @@ QVariant Report::toVariant() const
     QVariantMap map;
     map.insert("taskId", taskId());
     map.insert("report-time", dateTime());
-    map.insert("results", variantFromPtrList(results()));
+    map.insert("results", ptrListToVariant(results()));
     return map;
 }

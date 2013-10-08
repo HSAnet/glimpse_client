@@ -16,8 +16,8 @@ public:
     : dir(qApp->applicationDirPath())
     , realTime(true)
     {
-        connect(scheduler.data(), SIGNAL(testAdded(TestDefinition,int)), this, SLOT(testAdded(TestDefinition,int)));
-        connect(scheduler.data(), SIGNAL(testRemoved(TestDefinition,int)), this, SLOT(testRemoved(TestDefinition,int)));
+        connect(scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr,int)), this, SLOT(testAdded(TestDefinitionPtr,int)));
+        connect(scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr,int)), this, SLOT(testRemoved(TestDefinitionPtr,int)));
 
         dir.mkdir("scheduler");
         dir.cd("scheduler");
@@ -29,17 +29,17 @@ public:
     bool realTime;
 
     // Functions
-    void store(const TestDefinition& test);
-    QString fileNameForTest(const TestDefinition& test) const;
+    void store(const TestDefinitionPtr &test);
+    QString fileNameForTest(const TestDefinitionPtr& test) const;
 
 public slots:
-    void testAdded(const TestDefinition& test, int position);
-    void testRemoved(const TestDefinition& test, int position);
+    void testAdded(const TestDefinitionPtr &test, int position);
+    void testRemoved(const TestDefinitionPtr &test, int position);
 };
 
-void SchedulerStorage::Private::store(const TestDefinition& test)
+void SchedulerStorage::Private::store(const TestDefinitionPtr& test)
 {
-    QJsonDocument document = QJsonDocument::fromVariant(test.toVariant());
+    QJsonDocument document = QJsonDocument::fromVariant(test->toVariant());
 
     QFile file(dir.absoluteFilePath(fileNameForTest(test)));
     if (file.open(QIODevice::WriteOnly)) {
@@ -50,12 +50,12 @@ void SchedulerStorage::Private::store(const TestDefinition& test)
     }
 }
 
-QString SchedulerStorage::Private::fileNameForTest(const TestDefinition& test) const
+QString SchedulerStorage::Private::fileNameForTest(const TestDefinitionPtr &test) const
 {
-    return test.id.toString();
+    return test->id().toString();
 }
 
-void SchedulerStorage::Private::testAdded(const TestDefinition& test, int position)
+void SchedulerStorage::Private::testAdded(const TestDefinitionPtr& test, int position)
 {
     Q_UNUSED(position);
 
@@ -65,7 +65,7 @@ void SchedulerStorage::Private::testAdded(const TestDefinition& test, int positi
     store(test);
 }
 
-void SchedulerStorage::Private::testRemoved(const TestDefinition& test, int position)
+void SchedulerStorage::Private::testRemoved(const TestDefinitionPtr& test, int position)
 {
     Q_UNUSED(position);
 
@@ -98,7 +98,7 @@ bool SchedulerStorage::isRealtime() const
 
 void SchedulerStorage::storeData()
 {
-    foreach(const TestDefinition& test, d->scheduler->tests())
+    foreach(const TestDefinitionPtr& test, d->scheduler->tests())
         d->store(test);
 }
 
@@ -110,7 +110,7 @@ void SchedulerStorage::loadData()
 
         // TODO: Error checking
         QJsonDocument document = QJsonDocument::fromJson(file.readAll());
-        TestDefinition test = TestDefinition::fromVariant(document.toVariant());
+        TestDefinitionPtr test = TestDefinition::fromVariant(document.toVariant());
 
         d->scheduler->enqueue(test);
     }

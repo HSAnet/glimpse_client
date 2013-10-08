@@ -25,9 +25,9 @@ public:
 public slots:
     void update();
 
-    void testAdded(const TestDefinition& test, int position);
-    void testRemoved(const TestDefinition& test, int position);
-    void testMoved(const TestDefinition& test, int from, int to);
+    void testAdded(const TestDefinitionPtr &test, int position);
+    void testRemoved(const TestDefinitionPtr &test, int position);
+    void testMoved(const TestDefinitionPtr &test, int from, int to);
 };
 
 void SchedulerModel::Private::update()
@@ -35,14 +35,14 @@ void SchedulerModel::Private::update()
     emit q->dataChanged(q->index(0,0), q->index(q->rowCount(QModelIndex()), q->columnCount(QModelIndex())));
 }
 
-void SchedulerModel::Private::testAdded(const TestDefinition& test, int position)
+void SchedulerModel::Private::testAdded(const TestDefinitionPtr& test, int position)
 {
     q->beginInsertRows(QModelIndex(), position, position);
     tests.insert(position, test);
     q->endInsertRows();
 }
 
-void SchedulerModel::Private::testRemoved(const TestDefinition& test, int position)
+void SchedulerModel::Private::testRemoved(const TestDefinitionPtr& test, int position)
 {
     Q_UNUSED(test);
 
@@ -51,7 +51,7 @@ void SchedulerModel::Private::testRemoved(const TestDefinition& test, int positi
     q->endRemoveRows();
 }
 
-void SchedulerModel::Private::testMoved(const TestDefinition& test, int from, int to)
+void SchedulerModel::Private::testMoved(const TestDefinitionPtr& test, int from, int to)
 {
     Q_UNUSED(test);
 
@@ -78,17 +78,17 @@ void SchedulerModel::setScheduler(Scheduler *scheduler)
         return;
 
     if (d->scheduler) {
-        disconnect(d->scheduler.data(), SIGNAL(testAdded(TestDefinition,int)), this, SLOT(testAdded(TestDefinition,int)));
-        disconnect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinition,int)), this, SLOT(testRemoved(TestDefinition,int)));
-        disconnect(d->scheduler.data(), SIGNAL(testMoved(TestDefinition,int,int)), this, SLOT(testMoved(TestDefinition,int,int)));
+        disconnect(d->scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr,int)), this, SLOT(testAdded(TestDefinitionPtr,int)));
+        disconnect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr,int)), this, SLOT(testRemoved(TestDefinitionPtr,int)));
+        disconnect(d->scheduler.data(), SIGNAL(testMoved(TestDefinitionPtr,int,int)), this, SLOT(testMoved(TestDefinitionPtr,int,int)));
     }
 
     d->scheduler = scheduler;
 
     if (d->scheduler) {
-        connect(d->scheduler.data(), SIGNAL(testAdded(TestDefinition,int)), this, SLOT(testAdded(TestDefinition,int)));
-        connect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinition,int)), this, SLOT(testRemoved(TestDefinition,int)));
-        connect(d->scheduler.data(), SIGNAL(testMoved(TestDefinition,int,int)), this, SLOT(testMoved(TestDefinition,int,int)));
+        connect(d->scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr,int)), this, SLOT(testAdded(TestDefinitionPtr,int)));
+        connect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr,int)), this, SLOT(testRemoved(TestDefinitionPtr,int)));
+        connect(d->scheduler.data(), SIGNAL(testMoved(TestDefinitionPtr,int,int)), this, SLOT(testMoved(TestDefinitionPtr,int,int)));
     }
 
     reset();
@@ -152,17 +152,17 @@ int SchedulerModel::columnCount(const QModelIndex &parent) const
 
 QVariant SchedulerModel::data(const QModelIndex &index, int role) const
 {
-    const TestDefinition& testDefinition = d->tests.at(index.row());
+    const TestDefinitionPtr& testDefinition = d->tests.at(index.row());
 
     if (role == Qt::DisplayRole)
         role = NameRole + index.column();
 
     switch(role) {
-    case NameRole: return testDefinition.name;
-    case NextRunRole: return testDefinition.timing->nextRun();
-    case TimeLeftRole: return testDefinition.timing->timeLeft();
-    case TypeRole: return testDefinition.timing->type();
-    case IdRole: return testDefinition.id;
+    case NameRole: return testDefinition->name();
+    case NextRunRole: return testDefinition->timing()->nextRun();
+    case TimeLeftRole: return testDefinition->timing()->timeLeft();
+    case TypeRole: return testDefinition->timing()->type();
+    case IdRole: return testDefinition->id();
     }
 
     return QVariant();

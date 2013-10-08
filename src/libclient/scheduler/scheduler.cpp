@@ -27,7 +27,7 @@ public:
 
     // Functions
     void updateTimer();
-    int enqueue(const TestDefinition& testDefinition);
+    int enqueue(const TestDefinitionPtr &testDefinition);
 
 public slots:
     void timeout();
@@ -39,26 +39,26 @@ void Scheduler::Private::updateTimer()
         timer.stop();
         qDebug() << "Scheduling timer stopped";
     } else {
-        const TestDefinition& td = tests.at(0);
-        int ms = td.timing->timeLeft();
+        const TestDefinitionPtr& td = tests.at(0);
+        int ms = td->timing()->timeLeft();
         if ( ms > 0 )
             timer.start( ms );
         else
             timeout();
 
-        qDebug() << "Scheduling timer executes" << td.name << "in" << ms << "ms";
+        qDebug() << "Scheduling timer executes" << td->name() << "in" << ms << "ms";
     }
 }
 
-int Scheduler::Private::enqueue(const TestDefinition& testDefinition)
+int Scheduler::Private::enqueue(const TestDefinitionPtr& testDefinition)
 {
     bool wasEmpty = tests.isEmpty();
 
-    int timeLeft = testDefinition.timing->timeLeft();
+    int timeLeft = testDefinition->timing()->timeLeft();
 
     for(int i=0; i < tests.size(); ++i) {
-        const TestDefinition& td = tests.at(i);
-        if (timeLeft < td.timing->timeLeft()) {
+        const TestDefinitionPtr& td = tests.at(i);
+        if (timeLeft < td->timing()->timeLeft()) {
             tests.insert(i, testDefinition);
 
             if ( wasEmpty || i == 0 )
@@ -79,17 +79,17 @@ int Scheduler::Private::enqueue(const TestDefinition& testDefinition)
 void Scheduler::Private::timeout()
 {
     for(int i=0; i < tests.size(); ++i) {
-        const TestDefinition td = tests.at(i);
+        TestDefinitionPtr td = tests.at(i);
 
         // We assume they are already sorted - WRONG, SO WRONG!
-        if ( td.timing->timeLeft() > 0 )
+        if ( td->timing()->timeLeft() > 0 )
             continue;
 
         q->execute(td);
 
         tests.removeAt(i);
 
-        if (!td.timing->reset()) {
+        if (!td->timing()->reset()) {
             emit q->testRemoved(td, i);
 
             if (tests.isEmpty())
@@ -99,7 +99,7 @@ void Scheduler::Private::timeout()
         } else {
             int pos = enqueue(td);
             if (pos != i) {
-                qDebug() << td.name << "moved from" << i << "to" << pos;
+                qDebug() << td->name() << "moved from" << i << "to" << pos;
                 emit q->testMoved(td, i, pos);
             }
         }
@@ -123,7 +123,7 @@ TestDefinitionList Scheduler::tests() const
     return d->tests;
 }
 
-void Scheduler::enqueue(const TestDefinition &testDefinition)
+void Scheduler::enqueue(const TestDefinitionPtr &testDefinition)
 {
     int pos = d->enqueue(testDefinition);
     emit testAdded(testDefinition, pos);
@@ -134,9 +134,9 @@ void Scheduler::dequeue()
     // Whatever
 }
 
-void Scheduler::execute(const TestDefinition &testDefinition)
+void Scheduler::execute(const TestDefinitionPtr &testDefinition)
 {
-    qDebug() << "Executing" << testDefinition.name;
+    qDebug() << "Executing" << testDefinition->name();
 }
 
 #include "scheduler.moc"
