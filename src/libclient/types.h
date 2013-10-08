@@ -23,4 +23,20 @@ enum RequestType
 #define enumToString(className, enumName, value) \
     className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator(enumName)).valueToKey(value)
 
+template <typename T>
+QVariant ptrListToVariant(const QList<T>& list) {
+    QVariantList lst;
+    foreach(T entry, list)
+        lst.append(entry->toVariant());
+    return lst;
+}
+
+template <typename T>
+QList<QSharedPointer<T> > ptrListFromVariant(const QVariant& variant) {
+    QList<QSharedPointer<T> > lst;
+    foreach(const QVariant& entry, variant.toList())
+        lst.append(T::fromVariant(entry));
+    return lst;
+}
+
 #endif // TYPES_H

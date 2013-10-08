@@ -39,7 +39,14 @@ SOURCES +=  \
     timing/calendartiming.cpp \
     scheduler/schedulerstorage.cpp \
     scheduler/schedulermodel.cpp \
-    scheduler/scheduler.cpp
+    scheduler/scheduler.cpp \
+    report/reportstorage.cpp \
+    report/reportscheduler.cpp \
+    report/report.cpp \
+    task/taskvalidator.cpp \
+    task/taskexecutor.cpp \
+    task/task.cpp \
+    task/result.cpp
 
 HEADERS += \
     export.h \
@@ -74,7 +81,15 @@ HEADERS += \
     timing/calendartiming.h \
     scheduler/schedulerstorage.h \
     scheduler/schedulermodel.h \
-    scheduler/scheduler.h
+    scheduler/scheduler.h \
+    report/reportstorage.h \
+    report/reportscheduler.h \
+    report/report.h \
+    task/taskvalidator.h \
+    task/taskexecutor.h \
+    task/task.h \
+    task/result.h \
+    serializable.h
 
 OTHER_FILES += \
     libclient.pri

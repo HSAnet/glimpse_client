@@ -1,11 +1,13 @@
 #ifndef SCHEDULERSTORAGE_H
 #define SCHEDULERSTORAGE_H
 
+#include "export.h"
+
 #include <QObject>
 
 class Scheduler;
 
-class SchedulerStorage : public QObject
+class CLIENT_API SchedulerStorage : public QObject
 {
     Q_OBJECT
 

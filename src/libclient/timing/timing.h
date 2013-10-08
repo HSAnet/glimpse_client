@@ -1,24 +1,12 @@
 #ifndef TIMING_H
 #define TIMING_H
 
-#include "export.h"
-
-#include <QVariant>
+#include "../serializable.h"
 #include <QDateTime>
 #include <QSharedPointer>
 
-
 class Timing;
 typedef QSharedPointer<Timing> TimingPtr;
-
-
-class CLIENT_API Serializable
-{
-public:
-    virtual ~Serializable() {}
-    virtual QVariant toVariant() const = 0;
-};
-
 
 class CLIENT_API Timing : public Serializable
 {
