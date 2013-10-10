@@ -46,7 +46,8 @@ SOURCES +=  \
     task/taskvalidator.cpp \
     task/taskexecutor.cpp \
     task/task.cpp \
-    task/result.cpp
+    task/result.cpp \
+    network/networkmanager.cpp
 
 HEADERS += \
     export.h \
@@ -89,7 +90,8 @@ HEADERS += \
     task/taskexecutor.h \
     task/task.h \
     task/result.h \
-    serializable.h
+    serializable.h \
+    network/networkmanager.h
 
 OTHER_FILES += \
     libclient.pri

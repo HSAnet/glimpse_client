@@ -16,9 +16,6 @@ public:
     : dir(qApp->applicationDirPath())
     , realTime(true)
     {
-        connect(scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr,int)), this, SLOT(testAdded(TestDefinitionPtr,int)));
-        connect(scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr,int)), this, SLOT(testRemoved(TestDefinitionPtr,int)));
-
         dir.mkdir("scheduler");
         dir.cd("scheduler");
     }
@@ -80,6 +77,9 @@ SchedulerStorage::SchedulerStorage(Scheduler *scheduler, QObject *parent)
 , d(new Private)
 {
     d->scheduler = scheduler;
+
+    connect(scheduler, SIGNAL(testAdded(TestDefinitionPtr,int)), d, SLOT(testAdded(TestDefinitionPtr,int)));
+    connect(scheduler, SIGNAL(testRemoved(TestDefinitionPtr,int)), d, SLOT(testRemoved(TestDefinitionPtr,int)));
 }
 
 SchedulerStorage::~SchedulerStorage()

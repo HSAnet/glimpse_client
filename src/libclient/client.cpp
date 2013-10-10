@@ -2,6 +2,8 @@
 #include "discovery.h"
 #include "network/requests/registerdevicerequest.h"
 #include "network/requests/manualrequest.h"
+#include "scheduler/scheduler.h"
+#include "scheduler/schedulerstorage.h"
 #include "networkhelper.h"
 
 #include <QUdpSocket>
@@ -39,6 +41,7 @@ public:
     : q(q)
     , status(Client::Unregistered)
     , networkAccessManager(new QNetworkAccessManager(q))
+    , storage(&scheduler_test)
     {
         connect(&discovery, SIGNAL(finished()), this, SLOT(onDiscoveryFinished()));
         connect(&managerSocket, SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
@@ -64,6 +67,9 @@ public:
     Settings settings;
 
     QHostAddress lastLocalIp;
+
+    Scheduler scheduler_test;
+    SchedulerStorage storage;
 
     // Functions
     void processDatagram(const QByteArray &datagram, const QHostAddress& host, quint16 port);

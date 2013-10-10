@@ -3,16 +3,23 @@
 
 #include "reportscheduler.h"
 
-class CLIENT_API ReportStorage
+class CLIENT_API ReportStorage : public QObject
 {
+    Q_OBJECT
+
 public:
-    ReportScheduler* scheduler;
+    ReportStorage(ReportScheduler* scheduler, QObject* parent = 0);
+    ~ReportStorage();
 
-    void loadData() {
-    }
+    void setRealTime(bool realTime);
+    bool isRealTime() const;
 
-    void saveData() {
-    }
+    void loadData();
+    void saveData();
+
+protected:
+    class Private;
+    Private* d;
 };
 
 
