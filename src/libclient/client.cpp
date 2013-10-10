@@ -2,8 +2,8 @@
 #include "discovery.h"
 #include "network/requests/registerdevicerequest.h"
 #include "network/requests/manualrequest.h"
-#include "scheduler/scheduler.h"
 #include "scheduler/schedulerstorage.h"
+#include "report/reportstorage.h"
 #include "networkhelper.h"
 
 #include <QUdpSocket>
@@ -41,13 +41,12 @@ public:
     : q(q)
     , status(Client::Unregistered)
     , networkAccessManager(new QNetworkAccessManager(q))
-    , storage(&scheduler_test)
+    , schedulerStorage(&scheduler)
+    , reportStorage(&reportScheduler)
     {
         connect(&discovery, SIGNAL(finished()), this, SLOT(onDiscoveryFinished()));
         connect(&managerSocket, SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
         connect(&aliveTimer, SIGNAL(timeout()), this, SLOT(onAliveTimer()));
-
-        scheduler.setManagerSocket(&managerSocket);
 
         aliveTimer.setInterval(30 * 1000);
         aliveTimer.start();
@@ -63,13 +62,16 @@ public:
     QTimer aliveTimer;
     QHostInfo aliveInfo;
 
-    TestScheduler scheduler;
+    Scheduler scheduler;
+    SchedulerStorage schedulerStorage;
+
+    ReportScheduler reportScheduler;
+    ReportStorage reportStorage;
+
     Settings settings;
+    NetworkManager networkManager;
 
     QHostAddress lastLocalIp;
-
-    Scheduler scheduler_test;
-    SchedulerStorage storage;
 
     // Functions
     void processDatagram(const QByteArray &datagram, const QHostAddress& host, quint16 port);
@@ -118,7 +120,9 @@ void Client::Private::processDatagram(const QByteArray& datagram, const QHostAdd
             qDebug() << "Received unknown request from master" << host.toString() << port;
         }
     } else {
-        AbstractTest* currentTest = scheduler.currentTest();
+        // TODO: Rewrite this
+
+        /*AbstractTest* currentTest = scheduler.currentTest();
         if ( currentTest ) {
             currentTest->processDatagram(datagram, host, port);
         } else {
@@ -132,7 +136,7 @@ void Client::Private::processDatagram(const QByteArray& datagram, const QHostAdd
             default:
                 qDebug() << "Received invalid datagram from" << host.toString() << port;
             }
-        }
+        }*/
     }
 }
 
@@ -315,7 +319,7 @@ void Client::Private::onPeerRequestFinished()
         QJsonDocument document = QJsonDocument::fromJson(reply->readAll(), &error);
 
         if ( error.error == QJsonParseError::NoError ) {
-            QJsonObject root = document.object();
+            /*QJsonObject root = document.object();
             bool isMaster = root.value("master").toBool();
             QString testName = root.value("test").toString();
             QJsonArray peers = root.value("peers").toArray();
@@ -340,6 +344,7 @@ void Client::Private::onPeerRequestFinished()
             }
 
             scheduler.enqueue( TestInfo(testName, peerList, isMaster) );
+            */
         } else {
             qDebug() << Q_FUNC_INFO << "Json error:" << error.errorString();
         }
@@ -363,6 +368,8 @@ Client::Client(QObject *parent)
 
 Client::~Client()
 {
+    d->schedulerStorage.storeData();
+    d->reportStorage.storeData();
     delete d;
 }
 
@@ -382,6 +389,10 @@ bool Client::init()
     ok = d->managerSocket.bind(1337);
 
     d->settings.init();
+
+    // Initialize storages
+    d->schedulerStorage.loadData();
+    d->reportStorage.loadData();
 
     // Cheat ...
     d->onAliveTimer();
@@ -413,9 +424,19 @@ QAbstractSocket *Client::managerSocket() const
     return &d->managerSocket;
 }
 
-TestScheduler *Client::scheduler() const
+Scheduler *Client::scheduler() const
 {
     return &d->scheduler;
+}
+
+ReportScheduler *Client::reportScheduler() const
+{
+    return &d->reportScheduler;
+}
+
+NetworkManager *Client::networkManager() const
+{
+    return &d->networkManager;
 }
 
 Settings *Client::settings() const
@@ -430,8 +451,8 @@ void Client::requestTest()
 
 void Client::speedTest()
 {
-    TestInfo info("speedtest", PeerList(), true);
-    d->scheduler.enqueue(info);
+    //TestInfo info("speedtest", PeerList(), true);
+    //d->scheduler.enqueue(info);
 }
 
 #include "client.moc"

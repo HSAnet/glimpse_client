@@ -2,9 +2,10 @@
 #define CLIENT_H
 
 #include "settings.h"
-#include "testfactory.h"
-#include "testscheduler.h"
 #include "types.h"
+#include "scheduler/scheduler.h"
+#include "report/reportscheduler.h"
+#include "network/networkmanager.h"
 
 #include <QObject>
 #include <QLocale>
@@ -20,8 +21,10 @@ class CLIENT_API Client : public QObject
     Q_OBJECT
     Q_ENUMS(Status)
     Q_PROPERTY(Status status READ status WRITE setStatus NOTIFY statusChanged)
-    Q_PROPERTY(TestScheduler* scheduler READ scheduler CONSTANT)
+    Q_PROPERTY(Scheduler* scheduler READ scheduler CONSTANT)
     Q_PROPERTY(Settings* settings READ settings CONSTANT)
+    Q_PROPERTY(ReportScheduler* reportScheduler READ reportScheduler CONSTANT)
+    Q_PROPERTY(NetworkManager* networkManager READ networkManager CONSTANT)
 
     explicit Client(QObject *parent = 0);
     ~Client();
@@ -44,7 +47,9 @@ public:
 
     QAbstractSocket* managerSocket() const;
 
-    TestScheduler* scheduler() const;
+    Scheduler* scheduler() const;
+    ReportScheduler* reportScheduler() const;
+    NetworkManager* networkManager() const;
 
     Settings* settings() const;
 

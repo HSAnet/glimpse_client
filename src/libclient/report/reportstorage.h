@@ -14,8 +14,8 @@ public:
     void setRealTime(bool realTime);
     bool isRealTime() const;
 
+    void storeData();
     void loadData();
-    void saveData();
 
 protected:
     class Private;
