@@ -11,23 +11,31 @@ public slots:
     void execute(const TestDefinitionPtr& test) {
         emit started(test);
 
+        MeasurementDefinitionPtr definition;
+
         MeasurementPtr measurement = factory.createMeasurement(test->name());
         if ( !measurement.isNull() ) {
+            measurement->prepare(&networkManager, definition);
 
+            measurement->start();
+            measurement->stop();
+
+            emit finished(test, measurement->result());
         }
 
         // TODO: Check the timing (too long ago?)
         // TODO: Run the test
 
-        emit finished(test, ReportPtr());
+        emit finished(test, ResultPtr());
     }
 
 signals:
     void started(const TestDefinitionPtr& test);
-    void finished(const TestDefinitionPtr& test, const ReportPtr& report);
+    void finished(const TestDefinitionPtr& test, const ResultPtr& result);
 
 protected:
     MeasurementFactory factory;
+    NetworkManager networkManager;
 };
 
 class TaskExecutor::Private
@@ -42,8 +50,8 @@ public:
         taskThread.start();
         executor.moveToThread(&taskThread);
 
-        connect(&executor, SIGNAL(started(TestDefinition)), q, SIGNAL(started(TestDefinition)));
-        connect(&executor, SIGNAL(finished(TestDefinition)), q, SIGNAL(finished(TestDefinition)));
+        connect(&executor, SIGNAL(started(TestDefinitionPtr)), q, SIGNAL(started(TestDefinitionPtr)));
+        connect(&executor, SIGNAL(finished(TestDefinitionPtr,ResultPtr)), q, SIGNAL(finished(TestDefinitionPtr,ResultPtr)));
     }
 
     ~Private()

@@ -2,6 +2,7 @@
 #define MEASUREMENT_H
 
 #include "measurementdefinition.h"
+#include "../network/networkmanager.h"
 #include "../task/result.h"
 
 #include <QSharedPointer>
@@ -24,7 +25,8 @@ public:
 
     virtual Status status() const = 0;
 
-    virtual bool prepare(const MeasurementDefinitionPtr& measurementDefinition) = 0;
+    virtual bool prepare(NetworkManager* networkManager,
+                         const MeasurementDefinitionPtr& measurementDefinition) = 0;
 
     virtual bool start() = 0;
     virtual bool stop() = 0;

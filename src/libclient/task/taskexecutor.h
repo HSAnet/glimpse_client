@@ -24,7 +24,7 @@ signals:
     void runningChanged();
 
     void started(const TestDefinitionPtr& test);
-    void finished(const TestDefinitionPtr& test, const Report& report);
+    void finished(const TestDefinitionPtr& test, const Result& result);
 
 protected:
     class Private;

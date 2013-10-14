@@ -87,9 +87,10 @@ void BulkTransportCapacityMP::handleError(QAbstractSocket::SocketError socketErr
 
 Measurement::Status BulkTransportCapacityMP::status() const
 {
+    return Unknown;
 }
 
-bool BulkTransportCapacityMP::prepare(const MeasurementDefinitionPtr &measurementDefinition)
+bool BulkTransportCapacityMP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     definition = measurementDefinition.dynamicCast<BulkTransportCapacityDefinition>();
     return true;

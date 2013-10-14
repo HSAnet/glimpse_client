@@ -118,7 +118,7 @@ Measurement::Status BulkTransportCapacityMA::status() const
     return Unknown;
 }
 
-bool BulkTransportCapacityMA::prepare(const MeasurementDefinitionPtr &measurementDefinition)
+bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     definition = measurementDefinition.dynamicCast<BulkTransportCapacityDefinition>();
     return true;
