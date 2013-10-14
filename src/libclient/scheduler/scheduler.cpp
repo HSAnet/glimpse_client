@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QPointer>
 
 class Scheduler::Private : public QObject
 {
@@ -26,7 +27,7 @@ public:
     QTimer timer;
     TestDefinitionList tests;
 
-    TaskExecutor executor;
+    QPointer<TaskExecutor> executor;
 
     // Functions
     void updateTimer();
@@ -121,6 +122,16 @@ Scheduler::~Scheduler()
     delete d;
 }
 
+void Scheduler::setExecutor(TaskExecutor *executor)
+{
+    d->executor = executor;
+}
+
+TaskExecutor *Scheduler::executor() const
+{
+    return d->executor;
+}
+
 TestDefinitionList Scheduler::tests() const
 {
     return d->tests;
@@ -139,7 +150,7 @@ void Scheduler::dequeue()
 
 void Scheduler::execute(const TestDefinitionPtr &testDefinition)
 {
-    d->executor.execute(testDefinition);
+    d->executor->execute(testDefinition);
 }
 
 #include "scheduler.moc"

@@ -5,6 +5,7 @@
 
 #include <QAbstractSocket>
 
+// FIXME: This class has to be thread safe!
 class CLIENT_API NetworkManager : public QObject
 {
     Q_OBJECT

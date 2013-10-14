@@ -3,6 +3,8 @@
 
 #include "../task/task.h"
 
+class TaskExecutor;
+
 class CLIENT_API Scheduler : public QObject
 {
     Q_OBJECT
@@ -10,6 +12,9 @@ class CLIENT_API Scheduler : public QObject
 public:
     Scheduler();
     ~Scheduler();
+
+    void setExecutor(TaskExecutor* executor);
+    TaskExecutor* executor() const;
 
     TestDefinitionList tests() const;
 

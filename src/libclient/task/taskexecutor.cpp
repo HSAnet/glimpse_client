@@ -1,41 +1,42 @@
 #include "taskexecutor.h"
 #include "../measurement/measurementfactory.h"
+#include "../network/networkmanager.h"
 
 #include <QThread>
+#include <QPointer>
 
 class InternalTaskExecutor : public QObject
 {
     Q_OBJECT
 
+public:
+    MeasurementFactory factory;
+    QPointer<NetworkManager> networkManager;
+
 public slots:
     void execute(const TestDefinitionPtr& test) {
         emit started(test);
 
-        MeasurementDefinitionPtr definition;
+        // TODO: Check the timing (too long ago?)
+
+        MeasurementDefinitionPtr definition; // FIXME: read from test
 
         MeasurementPtr measurement = factory.createMeasurement(test->name());
         if ( !measurement.isNull() ) {
-            measurement->prepare(&networkManager, definition);
+            measurement->prepare(networkManager, definition);
 
             measurement->start();
             measurement->stop();
 
             emit finished(test, measurement->result());
+        } else {
+            emit finished(test, ResultPtr());
         }
-
-        // TODO: Check the timing (too long ago?)
-        // TODO: Run the test
-
-        emit finished(test, ResultPtr());
     }
 
 signals:
     void started(const TestDefinitionPtr& test);
     void finished(const TestDefinitionPtr& test, const ResultPtr& result);
-
-protected:
-    MeasurementFactory factory;
-    NetworkManager networkManager;
 };
 
 class TaskExecutor::Private
@@ -75,7 +76,17 @@ TaskExecutor::TaskExecutor()
 
 TaskExecutor::~TaskExecutor()
 {
+    delete d;
+}
 
+void TaskExecutor::setNetworkManager(NetworkManager *networkManager)
+{
+    d->executor.networkManager = networkManager;
+}
+
+NetworkManager *TaskExecutor::networkManager() const
+{
+    return d->executor.networkManager;
 }
 
 bool TaskExecutor::isRunning() const

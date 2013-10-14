@@ -1,7 +1,9 @@
 #include "client.h"
 #include "discovery.h"
+#include "network/networkmanager.h"
 #include "network/requests/registerdevicerequest.h"
 #include "network/requests/manualrequest.h"
+#include "task/taskexecutor.h"
 #include "scheduler/schedulerstorage.h"
 #include "report/reportstorage.h"
 #include "networkhelper.h"
@@ -48,6 +50,9 @@ public:
         connect(&managerSocket, SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
         connect(&aliveTimer, SIGNAL(timeout()), this, SLOT(onAliveTimer()));
 
+        executor.setNetworkManager(&networkManager);
+        scheduler.setExecutor(&executor);
+
         aliveTimer.setInterval(30 * 1000);
         aliveTimer.start();
     }
@@ -61,6 +66,8 @@ public:
     QUdpSocket managerSocket;
     QTimer aliveTimer;
     QHostInfo aliveInfo;
+
+    TaskExecutor executor;
 
     Scheduler scheduler;
     SchedulerStorage schedulerStorage;

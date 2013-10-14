@@ -48,6 +48,6 @@ QAbstractSocket *NetworkManager::createConnection(const TestDefinitionPtr &testD
 
     // TODO: Implementation
 
-    return NULL;
+    return socket;
 }
 

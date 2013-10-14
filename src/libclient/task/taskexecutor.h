@@ -3,9 +3,10 @@
 
 #include "task.h"
 #include "../report/report.h"
-#include "../scheduler/scheduler.h" // TODO: REMOVE THIS
 
 #include <QObject>
+
+class NetworkManager;
 
 class TaskExecutor : public QObject
 {
@@ -16,6 +17,9 @@ public:
     TaskExecutor();
     ~TaskExecutor();
 
+    void setNetworkManager(NetworkManager* networkManager);
+    NetworkManager* networkManager() const;
+
     bool isRunning() const;
 
     void execute(const TestDefinitionPtr &test);
@@ -24,7 +28,7 @@ signals:
     void runningChanged();
 
     void started(const TestDefinitionPtr& test);
-    void finished(const TestDefinitionPtr& test, const Result& result);
+    void finished(const TestDefinitionPtr& test, const ResultPtr& result);
 
 protected:
     class Private;
