@@ -6,6 +6,7 @@
 #include "scheduler/scheduler.h"
 #include "report/reportscheduler.h"
 #include "network/networkmanager.h"
+#include "task/taskexecutor.h"
 
 #include <QObject>
 #include <QLocale>
@@ -25,6 +26,7 @@ class CLIENT_API Client : public QObject
     Q_PROPERTY(Settings* settings READ settings CONSTANT)
     Q_PROPERTY(ReportScheduler* reportScheduler READ reportScheduler CONSTANT)
     Q_PROPERTY(NetworkManager* networkManager READ networkManager CONSTANT)
+    Q_PROPERTY(TaskExecutor* taskExecutor READ taskExecutor CONSTANT)
 
     explicit Client(QObject *parent = 0);
     ~Client();
@@ -50,6 +52,7 @@ public:
     Scheduler* scheduler() const;
     ReportScheduler* reportScheduler() const;
     NetworkManager* networkManager() const;
+    TaskExecutor* taskExecutor() const;
 
     Settings* settings() const;
 

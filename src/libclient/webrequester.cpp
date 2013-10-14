@@ -48,6 +48,9 @@ void WebRequester::Private::setStatus(WebRequester::Status status)
         case Running: emit q->started(); break;
         case Finished: emit q->finished(); break;
         case Error: emit q->error(); break;
+
+        default:
+            break;
         }
     }
 }

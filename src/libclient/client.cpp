@@ -446,6 +446,11 @@ NetworkManager *Client::networkManager() const
     return &d->networkManager;
 }
 
+TaskExecutor *Client::taskExecutor() const
+{
+    return &d->executor;
+}
+
 Settings *Client::settings() const
 {
     return &d->settings;
