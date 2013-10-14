@@ -47,7 +47,13 @@ SOURCES +=  \
     task/taskexecutor.cpp \
     task/task.cpp \
     task/result.cpp \
-    network/networkmanager.cpp
+    network/networkmanager.cpp \
+    measurement/measurementfactory.cpp \
+    measurement/measurement.cpp \
+    measurement/measurementdefinition.cpp \
+    measurement/btc/btc_mp.cpp \
+    measurement/btc/btc_ma.cpp \
+    measurement/btc/btc_definition.cpp
 
 HEADERS += \
     export.h \
@@ -91,7 +97,13 @@ HEADERS += \
     task/task.h \
     task/result.h \
     serializable.h \
-    network/networkmanager.h
+    network/networkmanager.h \
+    measurement/measurementfactory.h \
+    measurement/measurement.h \
+    measurement/measurementdefinition.h \
+    measurement/btc/btc_mp.h \
+    measurement/btc/btc_ma.h \
+    measurement/btc/btc_definition.h
 
 OTHER_FILES += \
     libclient.pri

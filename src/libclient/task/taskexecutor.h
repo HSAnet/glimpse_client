@@ -18,13 +18,13 @@ public:
 
     bool isRunning() const;
 
-    void execute(const TestDefinition& test);
+    void execute(const TestDefinitionPtr &test);
 
 signals:
     void runningChanged();
 
-    void started(const TestDefinition& test);
-    void finished(const TestDefinition& test, const Report& report);
+    void started(const TestDefinitionPtr& test);
+    void finished(const TestDefinitionPtr& test, const Report& report);
 
 protected:
     class Private;

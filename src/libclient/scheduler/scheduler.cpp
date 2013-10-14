@@ -1,4 +1,5 @@
 #include "scheduler.h"
+#include "../task/taskexecutor.h"
 
 #include <QDir>
 #include <QTimer>
@@ -24,6 +25,8 @@ public:
     QDir path;
     QTimer timer;
     TestDefinitionList tests;
+
+    TaskExecutor executor;
 
     // Functions
     void updateTimer();
@@ -136,7 +139,7 @@ void Scheduler::dequeue()
 
 void Scheduler::execute(const TestDefinitionPtr &testDefinition)
 {
-    qDebug() << "Executing" << testDefinition->name();
+    d->executor.execute(testDefinition);
 }
 
 #include "scheduler.moc"

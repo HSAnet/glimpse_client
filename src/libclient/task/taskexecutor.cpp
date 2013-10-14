@@ -1,4 +1,5 @@
 #include "taskexecutor.h"
+#include "../measurement/measurementfactory.h"
 
 #include <QThread>
 
@@ -7,8 +8,13 @@ class InternalTaskExecutor : public QObject
     Q_OBJECT
 
 public slots:
-    void execute(const TestDefinition& test) {
+    void execute(const TestDefinitionPtr& test) {
         emit started(test);
+
+        MeasurementPtr measurement = factory.createMeasurement(test->name());
+        if ( !measurement.isNull() ) {
+
+        }
 
         // TODO: Check the timing (too long ago?)
         // TODO: Run the test
@@ -17,8 +23,11 @@ public slots:
     }
 
 signals:
-    void started(const TestDefinition& test);
-    void finished(const TestDefinition& test, const ReportPtr& report);
+    void started(const TestDefinitionPtr& test);
+    void finished(const TestDefinitionPtr& test, const ReportPtr& report);
+
+protected:
+    MeasurementFactory factory;
 };
 
 class TaskExecutor::Private
@@ -66,7 +75,9 @@ bool TaskExecutor::isRunning() const
     return d->running;
 }
 
-void TaskExecutor::execute(const TestDefinition &test)
+void TaskExecutor::execute(const TestDefinitionPtr &test)
 {
-    QMetaObject::invokeMethod(&d->executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinition, test));
+    QMetaObject::invokeMethod(&d->executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinitionPtr, test));
 }
+
+#include "taskexecutor.moc"
