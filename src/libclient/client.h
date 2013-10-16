@@ -1,18 +1,15 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "settings.h"
-#include "types.h"
-#include "scheduler/scheduler.h"
-#include "report/reportscheduler.h"
-#include "network/networkmanager.h"
-#include "task/taskexecutor.h"
+#include "export.h"
 
 #include <QObject>
-#include <QLocale>
-#include <QHostAddress>
-#include <QStringList>
 
+class Scheduler;
+class ReportScheduler;
+class NetworkManager;
+class TaskExecutor;
+class Settings;
 class QNetworkAccessManager;
 
 ////////////////////////////////////////////////////////////

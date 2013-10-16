@@ -1,10 +1,13 @@
 #include "webrequester.h"
 #include "client.h"
+#include "settings.h"
 
 #include <QPointer>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QJsonDocument>
+#include <QMetaClassInfo>
+#include <QDebug>
 
 namespace {
     const QUrl masterUrl = QUrl("https://141.82.49.82:5105");

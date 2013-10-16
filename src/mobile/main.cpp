@@ -5,6 +5,8 @@
 #include "connectiontester.h"
 #include "discovery.h"
 #include "network/requests/requests.h"
+#include "scheduler/scheduler.h"
+#include "settings.h"
 
 #include "qtquick2applicationviewer.h"
 

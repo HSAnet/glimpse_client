@@ -1,38 +1,15 @@
 #include "client.h"
 #include "controller/controlcontroller.h"
 #include "network/networkmanager.h"
-#include "network/requests/registerdevicerequest.h"
-#include "network/requests/manualrequest.h"
 #include "task/taskexecutor.h"
 #include "scheduler/schedulerstorage.h"
 #include "report/reportstorage.h"
-#include "networkhelper.h"
+#include "scheduler/scheduler.h"
+#include "settings.h"
 
-#include <QUdpSocket>
-#include <QBuffer>
 #include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
-#include <QTimer>
-#include <QHostInfo>
-#include <QDataStream>
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
-#else
-#ifdef Q_OS_WIN
-#include <QJson/Parser>
-#else
-#include <qjson/parser.h>
-#endif
-#endif
 
 #include <QDebug>
-
-const QUrl masterUrl = QUrl("https://141.82.49.82:5105");
 
 class Client::Private : public QObject
 {
@@ -66,8 +43,6 @@ public:
 
     Settings settings;
     NetworkManager networkManager;
-
-    QHostAddress lastLocalIp;
 
     ControlController controlController;
 };

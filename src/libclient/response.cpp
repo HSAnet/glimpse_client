@@ -1,5 +1,6 @@
 #include "response.h"
 #include "client.h"
+#include "settings.h"
 
 Response::Response(QObject *parent)
 : QObject(parent)
