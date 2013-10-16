@@ -1,9 +1,10 @@
 #include "alivecontroller.h"
 #include "../settings.h"
 #include "../networkhelper.h"
+#include "../network/networkmanager.h"
 
 #include <QPointer>
-#include <QAbstractSocket>
+#include <QUdpSocket>
 #include <QJsonDocument>
 #include <QStringList>
 #include <QTimer>
@@ -19,28 +20,87 @@ public:
         connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
     }
 
+    // Properties
     QTimer timer;
-    QPointer<QAbstractSocket> socket;
+    QPointer<QUdpSocket> socket;
+    QPointer<NetworkManager> networkManager;
     QPointer<Settings> settings;
 
+    quint16 localPort;
+
+    // Functions
+    void updateSocket();
     void updateTimer();
+    void processDatagram(const QByteArray& datagram, const QHostAddress& host, quint16 port);
 
 public slots:
+    void responseChanged();
     void timeout();
+    void onDatagramReady();
 };
+
+void AliveController::Private::updateSocket()
+{
+    if (!socket.isNull())
+        socket->deleteLater();
+
+    QString keepaliveAddress = settings->config()->keepaliveAddress();
+    RemoteHost remote = NetworkHelper::remoteHost(keepaliveAddress);
+    localPort = remote.port;
+
+    socket = qobject_cast<QUdpSocket*>( networkManager->createConnection(keepaliveAddress, NetworkManager::UdpSocket) );
+    connect(socket.data(), SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
+    if (!socket->bind(remote.port)) {
+        qDebug() << "AliveController: Unable to bind port" << remote.port << socket->errorString();
+    }
+}
 
 void AliveController::Private::updateTimer()
 {
     int interval = settings->config()->keepaliveSchedule()->interval();
+    if (interval < 1000) {
+        qDebug() << "Keepalive interval < 1 sec will not be accepted.";
+        return;
+    } else {
+        qDebug() << "AliveController: Keepalive set to" << interval/1000 << "sec.";
+    }
+
     timer.setInterval(interval);
     timer.start();
 }
 
+void AliveController::Private::processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port)
+{
+    QString hostAndPort = QString("%1:%2").arg(host.toString()).arg(port);
+    if (settings->config()->keepaliveAddress() == hostAndPort) {
+        // Master server
+    } else {
+        // Someone else
+    }
+}
+
+void AliveController::Private::responseChanged()
+{
+    updateSocket();
+    updateTimer();
+
+    // Send the first timeout now
+    timeout();
+}
+
 void AliveController::Private::timeout()
 {
-    QString sessionId = settings->sessionId();
-    if (sessionId.isEmpty())
+    RemoteHost remote = NetworkHelper::remoteHost(settings->config()->keepaliveAddress());
+    if (!remote.isValid()) {
+        qDebug() << "AliveController: Invalid keepalive host";
         return;
+    }
+
+    QString sessionId = settings->sessionId();
+    if (sessionId.isEmpty()) {
+        qDebug() << "AliveController: Empty session id";
+        return;
+    }
 
     QStringList srcIp;
     srcIp.append( NetworkHelper::localIpAddress().toString() );
@@ -49,12 +109,27 @@ void AliveController::Private::timeout()
     map.insert("type", "keepalive");
     map.insert("session_id", sessionId);
     map.insert("src_ip", srcIp);
-    map.insert("src_port", 1337);
+    map.insert("src_port", localPort);
 
     QByteArray data = QJsonDocument::fromVariant(map).toJson();
-    socket->write(data);
+    socket->writeDatagram(data, QHostAddress(remote.host), remote.port);
 
     qDebug() << "Alive packet sent";
+}
+
+void AliveController::Private::onDatagramReady()
+{
+    while (socket->hasPendingDatagrams()) {
+        QByteArray datagram;
+        datagram.resize(socket->pendingDatagramSize());
+
+        QHostAddress host;
+        quint16 port;
+        socket->readDatagram(datagram.data(), datagram.size(), &host, &port);
+
+        // Process the datagram
+        processDatagram(datagram, host, port);
+    }
 }
 
 AliveController::AliveController(QObject *parent)
@@ -68,21 +143,15 @@ AliveController::~AliveController()
     delete d;
 }
 
-bool AliveController::init(Settings *settings)
+bool AliveController::init(NetworkManager *networkManager, Settings *settings)
 {
+    connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(responseChanged()));
+
     d->settings = settings;
-    d->updateTimer();
+    d->networkManager = networkManager;
+    d->responseChanged();
+
     return true;
-}
-
-void AliveController::setSocket(QAbstractSocket *socket)
-{
-    d->socket = socket;
-}
-
-QAbstractSocket* AliveController::socket() const
-{
-    return d->socket;
 }
 
 void AliveController::setRunning(bool running)

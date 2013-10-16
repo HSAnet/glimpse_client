@@ -2,6 +2,12 @@
 
 #include <QNetworkInterface>
 #include <QHostInfo>
+#include <QStringList>
+
+bool RemoteHost::isValid() const
+{
+    return !host.isEmpty();
+}
 
 /*
  * This code is based on code I found here:
@@ -85,4 +91,20 @@ QHostAddress NetworkHelper::localIpAddress()
 #endif
 
     return hostIp;
+}
+
+RemoteHost NetworkHelper::remoteHost(const QString &hostname)
+{
+    RemoteHost host;
+
+    if (hostname.contains('.')) {
+        QStringList parts = hostname.split(':');
+        host.host = parts.at(0);
+        host.port = parts.at(1).toInt();
+    } else {
+        host.host = hostname;
+        host.port = 1337;
+    }
+
+    return host;
 }

@@ -6,6 +6,7 @@
 #include <QObject>
 
 class QAbstractSocket;
+class NetworkManager;
 class Settings;
 
 class CLIENT_API AliveController : public QObject
@@ -17,10 +18,7 @@ public:
     AliveController(QObject* parent = 0);
     ~AliveController();
 
-    bool init(Settings* settings);
-
-    void setSocket(QAbstractSocket* socket);
-    QAbstractSocket *socket() const;
+    bool init(NetworkManager* networkManager, Settings* settings);
 
     void setRunning(bool running);
     bool isRunning() const;

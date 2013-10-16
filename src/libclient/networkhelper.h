@@ -4,6 +4,14 @@
 #include "export.h"
 #include <QHostAddress>
 
+struct CLIENT_API RemoteHost
+{
+    bool isValid() const;
+
+    QString host;
+    quint16 port;
+};
+
 class CLIENT_API NetworkHelper
 {
 public:
@@ -11,6 +19,8 @@ public:
     static bool isLocalIpAddress(const QHostAddress& host);
 
     static QHostAddress localIpAddress();
+
+    static RemoteHost remoteHost(const QString& hostname);
 };
 
 #endif // NETWORKHELPER_H

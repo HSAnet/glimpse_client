@@ -72,15 +72,16 @@ Client *Client::instance()
 
 bool Client::init()
 {
-    bool ok = false;
-
     d->settings.init();
 
     // Initialize storages
     d->schedulerStorage.loadData();
     d->reportStorage.loadData();
 
-    return ok;
+    // Initialize controllers
+    d->controlController.init(&d->networkManager, &d->scheduler, &d->settings);
+
+    return true;
 }
 
 void Client::setStatus(Client::Status status)

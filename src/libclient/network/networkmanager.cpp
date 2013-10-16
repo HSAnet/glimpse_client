@@ -1,4 +1,5 @@
 #include "networkmanager.h"
+#include "../networkhelper.h"
 
 #include <QTcpSocket>
 #include <QUdpSocket>
@@ -7,36 +8,14 @@
 #include <QReadWriteLock>
 #include <QDebug>
 
-struct RemoteHost
-{
-    QString host;
-    quint16 port;
-};
-
 class NetworkManager::Private
 {
 public:
     QMutex mutex;
 
-    RemoteHost remoteHost(const QString& hostname) const;
     QAbstractSocket* createSocket(NetworkManager::SocketType socketType);
 };
 
-RemoteHost NetworkManager::Private::remoteHost(const QString &hostname) const
-{
-    RemoteHost host;
-
-    if (hostname.contains('.')) {
-        QStringList parts = hostname.split(':');
-        host.host = parts.at(0);
-        host.port = parts.at(1).toInt();
-    } else {
-        host.host = hostname;
-        host.port = 1337;
-    }
-
-    return host;
-}
 
 QAbstractSocket *NetworkManager::Private::createSocket(NetworkManager::SocketType socketType)
 {
@@ -74,8 +53,11 @@ QAbstractSocket *NetworkManager::createConnection(const QString &hostname, Netwo
         return NULL;
     }
 
-    RemoteHost remote = d->remoteHost(hostname);
-    socket->connectToHost(remote.host, remote.port);
+    if (socketType != UdpSocket) {
+        RemoteHost remote = NetworkHelper::remoteHost(hostname);
+        socket->connectToHost(remote.host, remote.port);
+        socket->waitForConnected();
+    }
 
     return socket;
 }
