@@ -72,8 +72,6 @@ void MainWindow::startClicked()
     }
 
     ui->textEdit->append(tr("Requesting manual test"));
-
-    m_client->requestTest();
 }
 
 void MainWindow::noConnectionClicked()

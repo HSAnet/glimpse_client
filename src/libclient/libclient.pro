@@ -53,7 +53,12 @@ SOURCES +=  \
     measurement/measurementdefinition.cpp \
     measurement/btc/btc_mp.cpp \
     measurement/btc/btc_ma.cpp \
-    measurement/btc/btc_definition.cpp
+    measurement/btc/btc_definition.cpp \
+    network/udpsocket.cpp \
+    network/tcpsocket.cpp \
+    controller/logincontroller.cpp \
+    controller/controlcontroller.cpp \
+    controller/alivecontroller.cpp
 
 HEADERS += \
     export.h \
@@ -103,7 +108,12 @@ HEADERS += \
     measurement/measurementdefinition.h \
     measurement/btc/btc_mp.h \
     measurement/btc/btc_ma.h \
-    measurement/btc/btc_definition.h
+    measurement/btc/btc_definition.h \
+    network/udpsocket.h \
+    network/tcpsocket.h \
+    controller/logincontroller.h \
+    controller/controlcontroller.h \
+    controller/alivecontroller.h
 
 OTHER_FILES += \
     libclient.pri

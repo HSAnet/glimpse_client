@@ -4,11 +4,11 @@ class Result::Private
 {
 public:
     QDateTime dateTime;
-    QString probeResult;
-    QString peerResult;
+    QVariant probeResult;
+    QVariant peerResult;
 };
 
-Result::Result(const QDateTime &dateTime, const QString &probeResult, const QString &peerResult)
+Result::Result(const QDateTime &dateTime, const QVariant &probeResult, const QVariant &peerResult)
 : d(new Private)
 {
     d->dateTime = dateTime;
@@ -35,12 +35,12 @@ QDateTime Result::dateTime() const
     return d->dateTime;
 }
 
-QString Result::probeResult() const
+QVariant Result::probeResult() const
 {
     return d->probeResult;
 }
 
-QString Result::peerResult() const
+QVariant Result::peerResult() const
 {
     return d->peerResult;
 }

@@ -14,8 +14,8 @@ class CLIENT_API Result : public Serializable
 {
 public:
     Result(const QDateTime& dateTime,
-           const QString& probeResult,
-           const QString& peerResult);
+           const QVariant& probeResult,
+           const QVariant& peerResult);
     ~Result();
 
     // Storage
@@ -23,8 +23,8 @@ public:
 
     // Getters
     QDateTime dateTime() const;
-    QString probeResult() const;
-    QString peerResult() const;
+    QVariant probeResult() const;
+    QVariant peerResult() const;
 
     // Serializable interface
     QVariant toVariant() const;

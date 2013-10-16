@@ -22,6 +22,7 @@ public:
 //        UtpSocket
     };
 
+    QAbstractSocket* createConnection(const QString& hostname, SocketType socketType);
     QAbstractSocket* createConnection(const TestDefinitionPtr& testDefinition, SocketType socketType);
 
 protected:

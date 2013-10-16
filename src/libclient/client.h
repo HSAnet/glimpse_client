@@ -47,8 +47,6 @@ public:
 
     QNetworkAccessManager* networkAccessManager() const;
 
-    QAbstractSocket* managerSocket() const;
-
     Scheduler* scheduler() const;
     ReportScheduler* reportScheduler() const;
     NetworkManager* networkManager() const;
@@ -58,9 +56,6 @@ public:
 
 public slots:
     bool init();
-    void requestTest();
-    // TODO: REMOVE THIS!!!!
-    void speedTest();
 
 signals:
     void statusChanged();
