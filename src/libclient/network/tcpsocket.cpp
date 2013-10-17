@@ -56,4 +56,4 @@ qint64 TcpSocket::bytesRead() const
     return d->bytesRead;
 }
 
-#include "tcpsocket.h"
+#include "tcpsocket.moc"

@@ -36,11 +36,11 @@ QAbstractSocket *NetworkManager::Private::createSocket(NetworkManager::SocketTyp
 
     switch(socketType) {
     case TcpSocket:
-        socket = new TcpSocket;
+        socket = new ::TcpSocket;
         break;
 
     case UdpSocket:
-        socket = new UdpSocket;
+        socket = new ::UdpSocket;
         break;
 
     case UtpSocket:
