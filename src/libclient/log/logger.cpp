@@ -12,27 +12,27 @@ Logger::~Logger()
 {
 }
 
-void Logger::logTrace(const QString &message)
+void Logger::logTrace(const QString &funcName, const QString &message)
 {
-    log(Trace, message);
+    log(Trace, funcName, message);
 }
 
-void Logger::logInfo(const QString &message)
+void Logger::logInfo(const QString &funcName, const QString &message)
 {
-    log(Info, message);
+    log(Info, funcName, message);
 }
 
-void Logger::logWarning(const QString &message)
+void Logger::logWarning(const QString &funcName, const QString &message)
 {
-    log(Warning, message);
+    log(Warning, funcName, message);
 }
 
-void Logger::logError(const QString &message)
+void Logger::logError(const QString &funcName, const QString &message)
 {
-    log(Error, message);
+    log(Error, funcName, message);
 }
 
-void Logger::log(Logger::Level level, const QString &message)
+void Logger::log(Logger::Level level, const QString &funcName, const QString &message)
 {
     QString levelName;
     switch(level) {
@@ -42,5 +42,5 @@ void Logger::log(Logger::Level level, const QString &message)
     case Error: levelName = "ERROR"; break;
     }
 
-    qDebug() << levelName << m_name << ":" << message;
+    qDebug() << levelName << funcName << m_name << ":" << message;
 }

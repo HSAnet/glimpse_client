@@ -27,12 +27,12 @@ public:
         Error
     };
 
-    void logTrace(const QString& message);
-    void logInfo(const QString& message);
-    void logWarning(const QString& message);
-    void logError(const QString& message);
+    void logTrace(const QString& funcName, const QString& message);
+    void logInfo(const QString& funcName, const QString& message);
+    void logWarning(const QString& funcName, const QString& message);
+    void logError(const QString& funcName, const QString& message);
 
-    void log(Level level, const QString& message);
+    void log(Level level, const QString& funcName, const QString& message);
 
 private:
     QString m_name;
@@ -42,27 +42,27 @@ private:
     namespace { Logger log(#x); }
 
 #if LOG_LEVEL <= LEVEL_TRACE
-#define LOG_TRACE(msg) log.logTrace(msg);
+#define LOG_TRACE(msg) log.logTrace(Q_FUNC_INFO, msg);
 #else
-#define LOG_TRACE(msg)
+#define LOG_TRACE(msg) ;
 #endif
 
 #if LOG_LEVEL <= LEVEL_INFO
-#define LOG_INFO(msg) log.logInfo(msg);
+#define LOG_INFO(msg) log.logInfo(Q_FUNC_INFO, msg);
 #else
-#define LOG_INFO(msg)
+#define LOG_INFO(msg) ;
 #endif
 
 #if LOG_LEVEL <= LEVEL_WARNING
-#define LOG_WARNING(msg) log.logWarning(msg);
+#define LOG_WARNING(msg) log.logWarning(Q_FUNC_INFO, msg);
 #else
-#define LOG_WARNING(msg)
+#define LOG_WARNING(msg) ;
 #endif
 
 #if LOG_LEVEL <= LEVEL_ERROR
-#define LOG_ERROR(msg) log.logError(msg);
+#define LOG_ERROR(msg) log.logError(Q_FUNC_INFO, msg);
 #else
-#define LOG_ERROR(msg)
+#define LOG_ERROR(msg) ;
 #endif
 
 #endif // LOGGER_H
