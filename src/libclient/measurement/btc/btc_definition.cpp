@@ -1,9 +1,13 @@
 #include "btc_definition.h"
 
-BulkTransportCapacityDefinition::BulkTransportCapacityDefinition(QString host, quint16 port, quint64 initialDataSize)
-    : host(host)
-    , port(port)
-    , initialDataSize(initialDataSize)
+BulkTransportCapacityDefinition::BulkTransportCapacityDefinition(const QString &host, quint16 port, quint64 initialDataSize)
+: host(host)
+, port(port)
+, initialDataSize(initialDataSize)
+{
+}
+
+BulkTransportCapacityDefinition::~BulkTransportCapacityDefinition()
 {
 }
 

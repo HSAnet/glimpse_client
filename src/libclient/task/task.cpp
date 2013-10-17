@@ -7,14 +7,16 @@ public:
     QUuid id;
     QString name;
     TimingPtr timing;
+    QVariant measurementDefinition;
 };
 
-TestDefinition::TestDefinition(const QUuid &id, const QString &name, const TimingPtr &timing)
+TestDefinition::TestDefinition(const QUuid &id, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition)
 : d(new Private)
 {
     d->id = id;
     d->name = name;
     d->timing = timing;
+    d->measurementDefinition = measurementDefinition;
 }
 
 TestDefinition::~TestDefinition()
@@ -28,6 +30,7 @@ QVariant TestDefinition::toVariant() const
     hash.insert("id", d->id);
     hash.insert("name", d->name);
     hash.insert("timing", d->timing->toVariant());
+    hash.insert("measurement_definition", d->measurementDefinition);
     return hash;
 }
 
@@ -37,7 +40,8 @@ TestDefinitionPtr TestDefinition::fromVariant(const QVariant &variant)
 
     return TestDefinitionPtr(new TestDefinition(hash.value("id").toUuid(),
                                                 hash.value("name").toString(),
-                                                TimingFactory::timingFromVariant(hash.value("timing"))));
+                                                TimingFactory::timingFromVariant(hash.value("timing")),
+                                                hash.value("measurement_definition")));
 }
 
 QUuid TestDefinition::id() const
@@ -53,4 +57,9 @@ QString TestDefinition::name() const
 TimingPtr TestDefinition::timing() const
 {
     return d->timing;
+}
+
+QVariant TestDefinition::measurementDefinition() const
+{
+    return d->measurementDefinition;
 }

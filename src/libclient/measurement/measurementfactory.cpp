@@ -1,17 +1,60 @@
 #include "measurementfactory.h"
+#include "btc/btc_plugin.h"
 
-// TODO: Pluginize measurements
-#include "btc/btc_ma.h"
-#include "btc/btc_mp.h"
+#include <QHash>
+
+class MeasurementFactory::Private
+{
+public:
+    Private()
+    {
+        // TODO: Don't link with plugins
+        addPlugin(new BulkTransportCapacityPlugin);
+    }
+
+    ~Private()
+    {
+        qDeleteAll(plugins);
+    }
+
+    // Properties
+    QList<MeasurementPlugin*> plugins;
+    QHash<QString, MeasurementPlugin*> pluginNameHash;
+
+    // Functions
+    void addPlugin(MeasurementPlugin* plugin);
+};
+
+void MeasurementFactory::Private::addPlugin(MeasurementPlugin *plugin)
+{
+    plugins.append(plugin);
+
+    foreach(const QString& name, plugin->measurements())
+        pluginNameHash.insert(name, plugin);
+}
+
+MeasurementFactory::MeasurementFactory()
+: d(new Private)
+{
+}
+
+MeasurementFactory::~MeasurementFactory()
+{
+    delete d;
+}
 
 MeasurementPtr MeasurementFactory::createMeasurement(const QString &name)
 {
-    // TODO: Improve creation handling
-    if (name == "btc_ma")
-        return MeasurementPtr(new BulkTransportCapacityMA);
-
-    if (name == "btc_mp")
-        return MeasurementPtr(new BulkTransportCapacityMP);
+    if (MeasurementPlugin* plugin = d->pluginNameHash.value(name))
+        return plugin->createMeasurement(name);
 
     return MeasurementPtr();
+}
+
+MeasurementDefinitionPtr MeasurementFactory::createMeasurementDefinition(const QString &name, const QVariant &data)
+{
+    if (MeasurementPlugin* plugin = d->pluginNameHash.value(name))
+        return plugin->createMeasurementDefinition(name, data);
+
+    return MeasurementDefinitionPtr();
 }

@@ -32,7 +32,7 @@ void TcpSocket::Private::bytesWritten(qint64 bytes)
 
 void TcpSocket::Private::readyRead()
 {
-    bytesRead = q->bytesAvailable();
+    bytesRead += q->bytesAvailable();
 }
 
 TcpSocket::TcpSocket(QObject *parent)

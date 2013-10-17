@@ -5,6 +5,8 @@
 
 #include <QAbstractSocket>
 
+class Settings;
+class QUdpSocket;
 class QTcpServer;
 
 // FIXME: This class has to be thread safe!
@@ -12,10 +14,16 @@ class CLIENT_API NetworkManager : public QObject
 {
     Q_OBJECT
     Q_ENUMS(SocketType)
+    Q_PROPERTY(bool running READ isRunning WRITE setRunning NOTIFY runningChanged)
 
 public:
     explicit NetworkManager(QObject* parent = 0);
     ~NetworkManager();
+
+    bool init(Settings* settings);
+
+    void setRunning(bool running);
+    bool isRunning() const;
 
     enum SocketType
     {
@@ -28,10 +36,13 @@ public:
     QAbstractSocket* connection(const QString& hostname, SocketType socketType) const;
 
     // Creates a new connection
-    QAbstractSocket* createConnection(const QString& hostname, SocketType socketType);
-    QAbstractSocket* createConnection(const TestDefinitionPtr& testDefinition, SocketType socketType);
+    QAbstractSocket* createConnection(SocketType socketType);
+    QAbstractSocket* establishConnection(const QString& hostname, SocketType socketType);
 
     QTcpServer* createServerSocket();
+
+signals:
+    void runningChanged();
 
 protected:
     class Private;

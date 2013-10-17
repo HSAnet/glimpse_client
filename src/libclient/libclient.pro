@@ -58,8 +58,8 @@ SOURCES +=  \
     network/tcpsocket.cpp \
     controller/logincontroller.cpp \
     controller/controlcontroller.cpp \
-    controller/alivecontroller.cpp \
-    log/logger.cpp
+    log/logger.cpp \
+    measurement/btc/btc_plugin.cpp
 
 HEADERS += \
     export.h \
@@ -114,8 +114,9 @@ HEADERS += \
     network/tcpsocket.h \
     controller/logincontroller.h \
     controller/controlcontroller.h \
-    controller/alivecontroller.h \
-    log/logger.h
+    log/logger.h \
+    measurement/measurementplugin.h \
+    measurement/btc/btc_plugin.h
 
 OTHER_FILES += \
     libclient.pri

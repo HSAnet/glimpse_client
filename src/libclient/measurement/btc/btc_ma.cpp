@@ -105,7 +105,7 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const Meas
         LOG_WARNING("Definition is empty");
     }
 
-    m_tcpSocket = qobject_cast<QTcpSocket*>(networkManager->createConnection(QString(), NetworkManager::TcpSocket));
+    m_tcpSocket = qobject_cast<QTcpSocket*>(networkManager->createConnection(NetworkManager::TcpSocket));
     m_tcpSocket->setParent(this);
     m_bytesExpected = 0;
     m_preTest = true;

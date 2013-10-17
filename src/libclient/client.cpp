@@ -1,6 +1,5 @@
 #include "client.h"
 #include "controller/controlcontroller.h"
-#include "controller/alivecontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
 #include "scheduler/schedulerstorage.h"
@@ -46,7 +45,6 @@ public:
     NetworkManager networkManager;
 
     ControlController controlController;
-    AliveController aliveController;
 };
 
 Client::Client(QObject *parent)
@@ -81,8 +79,8 @@ bool Client::init()
     d->reportStorage.loadData();
 
     // Initialize controllers
+    d->networkManager.init(&d->settings);
     d->controlController.init(&d->networkManager, &d->scheduler, &d->settings);
-    d->aliveController.init(&d->networkManager, &d->settings);
 
     return true;
 }

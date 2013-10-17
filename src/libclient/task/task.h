@@ -2,6 +2,7 @@
 #define TASK_H
 
 #include "../timing/timing.h"
+#include "../measurement/measurementdefinition.h"
 
 #include <QUuid>
 
@@ -12,7 +13,7 @@ typedef QList<TestDefinitionPtr> TestDefinitionList;
 class CLIENT_API TestDefinition : public Serializable
 {
 public:
-    TestDefinition(const QUuid& id, const QString& name, const TimingPtr& timing);
+    TestDefinition(const QUuid& id, const QString& name, const TimingPtr& timing, const QVariant& measurementDefinition);
     ~TestDefinition();
 
     // Storage
@@ -22,6 +23,8 @@ public:
     QUuid id() const;
     QString name() const;
     TimingPtr timing() const;
+
+    QVariant measurementDefinition() const;
 
     // Serializable interface
     QVariant toVariant() const;

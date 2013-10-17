@@ -11,14 +11,19 @@ typedef QList<BulkTransportCapacityDefinitionPtr> BulkTransportCapacityDefinitio
 class BulkTransportCapacityDefinition : public MeasurementDefinition
 {
 public:
-    BulkTransportCapacityDefinition(QString host, quint16 port, quint64 initialDataSize);
+    BulkTransportCapacityDefinition(const QString& host, quint16 port, quint64 initialDataSize);
+    ~BulkTransportCapacityDefinition();
 
+    // Storage
+    static BulkTransportCapacityDefinitionPtr fromVariant(const QVariant &variant);
+
+    // Getters
     QString host;
     quint16 port;
     quint64 initialDataSize;
 
+    // Serializable interface
     QVariant toVariant() const;
-    static BulkTransportCapacityDefinitionPtr fromVariant(const QVariant &variant);
 };
 
 #endif // BTC_DEFINITION_H
