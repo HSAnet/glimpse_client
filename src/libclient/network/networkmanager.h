@@ -18,10 +18,14 @@ public:
     enum SocketType
     {
         TcpSocket,
-        UdpSocket
-//        UtpSocket
+        UdpSocket,
+        UtpSocket
     };
 
+    // Finds an existing connection
+    QAbstractSocket* connection(const QString& hostname, SocketType socketType) const;
+
+    // Creates a new connection
     QAbstractSocket* createConnection(const QString& hostname, SocketType socketType);
     QAbstractSocket* createConnection(const TestDefinitionPtr& testDefinition, SocketType socketType);
 

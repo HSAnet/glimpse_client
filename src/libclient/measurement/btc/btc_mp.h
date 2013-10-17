@@ -8,8 +8,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 
-class BulkTransportCapacityMP : public QObject
-                              , public Measurement
+class BulkTransportCapacityMP : public Measurement
 {
     Q_OBJECT
 

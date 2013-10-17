@@ -1,13 +1,12 @@
 #include "btc_ma.h"
+#include "../../log/logger.h"
 
-#include <QCoreApplication>
 #include <QDataStream>
-#include <iostream>
-#include <iomanip>
-using namespace std;
+
+LOGGER(BulkTransportCapacityMA)
 
 BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
-: QObject(parent)
+: Measurement(parent)
 {
     m_tcpSocket = new QTcpSocket(this);
     m_bytesExpected = 0;
@@ -28,10 +27,9 @@ BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
 
 bool BulkTransportCapacityMA::start()
 {
-    cout<<"Connect to "<<definition->host.toStdString()<<":"<<definition->port<<endl;
+    LOG_INFO(QString("Connect to %1:%2").arg(definition->host).arg(definition->port));
     m_tcpSocket->connectToHost(definition->host, definition->port);
-    return 1;
-
+    return true;
 }
 
 void BulkTransportCapacityMA::sendRequest(quint64 bytes)
@@ -41,10 +39,9 @@ void BulkTransportCapacityMA::sendRequest(quint64 bytes)
     out<<bytes;
 }
 
-
 void BulkTransportCapacityMA::sendInitialRequest()
 {
-    cout<<"Sending initial data size to server"<<endl;
+    LOG_INFO("Sending initial data size to server");
     sendRequest(definition->initialDataSize);
 }
 
@@ -75,7 +72,7 @@ void BulkTransportCapacityMA::receiveResponse()
         {
             qreal downloadSpeed = ((qreal)m_bytesReceived / 1024) / ((qreal)m_lasttime / 1000); // kbyte/s
 
-            cout<<"Speed: "<<fixed<<setprecision(0)<<downloadSpeed<<" KByte/s"<<endl;
+            LOG_INFO(QString("Speed: %1 KByte/s").arg(downloadSpeed, 0, 'g', 0));
 
             // TODO this is were the magic happens
             m_bytesExpected = 100*1024;
@@ -84,7 +81,7 @@ void BulkTransportCapacityMA::receiveResponse()
             m_time = QTime();
             m_preTest = false;
 
-            cout<<"Sending test data size to server"<<endl;
+            LOG_INFO("Sending test data size to server");
 
             // set next state
             sendRequest(m_bytesExpected);
@@ -92,15 +89,14 @@ void BulkTransportCapacityMA::receiveResponse()
         else
         {
             qreal downloadSpeed = ((qreal)m_bytesReceived / 1024) / ((qreal)m_lasttime / 1000); // kbyte/s
-            cout<<"Speed: "<<fixed<<setprecision(0)<<downloadSpeed<<" KByte/s"<<endl;
-            qApp->exit();
+            LOG_INFO(QString("Speed: %1 KByte/s").arg(downloadSpeed, 0, 'g', 0));
         }
     }
 }
 
 void BulkTransportCapacityMA::serverDisconnected()
 {
-    cout<<"Server closed connection, this should not happen"<<endl;
+    LOG_WARNING("Server closed connection, this should not happen");
 }
 
 void BulkTransportCapacityMA::handleError(QAbstractSocket::SocketError socketError)
@@ -109,9 +105,8 @@ void BulkTransportCapacityMA::handleError(QAbstractSocket::SocketError socketErr
         return;
 
     QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());
-    cout<<"Socket Error: "<<socket->errorString().toStdString()<<endl;
+    LOG_ERROR(QString("Socket Error: %1").arg(socket->errorString()));
 }
-
 
 Measurement::Status BulkTransportCapacityMA::status() const
 {

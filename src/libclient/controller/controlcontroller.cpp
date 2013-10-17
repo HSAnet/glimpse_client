@@ -2,7 +2,6 @@
 #include "../network/networkmanager.h"
 #include "../scheduler/scheduler.h"
 #include "../settings.h"
-#include "alivecontroller.h"
 
 #include <QPointer>
 
@@ -22,8 +21,6 @@ public:
     QPointer<NetworkManager> networkManager;
     QPointer<Scheduler> scheduler;
     QPointer<Settings> settings;
-
-    AliveController aliveController;
 };
 
 ControlController::ControlController(QObject *parent)
@@ -42,9 +39,6 @@ bool ControlController::init(NetworkManager *networkManager, Scheduler *schedule
     d->scheduler = scheduler;
     d->settings = settings;
     d->networkManager = networkManager;
-
-    // Also initialize the alive controller
-    d->aliveController.init(networkManager, settings);
 
     return true;
 }

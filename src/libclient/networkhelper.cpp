@@ -57,8 +57,8 @@ QHostAddress NetworkHelper::localIpAddress()
     QList<QHostAddress> hostNameLookupAddressList = hostInfo.addresses();
     QList<QHostAddress> interfaceAddressList = QNetworkInterface::allAddresses();
 
-    qDebug()<<__FUNCTION__<<"hostName lookup addresses:"<<hostNameLookupAddressList;
-    qDebug()<<__FUNCTION__<<"interface addresses:"<<interfaceAddressList;
+    //qDebug()<<__FUNCTION__<<"hostName lookup addresses:"<<hostNameLookupAddressList;
+    //qDebug()<<__FUNCTION__<<"interface addresses:"<<interfaceAddressList;
 
     QHostAddress hostIp;
 #if defined(Q_OS_WIN) || defined(Q_OS_MAC)
@@ -86,7 +86,7 @@ QHostAddress NetworkHelper::localIpAddress()
     }
 
     hostIp = interfaceAddressList.first();
-    qDebug() << "Hope" << hostIp << "is a local ip";
+    //qDebug() << "Hope" << hostIp << "is a local ip";
 
 #endif
 

@@ -9,6 +9,7 @@ class QAbstractSocket;
 class NetworkManager;
 class Settings;
 
+// TODO: This could also be HolePunchController
 class CLIENT_API AliveController : public QObject
 {
     Q_OBJECT

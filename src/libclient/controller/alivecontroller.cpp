@@ -80,8 +80,16 @@ void AliveController::Private::processDatagram(const QByteArray &datagram, const
     QString hostAndPort = QString("%1:%2").arg(host.toString()).arg(port);
     if (settings->config()->keepaliveAddress() == hostAndPort) {
         // Master server
+        QJsonParseError error;
+        QJsonDocument document = QJsonDocument::fromJson(datagram, &error);
+
+        if (error.error == QJsonParseError::NoError) {
+            // TODO: Read data
+        } else {
+            LOG_ERROR(QString("Invalid JSon from master server: %1").arg(error.errorString()));
+        }
     } else {
-        // Someone else
+        // TODO: Process incoming data
     }
 }
 

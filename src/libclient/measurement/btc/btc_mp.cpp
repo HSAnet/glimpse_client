@@ -1,11 +1,12 @@
 #include "btc_mp.h"
-#include <iostream>
-#include <iomanip>
+#include "../../log/logger.h"
+
 #include <QDataStream>
-using namespace std;
+
+LOGGER(BulkTransportCapacityMP)
 
 BulkTransportCapacityMP::BulkTransportCapacityMP(QObject *parent)
-: QObject(parent)
+: Measurement(parent)
 {
     m_tcpSocket = 0;
     m_tcpServer = new QTcpServer(this);
@@ -19,7 +20,6 @@ BulkTransportCapacityMP::BulkTransportCapacityMP(QObject *parent)
 
 bool BulkTransportCapacityMP::start()
 {
-
     // Start listening
     return m_tcpServer->listen(QHostAddress::Any, definition->port);
 }
@@ -40,7 +40,7 @@ void BulkTransportCapacityMP::resetServer()
 
 void BulkTransportCapacityMP::newClientConnection()
 {
-    cout<<"New client connection"<<endl;
+    LOG_INFO("New client connection");
 
     if (!m_tcpSocket)
     {
@@ -52,25 +52,28 @@ void BulkTransportCapacityMP::newClientConnection()
     }
     else
     {
-        cout<<"There is already a client connected, abort"<<endl;
-        m_tcpServer->nextPendingConnection()->abort();
+        LOG_ERROR("There is already a client connected, abort");
+        QTcpSocket* next = m_tcpServer->nextPendingConnection();
+        next->abort();
+        delete next;
     }
 }
 
 void BulkTransportCapacityMP::receiveRequest()
 {
-    cout<<"New client request"<<endl;
+    LOG_INFO("New client request");
+
     // get bytes from message
     QDataStream in(m_tcpSocket);
-    quint64 bytes;
 
     // abort if received data is not what we expected
     if (m_tcpSocket->bytesAvailable() < (int)sizeof(quint64))
     {
-        cout<<"Data length is not what we expected"<<endl;
+        LOG_ERROR("Data length is not what we expected");
         return;
     }
 
+    quint64 bytes;
     in>>bytes;
     sendResponse(bytes);
 }
@@ -81,7 +84,7 @@ void BulkTransportCapacityMP::handleError(QAbstractSocket::SocketError socketErr
         return;
 
     QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());
-    cout<<"Socket Error: "<<socket->errorString().toStdString()<<endl;
+    LOG_ERROR(QString("Socket Error: %1").arg(socket->errorString()));
 }
 
 

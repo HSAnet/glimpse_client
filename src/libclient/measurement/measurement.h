@@ -10,10 +10,13 @@
 class Measurement;
 typedef QSharedPointer<Measurement> MeasurementPtr;
 
-class CLIENT_API Measurement
+class CLIENT_API Measurement : public QObject
 {
+    Q_OBJECT
+
 public:
-    virtual ~Measurement() {}
+    Measurement(QObject* parent = 0);
+    ~Measurement();
 
     enum Status
     {
@@ -32,6 +35,10 @@ public:
     virtual bool stop() = 0;
 
     virtual ResultPtr result() const = 0;
+
+signals:
+    void started();
+    void finished();
 };
 
 #endif // MEASUREMENT_H
