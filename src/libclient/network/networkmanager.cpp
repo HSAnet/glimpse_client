@@ -1,6 +1,9 @@
 #include "networkmanager.h"
 #include "../networkhelper.h"
 
+#include "tcpsocket.h"
+#include "udpsocket.h"
+
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QUdpSocket>
@@ -33,11 +36,11 @@ QAbstractSocket *NetworkManager::Private::createSocket(NetworkManager::SocketTyp
 
     switch(socketType) {
     case TcpSocket:
-        socket = new QTcpSocket;
+        socket = new TcpSocket;
         break;
 
     case UdpSocket:
-        socket = new QUdpSocket;
+        socket = new UdpSocket;
         break;
 
     case UtpSocket:
@@ -92,6 +95,8 @@ QAbstractSocket *NetworkManager::createConnection(const QString &hostname, Netwo
     d->socketHash.insert(hostname, socket);
     d->objectHash.insert(hostname, socket);
 
+    // TODO: Create separate functions that connect the sockets and check them prior
+    //       to returning them back to the caller
     /*if (socketType != UdpSocket) {
         RemoteHost remote = NetworkHelper::remoteHost(hostname);
         socket->connectToHost(remote.host, remote.port);

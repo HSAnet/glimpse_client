@@ -1,9 +1,11 @@
 #ifndef TCPSOCKET_H
 #define TCPSOCKET_H
 
+#include "../export.h"
+
 #include <QTcpSocket>
 
-class TcpSocket : public QTcpSocket
+class CLIENT_API TcpSocket : public QTcpSocket
 {
     Q_OBJECT
 
