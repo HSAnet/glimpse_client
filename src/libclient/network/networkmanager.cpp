@@ -6,6 +6,7 @@
 #include "tcpsocket.h"
 #include "udpsocket.h"
 
+#include <QDataStream>
 #include <QJsonDocument>
 #include <QPointer>
 #include <QTcpServer>
@@ -19,6 +20,31 @@
 #include <QDebug>
 
 LOGGER(NetworkManager)
+
+class PeerRequest
+{
+    QVariant toVariant() {
+        QVariantMap map;
+        map.insert("peer", peer);
+        map.insert("port", port);
+        map.insert("protocol", protocol);
+        return map;
+    }
+
+    static PeerRequest fromVariant(const QVariant& variant) {
+        QVariantMap map = variant.toMap();
+
+        PeerRequest request;
+        request.peer = map.value("peer").toString();
+        request.port = map.value("port").toUInt();
+        request.protocol = (NetworkManager::SocketType)map.value("protocol").toInt();
+        return request;
+    }
+
+    QString peer;
+    quint16 port;
+    NetworkManager::SocketType protocol;
+};
 
 class NetworkManager::Private : public QObject
 {
@@ -262,12 +288,26 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, Ne
         return NULL;
     }
 
+    RemoteHost aliveRemote = NetworkHelper::remoteHost(d->settings->config()->keepaliveAddress());
+    RemoteHost remote = NetworkHelper::remoteHost(hostname);
+
+    PeerRequest request;
+    request.peer = remote.host;
+    request.port = 25000;
+    request.protocol = socketType;
+
+    QByteArray data = QJsonDocument::fromVariant(request.toVariant()).toJson();
+
     // Step one: Send test offer to peer directly
+    d->socket->writeDatagram(data, QHostAddress(remote.host), d->localPort);
+
     // Step two: Send test offer to peer via alive-server
+    d->socket->write(data, QHostAddress(aliveRemote.host), aliveRemote.port);
+
     // Final step: Connect to remote host
 
     // Step two: Try to connect directly
-    RemoteHost remote = NetworkHelper::remoteHost(hostname);
+
     socket->connectToHost(remote.host, remote.port);
     if (socket->waitForConnected(5000))
         return socket;
