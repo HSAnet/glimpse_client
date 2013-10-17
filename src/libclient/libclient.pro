@@ -58,7 +58,8 @@ SOURCES +=  \
     network/tcpsocket.cpp \
     controller/logincontroller.cpp \
     controller/controlcontroller.cpp \
-    controller/alivecontroller.cpp
+    controller/alivecontroller.cpp \
+    log/logger.cpp
 
 HEADERS += \
     export.h \
@@ -113,7 +114,8 @@ HEADERS += \
     network/tcpsocket.h \
     controller/logincontroller.h \
     controller/controlcontroller.h \
-    controller/alivecontroller.h
+    controller/alivecontroller.h \
+    log/logger.h
 
 OTHER_FILES += \
     libclient.pri

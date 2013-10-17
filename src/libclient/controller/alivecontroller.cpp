@@ -2,6 +2,7 @@
 #include "../settings.h"
 #include "../networkhelper.h"
 #include "../network/networkmanager.h"
+#include "../log/logger.h"
 
 #include <QPointer>
 #include <QUdpSocket>
@@ -9,6 +10,8 @@
 #include <QStringList>
 #include <QTimer>
 #include <QDebug>
+
+LOGGER(AliveController)
 
 class AliveController::Private : public QObject
 {
@@ -46,12 +49,15 @@ void AliveController::Private::updateSocket()
 
     QString keepaliveAddress = settings->config()->keepaliveAddress();
     RemoteHost remote = NetworkHelper::remoteHost(keepaliveAddress);
+    if (!remote.isValid())
+        return;
+
     localPort = remote.port;
 
     socket = qobject_cast<QUdpSocket*>( networkManager->createConnection(keepaliveAddress, NetworkManager::UdpSocket) );
     connect(socket.data(), SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
     if (!socket->bind(remote.port)) {
-        qDebug() << "AliveController: Unable to bind port" << remote.port << socket->errorString();
+        LOG_INFO(QString("Unable to bind port %1: %2").arg(remote.port).arg(socket->errorString()));
     }
 }
 
@@ -59,10 +65,10 @@ void AliveController::Private::updateTimer()
 {
     int interval = settings->config()->keepaliveSchedule()->interval();
     if (interval < 1000) {
-        qDebug() << "Keepalive interval < 1 sec will not be accepted.";
+        LOG_INFO("Keepalive interval < 1 sec will not be accepted.");
         return;
     } else {
-        qDebug() << "AliveController: Keepalive set to" << interval/1000 << "sec.";
+        LOG_INFO(QString("Keepalive set to %1 sec.").arg(interval/1000));
     }
 
     timer.setInterval(interval);
@@ -92,13 +98,13 @@ void AliveController::Private::timeout()
 {
     RemoteHost remote = NetworkHelper::remoteHost(settings->config()->keepaliveAddress());
     if (!remote.isValid()) {
-        qDebug() << "AliveController: Invalid keepalive host";
+        LOG_INFO("Invalid keepalive host");
         return;
     }
 
     QString sessionId = settings->sessionId();
     if (sessionId.isEmpty()) {
-        qDebug() << "AliveController: Empty session id";
+        LOG_INFO("Empty session id");
         return;
     }
 
@@ -114,7 +120,7 @@ void AliveController::Private::timeout()
     QByteArray data = QJsonDocument::fromVariant(map).toJson();
     socket->writeDatagram(data, QHostAddress(remote.host), remote.port);
 
-    qDebug() << "Alive packet sent";
+    LOG_INFO("Alive packet sent");
 }
 
 void AliveController::Private::onDatagramReady()
