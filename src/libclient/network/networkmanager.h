@@ -5,6 +5,8 @@
 
 #include <QAbstractSocket>
 
+class QTcpServer;
+
 // FIXME: This class has to be thread safe!
 class CLIENT_API NetworkManager : public QObject
 {
@@ -28,6 +30,8 @@ public:
     // Creates a new connection
     QAbstractSocket* createConnection(const QString& hostname, SocketType socketType);
     QAbstractSocket* createConnection(const TestDefinitionPtr& testDefinition, SocketType socketType);
+
+    QTcpServer* createServerSocket();
 
 protected:
     class Private;

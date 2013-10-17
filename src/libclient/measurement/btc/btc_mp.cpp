@@ -8,14 +8,6 @@ LOGGER(BulkTransportCapacityMP)
 BulkTransportCapacityMP::BulkTransportCapacityMP(QObject *parent)
 : Measurement(parent)
 {
-    m_tcpSocket = 0;
-    m_tcpServer = new QTcpServer(this);
-
-    // Signal for errors
-    connect(m_tcpServer, SIGNAL(acceptError(QAbstractSocket::SocketError)), this, SLOT(handleError(QAbstractSocket::SocketError)));
-
-    // Signal for new clients
-    connect(m_tcpServer, SIGNAL(newConnection()), this, SLOT(newClientConnection()));
 }
 
 bool BulkTransportCapacityMP::start()
@@ -29,7 +21,7 @@ qint64 BulkTransportCapacityMP::sendResponse(quint64 bytes)
     // send data back
     QByteArray data;
     data.resize(bytes);
-    data.fill('X'); // TODO do we need to randomize this to prevent compression on the path?
+    data.fill('X'); // TODO: do we need to randomize this to prevent compression on the path?
     return m_tcpSocket->write(data);
 }
 
@@ -96,6 +88,20 @@ Measurement::Status BulkTransportCapacityMP::status() const
 bool BulkTransportCapacityMP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     definition = measurementDefinition.dynamicCast<BulkTransportCapacityDefinition>();
+    if ( definition.isNull() ) {
+        LOG_WARNING("Definition is empty");
+    }
+
+    m_tcpSocket = 0;
+    m_tcpServer = networkManager->createServerSocket();
+    m_tcpServer->setParent(this);
+
+    // Signal for errors
+    connect(m_tcpServer, SIGNAL(acceptError(QAbstractSocket::SocketError)), this, SLOT(handleError(QAbstractSocket::SocketError)));
+
+    // Signal for new clients
+    connect(m_tcpServer, SIGNAL(newConnection()), this, SLOT(newClientConnection()));
+
     return true;
 }
 

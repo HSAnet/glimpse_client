@@ -1,6 +1,7 @@
 #include "networkmanager.h"
 #include "../networkhelper.h"
 
+#include <QTcpServer>
 #include <QTcpSocket>
 #include <QUdpSocket>
 #include <QStringList>
@@ -91,11 +92,11 @@ QAbstractSocket *NetworkManager::createConnection(const QString &hostname, Netwo
     d->socketHash.insert(hostname, socket);
     d->objectHash.insert(hostname, socket);
 
-    if (socketType != UdpSocket) {
+    /*if (socketType != UdpSocket) {
         RemoteHost remote = NetworkHelper::remoteHost(hostname);
         socket->connectToHost(remote.host, remote.port);
         socket->waitForConnected();
-    }
+    }*/
 
     return socket;
 }
@@ -111,6 +112,13 @@ QAbstractSocket *NetworkManager::createConnection(const TestDefinitionPtr &testD
     // TODO: Implementation
 
     return socket;
+}
+
+QTcpServer *NetworkManager::createServerSocket()
+{
+    // TODO: Connect to traffic counter
+    QTcpServer* server = new QTcpServer;
+    return server;
 }
 
 #include "networkmanager.moc"

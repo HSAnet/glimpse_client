@@ -8,21 +8,6 @@ LOGGER(BulkTransportCapacityMA)
 BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
 : Measurement(parent)
 {
-    m_tcpSocket = new QTcpSocket(this);
-    m_bytesExpected = 0;
-    m_preTest = true;
-
-    // Signal for new data
-    connect(m_tcpSocket, SIGNAL(readyRead()), this, SLOT(receiveResponse()));
-
-    // Signal for errors
-    connect(m_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(handleError(QAbstractSocket::SocketError)));
-
-    // Signal for end of data transmission
-    connect(m_tcpSocket, SIGNAL(disconnected()), this, SLOT(serverDisconnected()));
-
-    // Signal to start measurement when the client is connected
-    connect(m_tcpSocket, SIGNAL(connected()), this, SLOT(sendInitialRequest()));
 }
 
 bool BulkTransportCapacityMA::start()
@@ -116,6 +101,27 @@ Measurement::Status BulkTransportCapacityMA::status() const
 bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     definition = measurementDefinition.dynamicCast<BulkTransportCapacityDefinition>();
+    if ( definition.isNull() ) {
+        LOG_WARNING("Definition is empty");
+    }
+
+    m_tcpSocket = qobject_cast<QTcpSocket*>(networkManager->createConnection(QString(), NetworkManager::TcpSocket));
+    m_tcpSocket->setParent(this);
+    m_bytesExpected = 0;
+    m_preTest = true;
+
+    // Signal for new data
+    connect(m_tcpSocket, SIGNAL(readyRead()), this, SLOT(receiveResponse()));
+
+    // Signal for errors
+    connect(m_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(handleError(QAbstractSocket::SocketError)));
+
+    // Signal for end of data transmission
+    connect(m_tcpSocket, SIGNAL(disconnected()), this, SLOT(serverDisconnected()));
+
+    // Signal to start measurement when the client is connected
+    connect(m_tcpSocket, SIGNAL(connected()), this, SLOT(sendInitialRequest()));
+
     return true;
 }
 
