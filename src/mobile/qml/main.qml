@@ -277,10 +277,10 @@ Rectangle {
                 }
 
                 Button {
-                    text: "Quit"
+                    text: "Upnp"
                     anchors.horizontalCenter: parent.horizontalCenter
                     style: ButtonStyle {}
-                    onClicked: Qt.quit()
+                    onClicked: client.upnp()
                 }
             }
         }

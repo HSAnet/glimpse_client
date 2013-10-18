@@ -99,6 +99,13 @@ void Client::btc()
     d->scheduler.enqueue(testDefinition);
 }
 
+void Client::upnp()
+{
+    TimingPtr timing(new OnOffTiming(QDateTime::currentDateTime().addSecs(5)));
+    TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "upnp", timing, QVariant()));
+    d->scheduler.enqueue(testDefinition);
+}
+
 void Client::setStatus(Client::Status status)
 {
     if ( d->status == status )

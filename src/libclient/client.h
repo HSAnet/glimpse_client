@@ -54,6 +54,7 @@ public:
 public slots:
     bool init();
     void btc();
+    void upnp();
 
 signals:
     void statusChanged();
