@@ -77,6 +77,8 @@ Client *Client::instance()
 
 bool Client::init()
 {
+    qRegisterMetaType<TestDefinitionPtr>();
+    qRegisterMetaType<ResultPtr>();
     d->settings.init();
 
     // Initialize storages

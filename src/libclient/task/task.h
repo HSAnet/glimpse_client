@@ -34,4 +34,5 @@ protected:
     Private* d;
 };
 
+Q_DECLARE_METATYPE(TestDefinitionPtr)
 #endif // TASK_H

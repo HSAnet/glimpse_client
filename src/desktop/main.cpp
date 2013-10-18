@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "discovery.h"
 
 #include <QApplication>
 #include <QStyleFactory>

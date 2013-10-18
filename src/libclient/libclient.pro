@@ -13,7 +13,6 @@ include(../../3rdparty/miniupnpc.pri)
 
 SOURCES +=  \
     client.cpp \
-    discovery.cpp \
     connectiontester.cpp \
     testfactory.cpp \
     tests/packettrain.cpp \
@@ -59,13 +58,14 @@ SOURCES +=  \
     controller/logincontroller.cpp \
     controller/controlcontroller.cpp \
     log/logger.cpp \
-    measurement/btc/btc_plugin.cpp
+    measurement/btc/btc_plugin.cpp \
+    measurement/upnp/upnp.cpp \
+    measurement/upnp/upnp_plugin.cpp
 
 HEADERS += \
     export.h \
     client.h \
     types.h \
-    discovery.h \
     connectiontester.h \
     testfactory.h \
     tests/packettrain.h \
@@ -116,7 +116,9 @@ HEADERS += \
     controller/controlcontroller.h \
     log/logger.h \
     measurement/measurementplugin.h \
-    measurement/btc/btc_plugin.h
+    measurement/btc/btc_plugin.h \
+    measurement/upnp/upnp.h \
+    measurement/upnp/upnp_plugin.h
 
 OTHER_FILES += \
     libclient.pri

@@ -1,5 +1,6 @@
 #include "measurementfactory.h"
 #include "btc/btc_plugin.h"
+#include "upnp/upnp_plugin.h"
 
 #include <QHash>
 
@@ -10,6 +11,7 @@ public:
     {
         // TODO: Don't link with plugins
         addPlugin(new BulkTransportCapacityPlugin);
+        addPlugin(new UPnPPlugin);
     }
 
     ~Private()
