@@ -270,10 +270,17 @@ Rectangle {
                 }
 
                 Button {
-                    text: "Speedtest"
+                    text: "Btc"
                     anchors.horizontalCenter: parent.horizontalCenter
                     style: ButtonStyle {}
-                    onClicked: client.speedTest()
+                    onClicked: client.btc()
+                }
+
+                Button {
+                    text: "Quit"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    style: ButtonStyle {}
+                    onClicked: Qt.quit()
                 }
             }
         }

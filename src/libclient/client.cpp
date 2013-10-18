@@ -11,6 +11,11 @@
 
 #include <QDebug>
 
+// TEST INCLUDES
+#include "timing/onofftiming.h"
+#include "task/task.h"
+#include "measurement/btc/btc_definition.h"
+
 class Client::Private : public QObject
 {
     Q_OBJECT
@@ -83,6 +88,15 @@ bool Client::init()
     d->controlController.init(&d->networkManager, &d->scheduler, &d->settings);
 
     return true;
+}
+
+void Client::btc()
+{
+    BulkTransportCapacityDefinition btcDef("141.82.49.87", 3365, 4096);
+
+    TimingPtr timing(new OnOffTiming(QDateTime::currentDateTime().addSecs(5)));
+    TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "btc_ma", timing, btcDef.toVariant()));
+    d->scheduler.enqueue(testDefinition);
 }
 
 void Client::setStatus(Client::Status status)

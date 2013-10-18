@@ -53,6 +53,7 @@ public:
 
 public slots:
     bool init();
+    void btc();
 
 signals:
     void statusChanged();

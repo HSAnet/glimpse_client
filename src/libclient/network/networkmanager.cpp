@@ -23,8 +23,10 @@ LOGGER(NetworkManager)
 
 class PeerRequest
 {
+public:
     QVariant toVariant() {
         QVariantMap map;
+        map.insert("measurement", measurement);
         map.insert("peer", peer);
         map.insert("port", port);
         map.insert("protocol", protocol);
@@ -35,12 +37,14 @@ class PeerRequest
         QVariantMap map = variant.toMap();
 
         PeerRequest request;
+        request.measurement = map.value("measurement").toString();
         request.peer = map.value("peer").toString();
         request.port = map.value("port").toUInt();
         request.protocol = (NetworkManager::SocketType)map.value("protocol").toInt();
         return request;
     }
 
+    QString measurement;
     QString peer;
     quint16 port;
     NetworkManager::SocketType protocol;
@@ -158,6 +162,7 @@ void NetworkManager::Private::updateTimer()
 void NetworkManager::Private::processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port)
 {
     QString hostAndPort = QString("%1:%2").arg(host.toString()).arg(port);
+    LOG_INFO(QString("Received datagram from %1: %2").arg(hostAndPort).arg(QString::fromUtf8(datagram)));
     if (settings->config()->keepaliveAddress() == hostAndPort) {
         // Master server
         QJsonParseError error;
@@ -243,6 +248,8 @@ bool NetworkManager::init(Settings *settings)
 
     d->settings = settings;
     d->responseChanged();
+
+    return true;
 }
 
 void NetworkManager::setRunning(bool running)
@@ -280,7 +287,7 @@ QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType soc
     return socket;
 }
 
-QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, NetworkManager::SocketType socketType)
+QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, const QString &measurement, NetworkManager::SocketType socketType)
 {
     QAbstractSocket* socket = d->createSocket(socketType);
     if ( !socket ) {
@@ -288,13 +295,25 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, Ne
         return NULL;
     }
 
-    RemoteHost aliveRemote = NetworkHelper::remoteHost(d->settings->config()->keepaliveAddress());
     RemoteHost remote = NetworkHelper::remoteHost(hostname);
+    RemoteHost aliveRemote = NetworkHelper::remoteHost(d->settings->config()->keepaliveAddress());
 
     PeerRequest request;
+    request.measurement = measurement;
     request.peer = remote.host;
-    request.port = 25000;
+    request.port = remote.port;
     request.protocol = socketType;
+
+    if ( socketType != TcpSocket ) {
+        if (!socket->bind(request.port)) {
+            LOG_ERROR(QString("Unable to bind source port to %1").arg(request.port));
+            delete socket;
+            return NULL;
+        }
+
+        QUdpSocket* udpSocket = qobject_cast<QUdpSocket*>(socket);
+        udpSocket->writeDatagram(QByteArray(), QHostAddress(remote.host), remote.port);
+    }
 
     QByteArray data = QJsonDocument::fromVariant(request.toVariant()).toJson();
 
@@ -302,19 +321,25 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, Ne
     d->socket->writeDatagram(data, QHostAddress(remote.host), d->localPort);
 
     // Step two: Send test offer to peer via alive-server
-    d->socket->write(data, QHostAddress(aliveRemote.host), aliveRemote.port);
+    d->socket->writeDatagram(data, QHostAddress(aliveRemote.host), aliveRemote.port);
+
+    LOG_TRACE("Sent test offer to peer and alive-server");
+
 
     // Final step: Connect to remote host
+    if (socket->waitForReadyRead(5000))
+        return socket;
 
-    // Step two: Try to connect directly
+    LOG_ERROR("Remote did not answer for 5 sec, aborting connection.");
 
     socket->connectToHost(remote.host, remote.port);
     if (socket->waitForConnected(5000))
         return socket;
 
-    // Step two: Ask alive-server if it can tell the client to hole punch through
+    LOG_ERROR(QString("Unable to connect tcp socket to %1: %2").arg(hostname).arg(socket->errorString()));
 
-    return socket;
+    delete socket;
+    return NULL;
 }
 
 QTcpServer *NetworkManager::createServerSocket()
