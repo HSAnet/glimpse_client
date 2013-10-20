@@ -30,6 +30,8 @@ public:
     {
         executor.setNetworkManager(&networkManager);
         scheduler.setExecutor(&executor);
+
+        connect(&executor, SIGNAL(finished(TestDefinitionPtr,ResultPtr)), this, SLOT(taskFinished(TestDefinitionPtr,ResultPtr)));
     }
 
     Client* q;
@@ -50,7 +52,19 @@ public:
     NetworkManager networkManager;
 
     ControlController controlController;
+
+public slots:
+    void taskFinished(const TestDefinitionPtr& test, const ResultPtr& result);
 };
+
+void Client::Private::taskFinished(const TestDefinitionPtr &test, const ResultPtr &result)
+{
+    ResultList results;
+    results.append(result);
+
+    ReportPtr report(new Report(test->id(), QDateTime::currentDateTime(), results));
+    reportScheduler.addReport(report);
+}
 
 Client::Client(QObject *parent)
 : QObject(parent)
@@ -79,6 +93,7 @@ bool Client::init()
 {
     qRegisterMetaType<TestDefinitionPtr>();
     qRegisterMetaType<ResultPtr>();
+
     d->settings.init();
 
     // Initialize storages
@@ -86,7 +101,7 @@ bool Client::init()
     d->reportStorage.loadData();
 
     // Initialize controllers
-    d->networkManager.init(&d->settings);
+    d->networkManager.init(&d->scheduler, &d->settings);
     d->controlController.init(&d->networkManager, &d->scheduler, &d->settings);
 
     return true;
@@ -94,7 +109,7 @@ bool Client::init()
 
 void Client::btc()
 {
-    BulkTransportCapacityDefinition btcDef("141.82.49.87", 3365, 4096);
+    BulkTransportCapacityDefinition btcDef("141.82.59.143", 3365, 4096);
 
     TimingPtr timing(new OnOffTiming(QDateTime::currentDateTime().addSecs(5)));
     TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "btc_ma", timing, btcDef.toVariant()));

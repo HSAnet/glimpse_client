@@ -5,6 +5,7 @@
 
 #include <QAbstractSocket>
 
+class Scheduler;
 class Settings;
 class QUdpSocket;
 class QTcpServer;
@@ -20,7 +21,7 @@ public:
     explicit NetworkManager(QObject* parent = 0);
     ~NetworkManager();
 
-    bool init(Settings* settings);
+    bool init(Scheduler* scheduler, Settings* settings);
 
     void setRunning(bool running);
     bool isRunning() const;

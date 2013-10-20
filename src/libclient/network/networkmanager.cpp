@@ -1,7 +1,9 @@
 #include "networkmanager.h"
 #include "../networkhelper.h"
 #include "../log/logger.h"
+#include "../scheduler/scheduler.h"
 #include "../settings.h"
+#include "../timing/immediatetiming.h"
 
 #include "tcpsocket.h"
 #include "udpsocket.h"
@@ -70,6 +72,7 @@ public:
 
     QTimer timer;
     QPointer<QUdpSocket> socket;
+    QPointer<Scheduler> scheduler;
     QPointer<Settings> settings;
 
     quint16 localPort;
@@ -169,7 +172,12 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
         QJsonDocument document = QJsonDocument::fromJson(datagram, &error);
 
         if (error.error == QJsonParseError::NoError) {
-            // TODO: Read data
+            PeerRequest request = PeerRequest::fromVariant(document.toVariant());
+
+            TimingPtr timing(new ImmediateTiming);
+            TestDefinitionPtr testDefinition(new TestDefinition(QUuid(), request.measurement, timing, QVariant()));
+
+            scheduler->enqueue(testDefinition);
         } else {
             LOG_ERROR(QString("Invalid JSon from master server: %1").arg(error.errorString()));
         }
@@ -242,10 +250,11 @@ NetworkManager::~NetworkManager()
     delete d;
 }
 
-bool NetworkManager::init(Settings *settings)
+bool NetworkManager::init(Scheduler* scheduler, Settings *settings)
 {
     connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(responseChanged()));
 
+    d->scheduler = scheduler;
     d->settings = settings;
     d->responseChanged();
 
@@ -325,18 +334,20 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
 
     LOG_TRACE("Sent test offer to peer and alive-server");
 
+    if ( socketType != UdpSocket ) {
+        // Final step: Connect to remote host
+        if (socket->waitForReadyRead(5000))
+            return socket;
 
-    // Final step: Connect to remote host
-    if (socket->waitForReadyRead(5000))
-        return socket;
+        socket->connectToHost(remote.host, remote.port);
+        if (socket->waitForConnected(5000))
+            return socket;
 
-    LOG_ERROR("Remote did not answer for 5 sec, aborting connection.");
-
-    socket->connectToHost(remote.host, remote.port);
-    if (socket->waitForConnected(5000))
-        return socket;
-
-    LOG_ERROR(QString("Unable to connect tcp socket to %1: %2").arg(hostname).arg(socket->errorString()));
+        LOG_ERROR(QString("Unable to connect tcp socket to %1: %2").arg(hostname).arg(socket->errorString()));
+    } else {
+        if (!socket->waitForReadyRead(5000))
+            LOG_ERROR("Remote did not answer for 5 sec, aborting connection.");
+    }
 
     delete socket;
     return NULL;

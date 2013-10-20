@@ -1,9 +1,12 @@
 #include "taskexecutor.h"
+#include "../log/logger.h"
 #include "../measurement/measurementfactory.h"
 #include "../network/networkmanager.h"
 
 #include <QThread>
 #include <QPointer>
+
+LOGGER(TaskExecutor)
 
 class InternalTaskExecutor : public QObject
 {
@@ -19,19 +22,24 @@ public slots:
 
         // TODO: Check the timing (too long ago?)
 
-        MeasurementDefinitionPtr definition; // FIXME: read from test
+         // FIXME: read from test
 
         MeasurementPtr measurement = factory.createMeasurement(test->name());
         if ( !measurement.isNull() ) {
-            measurement->prepare(networkManager, definition);
+            MeasurementDefinitionPtr definition = factory.createMeasurementDefinition(test->name(), test->measurementDefinition());
 
-            measurement->start();
-            measurement->stop();
-
-            emit finished(test, measurement->result());
+            if (measurement->prepare(networkManager, definition)) {
+                if (measurement->start()) {
+                    measurement->stop();
+                    emit finished(test, measurement->result());
+                    return;
+                }
+            }
         } else {
-            emit finished(test, ResultPtr());
+            LOG_ERROR(QString("Unable to create measurement: %1").arg(test->name()));
         }
+
+        emit finished(test, ResultPtr());
     }
 
 signals:

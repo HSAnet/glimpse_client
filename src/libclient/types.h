@@ -26,8 +26,10 @@ enum RequestType
 template <typename T>
 QVariant ptrListToVariant(const QList<T>& list) {
     QVariantList lst;
-    foreach(T entry, list)
-        lst.append(entry->toVariant());
+    foreach(T entry, list) {
+        if (!entry.isNull())
+            lst.append(entry->toVariant());
+    }
     return lst;
 }
 

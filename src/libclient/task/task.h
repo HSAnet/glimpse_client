@@ -35,4 +35,6 @@ protected:
 };
 
 Q_DECLARE_METATYPE(TestDefinitionPtr)
+Q_DECLARE_METATYPE(TestDefinitionList)
+
 #endif // TASK_H
