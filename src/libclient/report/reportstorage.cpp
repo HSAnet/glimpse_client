@@ -96,6 +96,11 @@ bool ReportStorage::isRealTime() const
 
 void ReportStorage::storeData()
 {
+    // If realtime was enabled, the files are already on disk so we don't
+    // have to modify them again.
+    if (d->realTime)
+        return;
+
     foreach(const ReportPtr& report, d->scheduler->reports())
         d->store(report);
 }
