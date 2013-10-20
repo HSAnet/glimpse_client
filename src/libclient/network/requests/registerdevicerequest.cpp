@@ -20,8 +20,8 @@ class RegisterDeviceRequest::Private
 {
 public:
     Private()
-    : dataPlanDownlink(0)
-    , deviceType(TYPE)
+    : deviceType(TYPE)
+    , dataPlanDownlink(0)
     , dataPlanUplink(0)
     {
     }

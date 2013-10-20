@@ -28,6 +28,8 @@ class PeerRequest
 public:
     QVariant toVariant() {
         QVariantMap map;
+        map.insert("task_id", taskId);
+        map.insert("definition", measurementDefinition);
         map.insert("measurement", measurement);
         map.insert("peer", peer);
         map.insert("port", port);
@@ -39,6 +41,8 @@ public:
         QVariantMap map = variant.toMap();
 
         PeerRequest request;
+        request.taskId = map.value("task_id").toUuid();
+        request.measurementDefinition = map.value("definition");
         request.measurement = map.value("measurement").toString();
         request.peer = map.value("peer").toString();
         request.port = map.value("port").toUInt();
@@ -46,6 +50,8 @@ public:
         return request;
     }
 
+    QUuid taskId;
+    QVariant measurementDefinition;
     QString measurement;
     QString peer;
     quint16 port;
@@ -166,7 +172,7 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
 {
     QString hostAndPort = QString("%1:%2").arg(host.toString()).arg(port);
     LOG_INFO(QString("Received datagram from %1: %2").arg(hostAndPort).arg(QString::fromUtf8(datagram)));
-    if (settings->config()->keepaliveAddress() == hostAndPort) {
+//    if (settings->config()->keepaliveAddress() == hostAndPort) {
         // Master server
         QJsonParseError error;
         QJsonDocument document = QJsonDocument::fromJson(datagram, &error);
@@ -175,15 +181,15 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
             PeerRequest request = PeerRequest::fromVariant(document.toVariant());
 
             TimingPtr timing(new ImmediateTiming);
-            TestDefinitionPtr testDefinition(new TestDefinition(QUuid(), request.measurement, timing, QVariant()));
+            TestDefinitionPtr testDefinition(new TestDefinition(request.taskId, request.measurement, timing, request.measurementDefinition));
 
             scheduler->enqueue(testDefinition);
         } else {
             LOG_ERROR(QString("Invalid JSon from master server: %1").arg(error.errorString()));
         }
-    } else {
+//    } else {
         // TODO: Process incoming data
-    }
+//    }
 }
 
 void NetworkManager::Private::responseChanged()
