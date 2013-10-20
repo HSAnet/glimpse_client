@@ -17,6 +17,11 @@ void Logger::logTrace(const QString &funcName, const QString &message)
     log(Trace, funcName, message);
 }
 
+void Logger::logDebug(const QString &funcName, const QString &message)
+{
+    log(Debug, funcName, message);
+}
+
 void Logger::logInfo(const QString &funcName, const QString &message)
 {
     log(Info, funcName, message);
@@ -37,6 +42,7 @@ void Logger::log(Logger::Level level, const QString &funcName, const QString &me
     QString levelName;
     switch(level) {
     case Trace: levelName = "TRACE"; break;
+    case Debug: levelName = "DEBUG"; break;
     case Info: levelName = "INFO"; break;
     case Warning: levelName = "WARNING"; break;
     case Error: levelName = "ERROR"; break;

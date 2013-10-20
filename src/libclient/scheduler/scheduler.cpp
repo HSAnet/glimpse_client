@@ -1,11 +1,14 @@
 #include "scheduler.h"
 #include "../task/taskexecutor.h"
+#include "../log/logger.h"
 
 #include <QDir>
 #include <QTimer>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QPointer>
+
+LOGGER(Scheduler)
 
 class Scheduler::Private : public QObject
 {
@@ -41,7 +44,7 @@ void Scheduler::Private::updateTimer()
 {
     if (tests.isEmpty()) {
         timer.stop();
-        qDebug() << "Scheduling timer stopped";
+        LOG_DEBUG("Scheduling timer stopped");
     } else {
         const TestDefinitionPtr& td = tests.at(0);
         int ms = td->timing()->timeLeft();
@@ -50,7 +53,7 @@ void Scheduler::Private::updateTimer()
         else
             timeout();
 
-        qDebug() << "Scheduling timer executes" << td->name() << "in" << ms << "ms";
+        LOG_DEBUG(QString("Scheduling timer executes %1 in %2 ms").arg(td->name()).arg(ms));
     }
 }
 
@@ -103,7 +106,7 @@ void Scheduler::Private::timeout()
         } else {
             int pos = enqueue(td);
             if (pos != i) {
-                qDebug() << td->name() << "moved from" << i << "to" << pos;
+                LOG_DEBUG(QString("%1 moved from %2 to %3").arg(td->name()).arg(i).arg(pos));
                 emit q->testMoved(td, i, pos);
             }
         }

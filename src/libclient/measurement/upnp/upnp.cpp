@@ -16,7 +16,7 @@ LOGGER(UPnP)
 #endif
 
 UPnP::UPnP(QObject *parent)
-    : Measurement(parent)
+: Measurement(parent)
 {
 
 }
@@ -142,12 +142,10 @@ ResultPtr UPnP::result() const
         iter.next();
 
         QString name = enumToString(UPnP, "DataType", iter.key());
-        name = name.replace(QRegExp("([A-Z])"), "-\\1").toLower();
+        name = name.replace(QRegExp("([A-Z])"), "_\\1").toLower();
         name.remove(0, 1);
 
         upnp.insert(name, iter.value());
-
-        qDebug()<<name<<iter.value();
     }
 
     return ResultPtr(new Result(QDateTime::currentDateTime(), upnp, QVariant()));

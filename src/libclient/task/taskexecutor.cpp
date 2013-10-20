@@ -18,6 +18,8 @@ public:
 
 public slots:
     void execute(const TestDefinitionPtr& test) {
+        LOG_INFO(QString("Starting execution of %1").arg(test->name()));
+
         emit started(test);
 
         // TODO: Check the timing (too long ago?)
@@ -31,6 +33,7 @@ public slots:
             if (measurement->prepare(networkManager, definition)) {
                 if (measurement->start()) {
                     measurement->stop();
+                    LOG_INFO(QString("Finished execution of %1 (success)").arg(test->name()));
                     emit finished(test, measurement->result());
                     return;
                 }
@@ -39,6 +42,7 @@ public slots:
             LOG_ERROR(QString("Unable to create measurement: %1").arg(test->name()));
         }
 
+        LOG_INFO(QString("Finished execution of %1 (failed)").arg(test->name()));
         emit finished(test, ResultPtr());
     }
 

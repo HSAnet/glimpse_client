@@ -7,9 +7,10 @@
 
 // Compile-Time log levels
 #define LEVEL_TRACE 0
-#define LEVEL_INFO 1
-#define LEVEL_WARNING 2
-#define LEVEL_ERROR 3
+#define LEVEL_DEBUG 1
+#define LEVEL_INFO 2
+#define LEVEL_WARNING 3
+#define LEVEL_ERROR 4
 
 #define LOG_LEVEL LEVEL_TRACE
 
@@ -22,12 +23,14 @@ public:
     enum Level
     {
         Trace,
+        Debug,
         Info,
         Warning,
         Error
     };
 
     void logTrace(const QString& funcName, const QString& message);
+    void logDebug(const QString& funcName, const QString& message);
     void logInfo(const QString& funcName, const QString& message);
     void logWarning(const QString& funcName, const QString& message);
     void logError(const QString& funcName, const QString& message);
@@ -45,6 +48,12 @@ private:
 #define LOG_TRACE(msg) log.logTrace(Q_FUNC_INFO, msg);
 #else
 #define LOG_TRACE(msg) ;
+#endif
+
+#if LOG_LEVEL <= LEVEL_DEBUG
+#define LOG_DEBUG(msg) log.logDebug(Q_FUNC_INFO, msg);
+#else
+#define LOG_DEBUG(msg) ;
 #endif
 
 #if LOG_LEVEL <= LEVEL_INFO
