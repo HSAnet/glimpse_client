@@ -17,8 +17,11 @@ LOGGER(UPnP)
 
 UPnP::UPnP(QObject *parent)
 : Measurement(parent)
-{
+{   
+}
 
+UPnP::~UPnP()
+{
 }
 
 Measurement::Status UPnP::status() const

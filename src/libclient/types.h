@@ -23,6 +23,9 @@ enum RequestType
 #define enumToString(className, enumName, value) \
     className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator(enumName)).valueToKey(value)
 
+#define enumFromString(className, enumName, value) \
+    className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator(enumName)).keyToValue(value)
+
 template <typename T>
 QVariant ptrListToVariant(const QList<T>& list) {
     QVariantList lst;

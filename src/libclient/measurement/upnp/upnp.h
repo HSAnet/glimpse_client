@@ -11,6 +11,7 @@ class UPnP : public Measurement
 
 public:
     explicit UPnP(QObject *parent = 0);
+    ~UPnP();
 
     // Measurement interface
     Status status() const;
@@ -37,12 +38,8 @@ public:
     };
 
 private:
-
     typedef QHash<DataType, QVariant> UPnPHash;
     UPnPHash resultHash;
-
-private slots:
-
 };
 
 #endif // UPNP_H
