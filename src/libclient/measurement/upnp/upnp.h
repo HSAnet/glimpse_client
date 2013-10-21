@@ -39,7 +39,7 @@ public:
 
 private:
     typedef QHash<DataType, QVariant> UPnPHash;
-    UPnPHash resultHash;
+    QList<UPnPHash> results;
 };
 
 #endif // UPNP_H

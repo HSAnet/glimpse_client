@@ -58,13 +58,14 @@ bool UPnP::start()
     int error = 0;
 
     UPNPDev* devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
-    if (devlist) {
+    while (devlist) {
         UPNPUrls urls;
         IGDdatas data;
         char lanaddr[64];
+        UPnPHash resultHash;
 
         int code = UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr));
-        if (code == 1) {
+        if (code > 0) { // TODO maybe distinguish between the return codes (1,2,3) to add information what happend to the result
             resultHash.insert(LanIpAddress, QLatin1String(lanaddr));
 
             char externalIP[40];
@@ -123,12 +124,14 @@ bool UPnP::start()
         }
 
         FreeUPNPUrls(&urls);
-        freeUPNPDevlist(devlist);
 
-        return true;
+        results.append(resultHash);
+        devlist = devlist->pNext;
     }
 
-    return false;
+    freeUPNPDevlist(devlist);
+
+    return true; // TODO return false if something went wrong or if there are no results
 }
 
 bool UPnP::stop()
@@ -138,19 +141,29 @@ bool UPnP::stop()
 
 ResultPtr UPnP::result() const
 {
-    // Prepare upnp data
-    QVariantMap upnp;
-    QHashIterator<UPnP::DataType, QVariant> iter(resultHash);
-    while ( iter.hasNext() ) {
-        iter.next();
+    // List for all results
+    QVariantList deviceResultList;
 
-        QString name = enumToString(UPnP, "DataType", iter.key());
-        name = name.replace(QRegExp("([A-Z])"), "_\\1").toLower();
-        name.remove(0, 1);
+    foreach(UPnPHash resultHash, results) {
+        qDebug()<<"UPnP result:";
+        QHashIterator<UPnP::DataType, QVariant> iter(resultHash);
 
-        upnp.insert(name, iter.value());
+        // results from one interface
+        QVariantMap deviceResult;
+        while ( iter.hasNext() ) {
+            iter.next();
+
+            QString name = enumToString(UPnP, "DataType", iter.key());
+            name = name.replace(QRegExp("([A-Z])"), "_\\1").toLower();
+            name.remove(0, 1);
+
+            deviceResult.insert(name, iter.value());
+
+            qDebug()<<name<<iter.value();
+        }
+        deviceResultList.append(deviceResult);
     }
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), upnp, QVariant()));
+    return ResultPtr(new Result(QDateTime::currentDateTime(), deviceResultList, QVariant()));
 }
 
