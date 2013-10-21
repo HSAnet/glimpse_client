@@ -58,6 +58,14 @@ bool UPnP::start()
     int error = 0;
 
     UPNPDev* devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
+
+    // get interface list
+    /*foreach(interface, interfaces) {
+        newdevlist = ::upnpDiscover(2000, interface, NULL, FALSE, FALSE, &error);
+
+        // go to end of list and append
+    }*/
+
     while (devlist) {
         UPNPUrls urls;
         IGDdatas data;
@@ -90,6 +98,38 @@ bool UPnP::start()
                 resultHash.insert(LinkLayerMaxUpload, uplink);
             }
 
+            quint32 bytesSent, bytesReceived, packetsSent, packetsReceived;
+
+            bytesSent = UPNP_GetTotalBytesSent(urls.controlURL_CIF,
+                                               data.CIF.servicetype);
+
+            if ((unsigned int)UPNPCOMMAND_HTTP_ERROR != bytesSent) {
+                resultHash.insert(TotalBytesSent, bytesSent);
+            }
+
+            bytesReceived = UPNP_GetTotalBytesReceived(urls.controlURL_CIF,
+                                                       data.CIF.servicetype);
+
+            if ((unsigned int)UPNPCOMMAND_HTTP_ERROR != bytesReceived) {
+                resultHash.insert(TotalBytesReceived, bytesReceived);
+            }
+
+            packetsSent = UPNP_GetTotalPacketsSent(urls.controlURL_CIF,
+                                                   data.CIF.servicetype);
+
+            if ((unsigned int)UPNPCOMMAND_HTTP_ERROR != packetsSent) {
+                resultHash.insert(TotalPacketsSent, packetsSent);
+            }
+
+
+            packetsReceived = UPNP_GetTotalPacketsReceived(urls.controlURL_CIF,
+                                                           data.CIF.servicetype);
+
+            if ((unsigned int)UPNPCOMMAND_HTTP_ERROR != packetsReceived) {
+                resultHash.insert(TotalPacketsReceived, packetsReceived);
+            }
+
+
             char status[100];
             unsigned int uptime = 0;
             char lastConnectionError[128];
@@ -102,6 +142,15 @@ bool UPnP::start()
                 resultHash.insert(Uptime, uptime);
                 resultHash.insert(LastConnectionError, lastConnectionError);
             }
+
+            quint32 num;
+            if (UPNPCOMMAND_SUCCESS == UPNP_GetPortMappingNumberOfEntries(urls.controlURL,
+                                               data.first.servicetype,
+                                               &num)) {
+                resultHash.insert(NumberOfPortMappings, num);
+            }
+
+
 
             int bufferSize = 0;
             if (char* buffer = (char*)miniwget(urls.rootdescURL, &bufferSize, 0)) {
