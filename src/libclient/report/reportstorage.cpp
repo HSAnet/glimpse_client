@@ -50,7 +50,9 @@ void ReportStorage::Private::store(const ReportPtr &report)
 
 QString ReportStorage::Private::fileNameForReport(const ReportPtr &report) const
 {
-    return report->taskId().toString();
+    QString name = report->taskId().toString();
+    name.replace(QRegExp("[{}]"), QString());
+    return name;
 }
 
 void ReportStorage::Private::reportAdded(const ReportPtr &report)

@@ -56,6 +56,7 @@ QStringList GetValuesFromNameValueList(struct NameValueParserData * pdata,
 bool UPnP::start()
 {
     int error = 0;
+    int devNumber = 0;
 
     UPNPDev* devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
 
@@ -71,6 +72,8 @@ bool UPnP::start()
         IGDdatas data;
         char lanaddr[64];
         UPnPHash resultHash;
+
+        LOG_DEBUG(QString("Checking device %1: %2").arg(devNumber++).arg(QString::fromLatin1(devlist->descURL)));
 
         int code = UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr));
         if (code > 0) { // TODO maybe distinguish between the return codes (1,2,3) to add information what happend to the result
