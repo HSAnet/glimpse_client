@@ -36,6 +36,8 @@ public:
         Uptime,
         LastConnectionError,
         NumberOfPortMappings,
+        FirewallEnabled,
+        InboundPinholeAllwed,
 
         ModelName,
         Manufacturer,

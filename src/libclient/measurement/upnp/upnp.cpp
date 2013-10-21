@@ -148,12 +148,22 @@ bool UPnP::start()
 
             quint32 num;
             if (UPNPCOMMAND_SUCCESS == UPNP_GetPortMappingNumberOfEntries(urls.controlURL,
-                                               data.first.servicetype,
-                                               &num)) {
+                                                                          data.first.servicetype,
+                                                                          &num)) {
                 resultHash.insert(NumberOfPortMappings, num);
             }
 
+            // TODO GetListOfPortMappings do we need this?
 
+            int firewallEnabled, inboundPinholeAllowed;
+
+            if (UPNPCOMMAND_SUCCESS == UPNP_GetFirewallStatus(urls.controlURL,
+                                                              data.first.servicetype,
+                                                              &firewallEnabled,
+                                                              &inboundPinholeAllowed)) {
+                resultHash.insert(FirewallEnabled, firewallEnabled);
+                resultHash.insert(InboundPinholeAllwed, inboundPinholeAllowed);
+            }
 
             int bufferSize = 0;
             if (char* buffer = (char*)miniwget(urls.rootdescURL, &bufferSize, 0)) {
