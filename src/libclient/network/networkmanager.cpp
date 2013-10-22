@@ -137,8 +137,10 @@ void NetworkManager::Private::socketDestroyed(QObject *obj)
 
 void NetworkManager::Private::updateSocket()
 {
-    if (!socket.isNull())
-        socket->deleteLater();
+    if (!socket.isNull()) {
+        delete socket.data();
+        socket.clear();
+    }
 
     QString keepaliveAddress = settings->config()->keepaliveAddress();
     RemoteHost remote = NetworkHelper::remoteHost(keepaliveAddress);
@@ -150,7 +152,7 @@ void NetworkManager::Private::updateSocket()
     socket = qobject_cast<QUdpSocket*>( q->createConnection(NetworkManager::UdpSocket) );
     connect(socket.data(), SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
     if (!socket->bind(remote.port)) {
-        LOG_INFO(QString("Unable to bind port %1: %2").arg(remote.port).arg(socket->errorString()));
+        LOG_ERROR(QString("Unable to bind port %1: %2").arg(remote.port).arg(socket->errorString()));
     }
 }
 
@@ -171,7 +173,7 @@ void NetworkManager::Private::updateTimer()
 void NetworkManager::Private::processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port)
 {
     QString hostAndPort = QString("%1:%2").arg(host.toString()).arg(port);
-    LOG_INFO(QString("Received datagram from %1: %2").arg(hostAndPort).arg(QString::fromUtf8(datagram)));
+    LOG_DEBUG(QString("Received datagram from %1: %2").arg(hostAndPort).arg(QString::fromUtf8(datagram)));
 //    if (settings->config()->keepaliveAddress() == hostAndPort) {
         // Master server
         QJsonParseError error;
@@ -302,7 +304,7 @@ QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType soc
     return socket;
 }
 
-QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, const QString &measurement, NetworkManager::SocketType socketType)
+QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, const QString &measurement, const QVariant &definition, NetworkManager::SocketType socketType)
 {
     QAbstractSocket* socket = d->createSocket(socketType);
     if ( !socket ) {
@@ -315,13 +317,14 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
 
     PeerRequest request;
     request.measurement = measurement;
+    request.measurementDefinition = definition;
     request.peer = remote.host;
-    request.port = remote.port;
+    request.port = aliveRemote.port;
     request.protocol = socketType;
 
     if ( socketType != TcpSocket ) {
-        if (!socket->bind(request.port)) {
-            LOG_ERROR(QString("Unable to bind source port to %1").arg(request.port));
+        if (!socket->bind(remote.port)) {
+            LOG_ERROR(QString("Unable to bind source port to %1").arg(remote.port));
             delete socket;
             return NULL;
         }
@@ -342,14 +345,17 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
 
     if ( socketType != UdpSocket ) {
         // Final step: Connect to remote host
-        if (socket->waitForReadyRead(5000))
-            return socket;
+        //if (socket->waitForReadyRead(5000))
+        //    return socket;
 
-        socket->connectToHost(remote.host, remote.port);
-        if (socket->waitForConnected(5000))
-            return socket;
+        const int tries = 20;
+        for(int i=0; i < tries; ++i) {
+            socket->connectToHost(remote.host, remote.port);
+            if (socket->waitForConnected(5000/tries))
+                return socket;
+        }
 
-        LOG_ERROR(QString("Unable to connect tcp socket to %1: %2").arg(hostname).arg(socket->errorString()));
+        LOG_ERROR(QString("Unable to connect tcp socket in %3 tries to %1: %2").arg(hostname).arg(socket->errorString()).arg(tries));
     } else {
         if (!socket->waitForReadyRead(5000))
             LOG_ERROR("Remote did not answer for 5 sec, aborting connection.");

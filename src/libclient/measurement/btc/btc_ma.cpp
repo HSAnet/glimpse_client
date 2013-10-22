@@ -1,5 +1,6 @@
 #include "btc_ma.h"
 #include "../../log/logger.h"
+#include "../../network/networkmanager.h"
 
 #include <QDataStream>
 
@@ -7,13 +8,14 @@ LOGGER(BulkTransportCapacityMA)
 
 BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
 : Measurement(parent)
+, m_downloadSpeed(0.0)
 {
 }
 
 bool BulkTransportCapacityMA::start()
 {
-    LOG_INFO(QString("Connect to %1:%2").arg(definition->host).arg(definition->port));
-    m_tcpSocket->connectToHost(definition->host, definition->port);
+    //LOG_INFO(QString("Connect to %1:%2").arg(definition->host).arg(definition->port));
+    //m_tcpSocket->connectToHost(definition->host, definition->port);
     return true;
 }
 
@@ -57,10 +59,10 @@ void BulkTransportCapacityMA::receiveResponse()
         {
             qreal downloadSpeed = ((qreal)m_bytesReceived / 1024) / ((qreal)m_lasttime / 1000); // kbyte/s
 
-            LOG_INFO(QString("Speed: %1 KByte/s").arg(downloadSpeed, 0, 'g', 0));
+            LOG_INFO(QString("Speed: %1 KByte/s").arg(downloadSpeed, 0, 'f', 0));
 
             // TODO this is were the magic happens
-            m_bytesExpected = 100*1024;
+            m_bytesExpected = 5*1025*1024;
 
             // set timer to zero
             m_time = QTime();
@@ -73,8 +75,8 @@ void BulkTransportCapacityMA::receiveResponse()
         }
         else
         {
-            qreal downloadSpeed = ((qreal)m_bytesReceived / 1024) / ((qreal)m_lasttime / 1000); // kbyte/s
-            LOG_INFO(QString("Speed: %1 KByte/s").arg(downloadSpeed, 0, 'g', 0));
+            m_downloadSpeed = ((qreal)m_bytesReceived / 1024) / ((qreal)m_lasttime / 1000); // kbyte/s
+            LOG_INFO(QString("Speed: %1 KByte/s").arg(m_downloadSpeed, 0, 'f', 0));
 
             emit finished();
         }
@@ -107,7 +109,14 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const Meas
         LOG_WARNING("Definition is empty");
     }
 
-    m_tcpSocket = qobject_cast<QTcpSocket*>(networkManager->createConnection(NetworkManager::TcpSocket));
+    QString hostname = QString("%1:%2").arg(definition->host).arg(definition->port);
+
+    m_tcpSocket = qobject_cast<QTcpSocket*>(networkManager->establishConnection(hostname, "btc_mp", definition->toVariant(), NetworkManager::TcpSocket));
+    if (!m_tcpSocket) {
+        LOG_ERROR("Preparation failed");
+        return false;
+    }
+
     m_tcpSocket->setParent(this);
     m_bytesExpected = 0;
     m_preTest = true;
@@ -122,17 +131,27 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const Meas
     connect(m_tcpSocket, SIGNAL(disconnected()), this, SLOT(serverDisconnected()));
 
     // Signal to start measurement when the client is connected
-    connect(m_tcpSocket, SIGNAL(connected()), this, SLOT(sendInitialRequest()));
+    //connect(m_tcpSocket, SIGNAL(connected()), this, SLOT(sendInitialRequest()));
+
+    sendInitialRequest();
 
     return true;
 }
 
 bool BulkTransportCapacityMA::stop()
 {
+    if (m_tcpSocket) {
+        m_tcpSocket->disconnectFromHost();
+        m_tcpSocket->waitForDisconnected(1000);
+    }
+
     return true;
 }
 
 ResultPtr BulkTransportCapacityMA::result() const
 {
-    return ResultPtr();
+    QVariantMap map;
+    map.insert("download_speed", m_downloadSpeed);
+
+    return ResultPtr(new Result(QDateTime::currentDateTime(), map, QVariant()));
 }

@@ -48,5 +48,5 @@ void Logger::log(Logger::Level level, const QString &funcName, const QString &me
     case Error: levelName = "ERROR"; break;
     }
 
-    qDebug() << levelName << funcName << m_name << ":" << message;
+    qDebug() << levelName << funcName << ":" << message;
 }

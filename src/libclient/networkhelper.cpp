@@ -97,7 +97,7 @@ RemoteHost NetworkHelper::remoteHost(const QString &hostname)
 {
     RemoteHost host;
 
-    if (hostname.contains('.')) {
+    if (hostname.contains(':')) {
         QStringList parts = hostname.split(':');
         host.host = parts.at(0);
         host.port = parts.at(1).toInt();
