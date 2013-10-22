@@ -42,34 +42,34 @@ private:
 };
 
 #define LOGGER(x) \
-    namespace { Logger log(#x); }
+    namespace { Logger logger(#x); }
 
 #if LOG_LEVEL <= LEVEL_TRACE
-#define LOG_TRACE(msg) log.logTrace(Q_FUNC_INFO, msg);
+#define LOG_TRACE(msg) logger.logTrace(Q_FUNC_INFO, msg);
 #else
 #define LOG_TRACE(msg) ;
 #endif
 
 #if LOG_LEVEL <= LEVEL_DEBUG
-#define LOG_DEBUG(msg) log.logDebug(Q_FUNC_INFO, msg);
+#define LOG_DEBUG(msg) logger.logDebug(Q_FUNC_INFO, msg);
 #else
 #define LOG_DEBUG(msg) ;
 #endif
 
 #if LOG_LEVEL <= LEVEL_INFO
-#define LOG_INFO(msg) log.logInfo(Q_FUNC_INFO, msg);
+#define LOG_INFO(msg) logger.logInfo(Q_FUNC_INFO, msg);
 #else
 #define LOG_INFO(msg) ;
 #endif
 
 #if LOG_LEVEL <= LEVEL_WARNING
-#define LOG_WARNING(msg) log.logWarning(Q_FUNC_INFO, msg);
+#define LOG_WARNING(msg) logger.logWarning(Q_FUNC_INFO, msg);
 #else
 #define LOG_WARNING(msg) ;
 #endif
 
 #if LOG_LEVEL <= LEVEL_ERROR
-#define LOG_ERROR(msg) log.logError(Q_FUNC_INFO, msg);
+#define LOG_ERROR(msg) logger.logError(Q_FUNC_INFO, msg);
 #else
 #define LOG_ERROR(msg) ;
 #endif
