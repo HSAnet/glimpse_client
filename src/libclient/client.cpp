@@ -128,7 +128,7 @@ void Client::upnp()
 
 void Client::ping()
 {
-    PingDefinition pingDef("heise.de", 4, 1000);
+    PingDefinition pingDef("123.123.123.123", 4, 2);
     TimingPtr timing(new OnOffTiming(QDateTime::currentDateTime().addSecs(5)));
     TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "ping", timing, pingDef.toVariant()));
     d->scheduler.enqueue(testDefinition);

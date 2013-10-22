@@ -21,7 +21,6 @@ SOURCES +=  \
     tests/natporttimes.cpp \
     settings.cpp \
     webrequester.cpp \
-    ping.cpp \
     tests/speedtest.cpp \
     response.cpp \
     network/requests/request.cpp \
@@ -60,7 +59,10 @@ SOURCES +=  \
     log/logger.cpp \
     measurement/btc/btc_plugin.cpp \
     measurement/upnp/upnp.cpp \
-    measurement/upnp/upnp_plugin.cpp
+    measurement/upnp/upnp_plugin.cpp \
+    measurement/ping/ping_plugin.cpp \
+    measurement/ping/ping_definition.cpp \
+    measurement/ping/ping.cpp
 
 HEADERS += \
     export.h \
@@ -76,7 +78,6 @@ HEADERS += \
     tests/natporttimes.h \
     settings.h \
     webrequester.h \
-    ping.h \
     tests/speedtest.h \
     response.h \
     network/requests/request.h \
@@ -118,7 +119,10 @@ HEADERS += \
     measurement/measurementplugin.h \
     measurement/btc/btc_plugin.h \
     measurement/upnp/upnp.h \
-    measurement/upnp/upnp_plugin.h
+    measurement/upnp/upnp_plugin.h \
+    measurement/ping/ping_plugin.h \
+    measurement/ping/ping_definition.h \
+    measurement/ping/ping.h
 
 OTHER_FILES += \
     libclient.pri

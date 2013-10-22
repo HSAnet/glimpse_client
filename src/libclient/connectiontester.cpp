@@ -1,5 +1,5 @@
 #include "connectiontester.h"
-#include "ping.h"
+#include "measurement/ping/ping.h"
 #include "types.h"
 
 #include <QNetworkConfigurationManager>
@@ -209,23 +209,24 @@ QString ConnectionTester::Private::findDefaultDNS() const
 
 bool ConnectionTester::Private::canPing(const QString &host, int* averagePing) const
 {
+    // TODO invoke scheduler or tell scheduler something is going on outside of its controll
+    PingDefinitionPtr pingDef(new PingDefinition(host, 4, 1000));
     Ping ping;
-    ping.setHost(host);
-    ping.setAmount(1);
+    ping.prepare(NULL, pingDef);
     ping.start();
     ping.waitForFinished();
 
-    // Return the average ping if the caller wants to know it
-    if ( averagePing && ping.exitStatus() == Ping::Normal ) {
-        ping.setAmount(4);
-        ping.start();
-        ping.waitForFinished();
-
-        *averagePing = ping.averagePingTime();
-        return true;
+    int resultAvg = ping.averagePingTime();
+    if (averagePing) {
+        *averagePing = resultAvg;
     }
 
-    return ping.exitStatus() == Ping::Normal;
+    if(resultAvg > 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 #ifdef Q_OS_MAC
