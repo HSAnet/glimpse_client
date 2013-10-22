@@ -25,7 +25,7 @@ ResultPtr Result::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
 
-    return ResultPtr(new Result(map.value("dateTime").toDateTime(),
+    return ResultPtr(new Result(map.value("date_time").toDateTime(),
                                 map.value("probe_result").toString(),
                                 map.value("peer_result").toString()));
 }
@@ -48,7 +48,7 @@ QVariant Result::peerResult() const
 QVariant Result::toVariant() const
 {
     QVariantMap map;
-    map.insert("dateTime", d->dateTime);
+    map.insert("date_time", d->dateTime);
     map.insert("probe_result", d->probeResult);
     map.insert("peer_result", d->peerResult);
     return map;

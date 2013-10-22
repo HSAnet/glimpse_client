@@ -28,8 +28,8 @@ ReportPtr Report::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
 
-    return ReportPtr(new Report(map.value("taskId").toUuid(),
-                                map.value("report-time").toDateTime(),
+    return ReportPtr(new Report(map.value("task_id").toUuid(),
+                                map.value("report_time").toDateTime(),
                                 ptrListFromVariant<Result>(map.value("results"))));
 }
 
@@ -51,8 +51,8 @@ ResultList Report::results() const
 QVariant Report::toVariant() const
 {
     QVariantMap map;
-    map.insert("taskId", taskId());
-    map.insert("report-time", dateTime());
+    map.insert("task_id", taskId());
+    map.insert("report_time", dateTime());
     map.insert("results", ptrListToVariant(results()));
     return map;
 }

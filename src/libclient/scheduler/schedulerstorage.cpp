@@ -1,11 +1,14 @@
 #include "schedulerstorage.h"
 #include "scheduler.h"
+#include "../log/logger.h"
 
 #include <QDir>
 #include <QPointer>
 #include <QDebug>
 #include <QCoreApplication>
 #include <QJsonDocument>
+
+LOGGER(SchedulerStorage)
 
 class SchedulerStorage::Private : public QObject
 {
@@ -43,7 +46,7 @@ void SchedulerStorage::Private::store(const TestDefinitionPtr& test)
         file.write(document.toJson());
         file.close();
     } else {
-        qDebug() << "Unable to open file:" << file.errorString();
+        LOG_ERROR(QString("Unable to open file: %1").arg(file.errorString()));
     }
 }
 
@@ -69,7 +72,12 @@ void SchedulerStorage::Private::testRemoved(const TestDefinitionPtr& test, int p
     if (!realTime)
         return;
 
-    dir.remove(fileNameForTest(test));
+    QString fileName = fileNameForTest(test);
+    if (!dir.remove(fileName)) {
+        LOG_WARNING(QString("Unable to remove file: %1").arg(dir.absoluteFilePath(fileName)));
+    } else {
+        LOG_DEBUG(QString("Deleted file: %1").arg(dir.absoluteFilePath(fileName)));
+    }
 }
 
 SchedulerStorage::SchedulerStorage(Scheduler *scheduler, QObject *parent)
@@ -98,6 +106,9 @@ bool SchedulerStorage::isRealtime() const
 
 void SchedulerStorage::storeData()
 {
+    if (d->realTime)
+        return;
+
     foreach(const TestDefinitionPtr& test, d->scheduler->tests())
         d->store(test);
 }
