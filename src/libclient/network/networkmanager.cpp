@@ -315,6 +315,12 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
     RemoteHost remote = NetworkHelper::remoteHost(hostname);
     RemoteHost aliveRemote = NetworkHelper::remoteHost(d->settings->config()->keepaliveAddress());
 
+    if (!aliveRemote.isValid()) {
+        LOG_ERROR(QString("Invalid alive remote: '%1' can't talk to alive server").arg(d->settings->config()->keepaliveAddress()));
+        delete socket;
+        return NULL;
+    }
+
     PeerRequest request;
     request.measurement = measurement;
     request.measurementDefinition = definition;

@@ -1,4 +1,5 @@
 #include "reportstorage.h"
+#include "../log/logger.h"
 
 #include <QPointer>
 #include <QDir>
@@ -8,20 +9,25 @@
 #include <QFile>
 #include <QDebug>
 
+LOGGER(ReportStorage)
+
 class ReportStorage::Private : public QObject
 {
     Q_OBJECT
 
 public:
     Private()
-     : dir(qApp->applicationDirPath())
-     ,realTime(true)
+    : loading(false)
+    , dir(qApp->applicationDirPath())
+    , realTime(true)
     {
         dir.mkdir("reports");
         dir.cd("reports");
     }
 
     // Properties
+    bool loading;
+
     QDir dir;
     bool realTime;
     QPointer<ReportScheduler> scheduler;
@@ -44,7 +50,7 @@ void ReportStorage::Private::store(const ReportPtr &report)
         file.write(document.toJson());
         file.close();
     } else {
-        qDebug() << "Unable to open file:" << file.errorString();
+        LOG_ERROR(QString("Unable to open file: %1").arg(file.errorString()));
     }
 }
 
@@ -57,7 +63,7 @@ QString ReportStorage::Private::fileNameForReport(const ReportPtr &report) const
 
 void ReportStorage::Private::reportAdded(const ReportPtr &report)
 {
-    if ( !realTime )
+    if ( !realTime || loading )
         return;
 
     store(report);
@@ -109,16 +115,25 @@ void ReportStorage::storeData()
 
 void ReportStorage::loadData()
 {
+    d->loading = true;
+
     foreach(const QString& fileName, d->dir.entryList(QDir::Files)) {
         QFile file(d->dir.absoluteFilePath(fileName));
         file.open(QIODevice::ReadOnly);
 
         // TODO: Error checking
-        QJsonDocument document = QJsonDocument::fromJson(file.readAll());
-        ReportPtr report = Report::fromVariant(document.toVariant());
+        QJsonParseError error;
+        QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
 
-        d->scheduler->addReport(report);
+        if (error.error == QJsonParseError::NoError) {
+            ReportPtr report = Report::fromVariant(document.toVariant());
+            d->scheduler->addReport(report);
+        } else {
+            LOG_ERROR(QString("Error loading file %1: %2").arg(d->dir.absoluteFilePath(fileName)).arg(error.errorString()));
+        }
     }
+
+    d->loading = false;
 }
 
 #include "reportstorage.moc"
