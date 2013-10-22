@@ -15,6 +15,7 @@
 #include "timing/onofftiming.h"
 #include "task/task.h"
 #include "measurement/btc/btc_definition.h"
+#include "measurement/ping/ping_definition.h"
 
 class Client::Private : public QObject
 {
@@ -122,6 +123,15 @@ void Client::upnp()
     TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "upnp", timing, QVariant()));
     d->scheduler.enqueue(testDefinition);
 }
+
+void Client::ping()
+{
+    PingDefinition pingDef("heise.de", 4, 1000);
+    TimingPtr timing(new OnOffTiming(QDateTime::currentDateTime().addSecs(5)));
+    TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "ping", timing, pingDef.toVariant()));
+    d->scheduler.enqueue(testDefinition);
+}
+
 
 void Client::setStatus(Client::Status status)
 {
