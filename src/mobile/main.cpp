@@ -1,7 +1,7 @@
 #include "client.h"
 #include "tests/test.h"
 #include "webrequester.h"
-#include "ping.h"
+#include "measurement/ping/ping.h"
 #include "connectiontester.h"
 #include "network/requests/requests.h"
 #include "scheduler/scheduler.h"

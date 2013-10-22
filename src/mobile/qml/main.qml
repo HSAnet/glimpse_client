@@ -282,6 +282,13 @@ Rectangle {
                     style: ButtonStyle {}
                     onClicked: client.upnp()
                 }
+
+                Button {
+                    text: "Ping"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    style: ButtonStyle {}
+                    onClicked: client.ping()
+                }
             }
         }
     }
