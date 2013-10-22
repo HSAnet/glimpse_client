@@ -46,7 +46,7 @@ void Scheduler::Private::updateTimer()
         timer.stop();
         LOG_DEBUG("Scheduling timer stopped");
     } else {
-        const TestDefinitionPtr& td = tests.at(0);
+        const TestDefinitionPtr td = tests.at(0);
         int ms = td->timing()->timeLeft();
         if ( ms > 0 )
             timer.start( ms );
