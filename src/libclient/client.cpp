@@ -6,15 +6,25 @@
 #include "report/reportstorage.h"
 #include "scheduler/scheduler.h"
 #include "settings.h"
+#include "log/logger.h"
 
+#include <QCoreApplication>
 #include <QNetworkAccessManager>
-
 #include <QDebug>
+
+#ifdef Q_OS_UNIX
+#include <QSocketNotifier>
+#include <sys/socket.h>
+#include <signal.h>
+#include <unistd.h>
+#endif // Q_OS_UNIX
 
 // TEST INCLUDES
 #include "timing/onofftiming.h"
 #include "task/task.h"
 #include "measurement/btc/btc_definition.h"
+
+LOGGER(Client)
 
 class Client::Private : public QObject
 {
@@ -53,9 +63,136 @@ public:
 
     ControlController controlController;
 
+#ifdef Q_OS_UNIX
+    static int sigintFd[2];
+    static int sighupFd[2];
+    static int sigtermFd[2];
+
+    QSocketNotifier* snInt;
+    QSocketNotifier* snHup;
+    QSocketNotifier* snTerm;
+
+    // Unix signal handlers.
+    static void intSignalHandler(int unused);
+    static void hupSignalHandler(int unused);
+    static void termSignalHandler(int unused);
+#endif // Q_OS_UNIX
+
+    // Functions
+    void setupUnixSignalHandlers();
+
 public slots:
+    void handleSigInt();
+    void handleSigHup();
+    void handleSigTerm();
     void taskFinished(const TestDefinitionPtr& test, const ResultPtr& result);
 };
+
+int Client::Private::sigintFd[2];
+int Client::Private::sighupFd[2];
+int Client::Private::sigtermFd[2];
+
+void Client::Private::intSignalHandler(int)
+{
+    char a = 1;
+    ::write(sigintFd[0], &a, sizeof(a));
+}
+
+void Client::Private::hupSignalHandler(int)
+{
+    char a = 1;
+    ::write(sighupFd[0], &a, sizeof(a));
+}
+
+void Client::Private::termSignalHandler(int)
+{
+    char a = 1;
+    ::write(sigtermFd[0], &a, sizeof(a));
+}
+
+void Client::Private::setupUnixSignalHandlers()
+{
+#ifdef Q_OS_UNIX
+    struct sigaction Int, hup, term;
+
+    Int.sa_handler = Client::Private::intSignalHandler;
+    sigemptyset(&Int.sa_mask);
+    Int.sa_flags = 0;
+    Int.sa_flags |= SA_RESTART;
+
+    if (sigaction(SIGINT, &Int, 0) > 0)
+       return;
+
+    hup.sa_handler = Client::Private::hupSignalHandler;
+    sigemptyset(&hup.sa_mask);
+    hup.sa_flags = 0;
+    hup.sa_flags |= SA_RESTART;
+
+    if (sigaction(SIGHUP, &hup, 0) > 0)
+       return;
+
+    term.sa_handler = Client::Private::termSignalHandler;
+    sigemptyset(&term.sa_mask);
+    term.sa_flags |= SA_RESTART;
+
+    if (sigaction(SIGTERM, &term, 0) > 0)
+       return;
+
+    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigintFd))
+       qFatal("Couldn't create INT socketpair");
+
+    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sighupFd))
+       qFatal("Couldn't create HUP socketpair");
+
+    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigtermFd))
+       qFatal("Couldn't create TERM socketpair");
+
+    snInt = new QSocketNotifier(sigintFd[1], QSocketNotifier::Read, this);
+    connect(snInt, SIGNAL(activated(int)), this, SLOT(handleSigInt()));
+
+    snHup = new QSocketNotifier(sighupFd[1], QSocketNotifier::Read, this);
+    connect(snHup, SIGNAL(activated(int)), this, SLOT(handleSigHup()));
+
+    snTerm = new QSocketNotifier(sigtermFd[1], QSocketNotifier::Read, this);
+    connect(snTerm, SIGNAL(activated(int)), this, SLOT(handleSigTerm()));
+#endif // Q_OS_UNIX
+}
+
+void Client::Private::handleSigInt()
+{
+    snInt->setEnabled(false);
+    char tmp;
+    ::read(sigintFd[1], &tmp, sizeof(tmp));
+
+    LOG_INFO("Interrupt requested, quitting.");
+    qApp->quit();
+
+    snInt->setEnabled(true);
+}
+
+void Client::Private::handleSigTerm()
+{
+    snTerm->setEnabled(false);
+    char tmp;
+    ::read(sigtermFd[1], &tmp, sizeof(tmp));
+
+    LOG_INFO("Termination requested, quitting.");
+    qApp->quit();
+
+    snTerm->setEnabled(true);
+}
+
+void Client::Private::handleSigHup()
+{
+    snHup->setEnabled(false);
+    char tmp;
+    ::read(sighupFd[1], &tmp, sizeof(tmp));
+
+    LOG_INFO("Hangup detected, quitting.");
+    qApp->quit();
+
+    snHup->setEnabled(true);
+}
 
 void Client::Private::taskFinished(const TestDefinitionPtr &test, const ResultPtr &result)
 {
@@ -96,6 +233,7 @@ bool Client::init()
     qRegisterMetaType<TestDefinitionPtr>();
     qRegisterMetaType<ResultPtr>();
 
+    d->setupUnixSignalHandlers();
     d->settings.init();
 
     // Initialize storages
