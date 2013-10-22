@@ -1,5 +1,6 @@
 #include "btc_ma.h"
 #include "../../log/logger.h"
+#include "../../network/networkmanager.h"
 
 #include <QDataStream>
 
@@ -12,8 +13,8 @@ BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
 
 bool BulkTransportCapacityMA::start()
 {
-    LOG_INFO(QString("Connect to %1:%2").arg(definition->host).arg(definition->port));
-    m_tcpSocket->connectToHost(definition->host, definition->port);
+    //LOG_INFO(QString("Connect to %1:%2").arg(definition->host).arg(definition->port));
+    //m_tcpSocket->connectToHost(definition->host, definition->port);
     return true;
 }
 
@@ -107,7 +108,12 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const Meas
         LOG_WARNING("Definition is empty");
     }
 
-    m_tcpSocket = qobject_cast<QTcpSocket*>(networkManager->createConnection(NetworkManager::TcpSocket));
+    m_tcpSocket = qobject_cast<QTcpSocket*>(networkManager->establishConnection(definition->host, "btc_mp", definition->toVariant(), NetworkManager::TcpSocket));
+    if (!m_tcpSocket) {
+        LOG_ERROR("Preparation failed");
+        return false;
+    }
+
     m_tcpSocket->setParent(this);
     m_bytesExpected = 0;
     m_preTest = true;

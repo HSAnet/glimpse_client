@@ -150,7 +150,7 @@ void NetworkManager::Private::updateSocket()
     socket = qobject_cast<QUdpSocket*>( q->createConnection(NetworkManager::UdpSocket) );
     connect(socket.data(), SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
     if (!socket->bind(remote.port)) {
-        LOG_INFO(QString("Unable to bind port %1: %2").arg(remote.port).arg(socket->errorString()));
+        LOG_ERROR(QString("Unable to bind port %1: %2").arg(remote.port).arg(socket->errorString()));
     }
 }
 
@@ -171,7 +171,7 @@ void NetworkManager::Private::updateTimer()
 void NetworkManager::Private::processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port)
 {
     QString hostAndPort = QString("%1:%2").arg(host.toString()).arg(port);
-    LOG_INFO(QString("Received datagram from %1: %2").arg(hostAndPort).arg(QString::fromUtf8(datagram)));
+    LOG_DEBUG(QString("Received datagram from %1: %2").arg(hostAndPort).arg(QString::fromUtf8(datagram)));
 //    if (settings->config()->keepaliveAddress() == hostAndPort) {
         // Master server
         QJsonParseError error;
@@ -302,7 +302,7 @@ QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType soc
     return socket;
 }
 
-QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, const QString &measurement, NetworkManager::SocketType socketType)
+QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, const QString &measurement, const QVariant &definition, NetworkManager::SocketType socketType)
 {
     QAbstractSocket* socket = d->createSocket(socketType);
     if ( !socket ) {
@@ -315,6 +315,7 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
 
     PeerRequest request;
     request.measurement = measurement;
+    request.measurementDefinition = definition;
     request.peer = remote.host;
     request.port = remote.port;
     request.protocol = socketType;

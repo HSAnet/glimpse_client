@@ -1,5 +1,6 @@
 #include "btc_mp.h"
 #include "../../log/logger.h"
+#include "../../network/networkmanager.h"
 
 #include <QDataStream>
 
@@ -8,6 +9,7 @@ LOGGER(BulkTransportCapacityMP)
 BulkTransportCapacityMP::BulkTransportCapacityMP(QObject *parent)
 : Measurement(parent)
 {
+    resetServer();
 }
 
 bool BulkTransportCapacityMP::start()
@@ -107,6 +109,7 @@ bool BulkTransportCapacityMP::prepare(NetworkManager *networkManager, const Meas
 
 bool BulkTransportCapacityMP::stop()
 {
+    delete m_tcpSocket;
     return true;
 }
 

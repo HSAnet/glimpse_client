@@ -2,13 +2,14 @@
 #define MEASUREMENT_H
 
 #include "measurementdefinition.h"
-#include "../network/networkmanager.h"
 #include "../task/result.h"
 
 #include <QSharedPointer>
 
 class Measurement;
 typedef QSharedPointer<Measurement> MeasurementPtr;
+
+class NetworkManager;
 
 class CLIENT_API Measurement : public QObject
 {

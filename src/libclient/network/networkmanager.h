@@ -38,7 +38,10 @@ public:
 
     // Creates a new connection
     QAbstractSocket* createConnection(SocketType socketType);
-    QAbstractSocket* establishConnection(const QString& hostname, const QString& measurement, SocketType socketType);
+    QAbstractSocket* establishConnection(const QString& hostname,
+                                         const QString& measurement,
+                                         const QVariant& definition,
+                                         SocketType socketType);
 
     QTcpServer* createServerSocket();
 
