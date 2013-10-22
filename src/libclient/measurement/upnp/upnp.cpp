@@ -193,6 +193,7 @@ bool UPnP::start()
 
     freeUPNPDevlist(devlist);
 
+    emit finished();
     return true; // TODO return false if something went wrong or if there are no results
 }
 

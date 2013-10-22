@@ -75,6 +75,8 @@ void BulkTransportCapacityMA::receiveResponse()
         {
             qreal downloadSpeed = ((qreal)m_bytesReceived / 1024) / ((qreal)m_lasttime / 1000); // kbyte/s
             LOG_INFO(QString("Speed: %1 KByte/s").arg(downloadSpeed, 0, 'g', 0));
+
+            emit finished();
         }
     }
 }
