@@ -33,6 +33,7 @@ private:
     quint64 m_totalBytesReceived; // with first packets
     quint64 m_bytesExpected;
     int m_lasttime;
+    qreal m_downloadSpeed;
 
 private slots:
     void sendInitialRequest();

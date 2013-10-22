@@ -137,8 +137,10 @@ void NetworkManager::Private::socketDestroyed(QObject *obj)
 
 void NetworkManager::Private::updateSocket()
 {
-    if (!socket.isNull())
-        socket->deleteLater();
+    if (!socket.isNull()) {
+        delete socket.data();
+        socket.clear();
+    }
 
     QString keepaliveAddress = settings->config()->keepaliveAddress();
     RemoteHost remote = NetworkHelper::remoteHost(keepaliveAddress);
@@ -321,8 +323,8 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
     request.protocol = socketType;
 
     if ( socketType != TcpSocket ) {
-        if (!socket->bind(request.port)) {
-            LOG_ERROR(QString("Unable to bind source port to %1").arg(request.port));
+        if (!socket->bind(remote.port)) {
+            LOG_ERROR(QString("Unable to bind source port to %1").arg(remote.port));
             delete socket;
             return NULL;
         }
@@ -343,14 +345,17 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
 
     if ( socketType != UdpSocket ) {
         // Final step: Connect to remote host
-        if (socket->waitForReadyRead(5000))
-            return socket;
+        //if (socket->waitForReadyRead(5000))
+        //    return socket;
 
-        socket->connectToHost(remote.host, remote.port);
-        if (socket->waitForConnected(5000))
-            return socket;
+        const int tries = 20;
+        for(int i=0; i < tries; ++i) {
+            socket->connectToHost(remote.host, remote.port);
+            if (socket->waitForConnected(5000/tries))
+                return socket;
+        }
 
-        LOG_ERROR(QString("Unable to connect tcp socket to %1: %2").arg(hostname).arg(socket->errorString()));
+        LOG_ERROR(QString("Unable to connect tcp socket in %3 tries to %1: %2").arg(hostname).arg(socket->errorString()).arg(tries));
     } else {
         if (!socket->waitForReadyRead(5000))
             LOG_ERROR("Remote did not answer for 5 sec, aborting connection.");
