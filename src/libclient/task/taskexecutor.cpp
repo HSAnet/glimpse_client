@@ -16,6 +16,9 @@ public:
     MeasurementFactory factory;
     QPointer<NetworkManager> networkManager;
 
+    TestDefinitionPtr currentTest;
+    MeasurementPtr measurement;
+
 public slots:
     void execute(const TestDefinitionPtr& test) {
         LOG_INFO(QString("Starting execution of %1").arg(test->name()));
@@ -23,18 +26,15 @@ public slots:
         emit started(test);
 
         // TODO: Check the timing (too long ago?)
-
-         // FIXME: read from test
-
-        MeasurementPtr measurement = factory.createMeasurement(test->name());
+        currentTest = test;
+        measurement = factory.createMeasurement(test->name());
         if ( !measurement.isNull() ) {
+            connect(measurement.data(), SIGNAL(finished()), this, SLOT(measurementFinished()));
+
             MeasurementDefinitionPtr definition = factory.createMeasurementDefinition(test->name(), test->measurementDefinition());
 
             if (measurement->prepare(networkManager, definition)) {
                 if (measurement->start()) {
-                    measurement->stop();
-                    LOG_INFO(QString("Finished execution of %1 (success)").arg(test->name()));
-                    emit finished(test, measurement->result());
                     return;
                 }
             }
@@ -44,6 +44,13 @@ public slots:
 
         LOG_INFO(QString("Finished execution of %1 (failed)").arg(test->name()));
         emit finished(test, ResultPtr());
+    }
+
+    void measurementFinished() {
+        measurement->disconnect(this, SLOT(measurementFinished()));
+        LOG_INFO(QString("Finished execution of %1 (success)").arg(currentTest->name()));
+        emit finished(currentTest, measurement->result());
+        measurement.clear();
     }
 
 signals:
@@ -60,6 +67,7 @@ public:
     {
         // Should we really have a background thread running
         // all the time?
+        taskThread.setObjectName("TaskExecutorThread");
         taskThread.start();
         executor.moveToThread(&taskThread);
 

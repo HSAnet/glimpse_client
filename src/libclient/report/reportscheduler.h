@@ -11,7 +11,7 @@ public:
     ReportScheduler();
     ~ReportScheduler();
 
-    Report reportByTaskId(const QUuid& taskId) const;
+    ReportPtr reportByTaskId(const QUuid& taskId) const;
 
     ReportList reports() const;
 

@@ -60,7 +60,9 @@ public slots:
 
 void Client::Private::taskFinished(const TestDefinitionPtr &test, const ResultPtr &result)
 {
-    ResultList results;
+    ReportPtr oldReport = reportScheduler.reportByTaskId(test->id());
+
+    ResultList results = oldReport.isNull() ? ResultList() : oldReport->results();
     results.append(result);
 
     ReportPtr report(new Report(test->id(), QDateTime::currentDateTime(), results));
@@ -120,7 +122,7 @@ void Client::btc()
 void Client::upnp()
 {
     TimingPtr timing(new OnOffTiming(QDateTime::currentDateTime().addSecs(5)));
-    TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "upnp", timing, QVariant()));
+    TestDefinitionPtr testDefinition(new TestDefinition("{3702e527-f84f-4542-8df6-4e3d2a0ec977}", "upnp", timing, QVariant()));
     d->scheduler.enqueue(testDefinition);
 }
 
