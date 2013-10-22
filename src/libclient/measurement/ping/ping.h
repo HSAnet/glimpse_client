@@ -5,6 +5,7 @@
 #include "ping_definition.h"
 
 #include <QProcess>
+#include <QTextStream>
 
 class Ping : public Measurement
 {
