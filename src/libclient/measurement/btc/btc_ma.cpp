@@ -140,6 +140,11 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const Meas
 
 bool BulkTransportCapacityMA::stop()
 {
+    if (m_tcpSocket) {
+        m_tcpSocket->disconnectFromHost();
+        m_tcpSocket->waitForDisconnected(1000);
+    }
+
     return true;
 }
 

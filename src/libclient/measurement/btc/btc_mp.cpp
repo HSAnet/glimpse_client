@@ -43,6 +43,7 @@ void BulkTransportCapacityMP::newClientConnection()
         m_tcpSocket = m_tcpServer->nextPendingConnection();
 
         connect(m_tcpSocket, SIGNAL(disconnected()), m_tcpSocket, SLOT(deleteLater()));
+        connect(m_tcpSocket, SIGNAL(disconnected()), this, SIGNAL(finished()));
         connect(m_tcpSocket, SIGNAL(readyRead()), this, SLOT(receiveRequest()));
         connect(m_tcpSocket, SIGNAL(destroyed()), this, SLOT(resetServer()));
     }
