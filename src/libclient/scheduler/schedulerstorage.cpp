@@ -16,7 +16,8 @@ class SchedulerStorage::Private : public QObject
 
 public:
     Private()
-    : dir(qApp->applicationDirPath())
+    : loading(false)
+    , dir(qApp->applicationDirPath())
     , realTime(true)
     {
         dir.mkdir("scheduler");
@@ -24,6 +25,8 @@ public:
     }
 
     // Properties
+    bool loading;
+
     QPointer<Scheduler> scheduler;
     QDir dir;
     bool realTime;
@@ -59,7 +62,7 @@ void SchedulerStorage::Private::testAdded(const TestDefinitionPtr& test, int pos
 {
     Q_UNUSED(position);
 
-    if (!realTime)
+    if (!realTime || loading)
         return;
 
     store(test);
@@ -115,6 +118,8 @@ void SchedulerStorage::storeData()
 
 void SchedulerStorage::loadData()
 {
+    d->loading = true;
+
     foreach(const QString& fileName, d->dir.entryList(QDir::Files)) {
         QFile file(d->dir.absoluteFilePath(fileName));
         file.open(QIODevice::ReadOnly);
@@ -132,6 +137,8 @@ void SchedulerStorage::loadData()
             LOG_ERROR(QString("Error reading %1: %2").arg(d->dir.absoluteFilePath(fileName)).arg(error.errorString()));
         }
     }
+
+    d->loading = false;
 }
 
 #include "schedulerstorage.moc"
