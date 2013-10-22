@@ -38,7 +38,6 @@ private slots:
     void readyRead();
 
 signals:
-    void stopped();
     void statusChanged(Status status);
     void ping(int time);
 };

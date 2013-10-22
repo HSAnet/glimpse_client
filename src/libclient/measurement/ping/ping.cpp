@@ -86,7 +86,12 @@ bool Ping::stop()
 
 ResultPtr Ping::result() const
 {
-    return ResultPtr();
+    QVariantList res;
+    foreach(int val, pingTime) {
+        res<<val;
+    }
+
+    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
 }
 
 void Ping::started()
@@ -94,7 +99,6 @@ void Ping::started()
     pingTime.clear();
 
     setStatus(Ping::Running);
-    emit started();
 }
 
 void Ping::finished(int exitCode, QProcess::ExitStatus exitStatus)
@@ -103,7 +107,7 @@ void Ping::finished(int exitCode, QProcess::ExitStatus exitStatus)
     Q_UNUSED(exitStatus);
 
     setStatus(Ping::Finished);
-    emit stopped();
+    emit Measurement::finished();
 }
 
 void Ping::readyRead()
