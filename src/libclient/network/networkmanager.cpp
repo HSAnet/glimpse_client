@@ -317,7 +317,7 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
     request.measurement = measurement;
     request.measurementDefinition = definition;
     request.peer = remote.host;
-    request.port = remote.port;
+    request.port = aliveRemote.port;
     request.protocol = socketType;
 
     if ( socketType != TcpSocket ) {

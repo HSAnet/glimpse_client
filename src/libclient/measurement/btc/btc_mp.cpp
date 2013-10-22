@@ -15,7 +15,9 @@ BulkTransportCapacityMP::BulkTransportCapacityMP(QObject *parent)
 bool BulkTransportCapacityMP::start()
 {
     // Start listening
-    return m_tcpServer->listen(QHostAddress::Any, definition->port);
+    bool ret = m_tcpServer->listen(QHostAddress::Any, definition->port);
+    LOG_DEBUG(QString("Listening on port %1: %2").arg(definition->port).arg(ret));
+    return ret;
 }
 
 qint64 BulkTransportCapacityMP::sendResponse(quint64 bytes)
@@ -57,15 +59,15 @@ void BulkTransportCapacityMP::receiveRequest()
 {
     LOG_INFO("New client request");
 
-    // get bytes from message
-    QDataStream in(m_tcpSocket);
-
     // abort if received data is not what we expected
     if (m_tcpSocket->bytesAvailable() < (int)sizeof(quint64))
     {
-        LOG_ERROR("Data length is not what we expected");
+        LOG_DEBUG("Data length is not what we expected");
         return;
     }
+
+    // get bytes from message
+    QDataStream in(m_tcpSocket);
 
     quint64 bytes;
     in>>bytes;
@@ -80,7 +82,6 @@ void BulkTransportCapacityMP::handleError(QAbstractSocket::SocketError socketErr
     QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());
     LOG_ERROR(QString("Socket Error: %1").arg(socket->errorString()));
 }
-
 
 Measurement::Status BulkTransportCapacityMP::status() const
 {

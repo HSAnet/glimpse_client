@@ -111,7 +111,7 @@ bool Client::init()
 
 void Client::btc()
 {
-    BulkTransportCapacityDefinition btcDef("141.82.59.143", 3365, 4096);
+    BulkTransportCapacityDefinition btcDef("141.82.49.80", 3365, 4096);
 
     TimingPtr timing(new OnOffTiming(QDateTime::currentDateTime().addSecs(5)));
     TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "btc_ma", timing, btcDef.toVariant()));
