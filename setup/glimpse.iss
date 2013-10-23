@@ -8,6 +8,7 @@
 #define MyAppExeName "mobile.exe"
 
 #define QtDir "C:\Qt\Qt5.1.1\5.1.1\msvc2012_64"
+#define BuildDir "C:\Source\build-client-Desktop_Qt_5_1_1_MSVC2012_64bit-Release"
 
 [Setup]
 ; Restrict to 64 bit
@@ -42,12 +43,24 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 [Files]
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 ; Glimpse Files
-Source: "C:\Users\gri\Desktop\glimpse\mobile.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\plugins\*"; DestDir: "{app}\plugins"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "C:\Users\gri\Desktop\glimpse\qml\*"; DestDir: "{app}\qml"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "urls\*"; DestDir: "{app}\urls"; Flags: ignoreversion createallsubdirs recursesubdirs
+
+; Commandline
+Source: "{#BuildDir}\src\console\release\mplane.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+; Desktop
+Source: "{#BuildDir}\src\desktop\release\desktop.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+; Mobile Ui
+Source: "{#BuildDir}\src\mobile\release\mobile.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BuildDir}\src\mobile\qml\*"; DestDir: "{app}\qml"; Flags: ignoreversion createallsubdirs recursesubdirs
+
+; Url Files
+Source: "urls\*.url"; DestDir: "{app}\urls"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 ; Qt Files
+Source: "{#QtDir}\plugins\*"; DestDir: "{app}\plugins"; Excludes: "*d.dll,*.pdb"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "{#QtDir}\qml\*"; DestDir: "{app}\qml"; Excludes: "*d.dll,*.pdb,*.qmltypes"; Flags: ignoreversion createallsubdirs recursesubdirs
+
 Source: "{#QtDir}\bin\d3dcompiler_46.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#QtDir}\bin\icudt51.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#QtDir}\bin\icuin51.dll"; DestDir: "{app}"; Flags: ignoreversion
