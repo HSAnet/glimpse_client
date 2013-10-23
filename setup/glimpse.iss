@@ -7,7 +7,13 @@
 #define MyAppURL "http://www.measure-it.de"
 #define MyAppExeName "mobile.exe"
 
+#define QtDir "C:\Qt\Qt5.1.1\5.1.1\msvc2012_64"
+
 [Setup]
+; Restrict to 64 bit
+ArchitecturesInstallIn64BitMode=x64
+ArchitecturesAllowed=x64
+
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
@@ -21,7 +27,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-OutputBaseFilename=setup
+OutputBaseFilename={#MyAppName}_{#MyAppVersion}_x64_setup
 Compression=lzma
 SolidCompression=yes
 
@@ -35,27 +41,40 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-Source: "C:\Users\gri\Desktop\glimpse\d3dcompiler_46.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\icudt51.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\icuin51.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\icuuc51.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\libGLESv2.dll"; DestDir: "{app}"; Flags: ignoreversion
+; Glimpse Files
 Source: "C:\Users\gri\Desktop\glimpse\mobile.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\Qt5Qml.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\Qt5Quick.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\Qt5V8.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gri\Desktop\glimpse\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\gri\Desktop\glimpse\plugins\*"; DestDir: "{app}\plugins"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "C:\Users\gri\Desktop\glimpse\qml\*"; DestDir: "{app}\qml"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "urls\*"; DestDir: "{app}\urls"; Flags: ignoreversion createallsubdirs recursesubdirs
+
+; Qt Files
+Source: "{#QtDir}\bin\d3dcompiler_46.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\icudt51.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\icuin51.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\icuuc51.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\libGLESv2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\Qt5Qml.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\Qt5Quick.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\Qt5V8.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
+Name: "{group}\{cm:WebsiteUrls}\Glimpse"; Filename: "{app}\urls\measure-it.url"
+Name: "{group}\{cm:WebsiteUrls}\Hochschule Augsburg"; Filename: "{app}\urls\hsa.url"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: quicklaunchicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[CustomMessages]
+german.WebsiteUrls=Webseiten
+english.WebsiteUrls=Websites
+
+[Messages]
+BeveledLabel=Hochschule Augsburg
