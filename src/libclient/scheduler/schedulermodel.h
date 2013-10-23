@@ -7,8 +7,9 @@ class Scheduler;
 
 class SchedulerModel : public QAbstractTableModel
 {
-    Q_ENUMS(Roles Mode)
     Q_OBJECT
+    Q_ENUMS(Roles Mode)
+    Q_PROPERTY(Scheduler* scheduler READ scheduler WRITE setScheduler NOTIFY schedulerChanged)
 
 public:
     SchedulerModel(QObject* parent = 0);
@@ -40,6 +41,9 @@ public:
     int columnCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+
+signals:
+    void schedulerChanged();
 
 protected:
     class Private;

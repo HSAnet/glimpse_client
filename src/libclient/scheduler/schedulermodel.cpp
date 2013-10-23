@@ -78,19 +78,20 @@ void SchedulerModel::setScheduler(Scheduler *scheduler)
         return;
 
     if (d->scheduler) {
-        disconnect(d->scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr,int)), this, SLOT(testAdded(TestDefinitionPtr,int)));
-        disconnect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr,int)), this, SLOT(testRemoved(TestDefinitionPtr,int)));
-        disconnect(d->scheduler.data(), SIGNAL(testMoved(TestDefinitionPtr,int,int)), this, SLOT(testMoved(TestDefinitionPtr,int,int)));
+        disconnect(d->scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr,int)), d, SLOT(testAdded(TestDefinitionPtr,int)));
+        disconnect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr,int)), d, SLOT(testRemoved(TestDefinitionPtr,int)));
+        disconnect(d->scheduler.data(), SIGNAL(testMoved(TestDefinitionPtr,int,int)), d, SLOT(testMoved(TestDefinitionPtr,int,int)));
     }
 
     d->scheduler = scheduler;
 
     if (d->scheduler) {
-        connect(d->scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr,int)), this, SLOT(testAdded(TestDefinitionPtr,int)));
-        connect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr,int)), this, SLOT(testRemoved(TestDefinitionPtr,int)));
-        connect(d->scheduler.data(), SIGNAL(testMoved(TestDefinitionPtr,int,int)), this, SLOT(testMoved(TestDefinitionPtr,int,int)));
+        connect(d->scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr,int)), d, SLOT(testAdded(TestDefinitionPtr,int)));
+        connect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr,int)), d, SLOT(testRemoved(TestDefinitionPtr,int)));
+        connect(d->scheduler.data(), SIGNAL(testMoved(TestDefinitionPtr,int,int)), d, SLOT(testMoved(TestDefinitionPtr,int,int)));
     }
 
+    emit schedulerChanged();
     reset();
 }
 
@@ -186,3 +187,5 @@ QVariant SchedulerModel::headerData(int section, Qt::Orientation orientation, in
         return QVariant();
     }
 }
+
+#include "schedulermodel.moc"

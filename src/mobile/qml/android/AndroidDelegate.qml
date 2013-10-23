@@ -50,6 +50,7 @@ Item {
     height: 100
 
     property alias text: textitem.text
+    property bool showArrow: true
     signal clicked
 
     Rectangle {
@@ -81,6 +82,7 @@ Item {
         anchors.rightMargin: 20
         anchors.verticalCenter: parent.verticalCenter
         source: "images/navigation_next_item.png"
+        visible: root.showArrow
     }
 
     MouseArea {

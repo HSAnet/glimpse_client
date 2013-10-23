@@ -227,18 +227,20 @@ Rectangle {
             statusText.text = currentItem.subtitle;
         }
 
-        initialItem: Item {
+        initialItem: Flickable {
             property string title: "Glimpse"
             property string subtitle: client.status == Client.Registered ? qsTr("Logged in") : qsTr("Please log in")
 
-            Column {
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: parent.top
-                    margins: 20
-                }
+            width: parent.width
+            height: parent.height
 
+            flickableDirection: Flickable.VerticalFlick
+            //contentWidth: column.width
+            contentHeight: column.height
+
+            Column {
+                id: column
+                width: parent.width
                 spacing: 50
 
                 Button {
@@ -249,10 +251,10 @@ Rectangle {
                 }
 
                 Button {
-                    text: "Login"
+                    text: "Scheduler"
                     anchors.horizontalCenter: parent.horizontalCenter
                     style: ButtonStyle {}
-                    onClicked: pageStack.push(Qt.resolvedUrl("Login.qml"))
+                    onClicked: pageStack.push(Qt.resolvedUrl("SchedulerPage.qml"))
                 }
 
                 Button {
