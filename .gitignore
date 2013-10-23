@@ -8,4 +8,5 @@ android/java.pro
 android/libjava.so
 android/local.properties
 android/assets/qml
+android/assets/--Managed_by_Qt_Creator--
 *.pro.user*
