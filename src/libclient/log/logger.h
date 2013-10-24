@@ -11,6 +11,7 @@
 #define LEVEL_INFO 2
 #define LEVEL_WARNING 3
 #define LEVEL_ERROR 4
+#define LEVEL_NONE 5
 
 #define LOG_LEVEL LEVEL_TRACE
 
@@ -41,8 +42,12 @@ private:
     QString m_name;
 };
 
+#if LOG_LEVEL == LEVEL_NONE
+#define LOGGER(x)
+#else
 #define LOGGER(x) \
     namespace { Logger logger(#x); }
+#endif
 
 #if LOG_LEVEL <= LEVEL_TRACE
 #define LOG_TRACE(msg) logger.logTrace(Q_FUNC_INFO, msg);
