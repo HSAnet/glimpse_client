@@ -1,7 +1,9 @@
 #include "settings.h"
+#include "log/logger.h"
 
 #include <QSettings>
-#include <QDebug>
+
+LOGGER(Settings);
 
 class Settings::Private
 {
@@ -28,13 +30,13 @@ Settings::StorageType Settings::init()
     if ( deviceId().isNull() ) {
         setDeviceId( QUuid::createUuid() );
 
-        qDebug() << "Created new settings for this device";
+        LOG_INFO("Created new settings for this device");
 
         return NewSettings;
     } else {
         d->config.fillFromVariant( qvariant_cast<QVariantMap>(d->settings.value("config")) );
 
-        qDebug() << "Loaded existing settings for this device";
+        LOG_INFO("Loaded existing settings for this device");
         return ExistingSettings;
     }
 }
