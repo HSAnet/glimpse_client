@@ -258,6 +258,13 @@ Rectangle {
                 }
 
                 Button {
+                    text: "Reports"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    style: ButtonStyle {}
+                    onClicked: pageStack.push(Qt.resolvedUrl("ReportsPage.qml"))
+                }
+
+                Button {
                     text: "Internet is not working"
                     anchors.horizontalCenter: parent.horizontalCenter
                     style: ButtonStyle {}

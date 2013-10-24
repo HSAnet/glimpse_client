@@ -20,6 +20,7 @@ public:
 
 signals:
     void reportAdded(const ReportPtr& report);
+    void reportModified(const ReportPtr& report);
     void reportRemoved(const ReportPtr& report);
 
 protected:

@@ -6,6 +6,8 @@
 #include "network/requests/requests.h"
 #include "scheduler/scheduler.h"
 #include "scheduler/schedulermodel.h"
+#include "report/reportscheduler.h"
+#include "report/reportmodel.h"
 #include "settings.h"
 
 #include "qtquick2applicationviewer.h"
@@ -61,8 +63,12 @@ int main(int argc, char* argv[])
 
     qmlRegisterUncreatableType<AbstractTest>("mplane", 1, 0, "AbstractTest", "abstract class");
     qmlRegisterUncreatableType<Client>("mplane", 1, 0, "Client", "This is a singleton");
+
     qmlRegisterUncreatableType<Scheduler>("mplane", 1, 0, "Scheduler", "uncreatable type");
     qmlRegisterType<SchedulerModel>("mplane", 1, 0, "SchedulerModel");
+
+    qmlRegisterUncreatableType<ReportScheduler>("mplane", 1, 0, "ReportScheduler", "uncreatable type");
+    qmlRegisterType<ReportModel>("mplane", 1, 0, "ReportModel");
 
     // Common objects
     qmlRegisterType<TimingInformation>("mplane", 1, 0, "TimingInformation");

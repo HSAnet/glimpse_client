@@ -62,7 +62,8 @@ SOURCES +=  \
     measurement/upnp/upnp_plugin.cpp \
     measurement/ping/ping_plugin.cpp \
     measurement/ping/ping_definition.cpp \
-    measurement/ping/ping.cpp
+    measurement/ping/ping.cpp \
+    report/reportmodel.cpp
 
 HEADERS += \
     export.h \
@@ -122,7 +123,8 @@ HEADERS += \
     measurement/upnp/upnp_plugin.h \
     measurement/ping/ping_plugin.h \
     measurement/ping/ping_definition.h \
-    measurement/ping/ping.h
+    measurement/ping/ping.h \
+    report/reportmodel.h
 
 OTHER_FILES += \
     libclient.pri
