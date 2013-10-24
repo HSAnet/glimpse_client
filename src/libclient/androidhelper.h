@@ -1,12 +1,14 @@
 #ifndef ANDROIDHELPER_H
 #define ANDROIDHELPER_H
 
+#include "export.h"
+
 #include <jni.h>
 #include <QByteArray>
 
-JavaVM* javaVM();
+JavaVM* CLIENT_API javaVM();
 
-class Java
+class CLIENT_API Java
 {
 public:
     Java() {
@@ -33,5 +35,7 @@ protected:
     bool valid;
     JNIEnv* env;
 };
+
+QString CLIENT_API getQString(Java& env, jstring str);
 
 #endif // ANDROIDHELPER_H

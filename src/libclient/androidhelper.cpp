@@ -11,6 +11,14 @@ namespace {
     static QHash<QByteArray, jclass> classMap;
 }
 
+QString getQString(Java& env, jstring str)
+{
+    const jchar* chars = env->GetStringChars(str, NULL);
+    QString msg = QString::fromUtf16(chars, env->GetStringLength(str));
+    env->ReleaseStringChars(str, chars);
+    return msg;
+}
+
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*)
 {
     g_vm = vm;

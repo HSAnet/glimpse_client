@@ -10,12 +10,10 @@ QT += gui quick qml concurrent
 include(../libclient/libclient.pri)
 
 android {
-    HEADERS += androidhelper.h \
-               statusbarhelper.h \
+    HEADERS += statusbarhelper.h \
                androidimageprovider.h \
                androidprocessmodel.h
-    SOURCES += androidhelper.cpp \
-               statusbarhelper.cpp \
+    SOURCES += statusbarhelper.cpp \
                androidimageprovider.cpp \
                androidprocessmodel.cpp
 } else {

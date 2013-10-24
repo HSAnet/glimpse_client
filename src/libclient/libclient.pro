@@ -11,6 +11,15 @@ INCLUDEPATH += $$PWD
 
 include(../../3rdparty/miniupnpc.pri)
 
+android {
+    HEADERS += androidhelper.h
+    SOURCES += androidhelper.cpp \
+               storage/storagepaths_android.cpp
+}
+else:unix { # Don't remove the else or android will also count
+    SOURCES += storage/storagepaths_unix.cpp
+}
+
 SOURCES +=  \
     client.cpp \
     connectiontester.cpp \
@@ -124,7 +133,8 @@ HEADERS += \
     measurement/ping/ping_plugin.h \
     measurement/ping/ping_definition.h \
     measurement/ping/ping.h \
-    report/reportmodel.h
+    report/reportmodel.h \
+    storage/storagepaths.h
 
 OTHER_FILES += \
     libclient.pri

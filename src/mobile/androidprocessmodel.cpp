@@ -91,14 +91,6 @@ QHash<int, QByteArray> AndroidProcessModel::roleNames() const
     return roles;
 }
 
-QString getQString(Java& env, jstring str)
-{
-    const jchar* chars = env->GetStringChars(str, NULL);
-    QString msg = QString::fromUtf16(chars, env->GetStringLength(str));
-    env->ReleaseStringChars(str, chars);
-    return msg;
-}
-
 void AndroidProcessModel::reload()
 {
     beginResetModel();
