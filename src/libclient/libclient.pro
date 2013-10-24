@@ -17,7 +17,7 @@ android {
                storage/storagepaths_android.cpp
 }
 else {
-    SOURCES += storage/storagepaths_unix.cpp
+    SOURCES += storage/storagepaths.cpp
 }
 
 SOURCES +=  \
