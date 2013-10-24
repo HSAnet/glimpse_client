@@ -1,5 +1,6 @@
 #include "schedulerstorage.h"
 #include "scheduler.h"
+#include "../storage/storagepaths.h"
 #include "../log/logger.h"
 
 #include <QDir>
@@ -8,7 +9,7 @@
 #include <QCoreApplication>
 #include <QJsonDocument>
 
-LOGGER(SchedulerStorage)
+LOGGER(SchedulerStorage);
 
 class SchedulerStorage::Private : public QObject
 {
@@ -17,11 +18,19 @@ class SchedulerStorage::Private : public QObject
 public:
     Private()
     : loading(false)
-    , dir(qApp->applicationDirPath())
+    , dir(StoragePaths().schedulerDirectory())
     , realTime(true)
     {
-        dir.mkdir("scheduler");
-        dir.cd("scheduler");
+        if (!dir.exists()) {
+            QDir upper = dir;
+            upper.cdUp();
+
+            if (!upper.mkdir(dir.dirName())) {
+                LOG_ERROR(QString("Unable to create path %1").arg(dir.absolutePath()));
+            } else {
+                LOG_INFO("Scheduler storage directory created");
+            }
+        }
     }
 
     // Properties

@@ -3,7 +3,7 @@
 
 #include <QProcess>
 
-LOGGER(BulkTransportCapacityMA)
+LOGGER(BulkTransportCapacityMA);
 
 Ping::Ping(QObject *parent)
 : Measurement(parent)

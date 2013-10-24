@@ -4,7 +4,7 @@
 #include <QMetaEnum>
 #include "../../types.h"
 
-LOGGER(UPnP)
+LOGGER(UPnP);
 
 #include <miniupnpc/miniupnpc.h>
 #include <miniupnpc/upnpcommands.h>

@@ -21,7 +21,7 @@
 #include <QTimer>
 #include <QDebug>
 
-LOGGER(NetworkManager)
+LOGGER(NetworkManager);
 
 class PeerRequest
 {

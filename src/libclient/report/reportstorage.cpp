@@ -1,4 +1,5 @@
 #include "reportstorage.h"
+#include "../storage/storagepaths.h"
 #include "../log/logger.h"
 
 #include <QPointer>
@@ -9,7 +10,7 @@
 #include <QFile>
 #include <QDebug>
 
-LOGGER(ReportStorage)
+LOGGER(ReportStorage);
 
 class ReportStorage::Private : public QObject
 {
@@ -18,11 +19,19 @@ class ReportStorage::Private : public QObject
 public:
     Private()
     : loading(false)
-    , dir(qApp->applicationDirPath())
+    , dir(StoragePaths().reportDirectory())
     , realTime(true)
     {
-        dir.mkdir("reports");
-        dir.cd("reports");
+        if (!dir.exists()) {
+            QDir upper = dir;
+            upper.cdUp();
+
+            if (!upper.mkdir(dir.dirName())) {
+                LOG_ERROR(QString("Unable to create path %1").arg(dir.absolutePath()));
+            } else {
+                LOG_INFO("Report storage directory created");
+            }
+        }
     }
 
     // Properties

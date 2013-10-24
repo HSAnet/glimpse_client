@@ -25,7 +25,7 @@
 #include "measurement/btc/btc_definition.h"
 #include "measurement/ping/ping_definition.h"
 
-LOGGER(Client)
+LOGGER(Client);
 
 class Client::Private : public QObject
 {

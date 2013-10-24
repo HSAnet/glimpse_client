@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <QPointer>
 
-LOGGER(Scheduler)
+LOGGER(Scheduler);
 
 class Scheduler::Private : public QObject
 {

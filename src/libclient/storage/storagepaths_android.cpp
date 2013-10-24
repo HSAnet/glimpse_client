@@ -1,6 +1,8 @@
 #include "storagepaths.h"
-
+#include "../log/logger.h"
 #include "../androidhelper.h"
+
+LOGGER(StoragePaths);
 
 class StoragePaths::Private
 {

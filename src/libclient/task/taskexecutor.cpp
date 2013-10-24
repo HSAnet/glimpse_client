@@ -6,7 +6,7 @@
 #include <QThread>
 #include <QPointer>
 
-LOGGER(TaskExecutor)
+LOGGER(TaskExecutor);
 
 class InternalTaskExecutor : public QObject
 {

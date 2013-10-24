@@ -36,6 +36,6 @@ protected:
     JNIEnv* env;
 };
 
-QString CLIENT_API getQString(Java& env, jstring str);
+QString CLIENT_API getQString(const Java &env, jstring str);
 
 #endif // ANDROIDHELPER_H

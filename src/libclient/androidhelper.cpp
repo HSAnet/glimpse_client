@@ -1,17 +1,24 @@
 #include "androidhelper.h"
+#include "log/logger.h"
 
 #include <QList>
 #include <QHash>
 #include <QDebug>
 
+LOGGER(Java);
+
 namespace {
     static JavaVM* g_vm = NULL;
 
-    static QList<const char*> registeredClasses;
+    QList<const char*>& registeredClasses() {
+        static QList<const char*> classes;
+        return classes;
+    }
+
     static QHash<QByteArray, jclass> classMap;
 }
 
-QString getQString(Java& env, jstring str)
+QString getQString(const Java& env, jstring str)
 {
     const jchar* chars = env->GetStringChars(str, NULL);
     QString msg = QString::fromUtf16(chars, env->GetStringLength(str));
@@ -26,12 +33,12 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*)
     JNIEnv* env;
     vm->GetEnv((void**)&env, JNI_VERSION_1_6);
 
-    foreach(const char* className, registeredClasses) {
+    foreach(const char* className, registeredClasses()) {
         jclass clazz = env->FindClass(className);
         if ( clazz ) {
             classMap.insert(className, (jclass)env->NewGlobalRef(clazz));
         } else {
-            qDebug() << Q_FUNC_INFO << "Failed to find class" << className;
+            LOG_ERROR(QString("Failed to find class %1").arg(className));
         }
     }
 
@@ -74,8 +81,8 @@ JNIEnv *Java::operator ->() const
 
 void Java::registerClass(const char *className)
 {
-    if (!registeredClasses.contains(className))
-        registeredClasses.append(className);
+    if (!registeredClasses().contains(className))
+        registeredClasses().append(className);
 }
 
 jclass Java::findClass(const QByteArray &className) const
@@ -89,8 +96,12 @@ jobject Java::createInstance(jclass clazz) const
         return NULL;
 
     jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
-    if ( !constructor )
+    if ( !constructor ) {
+        jmethodID nameId = env->GetMethodID(clazz, "getName", "()Ljava/lang/String;");
+        QString className = getQString(*this, (jstring)env->CallObjectMethod(clazz, nameId));
+        LOG_WARNING(QString("No default contructor found for class %1").arg(className));
         return NULL;
+    }
 
     return env->NewGlobalRef( env->NewObject(clazz, constructor) );
 }

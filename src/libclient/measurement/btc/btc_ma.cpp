@@ -4,7 +4,7 @@
 
 #include <QDataStream>
 
-LOGGER(BulkTransportCapacityMA)
+LOGGER(BulkTransportCapacityMA);
 
 BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
 : Measurement(parent)
