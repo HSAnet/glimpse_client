@@ -16,7 +16,7 @@ android {
     SOURCES += androidhelper.cpp \
                storage/storagepaths_android.cpp
 }
-else:unix { # Don't remove the else or android will also count
+else {
     SOURCES += storage/storagepaths_unix.cpp
 }
 

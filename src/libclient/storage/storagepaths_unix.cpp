@@ -1,28 +1,26 @@
 #include "storagepaths.h"
 
-class StoragePaths::Private
-{
-public:
-};
+#include <QStandardPaths>
 
 StoragePaths::StoragePaths()
-: d(new Private)
 {
 }
 
 StoragePaths::~StoragePaths()
 {
-    delete d;
 }
 
 QDir StoragePaths::schedulerDirectory() const
 {
+    return QDir(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/scheduler");
 }
 
 QDir StoragePaths::reportDirectory() const
 {
+    return QDir(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/reports");
 }
 
 QDir StoragePaths::cacheDirectory() const
 {
+    return QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
 }

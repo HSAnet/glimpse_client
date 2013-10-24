@@ -26,7 +26,7 @@ public:
             QDir upper = dir;
             upper.cdUp();
 
-            if (!upper.mkdir(dir.dirName())) {
+            if (!upper.mkpath(dir.dirName())) {
                 LOG_ERROR(QString("Unable to create path %1").arg(dir.absolutePath()));
             } else {
                 LOG_INFO("Report storage directory created");
