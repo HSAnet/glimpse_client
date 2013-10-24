@@ -47,7 +47,7 @@ bool Ping::start()
          << "-W" << QString::number(definition->timeout);
 #elif defined(Q_OS_MAC)
     args << "-c" << QString::number(definition->count)
-         << "-t" << QString::number(definition->timeout * d->count);
+         << "-t" << QString::number(definition->timeout * definition->count);
 #elif defined(Q_OS_WIN)
     args << "-n" << QString::number(definition->count)
          << "-4" // ipv4
