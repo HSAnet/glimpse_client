@@ -83,12 +83,15 @@ public:
     void setupUnixSignalHandlers();
 
 public slots:
+#ifdef Q_OS_UNIX
     void handleSigInt();
     void handleSigHup();
     void handleSigTerm();
+#endif // Q_OS_UNIX
     void taskFinished(const TestDefinitionPtr& test, const ResultPtr& result);
 };
 
+#ifdef Q_OS_UNIX
 int Client::Private::sigintFd[2];
 int Client::Private::sighupFd[2];
 int Client::Private::sigtermFd[2];
@@ -110,6 +113,7 @@ void Client::Private::termSignalHandler(int)
     char a = 1;
     ::write(sigtermFd[0], &a, sizeof(a));
 }
+#endif // Q_OS_UNIX
 
 void Client::Private::setupUnixSignalHandlers()
 {
@@ -159,6 +163,7 @@ void Client::Private::setupUnixSignalHandlers()
 #endif // Q_OS_UNIX
 }
 
+#ifdef Q_OS_UNIX
 void Client::Private::handleSigInt()
 {
     snInt->setEnabled(false);
@@ -194,6 +199,7 @@ void Client::Private::handleSigHup()
 
     snHup->setEnabled(true);
 }
+#endif // Q_OS_UNIX
 
 void Client::Private::taskFinished(const TestDefinitionPtr &test, const ResultPtr &result)
 {

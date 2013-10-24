@@ -9,4 +9,5 @@ android/libjava.so
 android/local.properties
 android/assets/qml
 android/assets/--Managed_by_Qt_Creator--
+setup/Output
 *.pro.user*
