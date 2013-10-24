@@ -12,6 +12,8 @@ typedef QList<MeasurementDefinitionPtr> MeasurementDefinitionPtrList;
 class CLIENT_API MeasurementDefinition : public Serializable
 {
 public:
+    MeasurementDefinition();
+    ~MeasurementDefinition();
 };
 
 #endif // MEASUREMENTDEFINITION_H
