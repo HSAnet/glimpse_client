@@ -49,7 +49,7 @@ Rectangle {
 
     Connections {
         target: client.scheduler
-        onCurrentTestChanged: {
+        /*onCurrentTestChanged: {
             if ( !currentTest )
                 //loader.sourceComponent = undefined;
                 return;
@@ -60,7 +60,7 @@ Rectangle {
 
                 pageStack.push({item:Qt.resolvedUrl(currentTest.name + ".qml"), properties:params});
             }
-        }
+        }*/
     }
 
     WebRequester {
@@ -223,8 +223,8 @@ Rectangle {
         }
 
         onCurrentItemChanged: {
-            applicationTitle.text = currentItem.title;
-            statusText.text = currentItem.subtitle;
+            applicationTitle.text = currentItem ? currentItem.title : "";
+            statusText.text = currentItem ? currentItem.subtitle : "";
         }
 
         initialItem: Flickable {
