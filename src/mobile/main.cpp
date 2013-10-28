@@ -28,6 +28,10 @@
 #include "desktopstatusbarhelper.h"
 #endif // Q_OS_ANDROID
 
+#ifdef Q_OS_MAC
+#include <macprocessmodel.h>
+#endif
+
 class Time : public QObject
 {
     Q_OBJECT
@@ -98,6 +102,10 @@ int main(int argc, char* argv[])
 #ifdef Q_OS_ANDROID
     qmlRegisterType<AndroidProcessModel>("mplane", 1, 0, "ProcessModel");
 #endif // Q_OS_ANDROID
+
+#ifdef Q_OS_MAC
+    qmlRegisterType<MacProcessModel>("mplane", 1, 0, "ProcessModel");
+#endif // Q_OS_MAC
 
     QtQuick2ApplicationViewer view;
 

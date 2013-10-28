@@ -32,6 +32,14 @@ android {
     SOURCES += desktopstatusbarhelper.cpp
 }
 
+mac {
+    QT += macextras
+    LIBS += -framework AppKit
+
+    HEADERS += macprocessmodel.h
+    SOURCES += macprocessmodel.mm
+}
+
 SOURCES += \
     main.cpp
 
