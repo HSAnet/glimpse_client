@@ -101,6 +101,11 @@ int main(int argc, char* argv[])
 
     QtQuick2ApplicationViewer view;
 
+    QQmlEngine* engine = view.engine();
+    // Allow QFileSelector to be automatically applied on qml scripting
+    QQmlFileSelector selector;
+    engine->setUrlInterceptor(&selector);
+
     QQmlContext* rootContext = view.rootContext();
     rootContext->setContextProperty("client", Client::instance());
 #ifdef Q_OS_ANDROID
