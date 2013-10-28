@@ -59,6 +59,7 @@ bool UPnP::start()
     int devNumber = 0;
 
     UPNPDev* devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
+    UPNPDev* devlistBegin = devlist;
 
     // get interface list
     /*foreach(interface, interfaces) {
@@ -182,6 +183,8 @@ bool UPnP::start()
                 QStringList friendlyName = GetValuesFromNameValueList(&pdata, "friendlyName");
                 if ( !friendlyName.isEmpty() )
                     resultHash.insert(FriendlyName, friendlyName.last());
+
+                ClearNameValueList(&pdata);
             }
         }
 
@@ -191,7 +194,7 @@ bool UPnP::start()
         devlist = devlist->pNext;
     }
 
-    freeUPNPDevlist(devlist);
+    freeUPNPDevlist(devlistBegin);
 
     emit finished();
     return true; // TODO return false if something went wrong or if there are no results

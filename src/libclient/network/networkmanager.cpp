@@ -150,6 +150,7 @@ void NetworkManager::Private::updateSocket()
     localPort = remote.port;
 
     socket = qobject_cast<QUdpSocket*>( q->createConnection(NetworkManager::UdpSocket) );
+    socket->setParent(this);
     connect(socket.data(), SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
     if (!socket->bind(remote.port)) {
         LOG_ERROR(QString("Unable to bind port %1: %2").arg(remote.port).arg(socket->errorString()));

@@ -104,6 +104,7 @@ SchedulerStorage::SchedulerStorage(Scheduler *scheduler, QObject *parent)
 
 SchedulerStorage::~SchedulerStorage()
 {
+    delete d;
 }
 
 void SchedulerStorage::setRealTime(bool realTime)
