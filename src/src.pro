@@ -2,9 +2,12 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS += libclient \
-           console \
-           desktop \
            mobile
+
+!android {
+    SUBDIRS += console \
+               desktop
+}
 
 console.depends = libclient
 desktop.depends = libclient

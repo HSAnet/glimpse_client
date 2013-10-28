@@ -12,12 +12,16 @@ INCLUDEPATH += $$PWD
 include(../../3rdparty/miniupnpc.pri)
 
 android {
+    QT += androidextras
+
     HEADERS += androidhelper.h
     SOURCES += androidhelper.cpp \
-               storage/storagepaths_android.cpp
+               storage/storagepaths_android.cpp \
+               log/logger_android.cpp
 }
 else {
-    SOURCES += storage/storagepaths.cpp
+    SOURCES += storage/storagepaths.cpp \
+               log/logger.cpp
 }
 
 SOURCES +=  \
@@ -65,7 +69,6 @@ SOURCES +=  \
     network/tcpsocket.cpp \
     controller/logincontroller.cpp \
     controller/controlcontroller.cpp \
-    log/logger.cpp \
     measurement/btc/btc_plugin.cpp \
     measurement/upnp/upnp.cpp \
     measurement/upnp/upnp_plugin.cpp \

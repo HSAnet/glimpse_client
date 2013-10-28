@@ -14,6 +14,8 @@ ANDROID_PACKAGE = "de.hsaugsburg.informatik.mplane.client"
 ANDROID_APP_NAME = "mPlane"
 
 android {
+    QT += androidextras
+
     HEADERS += statusbarhelper.h \
                androidimageprovider.h \
                androidprocessmodel.h
