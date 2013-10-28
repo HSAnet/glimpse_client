@@ -1,13 +1,11 @@
 package de.hsaugsburg.informatik.mplane;
 
-import org.qtproject.qt5.android.bindings.QtActivity;
-
 public class StorageHelper {
 	public StorageHelper() {
 	}
 	
 	private String getDataDirectory() {
-		return QtActivity.instance.getFilesDir().getAbsolutePath();
+                return MobileActivity.instance.getFilesDir().getAbsolutePath();
 	}
 	
 	public String getSchedulerDirectory() {
@@ -19,6 +17,6 @@ public class StorageHelper {
 	}
 	
 	public String getCacheDirectory() {
-		return QtActivity.instance.getCacheDir().getAbsolutePath();
+                return MobileActivity.instance.getCacheDir().getAbsolutePath();
 	}
 }

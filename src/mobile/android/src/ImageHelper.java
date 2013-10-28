@@ -1,7 +1,5 @@
 package de.hsaugsburg.informatik.mplane;
 
-import org.qtproject.qt5.android.bindings.QtActivity;
-
 import android.graphics.*;
 import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
@@ -14,7 +12,7 @@ public class ImageHelper {
 	}
 	
 	public Bitmap loadApplicationIcon(String packageName) {
-		PackageManager pm = QtActivity.instance.getPackageManager();
+                PackageManager pm = MobileActivity.instance.getPackageManager();
 		
 		try {
 			Drawable drawableIcon = pm.getApplicationIcon(packageName);

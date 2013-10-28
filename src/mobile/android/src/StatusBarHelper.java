@@ -1,7 +1,5 @@
 package de.hsaugsburg.informatik.mplane;
 
-import org.qtproject.qt5.android.bindings.QtActivity;
-
 import de.hsaugsburg.informatik.mplane.client.R;
 import android.annotation.TargetApi;
 import android.app.Notification;
@@ -28,17 +26,17 @@ public class StatusBarHelper {
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
 		//notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;
 		
-		PendingIntent pendingIntent = PendingIntent.getActivity(QtActivity.instance, 0, new Intent(), 0);
-		notification.setLatestEventInfo(QtActivity.instance, title, message, pendingIntent);
+                PendingIntent pendingIntent = PendingIntent.getActivity(MobileActivity.instance, 0, new Intent(), 0);
+                notification.setLatestEventInfo(MobileActivity.instance, title, message, pendingIntent);
 	
-		((NotificationManager)QtActivity.instance.getSystemService(Context.NOTIFICATION_SERVICE)).notify(1, notification);
+                ((NotificationManager)MobileActivity.instance.getSystemService(Context.NOTIFICATION_SERVICE)).notify(1, notification);
 		
 		Log.i("mplane", "notification posted");
 	}
 	
 	public void hideIcon() {
 		Log.i("mplane", "notification removed");
-		((NotificationManager)QtActivity.instance.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(1);
+                ((NotificationManager)MobileActivity.instance.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(1);
 		Log.i("mplane", "really.");
 	}
 }

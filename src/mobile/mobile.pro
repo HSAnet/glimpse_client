@@ -9,6 +9,10 @@ QT += gui quick qml concurrent
 
 include(../libclient/libclient.pri)
 
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+ANDROID_PACKAGE = "de.hsaugsburg.informatik.mplane.client"
+ANDROID_APP_NAME = "mPlane"
+
 android {
     HEADERS += statusbarhelper.h \
                androidimageprovider.h \
@@ -16,6 +20,9 @@ android {
     SOURCES += statusbarhelper.cpp \
                androidimageprovider.cpp \
                androidprocessmodel.cpp
+
+    OTHER_FILES += $$files($$PWD/android/src/*.java) \
+                   android/AndroidManifest.xml
 } else {
     QT += widgets
 

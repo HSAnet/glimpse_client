@@ -1,6 +1,5 @@
 package de.hsaugsburg.informatik.mplane;
 
-import org.qtproject.qt5.android.bindings.QtActivity;
 import java.util.ArrayList;
 import java.util.List;
 import android.Manifest;
@@ -26,10 +25,10 @@ public class ProcessHelper {
 	public List<ProcessInfo> runningProcesses() {
 		List<ProcessInfo> processes = new ArrayList<ProcessInfo>();
 		
-		ActivityManager activityManager = (ActivityManager)QtActivity.instance.getSystemService( Activity.ACTIVITY_SERVICE );
+                ActivityManager activityManager = (ActivityManager)MobileActivity.instance.getSystemService( Activity.ACTIVITY_SERVICE );
         List<RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
         
-        PackageManager packageManager = QtActivity.instance.getPackageManager();
+        PackageManager packageManager = MobileActivity.instance.getPackageManager();
         
         for (RunningAppProcessInfo runningAppProcessInfo : procInfos) {
 			try {
