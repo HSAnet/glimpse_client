@@ -10,10 +10,16 @@ namespace QtMac {
     QString fromNSString(const NSString *string);
 }
 
+struct ProcessInfo
+{
+    QString localizedName;
+    QString bundleName;
+};
+
 class MacProcessModel::Private
 {
 public:
-    QStringList apps;
+    QList<ProcessInfo> apps;
 };
 
 MacProcessModel::MacProcessModel(QObject *parent)
@@ -38,9 +44,11 @@ int MacProcessModel::rowCount(const QModelIndex &parent) const
 
 QVariant MacProcessModel::data(const QModelIndex &index, int role) const
 {
+    const ProcessInfo& app = d->apps.at(index.row());
+
     switch(role) {
-    case DisplayNameRole:
-        return d->apps.at(index.row());
+    case DisplayNameRole: return app.localizedName;
+    case BundleName: return app.bundleName;
 
     default:
         break;
@@ -53,6 +61,7 @@ QHash<int, QByteArray> MacProcessModel::roleNames() const
 {
     QHash<int, QByteArray> roleNames;
     roleNames.insert(DisplayNameRole, "displayName");
+    roleNames.insert(BundleName, "packageName");
     return roleNames;
 }
 
@@ -65,9 +74,11 @@ void MacProcessModel::reload()
     NSArray* runningApplications = [workspace runningApplications];
 
     for(NSRunningApplication* application in runningApplications) {
-        NSString* name = [application localizedName];
+        ProcessInfo info;
+        info.localizedName = QtMac::fromNSString([application localizedName]);
+        info.bundleName = QtMac::fromNSString([application bundleIdentifier]);
 
-        d->apps.append(QtMac::fromNSString(name));
+        d->apps.append(info);
     }
 
     endResetModel();

@@ -13,7 +13,8 @@ public:
 
     enum Roles
     {
-        DisplayNameRole = Qt::UserRole +1
+        DisplayNameRole = Qt::UserRole +1,
+        BundleName
     };
 
     // QAbstractItemModel overrides

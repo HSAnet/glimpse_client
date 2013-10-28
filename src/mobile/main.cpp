@@ -30,6 +30,7 @@
 
 #ifdef Q_OS_MAC
 #include <macprocessmodel.h>
+#include <macimageprovider.h>
 #endif
 
 class Time : public QObject
@@ -122,6 +123,10 @@ int main(int argc, char* argv[])
 #else
     rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(&view));
 #endif // Q_OS_ANDROID
+
+#ifdef Q_OS_MAC
+    view.engine()->addImageProvider("android", new MacImageProvider);
+#endif // Q_OS_MAC
 
     view.setMainQmlFile(QStringLiteral("qml/main.qml"));
     view.showExpanded();

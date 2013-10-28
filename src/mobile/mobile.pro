@@ -36,8 +36,10 @@ mac {
     QT += macextras
     LIBS += -framework AppKit
 
-    HEADERS += macprocessmodel.h
-    SOURCES += macprocessmodel.mm
+    HEADERS += macprocessmodel.h \
+               macimageprovider.h
+    SOURCES += macprocessmodel.mm \
+               macimageprovider.mm
 }
 
 SOURCES += \
