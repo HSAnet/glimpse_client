@@ -1,6 +1,7 @@
 #include "storagepaths.h"
 #include "../log/logger.h"
-#include "../androidhelper.h"
+
+#include <QAndroidJniObject>
 
 LOGGER(StoragePaths);
 
@@ -23,24 +24,12 @@ StoragePaths::StoragePaths()
     if (StoragePaths::Private::initialized)
         return;
 
-    Java env;
-    jclass clazz = env.findClass("de/hsaugsburg/informatik/mplane/StorageHelper");
-    jobject instance = env.createInstance(clazz);
+    QAndroidJniObject storageHelper("de/hsaugsburg/informatik/mplane/StorageHelper");
 
-    jmethodID schedulerId = env->GetMethodID(clazz, "getSchedulerDirectory", "()Ljava/lang/String;");
-    jmethodID reportId = env->GetMethodID(clazz, "getReportDirectory", "()Ljava/lang/String;");
-    jmethodID cacheId = env->GetMethodID(clazz, "getCacheDirectory", "()Ljava/lang/String;");
-
-    jstring schedulerPath = (jstring)env->CallObjectMethod(instance, schedulerId);
-    jstring reportPath = (jstring)env->CallObjectMethod(instance, reportId);
-    jstring cachePath = (jstring)env->CallObjectMethod(instance, cacheId);
-
-    StoragePaths::Private::scheduler = getQString(env, schedulerPath);
-    StoragePaths::Private::report = getQString(env, reportPath);
-    StoragePaths::Private::cache = getQString(env, cachePath);
+    StoragePaths::Private::scheduler = storageHelper.callObjectMethod<jstring>("getSchedulerDirectory").toString();
+    StoragePaths::Private::report = storageHelper.callObjectMethod<jstring>("getReportDirectory").toString();
+    StoragePaths::Private::cache = storageHelper.callObjectMethod<jstring>("getCacheDirectory").toString();
     StoragePaths::Private::initialized = true;
-
-    env->DeleteGlobalRef(instance);
 }
 
 StoragePaths::~StoragePaths()
@@ -60,13 +49,4 @@ QDir StoragePaths::reportDirectory() const
 QDir StoragePaths::cacheDirectory() const
 {
     return StoragePaths::Private::cache;
-}
-
-namespace {
-    static int init_StoragePaths() {
-        Java::registerClass("de/hsaugsburg/informatik/mplane/StorageHelper");
-        return 1;
-    }
-
-    static int __StoragePaths = init_StoragePaths();
 }
