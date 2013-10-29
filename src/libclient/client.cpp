@@ -1,5 +1,6 @@
 #include "client.h"
 #include "controller/controlcontroller.h"
+#include "controller/reportcontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
 #include "scheduler/schedulerstorage.h"
@@ -63,6 +64,7 @@ public:
     NetworkManager networkManager;
 
     ControlController controlController;
+    ReportController reportController;
 
 #ifdef Q_OS_UNIX
     static int sigintFd[2];
@@ -251,6 +253,7 @@ bool Client::init()
     // Initialize controllers
     d->networkManager.init(&d->scheduler, &d->settings);
     d->controlController.init(&d->networkManager, &d->scheduler, &d->settings);
+    d->reportController.init(&d->reportScheduler, &d->settings);
 
     return true;
 }
@@ -317,6 +320,11 @@ NetworkManager *Client::networkManager() const
 TaskExecutor *Client::taskExecutor() const
 {
     return &d->executor;
+}
+
+ReportController *Client::reportController() const
+{
+    return &d->reportController;
 }
 
 Settings *Client::settings() const

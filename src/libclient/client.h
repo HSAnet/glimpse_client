@@ -5,6 +5,7 @@
 
 #include <QObject>
 
+class ReportController;
 class Scheduler;
 class ReportScheduler;
 class NetworkManager;
@@ -24,6 +25,7 @@ class CLIENT_API Client : public QObject
     Q_PROPERTY(ReportScheduler* reportScheduler READ reportScheduler CONSTANT)
     Q_PROPERTY(NetworkManager* networkManager READ networkManager CONSTANT)
     Q_PROPERTY(TaskExecutor* taskExecutor READ taskExecutor CONSTANT)
+    Q_PROPERTY(ReportController* reportController READ reportController CONSTANT)
 
     explicit Client(QObject *parent = 0);
     ~Client();
@@ -48,6 +50,8 @@ public:
     ReportScheduler* reportScheduler() const;
     NetworkManager* networkManager() const;
     TaskExecutor* taskExecutor() const;
+
+    ReportController* reportController() const;
 
     Settings* settings() const;
 

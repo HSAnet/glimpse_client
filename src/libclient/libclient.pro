@@ -75,7 +75,8 @@ SOURCES +=  \
     measurement/ping/ping_plugin.cpp \
     measurement/ping/ping_definition.cpp \
     measurement/ping/ping.cpp \
-    report/reportmodel.cpp
+    report/reportmodel.cpp \
+    controller/reportcontroller.cpp
 
 HEADERS += \
     export.h \
@@ -137,7 +138,8 @@ HEADERS += \
     measurement/ping/ping_definition.h \
     measurement/ping/ping.h \
     report/reportmodel.h \
-    storage/storagepaths.h
+    storage/storagepaths.h \
+    controller/reportcontroller.h
 
 OTHER_FILES += \
     libclient.pri
