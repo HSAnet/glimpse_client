@@ -10,6 +10,7 @@ else:DEFINES += LIBCLIENT_BUILD
 INCLUDEPATH += $$PWD
 
 include(../../3rdparty/miniupnpc.pri)
+include(../../3rdparty/breakpad.pri)
 
 android {
     QT += androidextras
@@ -76,7 +77,8 @@ SOURCES +=  \
     measurement/ping/ping_definition.cpp \
     measurement/ping/ping.cpp \
     report/reportmodel.cpp \
-    controller/reportcontroller.cpp
+    controller/reportcontroller.cpp \
+    crashhandler.cpp
 
 HEADERS += \
     export.h \
@@ -139,7 +141,8 @@ HEADERS += \
     measurement/ping/ping.h \
     report/reportmodel.h \
     storage/storagepaths.h \
-    controller/reportcontroller.h
+    controller/reportcontroller.h \
+    crashhandler.h
 
 OTHER_FILES += \
     libclient.pri

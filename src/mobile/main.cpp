@@ -10,6 +10,7 @@
 #include "report/reportmodel.h"
 #include "controller/reportcontroller.h"
 #include "settings.h"
+#include "crashhandler.h"
 
 #include "qtquick2applicationviewer.h"
 
@@ -59,6 +60,9 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
     QCoreApplication::setOrganizationName("HS Augsburg");
     QCoreApplication::setApplicationName("mPlaneClient");
+
+    CrashHandler crashHandler;
+    crashHandler.init("/home/gri/dump");
 
 #ifdef Q_OS_ANDROID
     QGuiApplication app(argc, argv);
