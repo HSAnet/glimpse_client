@@ -11,6 +11,7 @@
 #include "controller/reportcontroller.h"
 #include "settings.h"
 #include "crashhandler.h"
+#include "storage/storagepaths.h"
 
 #include "qtquick2applicationviewer.h"
 
@@ -61,8 +62,18 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationName("HS Augsburg");
     QCoreApplication::setApplicationName("mPlaneClient");
 
+    QDir crashdumpDir = StoragePaths().crashDumpDirectory();
+    if (!crashdumpDir.exists()) {
+        QDir upper = crashdumpDir;
+        upper.cdUp();
+
+        if (!upper.mkdir(crashdumpDir.dirName())) {
+            qDebug() << "Failed to create crashdump directory";
+        }
+    }
+
     CrashHandler crashHandler;
-    crashHandler.init("/home/gri/dump");
+    crashHandler.init(crashdumpDir.absolutePath());
 
 #ifdef Q_OS_ANDROID
     QGuiApplication app(argc, argv);

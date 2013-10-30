@@ -15,6 +15,8 @@ public:
     QDir reportDirectory() const;
     QDir cacheDirectory() const;
 
+    QDir crashDumpDirectory() const;
+
 protected:
     class Private;
     Private* d;

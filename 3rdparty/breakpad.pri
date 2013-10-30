@@ -3,6 +3,21 @@ BREAKPAD_PATH = $$PWD/breakpad
 INCLUDEPATH += $$BREAKPAD_PATH \
                $$BREAKPAD_PATH/src
 
+win32 {
+    HEADERS += $$BREAKPAD_PATH/src/common/windows/string_utils-inl.h
+    HEADERS += $$BREAKPAD_PATH/src/common/windows/guid_string.h
+    HEADERS += $$BREAKPAD_PATH/src/client/windows/handler/exception_handler.h
+    HEADERS += $$BREAKPAD_PATH/src/client/windows/common/ipc_protocol.h
+    HEADERS += $$BREAKPAD_PATH/src/google_breakpad/common/minidump_format.h
+    HEADERS += $$BREAKPAD_PATH/src/google_breakpad/common/breakpad_types.h
+    HEADERS += $$BREAKPAD_PATH/src/client/windows/crash_generation/crash_generation_client.h
+
+    SOURCES += $$BREAKPAD_PATH/src/client/windows/handler/exception_handler.cc
+    SOURCES += $$BREAKPAD_PATH/src/common/windows/string_utils.cc
+    SOURCES += $$BREAKPAD_PATH/src/common/windows/guid_string.cc
+    SOURCES += $$BREAKPAD_PATH/src/client/windows/crash_generation/crash_generation_client.cc
+}
+
 linux {
     HEADERS += $$BREAKPAD_PATH/src/client/linux/handler/exception_handler.h
     HEADERS += $$BREAKPAD_PATH/src/client/linux/crash_generation/crash_generation_client.h

@@ -80,7 +80,7 @@ void CrashHandler::Private::init(const QString& dumpPath)
 
 #if defined(Q_OS_WIN32)
     std::wstring pathAsStr = (const wchar_t*)dumpPath.utf16();
-    pHandler = new google_breakpad::ExceptionHandler(
+    exceptionHandler = new google_breakpad::ExceptionHandler(
         pathAsStr,
         /*FilterCallback*/ 0,
         CrashHandler::Private::DumpCallback,
@@ -101,7 +101,7 @@ void CrashHandler::Private::init(const QString& dumpPath)
         );
 #elif defined(Q_OS_MAC)
     std::string pathAsStr = dumpPath.toStdString();
-    pHandler = new google_breakpad::ExceptionHandler(
+    exceptionHandler = new google_breakpad::ExceptionHandler(
         pathAsStr,
         /*FilterCallback*/ 0,
         CrashHandler::Private::DumpCallback,

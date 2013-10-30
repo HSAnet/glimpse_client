@@ -24,3 +24,8 @@ QDir StoragePaths::cacheDirectory() const
 {
     return QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
 }
+
+QDir StoragePaths::crashDumpDirectory() const
+{
+    return QDir(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/crashdumps");
+}
