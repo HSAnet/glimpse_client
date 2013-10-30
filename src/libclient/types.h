@@ -27,7 +27,7 @@ enum RequestType
     className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator(enumName)).keyToValue(value)
 
 template <typename T>
-QVariant ptrListToVariant(const QList<T>& list) {
+QVariantList ptrListToVariant(const QList<T>& list) {
     QVariantList lst;
     foreach(T entry, list) {
         if (!entry.isNull())
