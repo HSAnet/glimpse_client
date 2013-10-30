@@ -16,7 +16,7 @@ Item {
         client.reportController.sendReports();
     }
 
-    TableView {
+    ListView {
         anchors.fill: parent
 
         model: ReportModel {
