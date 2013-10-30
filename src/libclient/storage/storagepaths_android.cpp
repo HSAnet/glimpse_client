@@ -12,12 +12,14 @@ public:
     static QDir scheduler;
     static QDir report;
     static QDir cache;
+    static QDir crashDumps;
 };
 
 bool StoragePaths::Private::initialized = false;
 QDir StoragePaths::Private::scheduler;
 QDir StoragePaths::Private::report;
 QDir StoragePaths::Private::cache;
+QDir StoragePaths::Private::crashDumps;
 
 StoragePaths::StoragePaths()
 {
@@ -29,6 +31,7 @@ StoragePaths::StoragePaths()
     StoragePaths::Private::scheduler = storageHelper.callObjectMethod<jstring>("getSchedulerDirectory").toString();
     StoragePaths::Private::report = storageHelper.callObjectMethod<jstring>("getReportDirectory").toString();
     StoragePaths::Private::cache = storageHelper.callObjectMethod<jstring>("getCacheDirectory").toString();
+    StoragePaths::Private::crashDumps = storageHelper.callObjectMethod<jstring>("getCrashDumpDirectory").toString();
     StoragePaths::Private::initialized = true;
 }
 
@@ -49,4 +52,9 @@ QDir StoragePaths::reportDirectory() const
 QDir StoragePaths::cacheDirectory() const
 {
     return StoragePaths::Private::cache;
+}
+
+QDir StoragePaths::crashDumpDirectory() const
+{
+    return StoragePaths::Private::crashDumps;
 }

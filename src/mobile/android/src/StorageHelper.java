@@ -19,4 +19,8 @@ public class StorageHelper {
 	public String getCacheDirectory() {
                 return MobileActivity.instance.getCacheDir().getAbsolutePath();
 	}
+
+        public String getCrashDumpDirectory() {
+                return getDataDirectory() + "/crashdumps";
+        }
 }
