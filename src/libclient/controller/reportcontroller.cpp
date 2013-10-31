@@ -55,8 +55,16 @@ public:
     {
     }
 
+    QStringList taskIds;
+
     // Response interface
     bool fillFromVariant(const QVariantMap &variant) {
+        this->taskIds.clear();
+
+        QVariantList taskIds = variant.value("successful_task_ids").toList();
+        foreach(const QVariant& id, taskIds)
+            this->taskIds.append(id.toString());
+
         return true;
     }
 
@@ -97,10 +105,16 @@ public slots:
 
 void ReportController::Private::onFinished()
 {
-    LOG_INFO("Reports successfully sent");
+    QStringList taskIds = response.taskIds;
+    LOG_INFO(QString("%1 Reports successfully sent").arg(taskIds.size()));
 
-    foreach(const ReportPtr& report, post.reports()) {
-        scheduler->removeReport(report);
+    foreach(const QString& taskId, taskIds) {
+        ReportPtr report = scheduler->reportByTaskId(taskId);
+        if ( report.isNull() ) {
+            LOG_ERROR(QString("No task with id %1 found.").arg(taskId));
+        } else {
+            scheduler->removeReport(report);
+        }
     }
 }
 
