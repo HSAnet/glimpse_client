@@ -4,13 +4,7 @@ INCLUDEPATH += $$BREAKPAD_PATH \
                $$BREAKPAD_PATH/src
 
 win32 {
-    HEADERS += $$BREAKPAD_PATH/src/common/windows/string_utils-inl.h
-    HEADERS += $$BREAKPAD_PATH/src/common/windows/guid_string.h
-    HEADERS += $$BREAKPAD_PATH/src/client/windows/handler/exception_handler.h
-    HEADERS += $$BREAKPAD_PATH/src/client/windows/common/ipc_protocol.h
-    HEADERS += $$BREAKPAD_PATH/src/google_breakpad/common/minidump_format.h
-    HEADERS += $$BREAKPAD_PATH/src/google_breakpad/common/breakpad_types.h
-    HEADERS += $$BREAKPAD_PATH/src/client/windows/crash_generation/crash_generation_client.h
+    CONFIG += breakpad-builtin
 
     SOURCES += $$BREAKPAD_PATH/src/client/windows/handler/exception_handler.cc
     SOURCES += $$BREAKPAD_PATH/src/common/windows/string_utils.cc
@@ -18,37 +12,34 @@ win32 {
     SOURCES += $$BREAKPAD_PATH/src/client/windows/crash_generation/crash_generation_client.cc
 }
 
-linux {
-    HEADERS += $$BREAKPAD_PATH/src/client/linux/handler/exception_handler.h
-    HEADERS += $$BREAKPAD_PATH/src/client/linux/crash_generation/crash_generation_client.h
-    HEADERS += $$BREAKPAD_PATH/src/client/linux/handler/minidump_descriptor.h
-    HEADERS += $$BREAKPAD_PATH/src/client/linux/minidump_writer/minidump_writer.h
-    HEADERS += $$BREAKPAD_PATH/src/client/linux/minidump_writer/line_reader.h
-    HEADERS += $$BREAKPAD_PATH/src/client/linux/minidump_writer/linux_dumper.h
-    HEADERS += $$BREAKPAD_PATH/src/client/linux/minidump_writer/linux_ptrace_dumper.h
-    HEADERS += $$BREAKPAD_PATH/src/client/linux/minidump_writer/directory_reader.h
-    HEADERS += $$BREAKPAD_PATH/src/client/linux/log/log.h
-    HEADERS += $$BREAKPAD_PATH/src/client/minidump_file_writer-inl.h
-    HEADERS += $$BREAKPAD_PATH/src/client/minidump_file_writer.h
-    HEADERS += $$BREAKPAD_PATH/src/common/linux/linux_libc_support.h
-    HEADERS += $$BREAKPAD_PATH/src/common/linux/eintr_wrapper.h
-    HEADERS += $$BREAKPAD_PATH/src/common/linux/ignore_ret.h
-    HEADERS += $$BREAKPAD_PATH/src/common/linux/file_id.h
-    HEADERS += $$BREAKPAD_PATH/src/common/linux/memory_mapped_file.h
-    HEADERS += $$BREAKPAD_PATH/src/common/linux/safe_readlink.h
-    HEADERS += $$BREAKPAD_PATH/src/common/linux/guid_creator.h
-    HEADERS += $$BREAKPAD_PATH/src/common/linux/elfutils.h
-    HEADERS += $$BREAKPAD_PATH/src/common/linux/elfutils-inl.h
-    HEADERS += $$BREAKPAD_PATH/src/common/using_std_string.h
-    HEADERS += $$BREAKPAD_PATH/src/common/memory.h
-    HEADERS += $$BREAKPAD_PATH/src/common/basictypes.h
-    HEADERS += $$BREAKPAD_PATH/src/common/memory_range.h
-    HEADERS += $$BREAKPAD_PATH/src/common/string_conversion.h
-    HEADERS += $$BREAKPAD_PATH/src/common/convert_UTF.h
-    HEADERS += $$BREAKPAD_PATH/src/google_breakpad/common/minidump_format.h
-    HEADERS += $$BREAKPAD_PATH/src/google_breakpad/common/minidump_size.h
-    HEADERS += $$BREAKPAD_PATH/src/google_breakpad/common/breakpad_types.h
-    HEADERS += $$BREAKPAD_PATH/src/third_party/lss/linux_syscall_support.h
+android {
+    CONFIG += breakpad-builtin
+
+    INCLUDEPATH += $$BREAKPAD_PATH/src/common/android/include
+
+    SOURCES += $$BREAKPAD_PATH/src/client/linux/crash_generation/crash_generation_client.cc \
+               $$BREAKPAD_PATH/src/client/linux/handler/exception_handler.cc \
+               $$BREAKPAD_PATH/src/client/linux/handler/minidump_descriptor.cc \
+               $$BREAKPAD_PATH/src/client/linux/log/log.cc \
+               $$BREAKPAD_PATH/src/client/linux/minidump_writer/linux_dumper.cc \
+               $$BREAKPAD_PATH/src/client/linux/minidump_writer/linux_ptrace_dumper.cc \
+               $$BREAKPAD_PATH/src/client/linux/minidump_writer/minidump_writer.cc \
+               $$BREAKPAD_PATH/src/client/minidump_file_writer.cc \
+               $$BREAKPAD_PATH/src/common/android/breakpad_getcontext.S \
+               $$BREAKPAD_PATH/src/common/convert_UTF.c \
+               $$BREAKPAD_PATH/src/common/md5.cc \
+               $$BREAKPAD_PATH/src/common/string_conversion.cc \
+               $$BREAKPAD_PATH/src/common/linux/elfutils.cc \
+               $$BREAKPAD_PATH/src/common/linux/file_id.cc \
+               $$BREAKPAD_PATH/src/common/linux/guid_creator.cc \
+               $$BREAKPAD_PATH/src/common/linux/linux_libc_support.cc \
+               $$BREAKPAD_PATH/src/common/linux/memory_mapped_file.cc \
+               $$BREAKPAD_PATH/src/common/linux/safe_readlink.cc
+}
+
+linux:!android {
+    CONFIG += breakpad-builtin
+
     SOURCES += $$BREAKPAD_PATH/src/client/linux/crash_generation/crash_generation_client.cc
     SOURCES += $$BREAKPAD_PATH/src/client/linux/handler/exception_handler.cc
     SOURCES += $$BREAKPAD_PATH/src/client/linux/handler/minidump_descriptor.cc
@@ -69,3 +60,6 @@ linux {
     QMAKE_CXXFLAGS += -g
 }
 
+breakpad-builtin {
+    DEFINES += HAVE_BREAKPAD
+}

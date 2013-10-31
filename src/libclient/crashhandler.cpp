@@ -6,7 +6,7 @@
 
 #if defined(Q_OS_MAC)
 #include "client/mac/handler/exception_handler.h"
-#elif defined(Q_OS_LINUX)
+#elif defined(Q_OS_LINUX) || defined(Q_OS_ANDROID)
 #include "client/linux/handler/exception_handler.h"
 #elif defined(Q_OS_WIN32)
 #include "client/windows/handler/exception_handler.h"

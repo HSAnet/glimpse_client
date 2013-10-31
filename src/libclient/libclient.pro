@@ -25,6 +25,11 @@ else {
                log/logger.cpp
 }
 
+breakpad-builtin {
+    HEADERS += crashhandler.h
+    SOURCES += crashhandler.cpp
+}
+
 SOURCES +=  \
     client.cpp \
     connectiontester.cpp \
@@ -77,8 +82,7 @@ SOURCES +=  \
     measurement/ping/ping_definition.cpp \
     measurement/ping/ping.cpp \
     report/reportmodel.cpp \
-    controller/reportcontroller.cpp \
-    crashhandler.cpp
+    controller/reportcontroller.cpp
 
 HEADERS += \
     export.h \
@@ -141,8 +145,7 @@ HEADERS += \
     measurement/ping/ping.h \
     report/reportmodel.h \
     storage/storagepaths.h \
-    controller/reportcontroller.h \
-    crashhandler.h
+    controller/reportcontroller.h
 
 OTHER_FILES += \
     libclient.pri

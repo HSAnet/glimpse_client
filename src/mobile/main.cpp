@@ -10,7 +10,6 @@
 #include "report/reportmodel.h"
 #include "controller/reportcontroller.h"
 #include "settings.h"
-#include "crashhandler.h"
 #include "storage/storagepaths.h"
 
 #include "qtquick2applicationviewer.h"
@@ -34,6 +33,10 @@
 #ifdef Q_OS_MAC
 #include <macprocessmodel.h>
 #include <macimageprovider.h>
+#endif
+
+#ifdef HAVE_BREAKPAD
+#include "crashhandler.h"
 #endif
 
 class Time : public QObject
@@ -62,6 +65,7 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationName("HS Augsburg");
     QCoreApplication::setApplicationName("mPlaneClient");
 
+#ifdef HAVE_BREAKPAD
     QDir crashdumpDir = StoragePaths().crashDumpDirectory();
     if (!crashdumpDir.exists()) {
         QDir upper = crashdumpDir;
@@ -74,6 +78,7 @@ int main(int argc, char* argv[])
 
     CrashHandler crashHandler;
     crashHandler.init(crashdumpDir.absolutePath());
+#endif // HAVE_BREAKPAD
 
 #ifdef Q_OS_ANDROID
     QGuiApplication app(argc, argv);
