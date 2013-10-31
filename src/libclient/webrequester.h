@@ -6,12 +6,14 @@
 
 #include <QObject>
 #include <QJsonObject>
+#include <QUrl>
 
 class WebRequester : public QObject
 {
     Q_OBJECT
     Q_ENUMS(Status)
-    Q_PROPERTY(int status READ status NOTIFY statusChanged)
+    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(QUrl url READ url WRITE setUrl NOTIFY urlChanged)
     Q_PROPERTY(Request* request READ request WRITE setRequest NOTIFY requestChanged)
     Q_PROPERTY(Response* response READ response WRITE setResponse NOTIFY responseChanged)
     Q_PROPERTY(bool running READ isRunning NOTIFY statusChanged)
@@ -28,6 +30,9 @@ public:
     };
 
     Status status() const;
+
+    void setUrl(const QUrl& url);
+    QUrl url() const;
 
     void setRequest(Request* request);
     Request* request() const;
@@ -47,6 +52,7 @@ public slots:
 
 signals:
     void statusChanged(Status status);
+    void urlChanged(const QUrl& url);
     void requestChanged(Request* request);
     void responseChanged(Response* response);
 

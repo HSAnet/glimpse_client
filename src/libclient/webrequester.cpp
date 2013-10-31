@@ -1,6 +1,7 @@
 #include "webrequester.h"
 #include "client.h"
 #include "settings.h"
+#include "log/logger.h"
 
 #include <QPointer>
 #include <QNetworkReply>
@@ -9,9 +10,7 @@
 #include <QMetaClassInfo>
 #include <QDebug>
 
-namespace {
-    const QUrl masterUrl = QUrl("https://141.82.49.82:5105");
-}
+LOGGER(WebRequester);
 
 class WebRequester::Private : public QObject
 {
@@ -28,6 +27,7 @@ public:
 
     // Properties
     WebRequester::Status status;
+    QUrl url;
     QPointer<Request> request;
     QPointer<Response> response;
     QString errorString;
@@ -81,7 +81,7 @@ void WebRequester::Private::requestFinished()
                     else
                         setStatus(WebRequester::Error);
                 } else {
-                    qWarning() << "No response object set";
+                    LOG_WARNING("No response object set");
                     setStatus(WebRequester::Finished);
                 }
             } else {
@@ -114,6 +114,19 @@ WebRequester::~WebRequester()
 WebRequester::Status WebRequester::status() const
 {
     return d->status;
+}
+
+void WebRequester::setUrl(const QUrl &url)
+{
+    if ( d->url != url ) {
+        d->url = url;
+        emit urlChanged(url);
+    }
+}
+
+QUrl WebRequester::url() const
+{
+    return d->url;
 }
 
 void WebRequester::setRequest(Request *request)
@@ -164,10 +177,19 @@ QJsonObject WebRequester::jsonData() const
 
 void WebRequester::start()
 {
+    /*
+    if ( !d->url.isValid() ) {
+        d->errorString = tr("Invalid url: %1").arg(d->url.toString());
+        d->setStatus(Error);
+        LOG_ERROR(QString("Invalid url: %1").arg(d->url.toString()));
+        return;
+    }
+    */
+
     if ( !d->request ) {
         d->errorString = tr("No request to start");
         d->setStatus(Error);
-        qDebug() << "No request to start";
+        LOG_ERROR("No request to start");
         return;
     }
 
@@ -175,7 +197,7 @@ void WebRequester::start()
     if ( pathIdx == -1 ) {
         d->errorString = tr("No path found for request");
         d->setStatus(Error);
-        qDebug() << "No path found for request";
+        LOG_ERROR("No path found for request");
         return;
     }
 
@@ -189,7 +211,8 @@ void WebRequester::start()
 
     QByteArray data = QJsonDocument::fromVariant(d->request->toVariant()).toJson();
 
-    QUrl url = masterUrl;
+    // TODO: Use internal url here
+    QUrl url = QString("https://%1").arg(Client::instance()->settings()->config()->controllerAddress());
     url.setPath(classInfo.value());
 
     QNetworkRequest request(url);

@@ -139,6 +139,11 @@ void GetConfigResponse::finished()
 {
 }
 
+void GetConfigResponse::setControllerAddress(const QString &controllerAddress)
+{
+    m_controllerAddress = controllerAddress;
+}
+
 QString GetConfigResponse::controllerAddress() const
 {
     return m_controllerAddress;

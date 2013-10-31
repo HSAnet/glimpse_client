@@ -99,6 +99,7 @@ public:
     QVariant toVariant() const;
     void finished();
 
+    void setControllerAddress(const QString& controllerAddress);
     QString controllerAddress() const;
     TimingInformation *fetchTaskSchedule() const;
 
