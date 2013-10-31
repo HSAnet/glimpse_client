@@ -1,4 +1,5 @@
 #include "settings.h"
+#include "deviceinfo.h"
 #include "log/logger.h"
 
 #include <QSettings>
@@ -26,9 +27,15 @@ Settings::~Settings()
 
 Settings::StorageType Settings::init()
 {
+    DeviceInfo info;
+    setDeviceId(info.deviceId());
+
+    LOG_INFO(QString("Device ID: %1").arg(deviceId()));
+
     // Create new settings
     if ( deviceId().isNull() ) {
-        setDeviceId( QUuid::createUuid() );
+        //setDeviceId( QUuid::createUuid() );
+        d->config.setControllerAddress("141.82.49.82:5105");
 
         LOG_INFO("Created new settings for this device");
 
@@ -41,7 +48,7 @@ Settings::StorageType Settings::init()
     }
 }
 
-void Settings::setDeviceId(const QUuid &deviceId)
+void Settings::setDeviceId(const QString &deviceId)
 {
     if ( this->deviceId() != deviceId ) {
         d->settings.setValue("device-id", deviceId);
@@ -49,9 +56,9 @@ void Settings::setDeviceId(const QUuid &deviceId)
     }
 }
 
-QUuid Settings::deviceId() const
+QString Settings::deviceId() const
 {
-    return d->settings.value("device-id").toUuid();
+    return d->settings.value("device-id").toString();
 }
 
 void Settings::setUserId(const QString &userId)

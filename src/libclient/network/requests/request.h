@@ -10,7 +10,7 @@
 class CLIENT_API Request : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QUuid deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
+    Q_PROPERTY(QString deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
     Q_PROPERTY(QString sessionId READ sessionId WRITE setSessionId NOTIFY sessionIdChanged)
 
 public:
@@ -19,8 +19,8 @@ public:
 
     virtual QVariant toVariant() const = 0;
 
-    void setDeviceId(const QUuid& deviceId);
-    QUuid deviceId() const;
+    void setDeviceId(const QString &deviceId);
+    QString deviceId() const;
 
     void setSessionId(const QString& sessionId);
     QString sessionId() const;

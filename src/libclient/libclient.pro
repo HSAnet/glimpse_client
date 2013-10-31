@@ -18,11 +18,13 @@ android {
     HEADERS += androidhelper.h
     SOURCES += androidhelper.cpp \
                storage/storagepaths_android.cpp \
-               log/logger_android.cpp
+               log/logger_android.cpp \
+               deviceinfo_android.cpp
 }
 else {
     SOURCES += storage/storagepaths.cpp \
-               log/logger.cpp
+               log/logger.cpp \
+               deviceinfo.cpp
 }
 
 breakpad-builtin {
@@ -33,9 +35,7 @@ breakpad-builtin {
 SOURCES +=  \
     client.cpp \
     connectiontester.cpp \
-    testfactory.cpp \
     tests/packettrain.cpp \
-    testscheduler.cpp \
     networkhelper.cpp \
     tests/natporttimes.cpp \
     settings.cpp \
@@ -89,10 +89,8 @@ HEADERS += \
     client.h \
     types.h \
     connectiontester.h \
-    testfactory.h \
     tests/packettrain.h \
     tests/test.h \
-    testscheduler.h \
     tests/testinfo.h \
     networkhelper.h \
     tests/natporttimes.h \
@@ -145,7 +143,8 @@ HEADERS += \
     measurement/ping/ping.h \
     report/reportmodel.h \
     storage/storagepaths.h \
-    controller/reportcontroller.h
+    controller/reportcontroller.h \
+    deviceinfo.h
 
 OTHER_FILES += \
     libclient.pri

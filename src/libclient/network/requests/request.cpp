@@ -3,7 +3,7 @@
 class Request::Private
 {
 public:
-    QUuid deviceId;
+    QString deviceId;
     QString sessionId;
 };
 
@@ -18,7 +18,7 @@ Request::~Request()
     delete d;
 }
 
-void Request::setDeviceId(const QUuid& deviceId)
+void Request::setDeviceId(const QString& deviceId)
 {
     if ( d->deviceId != deviceId ) {
         d->deviceId = deviceId;
@@ -26,7 +26,7 @@ void Request::setDeviceId(const QUuid& deviceId)
     }
 }
 
-QUuid Request::deviceId() const
+QString Request::deviceId() const
 {
     return d->deviceId;
 }
