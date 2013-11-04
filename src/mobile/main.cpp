@@ -73,6 +73,13 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationName("HS Augsburg");
     QCoreApplication::setApplicationName("mPlaneClient");
 
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+    QGuiApplication app(argc, argv);
+#else
+    QApplication app(argc, argv);
+    app.setQuitOnLastWindowClosed(true);
+#endif
+
 #ifdef HAVE_BREAKPAD
     QDir crashdumpDir = StoragePaths().crashDumpDirectory();
     if (!crashdumpDir.exists()) {
@@ -87,13 +94,6 @@ int main(int argc, char* argv[])
     CrashHandler crashHandler;
     crashHandler.init(crashdumpDir.absolutePath());
 #endif // HAVE_BREAKPAD
-
-#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
-    QGuiApplication app(argc, argv);
-#else
-    QApplication app(argc, argv);
-    app.setQuitOnLastWindowClosed(true);
-#endif
 
     qmlRegisterUncreatableType<AbstractTest>("mplane", 1, 0, "AbstractTest", "abstract class");
     qmlRegisterUncreatableType<Client>("mplane", 1, 0, "Client", "This is a singleton");

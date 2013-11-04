@@ -20,8 +20,11 @@ android {
                storage/storagepaths_android.cpp \
                log/logger_android.cpp \
                deviceinfo_android.cpp
-}
-else {
+} else: ios {
+    SOURCES += log/logger.cpp
+    OBJECTIVE_SOURCES += storage/storagepaths_ios.mm \
+                         deviceinfo_ios.mm
+} else {
     SOURCES += storage/storagepaths.cpp \
                log/logger.cpp \
                deviceinfo.cpp

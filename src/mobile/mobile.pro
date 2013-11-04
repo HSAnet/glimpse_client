@@ -37,6 +37,8 @@ android {
     LIBS += $$[QT_INSTALL_QML]/QtQuick/Controls/libqtquickcontrolsplugin.a \
             $$[QT_INSTALL_QML]/QtQuick/Window.2/libwindowplugin.a \
             $$[QT_INSTALL_QML]/QtQuick.2/libqtquick2plugin.a
+
+    LIBS += -framework AdSupport
 } else {
     QT += widgets
 
@@ -44,7 +46,7 @@ android {
     SOURCES += desktopstatusbarhelper.cpp
 }
 
-mac:!ios {
+osx {
     QT += macextras
     LIBS += -framework AppKit
 
