@@ -4,7 +4,7 @@ CONFIG += ordered
 SUBDIRS += libclient \
            mobile
 
-!android {
+!android:!ios {
     SUBDIRS += console \
                desktop
 }

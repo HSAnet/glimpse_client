@@ -25,18 +25,24 @@
 #include "statusbarhelper.h"
 #include "androidimageprovider.h"
 #include "androidprocessmodel.h"
-#else
+#elif !defined(Q_OS_IOS)
 #include <QApplication>
 #include "desktopstatusbarhelper.h"
 #endif // Q_OS_ANDROID
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_OSX
 #include <macprocessmodel.h>
 #include <macimageprovider.h>
 #endif
 
+#define HAVE_BREAKPAD
 #ifdef HAVE_BREAKPAD
 #include "crashhandler.h"
+#endif
+
+#ifdef Q_OS_IOS
+#include <QtPlugin>
+Q_IMPORT_PLUGIN(QtQuickControlsPlugin)
 #endif
 
 class Time : public QObject
@@ -80,7 +86,7 @@ int main(int argc, char* argv[])
     crashHandler.init(crashdumpDir.absolutePath());
 #endif // HAVE_BREAKPAD
 
-#ifdef Q_OS_ANDROID
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     QGuiApplication app(argc, argv);
 #else
     QApplication app(argc, argv);
@@ -126,7 +132,7 @@ int main(int argc, char* argv[])
     qmlRegisterType<AndroidProcessModel>("mplane", 1, 0, "ProcessModel");
 #endif // Q_OS_ANDROID
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_OSX
     qmlRegisterType<MacProcessModel>("mplane", 1, 0, "ProcessModel");
 #endif // Q_OS_MAC
 
@@ -142,11 +148,13 @@ int main(int argc, char* argv[])
 #ifdef Q_OS_ANDROID
     view.engine()->addImageProvider("android", new AndroidImageProvider);
     rootContext->setContextProperty("statusBar", new StatusBarHelper(&view));
+#elif defined(Q_OS_IOS)
+    // TODO: iOS Code
 #else
     rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(&view));
 #endif // Q_OS_ANDROID
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_OSX
     view.engine()->addImageProvider("android", new MacImageProvider);
 #endif // Q_OS_MAC
 

@@ -1,4 +1,6 @@
 #include "crashhandler.h"
+#include "log/logger.h"
+
 #include <QDir>
 #include <QProcess>
 #include <QCoreApplication>
@@ -12,11 +14,13 @@
 #include "client/windows/handler/exception_handler.h"
 #endif
 
-#define LOG_INFO(message) \
+#define P_LOG_INFO(message) \
     printf("INFO: %s : %s\n", Q_FUNC_INFO, message);
 
-#define LOG_ERROR(message) \
+#define P_LOG_ERROR(message) \
     printf("ERROR: %s : %s\n", Q_FUNC_INFO, message);
+
+LOGGER(CrashHandler);
 
 class CrashHandler::Private
 {
@@ -64,7 +68,7 @@ bool CrashHandler::Private::DumpCallback(const char* _dump_dir,const char* _mini
     Q_UNUSED(md);
 #endif
 
-    LOG_INFO("Crash detected.");
+    P_LOG_INFO("Crash detected.");
 
     /*
     NO STACK USE, NO HEAP USE THERE !!!
@@ -111,6 +115,8 @@ void CrashHandler::Private::init(const QString& dumpPath)
         NULL
         );
 #endif
+
+    LOG_INFO("Crash handler initialized.");
 }
 
 CrashHandler::CrashHandler()

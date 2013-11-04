@@ -10,4 +10,5 @@ DeviceInfo::~DeviceInfo()
 
 QString DeviceInfo::deviceId() const
 {
+    return QString();
 }

@@ -60,6 +60,34 @@ linux:!android {
     QMAKE_CXXFLAGS += -g
 }
 
+ios {
+    warning(No breakpad yet for ios)
+}
+
+osx {
+    CONFIG += breakpad-builtin
+
+    SOURCES += $$BREAKPAD_PATH/src/client/mac/crash_generation/crash_generation_client.cc
+    SOURCES += $$BREAKPAD_PATH/src/client/mac/handler/exception_handler.cc
+    SOURCES += $$BREAKPAD_PATH/src/client/mac/handler/minidump_generator.cc
+    SOURCES += $$BREAKPAD_PATH/src/client/mac/handler/dynamic_images.cc
+    SOURCES += $$BREAKPAD_PATH/src/client/mac/handler/breakpad_nlist_64.cc
+    SOURCES += $$BREAKPAD_PATH/src/client/minidump_file_writer.cc
+    SOURCES += $$BREAKPAD_PATH/src/common/mac/string_utilities.cc
+    SOURCES += $$BREAKPAD_PATH/src/common/mac/file_id.cc
+    SOURCES += $$BREAKPAD_PATH/src/common/mac/macho_id.cc
+    SOURCES += $$BREAKPAD_PATH/src/common/mac/macho_walker.cc
+    SOURCES += $$BREAKPAD_PATH/src/common/mac/macho_utilities.cc
+    SOURCES += $$BREAKPAD_PATH/src/common/mac/bootstrap_compat.cc
+    SOURCES += $$BREAKPAD_PATH/src/common/string_conversion.cc
+    SOURCES += $$BREAKPAD_PATH/src/common/convert_UTF.c
+    SOURCES += $$BREAKPAD_PATH/src/common/md5.cc
+
+    OBJECTIVE_SOURCES += $$BREAKPAD_PATH/src/common/mac/MachIPC.mm
+
+    QMAKE_CXXFLAGS += -g
+}
+
 breakpad-builtin {
     DEFINES += HAVE_BREAKPAD
 }

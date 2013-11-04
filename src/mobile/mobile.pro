@@ -25,6 +25,8 @@ android {
 
     OTHER_FILES += $$files($$PWD/android/src/*.java) \
                    android/AndroidManifest.xml
+} else: ios {
+    LIBS += $$[QT_INSTALL_QML]/QtQuick/Controls/libqtquickcontrolsplugin.a
 } else {
     QT += widgets
 
@@ -32,14 +34,14 @@ android {
     SOURCES += desktopstatusbarhelper.cpp
 }
 
-mac {
+mac:!ios {
     QT += macextras
     LIBS += -framework AppKit
 
     HEADERS += macprocessmodel.h \
                macimageprovider.h
-    SOURCES += macprocessmodel.mm \
-               macimageprovider.mm
+    OBJECTIVE_SOURCES += macprocessmodel.mm \
+                         macimageprovider.mm
 }
 
 SOURCES += \
