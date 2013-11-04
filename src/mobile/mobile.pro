@@ -5,6 +5,14 @@ folder_01.source = qml
 folder_01.target = ""
 DEPLOYMENTFOLDERS = folder_01
 
+qmlfiles.files = $$PWD/qml
+qmlfiles.path = .
+QMAKE_BUNDLE_DATA += qmlfiles
+
+qmlimports.files = $$[QT_INSTALL_QML]
+qmlimports.path = imports
+QMAKE_BUNDLE_DATA += qmlimports
+
 QT += gui quick qml concurrent
 
 include(../libclient/libclient.pri)
@@ -26,7 +34,9 @@ android {
     OTHER_FILES += $$files($$PWD/android/src/*.java) \
                    android/AndroidManifest.xml
 } else: ios {
-    LIBS += $$[QT_INSTALL_QML]/QtQuick/Controls/libqtquickcontrolsplugin.a
+    LIBS += $$[QT_INSTALL_QML]/QtQuick/Controls/libqtquickcontrolsplugin.a \
+            $$[QT_INSTALL_QML]/QtQuick/Window.2/libwindowplugin.a \
+            $$[QT_INSTALL_QML]/QtQuick.2/libqtquick2plugin.a
 } else {
     QT += widgets
 

@@ -6,7 +6,7 @@
 #include <QCoreApplication>
 #include <QString>
 
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_OSX)
 #include "client/mac/handler/exception_handler.h"
 #elif defined(Q_OS_LINUX) || defined(Q_OS_ANDROID)
 #include "client/linux/handler/exception_handler.h"
@@ -35,6 +35,7 @@ public:
     }
 
     void init(const QString& dumpPath);
+
     static google_breakpad::ExceptionHandler* exceptionHandler;
     static bool reportCrashesToSystem;
 
@@ -42,7 +43,7 @@ public:
     static bool DumpCallback(const wchar_t* _dump_dir,const wchar_t* _minidump_id,void* context,EXCEPTION_POINTERS* exinfo,MDRawAssertionInfo* assertion,bool success);
 #elif defined(Q_OS_LINUX)
     static bool DumpCallback(const google_breakpad::MinidumpDescriptor &md,void *context, bool success);
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_OSX)
     static bool DumpCallback(const char* _dump_dir,const char* _minidump_id,void *context, bool success);
 #endif
 };
@@ -54,7 +55,7 @@ bool CrashHandler::Private::reportCrashesToSystem = false;
 bool CrashHandler::Private::DumpCallback(const wchar_t* _dump_dir,const wchar_t* _minidump_id,void* context,EXCEPTION_POINTERS* exinfo,MDRawAssertionInfo* assertion,bool success)
 #elif defined(Q_OS_LINUX)
 bool CrashHandler::Private::DumpCallback(const google_breakpad::MinidumpDescriptor &md,void *context, bool success)
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_OSX)
 bool CrashHandler::Private::DumpCallback(const char* _dump_dir,const char* _minidump_id,void *context, bool success)
 #endif
 {
@@ -103,7 +104,7 @@ void CrashHandler::Private::init(const QString& dumpPath)
         true,
         -1
         );
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_OSX)
     std::string pathAsStr = dumpPath.toStdString();
     exceptionHandler = new google_breakpad::ExceptionHandler(
         pathAsStr,

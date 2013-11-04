@@ -42,6 +42,8 @@
 
 #ifdef Q_OS_IOS
 #include <QtPlugin>
+Q_IMPORT_PLUGIN(QtQuick2Plugin)
+Q_IMPORT_PLUGIN(QtQuick2WindowPlugin)
 Q_IMPORT_PLUGIN(QtQuickControlsPlugin)
 #endif
 
@@ -157,6 +159,10 @@ int main(int argc, char* argv[])
 #ifdef Q_OS_OSX
     view.engine()->addImageProvider("android", new MacImageProvider);
 #endif // Q_OS_MAC
+
+#ifdef Q_OS_IOS
+    view.addImportPath(QStringLiteral("imports/qml"));
+#endif
 
     view.setMainQmlFile(QStringLiteral("qml/main.qml"));
     view.showExpanded();

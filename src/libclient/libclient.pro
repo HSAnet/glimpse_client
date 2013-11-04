@@ -29,7 +29,8 @@ else {
 
 breakpad-builtin {
     HEADERS += crashhandler.h
-    SOURCES += crashhandler.cpp
+    ios:OBJECTIVE_SOURCES += crashhandler_ios.mm
+    else:SOURCES += crashhandler.cpp
 }
 
 SOURCES +=  \
