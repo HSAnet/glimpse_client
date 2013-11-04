@@ -35,9 +35,7 @@ android {
                $$BREAKPAD_PATH/src/common/linux/linux_libc_support.cc \
                $$BREAKPAD_PATH/src/common/linux/memory_mapped_file.cc \
                $$BREAKPAD_PATH/src/common/linux/safe_readlink.cc
-}
-
-linux:!android {
+} else: linux {
     CONFIG += breakpad-builtin
 
     SOURCES += $$BREAKPAD_PATH/src/client/linux/crash_generation/crash_generation_client.cc
@@ -60,14 +58,29 @@ linux:!android {
     QMAKE_CXXFLAGS += -g
 }
 
-ios {
-    warning(No breakpad yet for ios)
-}
-
-osx {
+mac {
     CONFIG += breakpad-builtin
 
-    SOURCES += $$BREAKPAD_PATH/src/client/mac/crash_generation/crash_generation_client.cc
+    ios {
+        INCLUDEPATH += $$BREAKPAD_PATH/src/client/ios \
+                       $$BREAKPAD_PATH/../google-toolbox-for-mac
+
+        SOURCES += $$BREAKPAD_PATH/src/client/mac/handler/protected_memory_allocator.cc
+        OBJECTIVE_SOURCES += $$BREAKPAD_PATH/src/client/ios/Breakpad.mm
+        OBJECTIVE_SOURCES += $$BREAKPAD_PATH/src/client/ios/BreakpadController.mm
+        OBJECTIVE_SOURCES += $$BREAKPAD_PATH/src/client/ios/handler/ios_exception_minidump_generator.mm
+        OBJECTIVE_SOURCES += $$BREAKPAD_PATH/src/client/mac/sender/uploader.mm
+        OBJECTIVE_SOURCES += $$BREAKPAD_PATH/src/client/mac/crash_generation/ConfigFile.mm
+        OBJECTIVE_SOURCES += $$BREAKPAD_PATH/src/common/mac/GTMLogger.m
+        OBJECTIVE_SOURCES += $$BREAKPAD_PATH/src/common/mac/HTTPMultipartUpload.m
+    }
+
+    osx {
+        SOURCES += $$BREAKPAD_PATH/src/client/mac/crash_generation/crash_generation_client.cc
+        SOURCES += $$BREAKPAD_PATH/src/common/mac/bootstrap_compat.cc
+        OBJECTIVE_SOURCES += $$BREAKPAD_PATH/src/common/mac/MachIPC.mm
+    }
+
     SOURCES += $$BREAKPAD_PATH/src/client/mac/handler/exception_handler.cc
     SOURCES += $$BREAKPAD_PATH/src/client/mac/handler/minidump_generator.cc
     SOURCES += $$BREAKPAD_PATH/src/client/mac/handler/dynamic_images.cc
@@ -78,12 +91,9 @@ osx {
     SOURCES += $$BREAKPAD_PATH/src/common/mac/macho_id.cc
     SOURCES += $$BREAKPAD_PATH/src/common/mac/macho_walker.cc
     SOURCES += $$BREAKPAD_PATH/src/common/mac/macho_utilities.cc
-    SOURCES += $$BREAKPAD_PATH/src/common/mac/bootstrap_compat.cc
     SOURCES += $$BREAKPAD_PATH/src/common/string_conversion.cc
     SOURCES += $$BREAKPAD_PATH/src/common/convert_UTF.c
     SOURCES += $$BREAKPAD_PATH/src/common/md5.cc
-
-    OBJECTIVE_SOURCES += $$BREAKPAD_PATH/src/common/mac/MachIPC.mm
 
     QMAKE_CXXFLAGS += -g
 }
