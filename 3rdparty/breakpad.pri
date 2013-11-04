@@ -54,8 +54,6 @@ android {
     SOURCES += $$BREAKPAD_PATH/src/common/linux/elfutils.cc
     SOURCES += $$BREAKPAD_PATH/src/common/string_conversion.cc
     SOURCES += $$BREAKPAD_PATH/src/common/convert_UTF.c
-
-    QMAKE_CXXFLAGS += -g
 }
 
 mac {
@@ -94,10 +92,11 @@ mac {
     SOURCES += $$BREAKPAD_PATH/src/common/string_conversion.cc
     SOURCES += $$BREAKPAD_PATH/src/common/convert_UTF.c
     SOURCES += $$BREAKPAD_PATH/src/common/md5.cc
-
-    QMAKE_CXXFLAGS += -g
 }
 
 breakpad-builtin {
     DEFINES += HAVE_BREAKPAD
+
+    *clang*|*g++*|*llvm*: QMAKE_CXXFLAGS += -g
+    *msvc*: QMAKE_CXXFLAGS += /Zi
 }
