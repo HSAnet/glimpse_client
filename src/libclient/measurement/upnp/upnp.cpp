@@ -211,7 +211,7 @@ ResultPtr UPnP::result() const
     QVariantList deviceResultList;
 
     foreach(UPnPHash resultHash, results) {
-        qDebug()<<"UPnP result:";
+        LOG_DEBUG("UPnP result:");
         QHashIterator<UPnP::DataType, QVariant> iter(resultHash);
 
         // results from one interface
@@ -225,7 +225,7 @@ ResultPtr UPnP::result() const
 
             deviceResult.insert(name, iter.value());
 
-            qDebug()<<name<<iter.value();
+            LOG_DEBUG(QString("%1: %2").arg(name).arg(iter.value().toString()));
         }
         deviceResultList.append(deviceResult);
     }
