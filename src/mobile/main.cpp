@@ -12,6 +12,7 @@
 #include "controller/reportcontroller.h"
 #include "settings.h"
 #include "storage/storagepaths.h"
+#include "log/logger.h"
 
 #include "qtquick2applicationviewer.h"
 
@@ -47,6 +48,8 @@ Q_IMPORT_PLUGIN(QtQuick2Plugin)
 Q_IMPORT_PLUGIN(QtQuick2WindowPlugin)
 Q_IMPORT_PLUGIN(QtQuickControlsPlugin)
 #endif
+
+LOGGER(main)
 
 class Time : public QObject
 {
@@ -84,11 +87,10 @@ int main(int argc, char* argv[])
 #ifdef HAVE_BREAKPAD
     QDir crashdumpDir = StoragePaths().crashDumpDirectory();
     if (!crashdumpDir.exists()) {
-        QDir upper = crashdumpDir;
-        upper.cdUp();
-
-        if (!upper.mkdir(crashdumpDir.dirName())) {
-            qDebug() << "Failed to create crashdump directory";
+        if (!QDir::root().mkpath(crashdumpDir.absolutePath())) {
+            LOG_ERROR(QString("Failed to create crashdump directory: %1").arg(crashdumpDir.absolutePath()));
+        } else {
+            LOG_INFO("Crashdump directory created");
         }
     }
 
