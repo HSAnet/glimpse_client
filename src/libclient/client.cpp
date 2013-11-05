@@ -21,7 +21,7 @@
 #endif // Q_OS_UNIX
 
 // TEST INCLUDES
-#include "timing/onofftiming.h"
+#include "timing/immediatetiming.h"
 #include "task/task.h"
 #include "measurement/btc/btc_definition.h"
 #include "measurement/ping/ping_definition.h"
@@ -262,14 +262,14 @@ void Client::btc()
 {
     BulkTransportCapacityDefinition btcDef("141.82.49.80", 3365, 1024*50);
 
-    TimingPtr timing(new OnOffTiming(QDateTime::currentDateTime().addSecs(5)));
+    TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "btc_ma", timing, btcDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
 }
 
 void Client::upnp()
 {
-    TimingPtr timing(new OnOffTiming(QDateTime::currentDateTime().addSecs(5)));
+    TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("{3702e527-f84f-4542-8df6-4e3d2a0ec977}", "upnp", timing, QVariant()));
     d->scheduler.enqueue(testDefinition);
 }
@@ -277,7 +277,7 @@ void Client::upnp()
 void Client::ping()
 {
     PingDefinition pingDef("141.82.49.80", 4, 2);
-    TimingPtr timing(new OnOffTiming(QDateTime::currentDateTime().addSecs(5)));
+    TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "ping", timing, pingDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
 }
