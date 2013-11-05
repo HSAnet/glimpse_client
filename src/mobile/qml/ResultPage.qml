@@ -17,7 +17,7 @@ Flickable {
     Text {
         id: textView
         width: parent.width
-        color: "white"
+        color: "black"
         font.family: "Roboto Light"
         font.pixelSize: units.gu(30)
         renderType: Text.NativeRendering

@@ -11,8 +11,9 @@ Item {
 
     property string title: qsTr("Reports")
     property string subtitle: qsTr("see what happened recently")
+    property string actionTitle: qsTr("Upload")
 
-    function sendReports() {
+    function actionClicked() {
         client.reportController.sendReports();
     }
 
@@ -38,17 +39,6 @@ Item {
         delegate: AndroidDelegate {
             text: qsTr("%1 on %2").arg(model.taskId).arg(model.dateTime)
             onClicked: showReport(ListView.view.model.get(model.index))
-        }
-
-        header: Column {
-            width: parent.width
-
-            Button {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: qsTr("Send reports")
-                style: ButtonStyle {}
-                onClicked: root.sendReports()
-            }
         }
     }
 }

@@ -61,7 +61,7 @@ Item {
 
     Text {
         id: textitem
-        color: "white"
+        color: "black"
         font.pixelSize: units.gu(45)
         text: modelData
         anchors.verticalCenter: parent.verticalCenter
@@ -75,6 +75,7 @@ Item {
         anchors.margins: units.gu(15)
         height: units.gu(1)
         color: "#424246"
+        visible: model.index > 0
     }
 
     Image {
@@ -89,6 +90,5 @@ Item {
         id: mouse
         anchors.fill: parent
         onClicked: root.clicked()
-
     }
 }

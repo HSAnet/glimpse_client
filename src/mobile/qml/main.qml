@@ -10,10 +10,6 @@ Rectangle {
     height: units.gu(1200)
     clip: true
 
-    color: "#212126"
-
-    property variant scheduler: client.scheduler
-
     Component.onCompleted: {
         // Initialize the client
         if ( !client.init() ) {
@@ -22,22 +18,10 @@ Rectangle {
         }
     }
 
-    Behavior on scale {
-        NumberAnimation {
-            easing.type: Easing.OutBack
-            duration: 100
-        }
-    }
-
     // Implements back key navigation
     focus: true
     Keys.enabled: true
     Keys.onReleased: {
-        if (event.key === Qt.Key_Plus)
-            root.scale += 0.1
-        if (event.key === Qt.Key_Minus)
-            root.scale -= 0.1
-
         if (event.key === Qt.Key_Back) {
             if (pageStack.depth > 1) {
                 pageStack.pop();
@@ -52,30 +36,20 @@ Rectangle {
         value: client.taskExecutor.running
     }
 
-    Connections {
-        target: client.scheduler
-        /*onCurrentTestChanged: {
-            if ( !currentTest )
-                //loader.sourceComponent = undefined;
-                return;
-            else {
-                var params = {
-                    "test": currentTest
-                }
-
-                pageStack.push({item:Qt.resolvedUrl(currentTest.name + ".qml"), properties:params});
-            }
-        }*/
-    }
-
-    BorderImage {
+    Rectangle {
         id: title
-        border.bottom: 9
-        source: "android/images/toolbar.png"
+        color: "#f7f7f7"
         y: Qt.platform.os == "ios" ? 20 : 0
         width: parent.width
         height: applicationTitle.height * 2
         z: 1
+
+        Rectangle {
+            width: parent.width
+            anchors.bottom: parent.bottom
+            height: units.gu(2)
+            color: "#d9d9d9"
+        }
 
         BackButton {
             id: backButton
@@ -83,24 +57,61 @@ Rectangle {
 
         Text {
             id: applicationTitle
-            font.pixelSize: units.gu(55)
+            color: "#ff3b30"
+            font.pixelSize: units.gu(45)
             Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
             x: backButton.x + backButton.width + units.gu(20)
             anchors {
-                top: parent.top
-                topMargin: units.gu(10)
+                verticalCenter: parent.verticalCenter
             }
-            color: "white"
+        }
+
+        MouseArea {
+            anchors {
+                left: parent.left
+                right: applicationTitle.right
+                top: parent.top
+                bottom: parent.bottom
+            }
+
+            onClicked: pageStack.pop()
         }
 
         Text {
+            id: actionTitle
+            color: "#ff3b30"
+            font.pixelSize: units.gu(45)
+            anchors {
+                right: parent.right
+                rightMargin: units.gu(30)
+                verticalCenter: parent.verticalCenter
+            }
+
+            visible: false
+        }
+
+        MouseArea {
+            anchors {
+                left: actionTitle.left
+                right: parent.right
+                top: parent.top
+                bottom: parent.bottom
+            }
+
+            enabled: actionTitle.visible
+            onClicked: pageStack.currentItem.actionClicked()
+        }
+
+        /*
+        Text {
             id: statusText
-            font.pixelSize: units.gu(35)
+            font.pixelSize: units.gu(25)
             x: applicationTitle.x + units.gu(30)
             anchors.top: applicationTitle.bottom
             anchors.topMargin: units.gu(-5)
             color: "lightgray"
         }
+        */
 
         Spinner {
             anchors {
@@ -117,131 +128,32 @@ Rectangle {
         id: pageStack
         anchors {
             top: title.bottom
+            topMargin: units.gu(5)
             left: parent.left
             right: parent.right
             bottom: parent.bottom
         }
 
-        /*
-        delegate: StackViewDelegate {
-            function transitionFinished(properties)
-            {
-                properties.exitItem.x = 0
-            }
-
-            property Component pushTransition: StackViewTransition {
-                PropertyAnimation {
-                    target: enterItem
-                    property: "x"
-                    from: enterItem.width
-                    to: 0
-                    duration: 100
-                }
-                PropertyAnimation {
-                    target: exitItem
-                    property: "x"
-                    from: 0
-                    to: -exitItem.width
-                    duration: 100
-                }
-            }
-
-            property Component popTransition: StackViewTransition {
-                PropertyAnimation {
-                    target: enterItem
-                    property: "x"
-                    from: -enterItem.width
-                    to: 0
-                    duration: 100
-                }
-                PropertyAnimation {
-                    target: exitItem
-                    property: "x"
-                    from: 0
-                    to: exitItem.width
-                    duration: 100
-                }
-            }
-        }
-        */
-
         onCurrentItemChanged: {
-            applicationTitle.text = currentItem ? currentItem.title : "";
-            statusText.text = currentItem ? currentItem.subtitle : "";
+            if (currentItem) {
+                applicationTitle.text = currentItem.title;
+
+                if (currentItem.actionTitle) {
+                    actionTitle.text = currentItem.actionTitle;
+                    actionTitle.visible = true;
+                }
+                else
+                    actionTitle.visible = false;
+
+            } else {
+                applicationTitle.text = "";
+                actionTitle.visible = false;
+            }
+
+            //statusText.text = currentItem ? currentItem.subtitle : "";
         }
 
-        initialItem: Flickable {
-            property string title: "Glimpse"
-            property string subtitle: client.status == Client.Registered ? qsTr("Logged in") : qsTr("Please log in")
-
-            width: parent.width
-            height: parent.height
-
-            flickableDirection: Flickable.VerticalFlick
-            //contentWidth: column.width
-            contentHeight: column.height
-
-            Column {
-                id: column
-                width: parent.width
-                spacing: units.gu(50)
-
-                Button {
-                    text: "Registration"
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    style: ButtonStyle {}
-                    onClicked: pageStack.push(Qt.resolvedUrl("UserRegistration.qml"))
-                }
-
-                Button {
-                    text: "Scheduler"
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    style: ButtonStyle {}
-                    onClicked: pageStack.push(Qt.resolvedUrl("SchedulerPage.qml"))
-                }
-
-                Button {
-                    text: "Reports"
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    style: ButtonStyle {}
-                    onClicked: pageStack.push(Qt.resolvedUrl("ReportsPage.qml"))
-                }
-
-                Button {
-                    text: "Internet is not working"
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    style: ButtonStyle {}
-                    onClicked: pageStack.push(Qt.resolvedUrl("Settings.qml"))
-                }
-
-                Button {
-                    text: "Internet is slow"
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    style: ButtonStyle {}
-                    onClicked: pageStack.push(Qt.resolvedUrl("Slow.qml"))
-                }
-
-                Button {
-                    text: "Btc"
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    style: ButtonStyle {}
-                    onClicked: client.btc()
-                }
-
-                Button {
-                    text: "Upnp"
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    style: ButtonStyle {}
-                    onClicked: client.upnp()
-                }
-
-                Button {
-                    text: "Ping"
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    style: ButtonStyle {}
-                    onClicked: client.ping()
-                }
-            }
+        initialItem: MenuPage {
         }
     }
 }

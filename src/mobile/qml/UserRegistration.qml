@@ -6,7 +6,7 @@ import "android"
 Login {
     id: root
 
-    title: "Register user"
+    title: "Registration"
     subtitle: "blah ..."
 
     request: UserRegisterRequest {

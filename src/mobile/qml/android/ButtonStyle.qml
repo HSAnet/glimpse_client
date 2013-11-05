@@ -18,7 +18,7 @@ ButtonStyle {
             Text {
                 text: control.text
                 anchors.centerIn: parent
-                color: "white"
+                color: "black"
                 font.pixelSize: units.gu(50)
                 renderType: Text.NativeRendering
             }

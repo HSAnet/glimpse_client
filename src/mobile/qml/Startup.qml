@@ -4,8 +4,8 @@ import mplane 1.0
 import "android"
 
 Rectangle {
-    width: 768
-    height: 1280
+    width: units.gu(768)
+    height: units.gu(1280)
 
     Flickable {
         anchors.fill: parent
@@ -18,7 +18,7 @@ Rectangle {
             id: logo
             anchors {
                 top: parent.top
-                topMargin: 100
+                topMargin: units.gu(100)
                 horizontalCenter: parent.horizontalCenter
             }
 
@@ -30,11 +30,11 @@ Rectangle {
 
             TextFieldStyle {
                 textColor: "#2989B2"
-                font.pixelSize: 41
+                font.pixelSize: units.gu(41)
 
                 padding {
-                    left: 24
-                    right: 24
+                    left: units.gu(24)
+                    right: units.gu(24)
                 }
             }
         }
@@ -42,7 +42,7 @@ Rectangle {
         Column {
             anchors {
                 top: logo.bottom
-                topMargin: 100
+                topMargin: units.gu(100)
                 horizontalCenter: parent.horizontalCenter
             }
 

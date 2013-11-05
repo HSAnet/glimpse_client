@@ -67,7 +67,6 @@ ListView {
 
             Text {
                 text: "Mail"
-                color: "white"
                 font.pixelSize: units.gu(40)
             }
 
@@ -86,7 +85,6 @@ ListView {
 
             Text {
                 text: "Password"
-                color: "white"
                 font.pixelSize: units.gu(40)
             }
 
