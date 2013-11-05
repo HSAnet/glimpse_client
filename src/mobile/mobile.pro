@@ -5,7 +5,7 @@ folder_01.source = qml
 folder_01.target = ""
 DEPLOYMENTFOLDERS = folder_01
 
-qmlfiles.files = $$PWD/qml
+qmlfiles.files = $$PWD/qml $$PWD/Default-568h@2x.png
 qmlfiles.path = .
 QMAKE_BUNDLE_DATA += qmlfiles
 

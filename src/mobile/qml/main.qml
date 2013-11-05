@@ -72,6 +72,7 @@ Rectangle {
         id: title
         border.bottom: 9
         source: "android/images/toolbar.png"
+        y: Qt.platform.os == "ios" ? 20 : 0
         width: parent.width
         height: applicationTitle.height * 2
         z: 1
