@@ -20,7 +20,7 @@ ListView {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             color: "white"
-            font.pixelSize: 45
+            font.pixelSize: units.gu(45)
             text: model.displayName
         }
     }

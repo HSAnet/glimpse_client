@@ -6,8 +6,8 @@ import "android"
 
 Rectangle {
     id: root
-    width: 768
-    height: 1200
+    width: units.gu(768)
+    height: units.gu(1200)
     clip: true
 
     color: "#212126"
@@ -19,6 +19,13 @@ Rectangle {
         if ( !client.init() ) {
             console.log("Unable to initialize client");
             Qt.quit();
+        }
+    }
+
+    Behavior on scale {
+        NumberAnimation {
+            easing.type: Easing.OutBack
+            duration: 100
         }
     }
 
@@ -66,7 +73,7 @@ Rectangle {
         border.bottom: 9
         source: "android/images/toolbar.png"
         width: parent.width
-        height: 140
+        height: units.gu(140)
         z: 1
 
         BackButton {
@@ -75,11 +82,11 @@ Rectangle {
 
         Text {
             id: applicationTitle
-            font.pixelSize: 55
+            font.pixelSize: units.gu(55)
             Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
-            x: backButton.x + backButton.width + 20
+            x: backButton.x + backButton.width + units.gu(20)
             anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -20
+            anchors.verticalCenterOffset: units.gu(-20)
             color: "white"
             /*text: {
                 var title = pageStack.currentItem.title;
@@ -92,17 +99,17 @@ Rectangle {
 
         Text {
             id: statusText
-            font.pixelSize: 35
-            x: applicationTitle.x + 30
+            font.pixelSize: units.gu(35)
+            x: applicationTitle.x + units.gu(30)
             anchors.top: applicationTitle.bottom
-            anchors.topMargin: -5
+            anchors.topMargin: units.gu(-5)
             color: "lightgray"
         }
 
         Spinner {
             anchors {
                 right: parent.right
-                rightMargin: 20
+                rightMargin: units.gu(20)
                 verticalCenter: parent.verticalCenter
             }
 
@@ -181,7 +188,7 @@ Rectangle {
             Column {
                 id: column
                 width: parent.width
-                spacing: 50
+                spacing: units.gu(50)
 
                 Button {
                     text: "Registration"

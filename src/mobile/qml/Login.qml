@@ -13,8 +13,8 @@ ListView {
 
     property string buttonTitle: qsTr("Login")
 
-    anchors.margins: 20
-    spacing: 10
+    anchors.margins: units.gu(20)
+    spacing: units.gu(10)
 
     WebRequester {
         id: requester
@@ -68,7 +68,7 @@ ListView {
             Text {
                 text: "Mail"
                 color: "white"
-                font.pixelSize: 40
+                font.pixelSize: units.gu(40)
             }
 
             TextField {
@@ -87,7 +87,7 @@ ListView {
             Text {
                 text: "Password"
                 color: "white"
-                font.pixelSize: 40
+                font.pixelSize: units.gu(40)
             }
 
             TextField {
@@ -101,7 +101,7 @@ ListView {
         Text {
             id: errorLabel
             color: "red"
-            font.pixelSize: 40
+            font.pixelSize: units.gu(40)
             x: text.length > 0 ? parent.width/2-errorLabel.width/2 : parent.width
 
             Behavior on x {

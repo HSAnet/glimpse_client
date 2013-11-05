@@ -4,8 +4,8 @@ import QtQuick.Controls.Styles 1.0
 
 ButtonStyle {
     panel: Item {
-        implicitHeight: 80
-        implicitWidth: 520
+        implicitHeight: units.gu(80)
+        implicitWidth: units.gu(520)
         BorderImage {
             anchors.fill: parent
             antialiasing: true
@@ -13,13 +13,13 @@ ButtonStyle {
             border.top: 8
             border.left: 8
             border.right: 8
-            anchors.margins: control.pressed ? -4 : 0
+            anchors.margins: control.pressed ? units.gu(-4) : 0
             source: control.pressed ? "images/button_pressed.png" : "images/button_default.png"
             Text {
                 text: control.text
                 anchors.centerIn: parent
                 color: "white"
-                font.pixelSize: 50
+                font.pixelSize: units.gu(50)
                 renderType: Text.NativeRendering
             }
         }

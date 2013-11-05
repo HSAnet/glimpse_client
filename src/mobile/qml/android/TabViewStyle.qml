@@ -18,14 +18,14 @@ TabViewStyle {
                 anchors.centerIn: parent
                 color: "white"
                 text: tab.title.toUpperCase()
-                font.pixelSize: 16
+                font.pixelSize: units.gu(16)
             }
             Rectangle {
                 visible: index > 0
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                anchors.margins: 10
-                width:1
+                anchors.margins: units.gu(10)
+                width:units.gu(1)
                 color: "#3a3a3a"
             }
         }

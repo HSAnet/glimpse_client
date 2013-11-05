@@ -23,11 +23,13 @@ public:
 
 Units::Units(QObject *parent)
 : QObject(parent)
+, d(new Private)
 {
 }
 
 Units::~Units()
 {
+    delete d;
 }
 
 float Units::gu(float value) const
@@ -44,4 +46,17 @@ float Units::gu(float value) const
 float Units::dp(float value) const
 {
     return qRound(value * d->gridUnit);
+}
+
+void Units::setGridUnit(float gridUnit)
+{
+    if (d->gridUnit != gridUnit) {
+        d->gridUnit = gridUnit;
+        emit gridUnitChanged();
+    }
+}
+
+float Units::gridUnit() const
+{
+    return d->gridUnit;
 }

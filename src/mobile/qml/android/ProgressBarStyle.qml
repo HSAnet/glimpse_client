@@ -10,7 +10,7 @@ ProgressBarStyle {
         opacity: 0.8
         Rectangle {
             antialiasing: true
-            radius: 1
+            radius: units.gu(1)
             color: "#468bb7"
             height: parent.height
             width: parent.width * control.value / control.maximumValue

@@ -47,7 +47,7 @@ import QtQuick 2.1
 Item {
     id: root
     width: parent.width
-    height: 100
+    height: units.gu(100)
 
     property alias text: textitem.text
     property bool showArrow: true
@@ -62,24 +62,24 @@ Item {
     Text {
         id: textitem
         color: "white"
-        font.pixelSize: 45
+        font.pixelSize: units.gu(45)
         text: modelData
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
-        anchors.leftMargin: 30
+        anchors.leftMargin: units.gu(30)
     }
 
     Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.margins: 15
-        height: 1
+        anchors.margins: units.gu(15)
+        height: units.gu(1)
         color: "#424246"
     }
 
     Image {
         anchors.right: parent.right
-        anchors.rightMargin: 20
+        anchors.rightMargin: units.gu(20)
         anchors.verticalCenter: parent.verticalCenter
         source: "images/navigation_next_item.png"
         visible: root.showArrow

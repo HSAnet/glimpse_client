@@ -4,7 +4,7 @@ import QtQuick.Controls.Styles 1.0
 
 TextFieldStyle {
     //textColor: "white"
-    font.pixelSize: 28
+    font.pixelSize: units.gu(28)
     background: Item {
         implicitHeight: 92
         implicitWidth: 652
