@@ -26,8 +26,10 @@ android {
                          deviceinfo_ios.mm
 } else {
     SOURCES += storage/storagepaths.cpp \
-               log/logger.cpp \
-               deviceinfo.cpp
+               log/logger.cpp
+
+    unix: SOURCES += deviceinfo_unix.cpp
+    else: SOURCES += deviceinfo.cpp
 }
 
 breakpad-builtin {

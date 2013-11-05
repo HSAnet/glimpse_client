@@ -9,6 +9,7 @@ public:
     DeviceInfo();
     ~DeviceInfo();
 
+    /// @returns A sha-224 hash or an empty string on error
     QString deviceId() const;
 
 protected:
