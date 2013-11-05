@@ -58,8 +58,10 @@ signals:
     void finished(const TestDefinitionPtr& test, const ResultPtr& result);
 };
 
-class TaskExecutor::Private
+class TaskExecutor::Private : public QObject
 {
+    Q_OBJECT
+
 public:
     Private(TaskExecutor* q)
     : q(q)
@@ -70,6 +72,9 @@ public:
         taskThread.setObjectName("TaskExecutorThread");
         taskThread.start();
         executor.moveToThread(&taskThread);
+
+        connect(&executor, SIGNAL(started(TestDefinitionPtr)), this, SLOT(onStarted()));
+        connect(&executor, SIGNAL(finished(TestDefinitionPtr,ResultPtr)), this, SLOT(onFinished()));
 
         connect(&executor, SIGNAL(started(TestDefinitionPtr)), q, SIGNAL(started(TestDefinitionPtr)));
         connect(&executor, SIGNAL(finished(TestDefinitionPtr,ResultPtr)), q, SIGNAL(finished(TestDefinitionPtr,ResultPtr)));
@@ -83,10 +88,28 @@ public:
 
     TaskExecutor* q;
 
+    // Properties
     bool running;
     QThread taskThread;
     InternalTaskExecutor executor;
+
+    // Functions
+public slots:
+    void onStarted();
+    void onFinished();
 };
+
+void TaskExecutor::Private::onStarted()
+{
+    running = true;
+    emit q->runningChanged(running);
+}
+
+void TaskExecutor::Private::onFinished()
+{
+    running = false;
+    emit q->runningChanged(running);
+}
 
 TaskExecutor::TaskExecutor()
 : d(new Private(this))

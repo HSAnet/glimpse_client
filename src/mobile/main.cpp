@@ -8,6 +8,7 @@
 #include "scheduler/schedulermodel.h"
 #include "report/reportscheduler.h"
 #include "report/reportmodel.h"
+#include "task/taskexecutor.h"
 #include "controller/reportcontroller.h"
 #include "settings.h"
 #include "storage/storagepaths.h"
@@ -101,6 +102,7 @@ int main(int argc, char* argv[])
     qmlRegisterUncreatableType<Scheduler>("mplane", 1, 0, "Scheduler", "uncreatable type");
     qmlRegisterType<SchedulerModel>("mplane", 1, 0, "SchedulerModel");
 
+    qmlRegisterUncreatableType<TaskExecutor>("mplane", 1, 0, "TaskExecutor", "uncreatable type");
     qmlRegisterUncreatableType<ReportController>("mplane", 1, 0, "ReportController", "uncreatable type");
     qmlRegisterUncreatableType<ReportScheduler>("mplane", 1, 0, "ReportScheduler", "uncreatable type");
     qmlRegisterType<ReportModel>("mplane", 1, 0, "ReportModel");

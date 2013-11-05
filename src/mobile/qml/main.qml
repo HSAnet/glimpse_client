@@ -44,7 +44,7 @@ Rectangle {
     Binding {
         target: statusBar
         property: "visible"
-        value: client.scheduler.isStarted
+        value: client.taskExecutor.running
     }
 
     Connections {

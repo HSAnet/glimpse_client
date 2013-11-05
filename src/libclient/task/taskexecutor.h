@@ -25,7 +25,7 @@ public:
     void execute(const TestDefinitionPtr &test);
 
 signals:
-    void runningChanged();
+    void runningChanged(bool running);
 
     void started(const TestDefinitionPtr& test);
     void finished(const TestDefinitionPtr& test, const ResultPtr& result);
