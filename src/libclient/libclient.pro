@@ -89,7 +89,9 @@ SOURCES +=  \
     measurement/ping/ping.cpp \
     report/reportmodel.cpp \
     controller/reportcontroller.cpp \
-    types.cpp
+    types.cpp \
+    units.cpp \
+    qmlmodule.cpp
 
 HEADERS += \
     export.h \
@@ -151,7 +153,9 @@ HEADERS += \
     report/reportmodel.h \
     storage/storagepaths.h \
     controller/reportcontroller.h \
-    deviceinfo.h
+    deviceinfo.h \
+    units.h \
+    qmlmodule.h
 
 OTHER_FILES += \
     libclient.pri
