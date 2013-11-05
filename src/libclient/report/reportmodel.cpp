@@ -108,18 +108,11 @@ void ReportModel::reset()
 
 QVariant ReportModel::get(int index) const
 {
-    QModelIndex idx = this->index(index, 0);
-    if (!idx.isValid())
+    if (index < 0 || index >= d->reports.size())
         return QVariant();
 
-    QVariantMap hash;
-    QHashIterator<int, QByteArray> iter(roleNames());
-    while(iter.hasNext()) {
-        iter.next();
-        hash.insert(iter.value(), data(idx, iter.key()));
-    }
-
-    return hash;
+    const ReportPtr& report = d->reports.at(index);
+    return report->toVariant();
 }
 
 QHash<int, QByteArray> ReportModel::roleNames() const

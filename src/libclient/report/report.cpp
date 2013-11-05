@@ -51,7 +51,7 @@ ResultList Report::results() const
 QVariant Report::toVariant() const
 {
     QVariantMap map;
-    map.insert("task_id", taskId());
+    map.insert("task_id", uuidToVariant(taskId()));
     map.insert("report_time", dateTime());
     map.insert("results", ptrListToVariant(results()));
     return map;

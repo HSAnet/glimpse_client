@@ -26,8 +26,8 @@ ResultPtr Result::fromVariant(const QVariant &variant)
     QVariantMap map = variant.toMap();
 
     return ResultPtr(new Result(map.value("date_time").toDateTime(),
-                                map.value("probe_result").toString(),
-                                map.value("peer_result").toString()));
+                                map.value("probe_result"),
+                                map.value("peer_result")));
 }
 
 QDateTime Result::dateTime() const

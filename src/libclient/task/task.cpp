@@ -1,4 +1,5 @@
 #include "task.h"
+#include "../types.h"
 #include "../timing/timingfactory.h"
 
 class TestDefinition::Private
@@ -27,7 +28,7 @@ TestDefinition::~TestDefinition()
 QVariant TestDefinition::toVariant() const
 {
     QVariantMap hash;
-    hash.insert("id", d->id);
+    hash.insert("id", uuidToVariant(d->id));
     hash.insert("name", d->name);
     hash.insert("timing", d->timing->toVariant());
     hash.insert("measurement_definition", d->measurementDefinition);

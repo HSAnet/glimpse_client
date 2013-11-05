@@ -5,6 +5,7 @@
 #include <QMetaEnum>
 #include <QHostAddress>
 #include <QList>
+#include <QUuid>
 
 // UDP request types
 enum RequestType
@@ -43,5 +44,10 @@ QList<QSharedPointer<T> > ptrListFromVariant(const QVariant& variant) {
         lst.append(T::fromVariant(entry));
     return lst;
 }
+
+/// Converts a QUuid to a QVariant. It removes the braces
+/// and makes it readable by QML's implementation of
+/// JSON.stringify()
+QVariant uuidToVariant(const QUuid& uuid);
 
 #endif // TYPES_H

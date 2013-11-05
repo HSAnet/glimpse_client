@@ -6,7 +6,7 @@ Flickable {
     width: 400
     height: 500
 
-    property string title: qsTr("Test result")
+    property string title: qsTr("Report")
     property string subtitle
     property alias resultText: textView.text
 

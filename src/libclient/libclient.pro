@@ -88,7 +88,8 @@ SOURCES +=  \
     measurement/ping/ping_definition.cpp \
     measurement/ping/ping.cpp \
     report/reportmodel.cpp \
-    controller/reportcontroller.cpp
+    controller/reportcontroller.cpp \
+    types.cpp
 
 HEADERS += \
     export.h \

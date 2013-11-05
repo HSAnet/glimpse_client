@@ -16,6 +16,18 @@ Item {
         client.reportController.sendReports();
     }
 
+    function showReport(report) {
+        var params = {
+            item: Qt.resolvedUrl("ResultPage.qml"),
+            properties: {
+                subtitle: qsTr("report details"),
+                resultText: JSON.stringify(report, null, "   ")
+            }
+        }
+
+        pageStack.push(params);
+    }
+
     ListView {
         anchors.fill: parent
 
@@ -25,6 +37,7 @@ Item {
 
         delegate: AndroidDelegate {
             text: qsTr("%1 on %2").arg(model.taskId).arg(model.dateTime)
+            onClicked: showReport(ListView.view.model.get(model.index))
         }
 
         header: Column {
