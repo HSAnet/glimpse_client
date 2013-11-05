@@ -170,6 +170,16 @@ Rectangle {
             anchors.topMargin: -5
             color: "lightgray"
         }
+
+        Spinner {
+            anchors {
+                right: parent.right
+                rightMargin: 20
+                verticalCenter: parent.verticalCenter
+            }
+
+            running: client.taskExecutor.running
+        }
     }
 
     StackView {
