@@ -4,8 +4,8 @@ import QtQuick.Controls.Styles 1.0
 
 ProgressBarStyle {
     panel: Rectangle {
-        implicitHeight: 15
-        implicitWidth: 400
+        implicitHeight: units.gu(15)
+        implicitWidth: units.gu(400)
         color: "#444"
         opacity: 0.8
         Rectangle {

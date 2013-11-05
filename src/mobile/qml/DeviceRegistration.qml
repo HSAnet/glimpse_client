@@ -8,8 +8,8 @@ ListView {
     property string title: "Device registration"
     property string subtitle: "blah ..."
 
-    anchors.margins: 20
-    spacing: 10
+    anchors.margins: units.gu(20)
+    spacing: units.gu(10)
 
     WebRequester {
         id: requester

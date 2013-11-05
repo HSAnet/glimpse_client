@@ -73,7 +73,7 @@ Rectangle {
         border.bottom: 9
         source: "android/images/toolbar.png"
         width: parent.width
-        height: units.gu(140)
+        height: applicationTitle.height * 2
         z: 1
 
         BackButton {
@@ -85,16 +85,11 @@ Rectangle {
             font.pixelSize: units.gu(55)
             Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
             x: backButton.x + backButton.width + units.gu(20)
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: units.gu(-20)
+            anchors {
+                top: parent.top
+                topMargin: units.gu(10)
+            }
             color: "white"
-            /*text: {
-                var title = pageStack.currentItem.title;
-                if (title)
-                    return title;
-                else
-                    return "mPlane";
-            }*/
         }
 
         Text {

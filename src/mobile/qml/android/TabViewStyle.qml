@@ -8,7 +8,7 @@ TabViewStyle {
     frame: Item { }
     tab: Item {
         implicitWidth: control.width/control.count
-        implicitHeight: 50
+        implicitHeight: units.gu(50)
         BorderImage {
             anchors.fill: parent
             border.bottom: 8

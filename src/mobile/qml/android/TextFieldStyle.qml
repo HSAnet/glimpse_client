@@ -6,10 +6,14 @@ TextFieldStyle {
     //textColor: "white"
     font.pixelSize: units.gu(28)
     background: Item {
-        implicitHeight: 92
-        implicitWidth: 652
+        implicitHeight: units.gu(92)
+        implicitWidth: units.gu(652)
         BorderImage {
             source: "../images/input.png"
+
+            width: parent.width
+            height: parent.height
+
             border.left: 8
             border.right: 8
             anchors.bottom: parent.bottom
@@ -21,6 +25,10 @@ TextFieldStyle {
 
         BorderImage {
             source: "../images/input_active.png"
+
+            width: parent.width
+            height: parent.height
+
             border.left: 8
             border.right: 8
             anchors.bottom: parent.bottom

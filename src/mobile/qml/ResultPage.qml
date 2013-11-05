@@ -19,7 +19,7 @@ Flickable {
         width: parent.width
         color: "white"
         font.family: "Roboto Light"
-        font.pixelSize: 30
+        font.pixelSize: units.gu(30)
         renderType: Text.NativeRendering
     }
 }
