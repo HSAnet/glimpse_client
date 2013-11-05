@@ -2,6 +2,7 @@
 #include "scheduler.h"
 #include "../storage/storagepaths.h"
 #include "../log/logger.h"
+#include "types.h"
 
 #include <QDir>
 #include <QPointer>
@@ -22,10 +23,7 @@ public:
     , realTime(true)
     {
         if (!dir.exists()) {
-            QDir upper = dir;
-            upper.cdUp();
-
-            if (!upper.mkpath(dir.dirName())) {
+            if (!QDir::root().mkpath(dir.absolutePath())) {
                 LOG_ERROR(QString("Unable to create path %1").arg(dir.absolutePath()));
             } else {
                 LOG_INFO("Scheduler storage directory created");
@@ -64,7 +62,7 @@ void SchedulerStorage::Private::store(const TestDefinitionPtr& test)
 
 QString SchedulerStorage::Private::fileNameForTest(const TestDefinitionPtr &test) const
 {
-    return test->id().toString();
+    return uuidToString(test->id());
 }
 
 void SchedulerStorage::Private::testAdded(const TestDefinitionPtr& test, int position)

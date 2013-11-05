@@ -1,6 +1,6 @@
 #include "types.h"
 
-QVariant uuidToVariant(const QUuid &uuid)
+QString uuidToString(const QUuid &uuid)
 {
     return uuid.toString().remove(QRegExp("[{}]"));
 }

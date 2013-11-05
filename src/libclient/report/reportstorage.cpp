@@ -1,6 +1,7 @@
 #include "reportstorage.h"
 #include "../storage/storagepaths.h"
 #include "../log/logger.h"
+#include "types.h"
 
 #include <QPointer>
 #include <QDir>
@@ -23,10 +24,7 @@ public:
     , realTime(true)
     {
         if (!dir.exists()) {
-            QDir upper = dir;
-            upper.cdUp();
-
-            if (!upper.mkpath(dir.dirName())) {
+            if (!QDir::root().mkpath(dir.absolutePath())) {
                 LOG_ERROR(QString("Unable to create path %1").arg(dir.absolutePath()));
             } else {
                 LOG_INFO("Report storage directory created");
@@ -65,9 +63,7 @@ void ReportStorage::Private::store(const ReportPtr &report)
 
 QString ReportStorage::Private::fileNameForReport(const ReportPtr &report) const
 {
-    QString name = report->taskId().toString();
-    name.replace(QRegExp("[{}]"), QString());
-    return name;
+    return uuidToString(report->taskId());
 }
 
 void ReportStorage::Private::reportAdded(const ReportPtr &report)

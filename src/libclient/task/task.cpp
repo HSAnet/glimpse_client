@@ -28,7 +28,7 @@ TestDefinition::~TestDefinition()
 QVariant TestDefinition::toVariant() const
 {
     QVariantMap hash;
-    hash.insert("id", uuidToVariant(d->id));
+    hash.insert("id", uuidToString(d->id));
     hash.insert("name", d->name);
     hash.insert("timing", d->timing->toVariant());
     hash.insert("measurement_definition", d->measurementDefinition);
