@@ -20,8 +20,6 @@ Rectangle {
             console.log("Unable to initialize client");
             Qt.quit();
         }
-
-        loginRequester.autoLogin();
     }
 
     // Implements back key navigation
@@ -61,76 +59,6 @@ Rectangle {
                 pageStack.push({item:Qt.resolvedUrl(currentTest.name + ".qml"), properties:params});
             }
         }*/
-    }
-
-    WebRequester {
-        id: loginRequester
-
-        function autoLogin() {
-            if ( client.settings.userId.length > 0 && client.settings.password.length > 0 )
-                loginRequester.start();
-        }
-
-        request: LoginRequest {
-            userId: client.settings.userId
-            password: client.settings.password
-            deviceId: client.settings.deviceId
-        }
-
-        response: LoginResponse {
-            id: loginResponse
-        }
-
-        onStarted: console.log("Autologin started")
-
-        onError: {
-            console.log("Autologin failed")
-        }
-
-        onFinished: {
-            console.log("Autologin finished")
-
-            if ( loginResponse.registeredDevice ) {
-                console.log("Device is already registered");
-                pageStack.pop();
-            }
-            else {
-                var properties = {
-                    item: Qt.resolvedUrl("DeviceRegistration.qml")
-                }
-
-                console.log("Pushing device registration")
-
-                pageStack.push(properties);
-            }
-        }
-    }
-
-    Connections {
-        target: client
-        onStatusChanged: {
-            if (client.status == Client.Registered) {
-                console.log("Fetching config from server");
-                configRequester.start();
-            }
-        }
-    }
-
-    WebRequester {
-        id: configRequester
-
-        request: GetConfigRequest {
-        }
-
-        response: client.settings.config
-
-        onError: console.log("Error fetching config")
-        onFinished: {
-            console.log("Successfully fetched config")
-
-            console.log("Controller: " + response.controllerAddress)
-            console.log("keepalive_schedule " + response.keepaliveSchedule)
-        }
     }
 
     BorderImage {
@@ -191,6 +119,7 @@ Rectangle {
             bottom: parent.bottom
         }
 
+        /*
         delegate: StackViewDelegate {
             function transitionFinished(properties)
             {
@@ -231,6 +160,7 @@ Rectangle {
                 }
             }
         }
+        */
 
         onCurrentItemChanged: {
             applicationTitle.text = currentItem ? currentItem.title : "";
