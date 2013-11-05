@@ -20,8 +20,6 @@ StoragePaths::StoragePaths()
     dir.cd("Documents");
 
     d->applicationRootPath = dir.absolutePath();
-
-    LOG_INFO(QString("Application root path: %1").arg(d->applicationRootPath));
 }
 
 StoragePaths::~StoragePaths()
