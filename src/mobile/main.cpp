@@ -10,6 +10,8 @@
 #include <QQmlContext>
 #include <QQmlFileSelector>
 #include <QTimer>
+#include <QDir>
+#include <QFontDatabase>
 
 #ifdef Q_OS_ANDROID
 #include "statusbarhelper.h"
@@ -31,6 +33,35 @@ Q_IMPORT_PLUGIN(QtQuickControlsPlugin)
 #endif
 
 LOGGER(main)
+
+void loadFonts(const QString& path)
+{
+    QDir dir(path);
+
+    if (dir.exists()) {
+        QStringList nameFilters;
+        nameFilters.append("*.ttf");
+
+        int ok = 0;
+
+        foreach(const QString& name, dir.entryList(nameFilters, QDir::NoDotAndDotDot|QDir::Files)) {
+            int id = QFontDatabase::addApplicationFont(dir.absoluteFilePath(name));
+            if (id == -1) {
+                LOG_ERROR(QString("Failed to load font: %1").arg(dir.absoluteFilePath(name)));
+            } else {
+                ++ok;
+            }
+        }
+
+        if (ok) {
+            LOG_INFO(QString("Loaded %1 fonts").arg(ok));
+        } else {
+            LOG_INFO("All fonts failed to load.");
+        }
+    } else {
+        LOG_ERROR(QString("Font directory does not exist: %1").arg(path));
+    }
+}
 
 int main(int argc, char* argv[])
 {
@@ -83,6 +114,8 @@ int main(int argc, char* argv[])
 #ifdef Q_OS_IOS
     view.addImportPath(QStringLiteral("imports/qml"));
 #endif
+
+    loadFonts(view.adjustPath(QStringLiteral("qml/fonts")));
 
     view.setMainQmlFile(QStringLiteral("qml/main.qml"));
     view.showExpanded();
