@@ -50,8 +50,11 @@ void Scheduler::Private::updateTimer()
         int ms = td->timing()->timeLeft();
         if ( ms > 0 )
             timer.start( ms );
-        else
-            timeout();
+        else {
+            // If we would call timeout() directly, the testAdded() signal
+            // would be emitted after execution.
+            timer.start(1);
+        }
 
         LOG_DEBUG(QString("Scheduling timer executes %1 in %2 ms").arg(td->name()).arg(ms));
     }
