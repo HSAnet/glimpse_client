@@ -2,7 +2,8 @@ import QtQuick 2.0
 
 Item {
     id: root
-    width: units.gu(76)
+    implicitWidth: units.gu(76)
+    width: implicitWidth
     height: width
     opacity: running ? 1.0 : 0.0
 

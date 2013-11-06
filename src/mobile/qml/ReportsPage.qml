@@ -1,7 +1,7 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.0
 import mplane 1.0
 import "android"
+import "controls"
 
 Item {
     id: root
@@ -12,6 +12,7 @@ Item {
     property string title: qsTr("Reports")
     property string subtitle: qsTr("see what happened recently")
     property string actionTitle: qsTr("Upload")
+    property bool activity: client.reportController.status == ReportController.Running
 
     function actionClicked() {
         client.reportController.sendReports();
@@ -32,12 +33,27 @@ Item {
     ListView {
         anchors.fill: parent
 
+        header: Label {
+            width: parent.width
+            wrapMode: Text.Wrap
+            text: visible ? client.reportController.errorString() : ""
+            height: visible ? implicitHeight : 0
+            color: "red"
+            visible: client.reportController.status == ReportController.Error
+
+            Behavior on height {
+                NumberAnimation {
+                    easing.type: Easing.OutQuad
+                }
+            }
+        }
+
         model: ReportModel {
             scheduler: client.reportScheduler
         }
 
         delegate: AndroidDelegate {
-            text: qsTr("%1 on %2").arg(model.taskId).arg(model.dateTime)
+            text: model.taskId
             onClicked: showReport(ListView.view.model.get(model.index))
         }
     }

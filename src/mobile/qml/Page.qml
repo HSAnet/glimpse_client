@@ -3,7 +3,9 @@ import QtQuick 2.0
 Flickable {
     property string title: "-- no title --"
     property string subtitle
+
     property string actionTitle
+    property bool activity
 
     function nextPage(componentName, properties) {
         var params = {

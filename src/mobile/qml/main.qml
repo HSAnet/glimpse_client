@@ -63,39 +63,52 @@ Rectangle {
             onClicked: pageStack.pop()
         }
 
-        Text {
+        Button {
             id: actionTitle
-            color: "#ff3b30"
-            font.pixelSize: units.gu(45)
+
             anchors {
-                right: parent.right
-                rightMargin: units.gu(30)
+                right: indicator.left
+                rightMargin: units.gu(15)
                 verticalCenter: parent.verticalCenter
             }
 
-            visible: false
-        }
-
-        MouseArea {
-            anchors {
-                left: actionTitle.left
-                right: parent.right
-                top: parent.top
-                bottom: parent.bottom
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 250
+                }
             }
 
-            enabled: actionTitle.visible
+            opacity: 0.0
             onClicked: pageStack.currentItem.actionClicked()
         }
 
         ActivityIndicator {
+            id: indicator
+
             anchors {
                 right: parent.right
-                rightMargin: units.gu(20)
+                rightMargin: units.gu(15)
                 verticalCenter: parent.verticalCenter
             }
 
-            running: client.taskExecutor.running
+            width: running ? implicitWidth : 0
+            running: {
+                if (client.taskExecutor.running)
+                    return true;
+
+                var item = pageStack.currentItem;
+                if (item && item.activity)
+                    return true;
+
+                return false;
+            }
+            visible: running
+
+            Behavior on width {
+                NumberAnimation {
+                    easing.type: Easing.OutCubic
+                }
+            }
         }
     }
 
@@ -115,20 +128,20 @@ Rectangle {
 
                 if (currentItem.actionTitle) {
                     actionTitle.text = currentItem.actionTitle;
-                    actionTitle.visible = true;
+                    actionTitle.opacity = 1;
                 }
                 else
-                    actionTitle.visible = false;
+                    actionTitle.opacity = 0;
 
             } else {
                 backButton.text = "";
-                actionTitle.visible = false;
+                actionTitle.opacity = 0;
             }
 
             //statusText.text = currentItem ? currentItem.subtitle : "";
         }
 
-        initialItem: MenuPage {
-        }
+        initialItem: MenuPage {}
+        //initialItem: WelcomePage {}
     }
 }

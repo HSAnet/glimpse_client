@@ -6,6 +6,7 @@ import "android"
 Page {
     title: "Glimpse"
     subtitle: client.status == Client.Registered ? qsTr("Logged in") : qsTr("Please log in")
+    actionTitle: qsTr("Settings")
 
     Column {
         id: column

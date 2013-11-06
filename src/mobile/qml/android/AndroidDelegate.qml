@@ -67,6 +67,8 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: units.gu(30)
+        anchors.right: arrow.left
+        elide: Text.ElideMiddle
     }
 
     Rectangle {
@@ -79,6 +81,7 @@ Item {
     }
 
     Image {
+        id: arrow
         anchors.right: parent.right
         anchors.rightMargin: units.gu(20)
         anchors.verticalCenter: parent.verticalCenter

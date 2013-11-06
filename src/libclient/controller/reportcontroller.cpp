@@ -81,6 +81,7 @@ public:
     Private(ReportController* q)
     : q(q)
     {
+        connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
 
@@ -134,11 +135,21 @@ ReportController::~ReportController()
     delete d;
 }
 
+ReportController::Status ReportController::status() const
+{
+    return (Status)d->requester.status();
+}
+
 bool ReportController::init(ReportScheduler *scheduler, Settings *settings)
 {
     d->scheduler = scheduler;
     d->settings = settings;
     return true;
+}
+
+QString ReportController::errorString() const
+{
+    return d->requester.errorString();
 }
 
 void ReportController::sendReports()
