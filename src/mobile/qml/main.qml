@@ -44,6 +44,14 @@ Rectangle {
     }
 
     Rectangle {
+        color: "#f7f7f7"
+        width: parent.width
+        height: 22
+        z: 1
+        visible: Qt.platform.os == "ios"
+    }
+
+    Rectangle {
         id: title
         color: "#f7f7f7"
         y: Qt.platform.os == "ios" ? 20 : 0
@@ -54,7 +62,7 @@ Rectangle {
         Rectangle {
             width: parent.width
             anchors.bottom: parent.bottom
-            height: units.gu(2)
+            height: 1 //units.gu(2)
             color: "#d9d9d9"
         }
 
