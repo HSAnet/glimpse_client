@@ -5,8 +5,8 @@ SUBDIRS += libclient \
            mobile
 
 !android:!ios {
-    SUBDIRS += console \
-               desktop
+    SUBDIRS += console
+    #SUBDIRS += desktop
 }
 
 console.depends = libclient
