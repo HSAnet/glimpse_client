@@ -6,25 +6,17 @@
 #include "qtquick2applicationviewer.h"
 
 #include <QGuiApplication>
-#include <QQuickView>
-#include <QQmlContext>
 #include <QQmlEngine>
-#include <QtQml>
-#include <QUrl>
+#include <QQmlContext>
+#include <QQmlFileSelector>
+#include <QTimer>
 
 #ifdef Q_OS_ANDROID
 #include "statusbarhelper.h"
-#include "androidimageprovider.h"
-#include "androidprocessmodel.h"
 #elif !defined(Q_OS_IOS)
 #include <QApplication>
 #include "desktopstatusbarhelper.h"
 #endif // Q_OS_ANDROID
-
-#ifdef Q_OS_OSX
-#include <macprocessmodel.h>
-#include <macimageprovider.h>
-#endif
 
 #define HAVE_BREAKPAD // We always have breakpad at the moment
 #ifdef HAVE_BREAKPAD
@@ -43,7 +35,7 @@ LOGGER(main)
 int main(int argc, char* argv[])
 {
     QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
-    QCoreApplication::setOrganizationName("HS Augsburg");
+    QCoreApplication::setOrganizationName("HS-Augsburg");
     QCoreApplication::setApplicationName("mPlaneClient");
 
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
@@ -69,14 +61,6 @@ int main(int argc, char* argv[])
 
     QmlModule::registerTypes();
 
-#ifdef Q_OS_ANDROID
-    qmlRegisterType<AndroidProcessModel>("mplane", 1, 0, "ProcessModel");
-#endif // Q_OS_ANDROID
-
-#ifdef Q_OS_OSX
-    qmlRegisterType<MacProcessModel>("mplane", 1, 0, "ProcessModel");
-#endif // Q_OS_MAC
-
     QtQuick2ApplicationViewer view;
 
     QQmlEngine* engine = view.engine();
@@ -89,17 +73,12 @@ int main(int argc, char* argv[])
     QQmlContext* rootContext = view.rootContext();
     rootContext->setContextProperty("client", Client::instance());
 #ifdef Q_OS_ANDROID
-    view.engine()->addImageProvider("android", new AndroidImageProvider);
     rootContext->setContextProperty("statusBar", new StatusBarHelper(&view));
 #elif defined(Q_OS_IOS)
     // TODO: iOS Code
 #else
     rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(&view));
 #endif // Q_OS_ANDROID
-
-#ifdef Q_OS_OSX
-    view.engine()->addImageProvider("android", new MacImageProvider);
-#endif // Q_OS_MAC
 
 #ifdef Q_OS_IOS
     view.addImportPath(QStringLiteral("imports/qml"));

@@ -24,12 +24,8 @@ ANDROID_APP_NAME = "mPlane"
 android {
     QT += androidextras
 
-    HEADERS += statusbarhelper.h \
-               androidimageprovider.h \
-               androidprocessmodel.h
-    SOURCES += statusbarhelper.cpp \
-               androidimageprovider.cpp \
-               androidprocessmodel.cpp
+    HEADERS += statusbarhelper.h
+    SOURCES += statusbarhelper.cpp
 
     OTHER_FILES += $$files($$PWD/android/src/*.java) \
                    android/AndroidManifest.xml
@@ -46,16 +42,6 @@ android {
     SOURCES += desktopstatusbarhelper.cpp
 }
 
-osx {
-    QT += macextras
-    LIBS += -framework AppKit
-
-    HEADERS += macprocessmodel.h \
-               macimageprovider.h
-    OBJECTIVE_SOURCES += macprocessmodel.mm \
-                         macimageprovider.mm
-}
-
 SOURCES += \
     main.cpp
 
@@ -65,7 +51,7 @@ RESOURCES += \
 # Dump symbols
 #symdump.commands = dump_syms $$qtLibraryTarget($$TARGET) 2>/dev/null > "$${TARGET}.sym"
 #QMAKE_EXTRA_TARGETS += symdump
-#PRE_TARGETDEPS += symdump
+#POST_TARGETDEPS += symdump
 
 # Please do not modify the following two lines. Required for deployment.
 include(qtquick2applicationviewer/qtquick2applicationviewer.pri)

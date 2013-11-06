@@ -3,15 +3,9 @@ import QtQuick.Controls 1.0
 import mplane 1.0
 import "android"
 
-Flickable {
-    property string title: "Glimpse"
-    property string subtitle: client.status == Client.Registered ? qsTr("Logged in") : qsTr("Please log in")
-
-    width: parent.width
-    height: parent.height
-
-    flickableDirection: Flickable.VerticalFlick
-    contentHeight: column.height
+Page {
+    title: "Glimpse"
+    subtitle: client.status == Client.Registered ? qsTr("Logged in") : qsTr("Please log in")
 
     Column {
         id: column

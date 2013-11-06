@@ -16,6 +16,15 @@
 #include "connectiontester.h"
 #include "settings.h"
 
+#if defined(Q_OS_ANDROID)
+#include "androidprocessmodel.h"
+#include "androidimageprovider.h"
+#elif defined(Q_OS_OSX)
+#include "macprocessmodel.h"
+#include "macimageprovider.h"
+#endif
+
+#include <QQuickImageProvider>
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <qqml.h>
@@ -80,12 +89,24 @@ void QmlModule::registerTypes()
     qmlRegisterType<ConnectionTester>(MODULE_URI, 1, 0, "ConnectionTester");
     qmlRegisterType<ConnectionTesterModel>(MODULE_URI, 1, 0, "ConnectionTesterModel");
     qmlRegisterType<Time>(MODULE_URI, 1, 0, "Time");
+
+#if defined(Q_OS_ANDROID)
+    qmlRegisterType<AndroidProcessModel>(MODULE_URI, 1, 0, "ProcessModel");
+#elif defined(Q_OS_OSX)
+    qmlRegisterType<MacProcessModel>(MODULE_URI, 1, 0, "ProcessModel");
+#endif
 }
 
 void QmlModule::initializeEngine(QQmlEngine *engine)
 {
     QQmlContext* context = engine->rootContext();
     context->setContextProperty("units", new Units(engine));
+
+#if defined(Q_OS_ANDROID)
+    engine->addImageProvider("android", new AndroidImageProvider);
+#elif defined(Q_OS_OSX)
+    engine->view.engine()->addImageProvider("android", new MacImageProvider);
+#endif
 }
 
 #include "qmlmodule.moc"

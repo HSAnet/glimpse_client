@@ -2,7 +2,7 @@ TEMPLATE = lib
 TARGET = client
 CONFIG += staticlib
 
-QT += network concurrent qml
+QT += network concurrent qml quick
 
 staticlib:DEFINES += LIBCLIENT_STATIC
 else:DEFINES += LIBCLIENT_BUILD
@@ -15,11 +15,15 @@ include(../../3rdparty/breakpad.pri)
 android {
     QT += androidextras
 
-    HEADERS += androidhelper.h
+    HEADERS += androidhelper.h \
+               androidimageprovider.h \
+               androidprocessmodel.h
     SOURCES += androidhelper.cpp \
                storage/storagepaths_android.cpp \
                log/logger_android.cpp \
-               deviceinfo_android.cpp
+               deviceinfo_android.cpp \
+               androidimageprovider.cpp \
+               androidprocessmodel.cpp
 } else: ios {
     SOURCES += log/logger.cpp
     OBJECTIVE_SOURCES += storage/storagepaths_ios.mm \
@@ -30,6 +34,16 @@ android {
 
     unix: SOURCES += deviceinfo_unix.cpp
     else: SOURCES += deviceinfo.cpp
+}
+
+osx {
+    QT += macextras
+    LIBS += -framework AppKit
+
+    HEADERS += macprocessmodel.h \
+               macimageprovider.h
+    OBJECTIVE_SOURCES += macprocessmodel.mm \
+                         macimageprovider.mm
 }
 
 breakpad-builtin {
