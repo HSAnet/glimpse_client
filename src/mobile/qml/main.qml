@@ -1,8 +1,6 @@
 import QtQuick 2.0
 import mplane 1.0
-import QtQuick.Controls 1.0
-import QtQuick.Window 2.0
-import "android"
+import "controls"
 
 Rectangle {
     id: root
@@ -41,7 +39,7 @@ Rectangle {
         color: "#f7f7f7"
         y: Qt.platform.os == "ios" ? 20 : 0
         width: parent.width
-        height: applicationTitle.height * 2
+        height: units.gu(45*2)
         z: 1
 
         Rectangle {
@@ -53,27 +51,15 @@ Rectangle {
 
         BackButton {
             id: backButton
-        }
 
-        Text {
-            id: applicationTitle
-            color: "#ff3b30"
-            font.pixelSize: units.gu(45)
-            Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
-            x: backButton.x + backButton.width + units.gu(20)
-            anchors {
-                verticalCenter: parent.verticalCenter
-            }
-        }
-
-        MouseArea {
             anchors {
                 left: parent.left
-                right: applicationTitle.right
+                leftMargin: units.gu(20)
                 top: parent.top
                 bottom: parent.bottom
             }
 
+            arrowVisible: pageStack.depth > 1
             onClicked: pageStack.pop()
         }
 
@@ -102,18 +88,7 @@ Rectangle {
             onClicked: pageStack.currentItem.actionClicked()
         }
 
-        /*
-        Text {
-            id: statusText
-            font.pixelSize: units.gu(25)
-            x: applicationTitle.x + units.gu(30)
-            anchors.top: applicationTitle.bottom
-            anchors.topMargin: units.gu(-5)
-            color: "lightgray"
-        }
-        */
-
-        Spinner {
+        ActivityIndicator {
             anchors {
                 right: parent.right
                 rightMargin: units.gu(20)
@@ -136,7 +111,7 @@ Rectangle {
 
         onCurrentItemChanged: {
             if (currentItem) {
-                applicationTitle.text = currentItem.title;
+                backButton.text = currentItem.title;
 
                 if (currentItem.actionTitle) {
                     actionTitle.text = currentItem.actionTitle;
@@ -146,7 +121,7 @@ Rectangle {
                     actionTitle.visible = false;
 
             } else {
-                applicationTitle.text = "";
+                backButton.text = "";
                 actionTitle.visible = false;
             }
 

@@ -85,4 +85,5 @@ OTHER_FILES += \
     qml/Slow.qml \
     qml/UserRegistration.qml \
     qml/DeviceRegistration.qml \
-    qml/Login.qml
+    qml/Login.qml \
+    qml/WelcomePage.qml

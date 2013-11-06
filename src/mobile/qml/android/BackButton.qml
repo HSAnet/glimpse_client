@@ -1,5 +1,4 @@
 import QtQuick 2.1
-import QtQuick.Controls 1.0
 import mplane 1.0
 
 Rectangle {
@@ -12,14 +11,9 @@ Rectangle {
     antialiasing: true
     height: units.gu(60)
     radius: units.gu(4)
-    //color: backmouse.pressed ? "#222" : "transparent"
     color: "transparent"
 
     Behavior on opacity { NumberAnimation{} }
-    /*Image {
-        anchors.verticalCenter: parent.verticalCenter
-        source: "images/navigation_previous_item.png"
-    }*/
 
     Text {
         anchors {

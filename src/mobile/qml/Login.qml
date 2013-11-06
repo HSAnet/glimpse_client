@@ -1,7 +1,7 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.0
 import mplane 1.0
 import "android"
+import "controls"
 
 ListView {
     id: root
@@ -113,7 +113,6 @@ ListView {
         Button {
             text: root.buttonTitle
             anchors.horizontalCenter: parent.horizontalCenter
-            style: ButtonStyle {}
             onClicked: {
                 if ( !mailField.acceptableInput ) {
                     errorLabel.text = qsTr("Mail is not valid");

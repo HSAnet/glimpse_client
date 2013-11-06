@@ -1,7 +1,7 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.0
 import mplane 1.0
 import "android"
+import "controls"
 
 ListView {
     id: root
@@ -41,15 +41,19 @@ ListView {
     }
 
     model: VisualItemModel {
+        Label {
+            width: root.width
+            wrapMode: Text.Wrap
+            text: qsTr("Please tell us something about your device")
+        }
+
         Button {
-            text: "Register Device"
+            text: qsTr("Register Device")
             anchors.horizontalCenter: parent.horizontalCenter
-            style: ButtonStyle {}
             onClicked: {
                 requester.start()
             }
         }
-
 
         Text {
             id: errorLabel
