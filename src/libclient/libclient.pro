@@ -105,7 +105,8 @@ SOURCES +=  \
     controller/reportcontroller.cpp \
     types.cpp \
     units.cpp \
-    qmlmodule.cpp
+    qmlmodule.cpp \
+    controller/controller.cpp
 
 HEADERS += \
     export.h \
@@ -169,7 +170,8 @@ HEADERS += \
     controller/reportcontroller.h \
     deviceinfo.h \
     units.h \
-    qmlmodule.h
+    qmlmodule.h \
+    controller/controller.h
 
 OTHER_FILES += \
     libclient.pri

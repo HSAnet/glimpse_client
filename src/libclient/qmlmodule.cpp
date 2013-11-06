@@ -62,6 +62,8 @@ void QmlModule::registerTypes()
     qmlRegisterType<SchedulerModel>(MODULE_URI, 1, 0, "SchedulerModel");
 
     qmlRegisterUncreatableType<TaskExecutor>(MODULE_URI, 1, 0, "TaskExecutor", "uncreatable type");
+    qmlRegisterUncreatableType<Controller>(MODULE_URI, 1, 0, "Controller", "uncreatable type");
+    qmlRegisterUncreatableType<LoginController>(MODULE_URI, 1, 0, "LoginController", "uncreatable type");
     qmlRegisterUncreatableType<ReportController>(MODULE_URI, 1, 0, "ReportController", "uncreatable type");
     qmlRegisterUncreatableType<ReportScheduler>(MODULE_URI, 1, 0, "ReportScheduler", "uncreatable type");
     qmlRegisterType<ReportModel>(MODULE_URI, 1, 0, "ReportModel");

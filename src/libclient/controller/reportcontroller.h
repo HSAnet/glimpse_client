@@ -1,39 +1,26 @@
 #ifndef REPORTCONTROLLER_H
 #define REPORTCONTROLLER_H
 
-#include "../export.h"
-
-#include <QObject>
+#include "controller.h"
 
 class Settings;
 class ReportScheduler;
 
-class CLIENT_API ReportController : public QObject
+class CLIENT_API ReportController : public Controller
 {
     Q_OBJECT
-    Q_ENUMS(Status)
-    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
     explicit ReportController(QObject* parent = 0);
     ~ReportController();
 
-    enum Status {
-        Unknown,
-        Running,
-        Finished,
-        Error
-    };
-
-    Status status() const;
-
-    bool init(ReportScheduler* scheduler, Settings* settings);
-
-    Q_INVOKABLE QString errorString() const;
     Q_INVOKABLE void sendReports();
 
-signals:
-    void statusChanged();
+    // Controller interface
+    Status status() const;
+    QString errorString() const;
+
+    bool init(ReportScheduler* scheduler, Settings* settings);
 
 protected:
     class Private;

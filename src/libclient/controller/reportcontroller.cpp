@@ -125,7 +125,7 @@ void ReportController::Private::onError()
 }
 
 ReportController::ReportController(QObject *parent)
-: QObject(parent)
+: Controller(parent)
 , d(new Private(this))
 {
 }

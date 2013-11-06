@@ -3,13 +3,13 @@ import mplane 1.0
 import "android"
 import "controls"
 
-ListView {
+Page {
     id: root
     property string title: "Device registration"
-    property string subtitle: "blah ..."
+
+    property bool activity: requester.status == WebRequester.Running
 
     anchors.margins: units.gu(20)
-    spacing: units.gu(10)
 
     WebRequester {
         id: requester
@@ -40,9 +40,11 @@ ListView {
         }
     }
 
-    model: VisualItemModel {
+    Column {
+        spacing: units.gu(10)
+
         Label {
-            width: root.width
+            width: parent.width
             wrapMode: Text.Wrap
             text: qsTr("Please tell us something about your device")
         }
@@ -69,11 +71,6 @@ ListView {
                     duration: 100
                 }
             }
-        }
-
-        Spinner {
-            anchors.horizontalCenter: parent.horizontalCenter
-            running: requester.running
         }
     }
 }

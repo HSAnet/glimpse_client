@@ -3,18 +3,18 @@ import mplane 1.0
 import "android"
 import "controls"
 
-ListView {
+Page {
     id: root
-    property string title: "Login"
-    property string subtitle: "blah ..."
+    title: qsTr("Login")
 
     property variant request: LoginRequest {
     }
 
     property string buttonTitle: qsTr("Login")
 
+    activity: requester.status == WebRequester.Running
+
     anchors.margins: units.gu(20)
-    spacing: units.gu(10)
 
     WebRequester {
         id: requester
@@ -61,7 +61,10 @@ ListView {
         }
     }
 
-    model: VisualItemModel {
+    Column {
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: units.gu(10)
+
         Column {
             anchors.horizontalCenter: parent.horizontalCenter
 
@@ -96,10 +99,9 @@ ListView {
             }
         }
 
-        Text {
+        Label {
             id: errorLabel
             color: "red"
-            font.pixelSize: units.gu(40)
             x: text.length > 0 ? parent.width/2-errorLabel.width/2 : parent.width
 
             Behavior on x {

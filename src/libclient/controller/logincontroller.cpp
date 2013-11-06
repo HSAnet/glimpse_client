@@ -1,6 +1,7 @@
 #include "logincontroller.h"
 #include "../network/networkmanager.h"
 #include "../settings.h"
+#include "../log/logger.h"
 
 #include "../webrequester.h"
 #include "../network/requests/loginrequest.h"
@@ -8,26 +9,65 @@
 
 #include <QPointer>
 
-class LoginController::Private
+LOGGER(LoginController);
+
+class LoginController::Private : public QObject
 {
+    Q_OBJECT
+
 public:
-    Private()
+    Private(LoginController* q)
+    : q(q)
+    , loggedIn(false)
     {
+        connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
+
         requester.setRequest(&request);
         requester.setResponse(&response);
     }
 
+    LoginController* q;
+
+    // Properties
     QPointer<NetworkManager> networkManager;
     QPointer<Settings> settings;
 
     WebRequester requester;
     LoginRequest request;
     LoginResponse response;
+
+    bool loggedIn;
+
+    // Functions
+    void setLoggedIn(bool loggedIn);
+
+public slots:
+    void onFinished();
+    void onError();
 };
 
+void LoginController::Private::setLoggedIn(bool loggedIn)
+{
+    if (this->loggedIn != loggedIn) {
+        this->loggedIn = loggedIn;
+        emit q->loggedInChanged();
+    }
+}
+
+void LoginController::Private::onFinished()
+{
+    LOG_INFO("Login successful");
+    setLoggedIn(true);
+}
+
+void LoginController::Private::onError()
+{
+    LOG_INFO(QString("Login failed: %1").arg(requester.errorString()));
+}
+
 LoginController::LoginController(QObject *parent)
-: QObject(parent)
-, d(new Private)
+: Controller(parent)
+, d(new Private(this))
 {
 }
 
@@ -36,9 +76,19 @@ LoginController::~LoginController()
     delete d;
 }
 
+LoginController::Status LoginController::status() const
+{
+    return (Status)d->requester.status();
+}
+
 bool LoginController::isLoggedIn() const
 {
     return false;
+}
+
+QString LoginController::errorString() const
+{
+    return d->requester.errorString();
 }
 
 void LoginController::login()
@@ -55,3 +105,5 @@ bool LoginController::init(NetworkManager *networkManager, Settings *settings)
     d->settings = settings;
     return true;
 }
+
+#include "logincontroller.moc"

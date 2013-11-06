@@ -5,6 +5,7 @@
 
 #include <QObject>
 
+class LoginController;
 class ReportController;
 class Scheduler;
 class ReportScheduler;
@@ -51,6 +52,7 @@ public:
     NetworkManager* networkManager() const;
     TaskExecutor* taskExecutor() const;
 
+    LoginController* loginController() const;
     ReportController* reportController() const;
 
     Settings* settings() const;

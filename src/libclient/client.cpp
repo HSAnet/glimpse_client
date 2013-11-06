@@ -1,6 +1,7 @@
 #include "client.h"
 #include "controller/controlcontroller.h"
 #include "controller/reportcontroller.h"
+#include "controller/logincontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
 #include "scheduler/schedulerstorage.h"
@@ -65,6 +66,7 @@ public:
 
     ControlController controlController;
     ReportController reportController;
+    LoginController loginController;
 
 #ifdef Q_OS_UNIX
     static int sigintFd[2];
@@ -320,6 +322,11 @@ NetworkManager *Client::networkManager() const
 TaskExecutor *Client::taskExecutor() const
 {
     return &d->executor;
+}
+
+LoginController *Client::loginController() const
+{
+    return &d->loginController;
 }
 
 ReportController *Client::reportController() const
