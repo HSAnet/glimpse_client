@@ -28,6 +28,15 @@ Rectangle {
         }
     }
 
+    function nextPage(componentName, properties) {
+        var params = {
+            item: Qt.resolvedUrl(componentName),
+            properties: properties
+        }
+
+        pageStack.push(params);
+    }
+
     Binding {
         target: statusBar
         property: "visible"
@@ -137,8 +146,6 @@ Rectangle {
                 backButton.text = "";
                 actionTitle.opacity = 0;
             }
-
-            //statusText.text = currentItem ? currentItem.subtitle : "";
         }
 
         initialItem: MenuPage {}

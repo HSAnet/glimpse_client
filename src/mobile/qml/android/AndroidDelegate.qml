@@ -53,11 +53,11 @@ Item {
     property bool showArrow: true
     signal clicked
 
-    Rectangle {
+    /*Rectangle {
         anchors.fill: parent
-        color: "#11ffffff"
+        color: "#d9d9d9"
         visible: mouse.pressed
-    }
+    }*/
 
     Text {
         id: textitem
@@ -75,8 +75,9 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.margins: units.gu(15)
-        height: units.gu(1)
+        height: units.gu(3)
         color: "#424246"
+        opacity: 0.2
         visible: model.index > 0
     }
 
@@ -93,5 +94,23 @@ Item {
         id: mouse
         anchors.fill: parent
         onClicked: root.clicked()
+    }
+
+    transitions: Transition {
+        NumberAnimation {
+            properties: "scale,opacity"
+            duration: 50
+        }
+    }
+
+    states: State {
+        name: "pressed"
+        when: mouse.pressed
+
+        PropertyChanges {
+            target: textitem
+            scale: 0.9
+            opacity: 0.6
+        }
     }
 }

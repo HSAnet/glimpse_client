@@ -33,6 +33,13 @@ Item {
     ListView {
         anchors.fill: parent
 
+        Label {
+            text: qsTr("You don't have any reports")
+            color: "lightgray"
+            anchors.centerIn: parent
+            visible: parent.count == 0
+        }
+
         header: Label {
             width: parent.width
             wrapMode: Text.Wrap

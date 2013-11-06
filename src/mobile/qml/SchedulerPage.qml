@@ -1,7 +1,7 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.0
 import mplane 1.0
 import "android"
+import "controls"
 
 Item {
     width: 100
@@ -12,6 +12,13 @@ Item {
 
     ListView {
         anchors.fill: parent
+
+        Label {
+            text: qsTr("Your schedule is empty")
+            color: "lightgray"
+            anchors.centerIn: parent
+            visible: parent.count == 0
+        }
 
         model: SchedulerModel {
             scheduler: client.scheduler
