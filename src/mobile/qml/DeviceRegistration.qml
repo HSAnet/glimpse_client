@@ -50,6 +50,23 @@ ListView {
             }
         }
 
+
+        Text {
+            id: errorLabel
+            color: "red"
+            font.pixelSize: units.gu(40)
+            x: text.length > 0 ? parent.width/2-errorLabel.width/2 : parent.width
+            width: root.width
+            wrapMode: Text.Wrap
+
+            Behavior on x {
+                NumberAnimation {
+                    easing.type: Easing.InBack
+                    duration: 100
+                }
+            }
+        }
+
         Spinner {
             anchors.horizontalCenter: parent.horizontalCenter
             running: requester.running

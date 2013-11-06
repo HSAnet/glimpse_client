@@ -27,14 +27,15 @@ Settings::~Settings()
 
 Settings::StorageType Settings::init()
 {
+    bool newSettings = deviceId().isNull();
+
     DeviceInfo info;
     setDeviceId(info.deviceId());
 
     LOG_INFO(QString("Device ID: %1").arg(deviceId()));
 
     // Create new settings
-    if ( deviceId().isNull() ) {
-        //setDeviceId( QUuid::createUuid() );
+    if ( newSettings ) {
         d->config.setControllerAddress("141.82.49.82:5105");
 
         LOG_INFO("Created new settings for this device");
