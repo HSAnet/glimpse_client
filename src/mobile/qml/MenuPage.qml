@@ -21,7 +21,7 @@ ListPage {
             }
         }
 
-        showArrow: false
+        showArrow: model.showArrow
     }
 
     model: ListModel {
@@ -29,30 +29,35 @@ ListPage {
             text: "Registration"
             url: "UserRegistration.qml"
             group: "pages"
+            showArrow: true
         }
 
         ListElement {
             text: "Scheduler"
             url: "SchedulerPage.qml"
             group: "pages"
+            showArrow: true
         }
 
         ListElement {
             text: "Reports"
             url: "ReportsPage.qml"
             group: "pages"
+            showArrow: true
         }
 
         ListElement {
             text: "Internet is not working"
-            url: "Settings.qml"
+            url: "NoInternet.qml"
             group: "pages"
+            showArrow: true
         }
 
         ListElement {
             text: "Internet is slow"
             url: "Slow.qml"
             group: "pages"
+            showArrow: true
         }
 
         ListElement {
