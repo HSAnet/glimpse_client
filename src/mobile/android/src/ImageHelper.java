@@ -8,6 +8,9 @@ import android.content.pm.*;
 import android.content.pm.PackageManager.NameNotFoundException;
 
 public class ImageHelper {
+        private Bitmap bm;
+        private Canvas canvas;
+
 	public ImageHelper() {
 	}
 	
@@ -21,8 +24,12 @@ public class ImageHelper {
 			if (drawableIcon instanceof BitmapDrawable)
 				return ((BitmapDrawable)drawableIcon).getBitmap();
 			
-			Bitmap bm = Bitmap.createBitmap(drawableIcon.getIntrinsicWidth(), drawableIcon.getIntrinsicHeight(), Config.ARGB_8888);
-			Canvas canvas = new Canvas(bm);
+                        if (bm == null)
+                            bm = Bitmap.createBitmap(drawableIcon.getIntrinsicWidth(), drawableIcon.getIntrinsicHeight(), Config.ARGB_8888);
+
+                        if (canvas == null)
+                            canvas = new Canvas(bm);
+
 			drawableIcon.setBounds(0, 0, bm.getWidth(), bm.getHeight());
 			drawableIcon.draw(canvas);
 			return bm;
