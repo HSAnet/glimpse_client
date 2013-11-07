@@ -17,7 +17,10 @@ ListPage {
                 nextPage(model.url);
             else {
                 var func = client[model.func];
-                func();
+                if (func)
+                    func();
+                else
+                    console.log("\"client\" has no property or function named " + model.func);
             }
         }
 
@@ -76,6 +79,13 @@ ListPage {
             text: "Ping"
             func: "ping"
             group: "test"
+        }
+
+        ListElement {
+            text: "Event log"
+            url: "EventLogPage.qml"
+            group: "utils"
+            showArrow: true
         }
     }
 }

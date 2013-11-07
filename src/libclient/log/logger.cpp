@@ -1,7 +1,15 @@
 #include "logger.h"
 #include "../types.h"
 
-#include <QDebug>
+#include <QList>
+
+typedef QList<LogAppender*> LogAppenderList;
+
+LogAppenderList& appenders()
+{
+    static LogAppenderList appenders;
+    return appenders;
+}
 
 Logger::Logger(const QString &name)
 : m_name(name)
@@ -10,6 +18,16 @@ Logger::Logger(const QString &name)
 
 Logger::~Logger()
 {
+}
+
+void Logger::addAppender(LogAppender *appender)
+{
+    appenders().append(appender);
+}
+
+void Logger::removeAppender(LogAppender *appender)
+{
+    appenders().removeAll(appender);
 }
 
 void Logger::logTrace(const QString &funcName, const QString &message)
@@ -39,14 +57,8 @@ void Logger::logError(const QString &funcName, const QString &message)
 
 void Logger::log(Logger::Level level, const QString &funcName, const QString &message)
 {
-    QString levelName;
-    switch(level) {
-    case Trace: levelName = "TRACE"; break;
-    case Debug: levelName = "DEBUG"; break;
-    case Info: levelName = "INFO"; break;
-    case Warning: levelName = "WARNING"; break;
-    case Error: levelName = "ERROR"; break;
-    }
+    real_log(level, m_name, funcName, message);
 
-    qDebug() << levelName << funcName << ":" << message;
+    foreach(LogAppender* appender, appenders())
+        appender->log(level, m_name, funcName, message);
 }

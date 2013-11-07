@@ -11,8 +11,16 @@ ListView {
     property bool actionEnabled: true
     property bool activity
 
+    property string emptyText: qsTr("No entries")
     readonly property int headerHeight: units.gu(100)
 
     section.property: "group"
     section.delegate: Item { height: headerHeight }
+
+    Label {
+        text: root.emptyText
+        color: "#727277"
+        anchors.centerIn: parent
+        visible: parent.count == 0
+    }
 }

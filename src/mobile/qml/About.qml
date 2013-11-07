@@ -19,15 +19,15 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
 
             Label {
-                horizontalAlignment: Text.AlignHCenter
+                anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Hochschule Augsburg")
             }
             Label {
-                horizontalAlignment: Text.AlignHCenter
+                anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("University of Applied Science")
             }
             Label {
-                horizontalAlignment: Text.AlignHCenter
+                anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Copyright (c) 2012-2013")
             }
         }

@@ -5,13 +5,7 @@ import "controls"
 ListPage {
     title: qsTr("Schedule")
     subtitle: qsTr("see what's coming next")
-
-    Label {
-        text: qsTr("Your schedule is empty")
-        color: "lightgray"
-        anchors.centerIn: parent
-        visible: parent.count == 0
-    }
+    emptyText: qsTr("Your schedule is empty")
 
     model: SchedulerModel {
         scheduler: client.scheduler

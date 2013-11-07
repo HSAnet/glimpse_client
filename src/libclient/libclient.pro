@@ -25,12 +25,12 @@ android {
                androidimageprovider.cpp \
                androidprocessmodel.cpp
 } else: ios {
-    SOURCES += log/logger.cpp
+    SOURCES += log/logger_all.cpp
     OBJECTIVE_SOURCES += storage/storagepaths_ios.mm \
                          deviceinfo_ios.mm
 } else {
     SOURCES += storage/storagepaths.cpp \
-               log/logger.cpp
+               log/logger_all.cpp
 
     unix: SOURCES += deviceinfo_unix.cpp
     else: SOURCES += deviceinfo.cpp
@@ -106,7 +106,9 @@ SOURCES +=  \
     types.cpp \
     units.cpp \
     qmlmodule.cpp \
-    controller/controller.cpp
+    controller/controller.cpp \
+    log/logger.cpp \
+    log/logmodel.cpp
 
 HEADERS += \
     export.h \
@@ -171,7 +173,8 @@ HEADERS += \
     deviceinfo.h \
     units.h \
     qmlmodule.h \
-    controller/controller.h
+    controller/controller.h \
+    log/logmodel.h
 
 OTHER_FILES += \
     libclient.pri

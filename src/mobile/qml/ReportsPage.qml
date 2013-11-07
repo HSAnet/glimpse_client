@@ -9,6 +9,7 @@ ListPage {
     subtitle: qsTr("see what happened recently")
     actionTitle: qsTr("Upload")
     activity: client.reportController.status == ReportController.Running
+    emptyText: qsTr("You don't have any reports")
 
     function actionClicked() {
         client.reportController.sendReports();
@@ -24,13 +25,6 @@ ListPage {
         }
 
         pageStack.push(params);
-    }
-
-    Label {
-        text: qsTr("You don't have any reports")
-        color: "lightgray"
-        anchors.centerIn: parent
-        visible: parent.count == 0
     }
 
     header: Item {

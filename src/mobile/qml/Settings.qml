@@ -12,7 +12,7 @@ Item {
 
     Label {
         text: qsTr("This page is under construction")
-        color: "lightgray"
+        color: "#727277"
         anchors.centerIn: parent
     }
 }

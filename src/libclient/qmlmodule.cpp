@@ -15,6 +15,7 @@
 #include "webrequester.h"
 #include "connectiontester.h"
 #include "settings.h"
+#include "log/logmodel.h"
 
 #if defined(Q_OS_ANDROID)
 #include "androidprocessmodel.h"
@@ -57,6 +58,7 @@ void QmlModule::registerTypes()
 {
     qmlRegisterUncreatableType<Units>(MODULE_URI, 1, 0, "Units", "Do not create units");
     qmlRegisterUncreatableType<Client>(MODULE_URI, 1, 0, "Client", "This is a singleton");
+    qmlRegisterUncreatableType<LogModel>(MODULE_URI, 1, 0, "LogModel", "uncreatable type");
 
     qmlRegisterUncreatableType<Scheduler>(MODULE_URI, 1, 0, "Scheduler", "uncreatable type");
     qmlRegisterType<SchedulerModel>(MODULE_URI, 1, 0, "SchedulerModel");
