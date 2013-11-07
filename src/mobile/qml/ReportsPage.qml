@@ -1,6 +1,5 @@
 import QtQuick 2.0
 import mplane 1.0
-import "android"
 import "controls"
 
 ListPage {
@@ -53,7 +52,7 @@ ListPage {
         scheduler: client.reportScheduler
     }
 
-    delegate: AndroidDelegate {
+    delegate: ListDelegate {
         text: model.taskId
         onClicked: showReport(ListView.view.model.get(model.index))
     }

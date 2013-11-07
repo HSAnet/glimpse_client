@@ -1,5 +1,4 @@
 import QtQuick 2.0
-import "android"
 
 FlickablePage {
     title: qsTr("Report")

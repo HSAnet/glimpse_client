@@ -12,12 +12,20 @@ Item {
     property bool arrowVisible: true
 
     width: row.width
+    implicitWidth: arrow.width + invisibleButton.width
+    readonly property int minimalImplicitWidth: arrow.width + button.width
+
+    Button {
+        id: invisibleButton
+        text: root.text
+        font.pixelSize: root.fontSize
+        visible: false
+    }
 
     Row {
         id: row
 
         height: parent.height
-        //spacing: units.gu(10)
 
         Item {
             id: arrowContainer
@@ -48,7 +56,8 @@ Item {
 
         Button {
             id: button
-            text: root.text
+            text: root.implicitWidth > root.width ? qsTr("Back") : root.text
+            visible: root.minimalImplicitWidth < root.width
             color: root.color
             font.pixelSize: root.fontSize
             anchors.verticalCenter: parent.verticalCenter

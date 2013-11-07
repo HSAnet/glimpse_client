@@ -75,10 +75,37 @@ Rectangle {
                 leftMargin: units.gu(20)
                 top: parent.top
                 bottom: parent.bottom
+                right: pageTitle.left
+                rightMargin: units.gu(20)
             }
 
             arrowVisible: pageStack.depth > 1
             onClicked: pageStack.pop()
+
+            text: {
+                if (pageStack.depth == 1)
+                    return "";
+
+                var item = pageStack.get(pageStack.depth-2);
+                if (item && item.title)
+                    return item.title;
+                else
+                    return "";
+            }
+        }
+
+        Label {
+            id: pageTitle
+            anchors.centerIn: parent
+            font.bold: true
+            //font.pixelSize: units.gu(45)
+            text: {
+                var item = pageStack.currentItem;
+                if (item && item.title)
+                    return item.title;
+                else
+                    return "";
+            }
         }
 
         Button {
@@ -96,7 +123,15 @@ Rectangle {
                 }
             }
 
-            opacity: 0.0
+            text: {
+                var item = pageStack.currentItem;
+                if (item && item.actionTitle)
+                    return item.actionTitle;
+                else
+                    return "";
+            }
+
+            opacity: text.length ? 1 : 0
             onClicked: pageStack.currentItem.actionClicked()
         }
 
@@ -138,23 +173,6 @@ Rectangle {
             left: parent.left
             right: parent.right
             bottom: parent.bottom
-        }
-
-        onCurrentItemChanged: {
-            if (currentItem) {
-                backButton.text = currentItem.title;
-
-                if (currentItem.actionTitle) {
-                    actionTitle.text = currentItem.actionTitle;
-                    actionTitle.opacity = 1;
-                }
-                else
-                    actionTitle.opacity = 0;
-
-            } else {
-                backButton.text = "";
-                actionTitle.opacity = 0;
-            }
         }
 
         initialItem: MenuPage {}

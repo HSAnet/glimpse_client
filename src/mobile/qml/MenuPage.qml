@@ -1,6 +1,5 @@
 import QtQuick 2.0
 import mplane 1.0
-import "android"
 import "controls"
 
 ListPage {
@@ -11,7 +10,7 @@ ListPage {
         nextPage("Settings.qml");
     }
 
-    delegate: AndroidDelegate {
+    delegate: ListDelegate {
         text: model.text
         onClicked: {
             if (model.url)

@@ -1,6 +1,5 @@
 import QtQuick 2.0
 import mplane 1.0
-import "android"
 import "controls"
 
 ListPage {
@@ -16,11 +15,13 @@ ListPage {
         height: units.gu(100)
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
+        color: "#727277"
+        font.pixelSize: units.gu(35)
     }
 
     model: ProcessModel {}
 
-    delegate: AndroidDelegate {
+    delegate: ListDelegate {
         text: model.displayName
         imageSource: "image://android/" + model.packageName
     }

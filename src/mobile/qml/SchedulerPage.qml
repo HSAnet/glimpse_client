@@ -1,6 +1,5 @@
 import QtQuick 2.0
 import mplane 1.0
-import "android"
 import "controls"
 
 ListPage {
@@ -18,7 +17,7 @@ ListPage {
         scheduler: client.scheduler
     }
 
-    delegate: AndroidDelegate {
+    delegate: ListDelegate {
         showArrow: false
         text: model.name
     }
