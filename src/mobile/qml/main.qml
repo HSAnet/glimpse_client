@@ -22,6 +22,11 @@ Rectangle {
     Keys.enabled: true
     Keys.onReleased: {
         if (event.key === Qt.Key_Back) {
+            if (pageStack.busy) {
+                console.log("Ignoring back key while animating");
+                event.accepted = true;
+            }
+
             if (pageStack.depth > 1) {
                 pageStack.pop();
                 event.accepted = true;
