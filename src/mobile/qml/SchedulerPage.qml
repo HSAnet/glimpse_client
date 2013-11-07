@@ -3,30 +3,23 @@ import mplane 1.0
 import "android"
 import "controls"
 
-Item {
-    width: 100
-    height: 62
+ListPage {
+    title: qsTr("Schedule")
+    subtitle: qsTr("see what's coming next")
 
-    property string title: qsTr("Schedule")
-    property string subtitle: qsTr("see what's coming next")
+    Label {
+        text: qsTr("Your schedule is empty")
+        color: "lightgray"
+        anchors.centerIn: parent
+        visible: parent.count == 0
+    }
 
-    ListView {
-        anchors.fill: parent
+    model: SchedulerModel {
+        scheduler: client.scheduler
+    }
 
-        Label {
-            text: qsTr("Your schedule is empty")
-            color: "lightgray"
-            anchors.centerIn: parent
-            visible: parent.count == 0
-        }
-
-        model: SchedulerModel {
-            scheduler: client.scheduler
-        }
-
-        delegate: AndroidDelegate {
-            showArrow: false
-            text: model.name
-        }
+    delegate: AndroidDelegate {
+        showArrow: false
+        text: model.name
     }
 }

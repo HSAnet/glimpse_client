@@ -3,34 +3,12 @@ import mplane 1.0
 import "android"
 import "controls"
 
-ListView {
-    property string title: "Glimpse"
-    property string actionTitle: qsTr("Settings")
+ListPage {
+    title: "Glimpse"
+    actionTitle: qsTr("Settings")
 
     function actionClicked() {
         nextPage("Settings.qml");
-    }
-
-    section.property: "group"
-    section.delegate: Item {
-        height: units.gu(100)
-
-        /*
-        Rectangle {
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: 1
-            color: "#d1d0d5"
-        }
-
-        Rectangle {
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: 1
-            color: "#d1d0d5"
-        }*/
     }
 
     delegate: AndroidDelegate {

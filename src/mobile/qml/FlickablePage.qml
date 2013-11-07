@@ -1,6 +1,6 @@
 import QtQuick 2.0
 
-Item {
+Flickable {
     property string title: "-- no title --"
     property string subtitle
 
@@ -8,9 +8,9 @@ Item {
     property bool actionEnabled: true
     property bool activity
 
-    property bool spacing: true
-
-    y: spacing ? units.gu(100) : 0
     width: parent.width
-    height: parent.height-y
+    height: parent.height
+
+    flickableDirection: Flickable.VerticalFlick
+    contentHeight: childrenRect.height
 }

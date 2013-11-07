@@ -1,15 +1,17 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.0
 import "android"
 
-Page {
+FlickablePage {
     title: qsTr("Report")
 
     property alias resultText: textView.text
 
+    contentWidth: textView.width
+    contentHeight: textView.height
+    flickableDirection: Flickable.AutoFlickDirection
+
     Text {
         id: textView
-        width: parent.width
         color: "black"
         font.family: "Roboto Light"
         font.pixelSize: units.gu(30)

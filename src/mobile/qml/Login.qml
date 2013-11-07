@@ -14,8 +14,6 @@ Page {
 
     activity: requester.status == WebRequester.Running
 
-    anchors.margins: units.gu(20)
-
     WebRequester {
         id: requester
 
