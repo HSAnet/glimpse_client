@@ -29,7 +29,7 @@ Text {
 
         PropertyChanges {
             target: root
-            scale: 0.9
+            //scale: 0.9
             opacity: 0.6
         }
     }

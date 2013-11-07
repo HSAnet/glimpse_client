@@ -46,18 +46,40 @@ import QtQuick 2.1
 
 Item {
     id: root
-    width: parent.width
+    width: ListView.view.width
     height: units.gu(100)
 
     property alias text: textitem.text
     property bool showArrow: true
     signal clicked
 
-    /*Rectangle {
+    property int count: ListView.view.count
+    property variant section: ListView.section
+    property variant nextSection: ListView.nextSection
+    property variant previousSection: ListView.previousSection
+
+    Rectangle {
         anchors.fill: parent
-        color: "#d9d9d9"
-        visible: mouse.pressed
-    }*/
+        color: mouse.pressed ? "#d9d9d9" : "white"
+    }
+
+    Rectangle {
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 1
+        color: "#d1d0d5"
+        visible: model.index == 0 || section != previousSection
+    }
+
+    Rectangle {
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 1
+        color: "#d1d0d5"
+        visible: model.index == count || (section != nextSection && model.index)
+    }
 
     Text {
         id: textitem
@@ -66,18 +88,17 @@ Item {
         text: modelData
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
-        anchors.leftMargin: units.gu(30)
+        anchors.leftMargin: units.gu(100)
         anchors.right: arrow.left
         elide: Text.ElideMiddle
     }
 
     Rectangle {
-        anchors.left: parent.left
+        anchors.left: textitem.left
         anchors.right: parent.right
         anchors.margins: units.gu(15)
-        height: units.gu(3)
-        color: "#424246"
-        opacity: 0.2
+        height: 1
+        color: "#d1d0d5"
         visible: model.index > 0
     }
 
@@ -96,6 +117,7 @@ Item {
         onClicked: root.clicked()
     }
 
+    /*
     transitions: Transition {
         NumberAnimation {
             properties: "scale,opacity"
@@ -113,4 +135,5 @@ Item {
             opacity: 0.6
         }
     }
+    */
 }

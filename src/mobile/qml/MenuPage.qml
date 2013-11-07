@@ -3,65 +3,97 @@ import mplane 1.0
 import "android"
 import "controls"
 
-Page {
-    title: "Glimpse"
-    actionTitle: qsTr("Settings")
+ListView {
+    property string title: "Glimpse"
+    property string actionTitle: qsTr("Settings")
 
     function actionClicked() {
         nextPage("Settings.qml");
     }
 
-    Column {
-        id: column
-        width: parent.width
-        spacing: units.gu(50)
+    section.property: "group"
+    section.delegate: Item {
+        height: units.gu(100)
 
-        Button {
+        /*
+        Rectangle {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: 1
+            color: "#d1d0d5"
+        }
+
+        Rectangle {
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: 1
+            color: "#d1d0d5"
+        }*/
+    }
+
+    delegate: AndroidDelegate {
+        text: model.text
+        onClicked: {
+            if (model.url)
+                nextPage(model.url);
+            else {
+                var func = client[model.func];
+                func();
+            }
+        }
+
+        showArrow: false
+    }
+
+    model: ListModel {
+        ListElement {
             text: "Registration"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: nextPage("UserRegistration.qml")
+            url: "UserRegistration.qml"
+            group: "pages"
         }
 
-        Button {
+        ListElement {
             text: "Scheduler"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: nextPage("SchedulerPage.qml")
+            url: "SchedulerPage.qml"
+            group: "pages"
         }
 
-        Button {
+        ListElement {
             text: "Reports"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: nextPage("ReportsPage.qml")
+            url: "ReportsPage.qml"
+            group: "pages"
         }
 
-        Button {
+        ListElement {
             text: "Internet is not working"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: nextPage("Settings.qml")
+            url: "Settings.qml"
+            group: "pages"
         }
 
-        Button {
+        ListElement {
             text: "Internet is slow"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: nextPage("Slow.qml")
+            url: "Slow.qml"
+            group: "pages"
         }
 
-        Button {
+        ListElement {
             text: "Btc"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: client.btc()
+            func: "btc"
+            group: "test"
         }
 
-        Button {
+        ListElement {
             text: "Upnp"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: client.upnp()
+            func: "upnp"
+            group: "test"
         }
 
-        Button {
+        ListElement {
             text: "Ping"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: client.ping()
+            func: "ping"
+            group: "test"
         }
     }
 }

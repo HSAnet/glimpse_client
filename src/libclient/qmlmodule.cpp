@@ -107,7 +107,7 @@ void QmlModule::initializeEngine(QQmlEngine *engine)
 #if defined(Q_OS_ANDROID)
     engine->addImageProvider("android", new AndroidImageProvider);
 #elif defined(Q_OS_OSX)
-    engine->view.engine()->addImageProvider("android", new MacImageProvider);
+    engine->addImageProvider("android", new MacImageProvider);
 #endif
 }
 

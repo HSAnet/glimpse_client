@@ -42,6 +42,8 @@ android {
     SOURCES += desktopstatusbarhelper.cpp
 }
 
+osx:QT += macextras
+
 SOURCES += \
     main.cpp
 

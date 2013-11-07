@@ -7,6 +7,7 @@ Rectangle {
     width: units.gu(768)
     height: units.gu(1200)
     clip: true
+    color: "#efeff4"
 
     Component.onCompleted: {
         // Initialize the client
@@ -44,7 +45,7 @@ Rectangle {
     }
 
     Rectangle {
-        color: "#f7f7f7"
+        color: "#f7f7f8"
         width: parent.width
         height: 22
         z: 1
@@ -53,7 +54,7 @@ Rectangle {
 
     Rectangle {
         id: title
-        color: "#f7f7f7"
+        color: "#f7f7f8"
         y: Qt.platform.os == "ios" ? 20 : 0
         width: parent.width
         height: units.gu(45*2)
@@ -63,7 +64,7 @@ Rectangle {
             width: parent.width
             anchors.bottom: parent.bottom
             height: 1 //units.gu(2)
-            color: "#d9d9d9"
+            color: "#b3b3b6"
         }
 
         BackButton {
