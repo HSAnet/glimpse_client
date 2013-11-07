@@ -81,12 +81,15 @@ Item {
         visible: model.index > 0
     }
 
-    Image {
+    Text {
         id: arrow
         anchors.right: parent.right
         anchors.rightMargin: units.gu(20)
         anchors.verticalCenter: parent.verticalCenter
-        source: "images/navigation_next_item.png"
+        text: ">"
+        color: "#c7c7cc"
+        font.pixelSize: textitem.font.pixelSize * 1.2
+        font.bold: true
         visible: root.showArrow
     }
 
