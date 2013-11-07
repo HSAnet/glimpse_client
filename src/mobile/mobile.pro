@@ -29,6 +29,8 @@ android {
 
     OTHER_FILES += $$files($$PWD/android/src/*.java) \
                    android/AndroidManifest.xml
+
+    RESOURCES += qmlresources.qrc
 } else: ios {
     LIBS += $$[QT_INSTALL_QML]/QtQuick/Controls/libqtquickcontrolsplugin.a \
             $$[QT_INSTALL_QML]/QtQuick/Window.2/libwindowplugin.a \
@@ -67,7 +69,6 @@ OTHER_FILES += \
     qml/android/SliderStyle.qml \
     qml/android/ProgressBarStyle.qml \
     qml/android/ButtonStyle.qml \
-    qml/android/BackButton.qml \
     qml/android/AndroidDelegate.qml \
     qml/android/images/toolbar.png \
     qml/android/images/textinput.png \
