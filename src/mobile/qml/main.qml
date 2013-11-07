@@ -112,10 +112,22 @@ Rectangle {
             id: actionTitle
 
             anchors {
+                left: pageTitle.right
+                leftMargin: units.gu(20)
                 right: indicator.left
                 rightMargin: units.gu(15)
-                verticalCenter: parent.verticalCenter
+                top: parent.top
+                bottom: parent.bottom
             }
+
+            Button {
+                id: invisibleButton
+                text: parent.text
+                visible: false
+            }
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignRight
+            fontSizeMode: width < invisibleButton.width ? Text.HorizontalFit : Text.FixedSize
 
             Behavior on opacity {
                 NumberAnimation {
