@@ -1,5 +1,6 @@
 #include "reportmodel.h"
 #include "reportscheduler.h"
+#include "../types.h"
 
 #include <QPointer>
 #include <QUuid>
@@ -146,7 +147,7 @@ QVariant ReportModel::data(const QModelIndex &index, int role) const
         role = TaskIdRole + index.column();
 
     switch(role) {
-    case TaskIdRole: return report->taskId();
+    case TaskIdRole: return uuidToString(report->taskId());
     case DateTimeRole: return report->dateTime();
     //case ResultsRole: return report->results(); // FIXME: Scripting can't do anything with that
     }

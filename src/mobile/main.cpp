@@ -1,6 +1,7 @@
 #include "client.h"
 #include "storage/storagepaths.h"
 #include "log/logger.h"
+#include "log/logmodel.h"
 #include "qmlmodule.h"
 
 #include "qtquick2applicationviewer.h"
@@ -76,6 +77,8 @@ int main(int argc, char* argv[])
     app.setQuitOnLastWindowClosed(true);
 #endif
 
+    LogModel loggerModel;
+
 #ifdef HAVE_BREAKPAD
     QDir crashdumpDir = StoragePaths().crashDumpDirectory();
     if (!crashdumpDir.exists()) {
@@ -103,6 +106,7 @@ int main(int argc, char* argv[])
 
     QQmlContext* rootContext = view.rootContext();
     rootContext->setContextProperty("client", Client::instance());
+    rootContext->setContextProperty("logModel", &loggerModel);
 #ifdef Q_OS_ANDROID
     rootContext->setContextProperty("statusBar", new StatusBarHelper(&view));
 #elif defined(Q_OS_IOS)

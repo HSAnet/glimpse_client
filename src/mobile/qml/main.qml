@@ -7,6 +7,7 @@ Rectangle {
     width: units.gu(768)
     height: units.gu(1200)
     clip: true
+    color: "#efeff4"
 
     Component.onCompleted: {
         // Initialize the client
@@ -21,6 +22,11 @@ Rectangle {
     Keys.enabled: true
     Keys.onReleased: {
         if (event.key === Qt.Key_Back) {
+            if (pageStack.busy) {
+                console.log("Ignoring back key while animating");
+                event.accepted = true;
+            }
+
             if (pageStack.depth > 1) {
                 pageStack.pop();
                 event.accepted = true;
@@ -44,8 +50,16 @@ Rectangle {
     }
 
     Rectangle {
+        color: "#f7f7f8"
+        width: parent.width
+        height: 22
+        z: 1
+        visible: Qt.platform.os == "ios"
+    }
+
+    Rectangle {
         id: title
-        color: "#f7f7f7"
+        color: "#f7f7f8"
         y: Qt.platform.os == "ios" ? 20 : 0
         width: parent.width
         height: units.gu(45*2)
@@ -54,8 +68,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             anchors.bottom: parent.bottom
-            height: units.gu(2)
-            color: "#d9d9d9"
+            height: 1 //units.gu(2)
+            color: "#b3b3b6"
         }
 
         BackButton {
@@ -66,20 +80,59 @@ Rectangle {
                 leftMargin: units.gu(20)
                 top: parent.top
                 bottom: parent.bottom
+                right: pageTitle.left
+                rightMargin: units.gu(20)
             }
 
             arrowVisible: pageStack.depth > 1
             onClicked: pageStack.pop()
+
+            text: {
+                if (pageStack.depth == 1)
+                    return "";
+
+                var item = pageStack.get(pageStack.depth-2);
+                if (item && item.title)
+                    return item.title;
+                else
+                    return "";
+            }
+        }
+
+        Label {
+            id: pageTitle
+            anchors.centerIn: parent
+            font.bold: true
+            //font.pixelSize: units.gu(45)
+            text: {
+                var item = pageStack.currentItem;
+                if (item && item.title)
+                    return item.title;
+                else
+                    return "";
+            }
         }
 
         Button {
             id: actionTitle
 
             anchors {
+                left: pageTitle.right
+                leftMargin: units.gu(20)
                 right: indicator.left
                 rightMargin: units.gu(15)
-                verticalCenter: parent.verticalCenter
+                top: parent.top
+                bottom: parent.bottom
             }
+
+            Button {
+                id: invisibleButton
+                text: parent.text
+                visible: false
+            }
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignRight
+            fontSizeMode: width < invisibleButton.width ? Text.HorizontalFit : Text.FixedSize
 
             Behavior on opacity {
                 NumberAnimation {
@@ -87,7 +140,15 @@ Rectangle {
                 }
             }
 
-            opacity: 0.0
+            text: {
+                var item = pageStack.currentItem;
+                if (item && item.actionTitle)
+                    return item.actionTitle;
+                else
+                    return "";
+            }
+
+            opacity: text.length ? 1 : 0
             onClicked: pageStack.currentItem.actionClicked()
         }
 
@@ -129,23 +190,6 @@ Rectangle {
             left: parent.left
             right: parent.right
             bottom: parent.bottom
-        }
-
-        onCurrentItemChanged: {
-            if (currentItem) {
-                backButton.text = currentItem.title;
-
-                if (currentItem.actionTitle) {
-                    actionTitle.text = currentItem.actionTitle;
-                    actionTitle.opacity = 1;
-                }
-                else
-                    actionTitle.opacity = 0;
-
-            } else {
-                backButton.text = "";
-                actionTitle.opacity = 0;
-            }
         }
 
         initialItem: MenuPage {}

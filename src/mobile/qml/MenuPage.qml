@@ -1,9 +1,8 @@
 import QtQuick 2.0
 import mplane 1.0
-import "android"
 import "controls"
 
-Page {
+ListPage {
     title: "Glimpse"
     actionTitle: qsTr("Settings")
 
@@ -11,57 +10,82 @@ Page {
         nextPage("Settings.qml");
     }
 
-    Column {
-        id: column
-        width: parent.width
-        spacing: units.gu(50)
+    delegate: ListDelegate {
+        text: model.text
+        onClicked: {
+            if (model.url)
+                nextPage(model.url);
+            else {
+                var func = client[model.func];
+                if (func)
+                    func();
+                else
+                    console.log("\"client\" has no property or function named " + model.func);
+            }
+        }
 
-        Button {
+        showArrow: model.showArrow
+    }
+
+    model: ListModel {
+        ListElement {
             text: "Registration"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: nextPage("UserRegistration.qml")
+            url: "UserRegistration.qml"
+            group: "pages"
+            showArrow: true
         }
 
-        Button {
+        ListElement {
             text: "Scheduler"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: nextPage("SchedulerPage.qml")
+            url: "SchedulerPage.qml"
+            group: "pages"
+            showArrow: true
         }
 
-        Button {
+        ListElement {
             text: "Reports"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: nextPage("ReportsPage.qml")
+            url: "ReportsPage.qml"
+            group: "pages"
+            showArrow: true
         }
 
-        Button {
+        ListElement {
             text: "Internet is not working"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: nextPage("Settings.qml")
+            url: "NoInternet.qml"
+            group: "pages"
+            showArrow: true
         }
 
-        Button {
+        ListElement {
             text: "Internet is slow"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: nextPage("Slow.qml")
+            url: "Slow.qml"
+            group: "pages"
+            showArrow: true
         }
 
-        Button {
+        ListElement {
             text: "Btc"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: client.btc()
+            func: "btc"
+            group: "test"
         }
 
-        Button {
+        ListElement {
             text: "Upnp"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: client.upnp()
+            func: "upnp"
+            group: "test"
         }
 
-        Button {
+        ListElement {
             text: "Ping"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: client.ping()
+            func: "ping"
+            group: "test"
+        }
+
+        ListElement {
+            text: "Event log"
+            url: "EventLogPage.qml"
+            group: "utils"
+            showArrow: true
         }
     }
 }
