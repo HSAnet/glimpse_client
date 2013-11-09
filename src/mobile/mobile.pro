@@ -30,6 +30,11 @@ android {
     OTHER_FILES += $$files($$PWD/android/src/*.java) \
                    android/AndroidManifest.xml
 
+    # Automatically create the qrc file for android
+    qmlresources.commands = sh qmlresources.sh
+    QMAKE_EXTRA_TARGETS += qmlresources
+    PRE_TARGETDEPS += qmlresources
+
     RESOURCES += qmlresources.qrc
 } else: ios {
     LIBS += $$[QT_INSTALL_QML]/QtQuick/Controls/libqtquickcontrolsplugin.a \
