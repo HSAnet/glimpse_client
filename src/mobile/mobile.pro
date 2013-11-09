@@ -30,10 +30,7 @@ android {
     OTHER_FILES += $$files($$PWD/android/src/*.java) \
                    android/AndroidManifest.xml
 
-    # Automatically create the qrc file for android
-    qmlresources.commands = sh qmlresources.sh
-    QMAKE_EXTRA_TARGETS += qmlresources
-    PRE_TARGETDEPS += qmlresources
+    system(sh $$PWD/qmlresources.sh)
 
     RESOURCES += qmlresources.qrc
 } else: ios {

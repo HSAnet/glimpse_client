@@ -8,7 +8,7 @@ OUTFILE="qmlresources.qrc"
 echo "<RCC>" > $OUTFILE
 echo "	<qresource prefix=\"/\">" >> $OUTFILE
 
-for file in $(find -f qml/*)
+for file in $(find qml -name "*.*")
 do
 	echo "		<file>$file</file>" >> $OUTFILE
 done
