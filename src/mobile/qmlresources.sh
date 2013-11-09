@@ -1,5 +1,8 @@
 #!/bin/sh
 
+BASEDIR=$(dirname $0)
+cd $BASEDIR
+
 OUTFILE="qmlresources.qrc"
 
 echo "<RCC>" > $OUTFILE
