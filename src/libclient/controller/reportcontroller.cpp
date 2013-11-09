@@ -9,6 +9,7 @@
 #include "../response.h"
 
 #include <QPointer>
+#include <QStringList>
 
 LOGGER(ReportController);
 
