@@ -10,12 +10,14 @@ class CLIENT_API LoginController : public Controller
 {
     Q_OBJECT
     Q_PROPERTY(bool loggedIn READ isLoggedIn NOTIFY loggedInChanged)
+    Q_PROPERTY(bool registeredDevice READ registeredDevice NOTIFY registeredDeviceChanged)
 
 public:
     explicit LoginController(QObject* parent = 0);
     ~LoginController();
 
     bool isLoggedIn() const;
+    bool registeredDevice() const;
 
     Q_INVOKABLE void login();
 
@@ -27,6 +29,7 @@ public:
 
 signals:
     void loggedInChanged();
+    void registeredDeviceChanged();
 
 protected:
     class Private;

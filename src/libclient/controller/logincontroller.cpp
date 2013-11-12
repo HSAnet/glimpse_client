@@ -19,6 +19,7 @@ public:
     Private(LoginController* q)
     : q(q)
     , loggedIn(false)
+    , registeredDevice(false)
     {
         connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
 
@@ -37,9 +38,11 @@ public:
     LoginResponse response;
 
     bool loggedIn;
+    bool registeredDevice;
 
     // Functions
     void setLoggedIn(bool loggedIn);
+    void setRegisterdDevice(bool registeredDevice);
 
 public slots:
     void onFinished();
@@ -54,9 +57,18 @@ void LoginController::Private::setLoggedIn(bool loggedIn)
     }
 }
 
+void LoginController::Private::setRegisterdDevice(bool registeredDevice)
+{
+    if (this->registeredDevice != registeredDevice) {
+        this->registeredDevice = registeredDevice;
+        emit q->registeredDeviceChanged();
+    }
+}
+
 void LoginController::Private::onFinished()
 {
     LOG_INFO("Login successful");
+    setRegisterdDevice(response.registeredDevice());
     setLoggedIn(true);
 }
 
@@ -83,7 +95,12 @@ LoginController::Status LoginController::status() const
 
 bool LoginController::isLoggedIn() const
 {
-    return false;
+    return d->loggedIn;
+}
+
+bool LoginController::registeredDevice() const
+{
+    return d->registeredDevice;
 }
 
 QString LoginController::errorString() const
