@@ -95,16 +95,16 @@ int main(int argc, char* argv[])
 
     QmlModule::registerTypes();
 
-    QtQuick2ApplicationViewer view;
+    QtQuick2ApplicationViewer* view = new QtQuick2ApplicationViewer;
 
-    QQmlEngine* engine = view.engine();
+    QQmlEngine* engine = view->engine();
     QmlModule::initializeEngine(engine);
 
     // Allow QFileSelector to be automatically applied on qml scripting
     QQmlFileSelector selector;
     engine->setUrlInterceptor(&selector);
 
-    QQmlContext* rootContext = view.rootContext();
+    QQmlContext* rootContext = view->rootContext();
     rootContext->setContextProperty("client", Client::instance());
     rootContext->setContextProperty("logModel", &loggerModel);
 #ifdef Q_OS_ANDROID
@@ -112,21 +112,22 @@ int main(int argc, char* argv[])
 #elif defined(Q_OS_IOS)
     // TODO: iOS Code
 #else
-    rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(&view));
+    rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(view));
 #endif // Q_OS_ANDROID
 
 #ifdef Q_OS_IOS
     view.addImportPath(QStringLiteral("imports/qml"));
 #endif
 
-    loadFonts(view.adjustPath(QStringLiteral("qml/fonts")));
+    loadFonts(view->adjustPath(QStringLiteral("qml/fonts")));
 
-    view.setMainQmlFile(QStringLiteral("qml/main.qml"));
-    view.showExpanded();
+    view->setMainQmlFile(QStringLiteral("qml/main.qml"));
+    view->showExpanded();
 
     int returnCode = app.exec();
 
     // Cleanly shutdown
+    delete view;
     Client::instance()->deleteLater();
     QTimer::singleShot(1, &app, SLOT(quit()));
     app.exec();
