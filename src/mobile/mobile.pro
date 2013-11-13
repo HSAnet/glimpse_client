@@ -30,6 +30,8 @@ android {
     OTHER_FILES += $$files($$PWD/android/src/*.java) \
                    android/AndroidManifest.xml
 
+    system(sh $$PWD/qmlresources.sh)
+
     RESOURCES += qmlresources.qrc
 } else: ios {
     LIBS += $$[QT_INSTALL_QML]/QtQuick/Controls/libqtquickcontrolsplugin.a \
