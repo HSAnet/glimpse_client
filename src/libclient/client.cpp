@@ -2,6 +2,8 @@
 #include "controller/controlcontroller.h"
 #include "controller/reportcontroller.h"
 #include "controller/logincontroller.h"
+#include "controller/registrationcontroller.h"
+#include "controller/configcontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
 #include "scheduler/schedulerstorage.h"
@@ -66,7 +68,9 @@ public:
 
     ControlController controlController;
     ReportController reportController;
+    RegistrationController registrationController;
     LoginController loginController;
+    ConfigController configController;
 
 #ifdef Q_OS_UNIX
     static int sigintFd[2];
@@ -254,8 +258,11 @@ bool Client::init()
 
     // Initialize controllers
     d->networkManager.init(&d->scheduler, &d->settings);
+    d->configController.init(&d->networkManager, &d->settings);
     d->controlController.init(&d->networkManager, &d->scheduler, &d->settings);
     d->reportController.init(&d->reportScheduler, &d->settings);
+    d->loginController.init(&d->networkManager, &d->settings);
+    d->registrationController.init(&d->networkManager, &d->settings);
 
     return true;
 }
@@ -322,6 +329,16 @@ NetworkManager *Client::networkManager() const
 TaskExecutor *Client::taskExecutor() const
 {
     return &d->executor;
+}
+
+ConfigController *Client::configController() const
+{
+    return &d->configController;
+}
+
+RegistrationController *Client::registrationController() const
+{
+    return &d->registrationController;
 }
 
 LoginController *Client::loginController() const

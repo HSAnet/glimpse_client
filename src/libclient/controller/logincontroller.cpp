@@ -21,6 +21,8 @@ public:
     , loggedIn(false)
     , registeredDevice(false)
     {
+        connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
+        connect(&requester, SIGNAL(error()), this, SLOT(onError()));
         connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
 
         requester.setRequest(&request);

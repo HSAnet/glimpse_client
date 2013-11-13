@@ -108,7 +108,9 @@ SOURCES +=  \
     qmlmodule.cpp \
     controller/controller.cpp \
     log/logger.cpp \
-    log/logmodel.cpp
+    log/logmodel.cpp \
+    controller/configcontroller.cpp \
+    controller/registrationcontroller.cpp
 
 HEADERS += \
     export.h \
@@ -174,7 +176,9 @@ HEADERS += \
     units.h \
     qmlmodule.h \
     controller/controller.h \
-    log/logmodel.h
+    log/logmodel.h \
+    controller/configcontroller.h \
+    controller/registrationcontroller.h
 
 OTHER_FILES += \
     libclient.pri
