@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
     rootContext->setContextProperty("client", Client::instance());
     rootContext->setContextProperty("logModel", &loggerModel);
 #ifdef Q_OS_ANDROID
-    rootContext->setContextProperty("statusBar", new StatusBarHelper(&view));
+    rootContext->setContextProperty("statusBar", new StatusBarHelper(view));
 #elif defined(Q_OS_IOS)
     // TODO: iOS Code
 #else
