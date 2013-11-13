@@ -7,6 +7,8 @@ Page {
     id: root
     title: qsTr("Login")
 
+    height: column.height
+
     property variant request: LoginRequest {
     }
 
@@ -60,6 +62,7 @@ Page {
     }
 
     Column {
+        id: column
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: units.gu(10)
 

@@ -9,8 +9,9 @@ Item {
     property bool activity
 
     property bool spacing: true
+    readonly property int spacingValue: units.gu(100)
 
-    y: spacing ? units.gu(100) : 0
+    y: spacing ? spacingValue : 0
     width: parent.width
-    height: parent.height-y
+    height: parent.height-spacingValue
 }

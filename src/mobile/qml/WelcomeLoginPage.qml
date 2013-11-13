@@ -1,23 +1,25 @@
 import QtQuick 2.0
-import mplane 1.0
 import "controls"
 
-Login {
+Page {
     id: root
 
-    title: qsTr("Registration")
+    title: qsTr("First time login")
+    activity: loginPage.activity
 
-    request: UserRegisterRequest {
+    onActivityChanged: console.log("activity:" + activity)
+
+    Login {
+        id: loginPage
+        width: parent.width
     }
-
-    buttonTitle: qsTr("Register")
 
     Column {
         anchors {
             left: parent.left
             right: parent.right
             bottom: parent.bottom
-            bottomMargin: units.gu(150)
+            bottomMargin: units.gu(50) + root.spacingValue
         }
 
         width: parent.width
@@ -32,7 +34,8 @@ Login {
 
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: qsTr("I don't want to register")
+            text: qsTr("I don't have an account")
+            onClicked: nextPage("WelcomeRegistrationPage.qml")
         }
     }
 }

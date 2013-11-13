@@ -3,7 +3,7 @@ import mplane 1.0
 import "controls"
 
 Rectangle {
-    id: root
+    id: app
     width: units.gu(768)
     height: units.gu(1200)
     clip: true

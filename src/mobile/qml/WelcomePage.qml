@@ -4,7 +4,11 @@ import "controls"
 FlickablePage {
     title: qsTr("Welcome to glimpse")
 
+    contentHeight: column.height
+
     Column {
+        id: column
+
         anchors {
             left: parent.left
             right: parent.right
@@ -24,7 +28,9 @@ FlickablePage {
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("Continue >")
-            onClicked: nextPage("UserRegistration.qml")
+            onClicked: nextPage("WelcomeLoginPage.qml")
         }
+
+        Item { width: 1; height: units.gu(50) }
     }
 }
