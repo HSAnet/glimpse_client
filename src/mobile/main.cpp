@@ -10,6 +10,7 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <QQmlFileSelector>
+#include <QFileSelector>
 #include <QTimer>
 #include <QDir>
 #include <QFontDatabase>
@@ -103,6 +104,12 @@ int main(int argc, char* argv[])
     // Allow QFileSelector to be automatically applied on qml scripting
     QQmlFileSelector selector;
     engine->setUrlInterceptor(&selector);
+
+#if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS)
+    QFileSelector desktopSelector;
+    desktopSelector.setExtraSelectors( QStringList() << "desktop" );
+    selector.setSelector(&desktopSelector);
+#endif
 
     QQmlContext* rootContext = view->rootContext();
     rootContext->setContextProperty("client", Client::instance());
