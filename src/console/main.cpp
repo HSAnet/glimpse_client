@@ -36,7 +36,7 @@ struct LoginData {
 int main(int argc, char* argv[])
 {
     QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
-    QCoreApplication::setOrganizationName("HS Augsburg");
+    QCoreApplication::setOrganizationName("HS-Augsburg");
     QCoreApplication::setApplicationName("mPlaneClient");
     QCoreApplication::setApplicationVersion("0.1");
 
