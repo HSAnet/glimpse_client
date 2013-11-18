@@ -64,6 +64,9 @@ int main(int argc, char* argv[])
 
 #endif // Q_OS_UNIX
 
+    QCommandLineOption registerAnonymous("register-anonymous", "Register anonymous on server");
+    parser.addOption(registerAnonymous);
+
     QCommandLineOption registerOption("register", "Register on server", "mail");
     parser.addOption(registerOption);
 
@@ -72,8 +75,13 @@ int main(int argc, char* argv[])
 
     parser.process(app);
 
-    if (parser.isSet(registerOption) && parser.isSet(loginOption)) {
-        out << "'--register' and '--login' cannot be set on the same time.\n";
+    if (parser.isSet(registerOption) && parser.isSet(registerAnonymous)) {
+        out << "'--register' and '--register-anonymous' cannot be set on the same time.\n";
+        return 1;
+    }
+
+    if ((parser.isSet(registerAnonymous)||parser.isSet(registerOption)) && parser.isSet(loginOption)) {
+        out << "'--register(-anonymous)' and '--login' cannot be set on the same time.\n";
         return 1;
     }
 
@@ -141,11 +149,10 @@ int main(int argc, char* argv[])
             close(STDERR_FILENO);
         }
     }
+#endif // Q_OS_UNIX
 
     // If there may be anything left, we flush it before the client starts
     out.flush();
-
-#endif // Q_OS_UNIX
 
     // Initialize the client instance
     Client* client = Client::instance();
@@ -167,6 +174,8 @@ int main(int argc, char* argv[])
             client->loginController()->login();
             break;
         }
+    } else if (parser.isSet(registerAnonymous)) {
+        client->registrationController()->anonymousRegistration();
     }
 
     return app.exec();
