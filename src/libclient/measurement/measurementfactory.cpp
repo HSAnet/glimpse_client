@@ -2,8 +2,11 @@
 #include "btc/btc_plugin.h"
 #include "upnp/upnp_plugin.h"
 #include "ping/ping_plugin.h"
+#include "../log/logger.h"
 
 #include <QHash>
+
+LOGGER(MeasurementFactory);
 
 class MeasurementFactory::Private
 {
@@ -47,6 +50,16 @@ MeasurementFactory::~MeasurementFactory()
     delete d;
 }
 
+MeasurementPluginList MeasurementFactory::plugins() const
+{
+    return d->plugins;
+}
+
+QStringList MeasurementFactory::availableMeasurements() const
+{
+    return d->pluginNameHash.keys();
+}
+
 MeasurementPtr MeasurementFactory::createMeasurement(const QString &name)
 {
     if (MeasurementPlugin* plugin = d->pluginNameHash.value(name))
@@ -59,6 +72,8 @@ MeasurementDefinitionPtr MeasurementFactory::createMeasurementDefinition(const Q
 {
     if (MeasurementPlugin* plugin = d->pluginNameHash.value(name))
         return plugin->createMeasurementDefinition(name, data);
+    else
+        LOG_DEBUG(QString("No measurement named '%1'' found.").arg(name));
 
     return MeasurementDefinitionPtr();
 }

@@ -110,7 +110,8 @@ SOURCES +=  \
     log/logger.cpp \
     log/logmodel.cpp \
     controller/configcontroller.cpp \
-    controller/registrationcontroller.cpp
+    controller/registrationcontroller.cpp \
+    measurement/measurementplugin.cpp
 
 HEADERS += \
     export.h \

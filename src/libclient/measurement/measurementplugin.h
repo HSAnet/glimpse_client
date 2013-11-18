@@ -6,10 +6,15 @@
 
 #include <QStringList>
 
+class MeasurementPlugin;
+typedef QList<MeasurementPlugin*> MeasurementPluginList;
+
 class CLIENT_API MeasurementPlugin
 {
 public:
     virtual ~MeasurementPlugin() {}
+
+    virtual QString type() const;
 
     virtual QStringList measurements() const = 0;
 

@@ -1,13 +1,16 @@
 #ifndef MEASUREMENTFACTORY_H
 #define MEASUREMENTFACTORY_H
 
-#include "measurement.h"
+#include "measurementplugin.h"
 
 class CLIENT_API MeasurementFactory
 {
 public:
     MeasurementFactory();
     ~MeasurementFactory();
+
+    MeasurementPluginList plugins() const;
+    QStringList availableMeasurements() const;
 
     MeasurementPtr createMeasurement(const QString& name);
     MeasurementDefinitionPtr createMeasurementDefinition(const QString& name, const QVariant& data);
