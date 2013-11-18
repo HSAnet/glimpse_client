@@ -130,17 +130,18 @@ void SchedulerStorage::loadData()
 
     foreach(const QString& fileName, d->dir.entryList(QDir::Files)) {
         QFile file(d->dir.absoluteFilePath(fileName));
-        file.open(QIODevice::ReadOnly);
+        if (!file.open(QIODevice::ReadOnly)) {
+            LOG_DEBUG(QString("Error opening %1: %2").arg(d->dir.absoluteFilePath(fileName)).arg(file.errorString()));
+            continue;
+        }
 
-        LOG_DEBUG(QString("Reading %1: %2").arg(d->dir.absoluteFilePath(fileName)).arg(file.errorString()));
-
-        // TODO: Error checking
         QJsonParseError error;
         QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
 
         if (error.error == QJsonParseError::NoError) {
             TestDefinitionPtr test = TestDefinition::fromVariant(document.toVariant());
-            d->scheduler->enqueue(test);
+            if (test)
+                d->scheduler->enqueue(test);
         } else {
             LOG_ERROR(QString("Error reading %1: %2").arg(d->dir.absoluteFilePath(fileName)).arg(error.errorString()));
         }
