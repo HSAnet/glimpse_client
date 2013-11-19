@@ -183,6 +183,7 @@ void Client::Private::setupUnixSignalHandlers()
 #endif
 }
 
+#ifdef Q_OS_WIN
 BOOL Client::Private::CtrlHandler(DWORD ctrlType)
 {
     switch(ctrlType) {
@@ -202,6 +203,7 @@ BOOL Client::Private::CtrlHandler(DWORD ctrlType)
         return FALSE;
     }
 }
+#endif // Q_OS_WIN
 
 #ifdef Q_OS_UNIX
 void Client::Private::handleSigInt()
