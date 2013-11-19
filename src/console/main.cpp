@@ -178,5 +178,7 @@ int main(int argc, char* argv[])
         client->registrationController()->anonymousRegistration();
     }
 
-    return app.exec();
+    int value = app.exec();
+    out << "Application shutting down.";
+    return value;
 }
