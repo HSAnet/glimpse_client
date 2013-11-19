@@ -23,6 +23,11 @@
 #include <unistd.h>
 #endif // Q_OS_UNIX
 
+#ifdef Q_OS_WIN
+#include <Windows.h>
+#include <stdio.h>
+#endif // Q_OS_WIN
+
 // TEST INCLUDES
 #include "timing/immediatetiming.h"
 #include "task/task.h"
@@ -89,6 +94,10 @@ public:
 
     // Functions
     void setupUnixSignalHandlers();
+
+#ifdef Q_OS_WIN
+    static BOOL CtrlHandler(DWORD ctrlType);
+#endif // Q_OS_WIN
 
 public slots:
 #ifdef Q_OS_UNIX
@@ -169,7 +178,29 @@ void Client::Private::setupUnixSignalHandlers()
 
     snTerm = new QSocketNotifier(sigtermFd[1], QSocketNotifier::Read, this);
     connect(snTerm, SIGNAL(activated(int)), this, SLOT(handleSigTerm()));
-#endif // Q_OS_UNIX
+#elif defined(Q_OS_WIN)
+    SetConsoleCtrlHandler((PHANDLER_ROUTINE)Private::CtrlHandler, TRUE);
+#endif
+}
+
+BOOL Client::Private::CtrlHandler(DWORD ctrlType)
+{
+    switch(ctrlType) {
+    case CTRL_C_EVENT:
+    case CTRL_CLOSE_EVENT:
+        LOG_INFO("Close requested, quitting.");
+        qApp->quit();
+        return TRUE;
+
+    case CTRL_LOGOFF_EVENT:
+    case CTRL_SHUTDOWN_EVENT:
+        LOG_INFO("System shutdown or user logout, quitting.");
+        qApp->quit();
+        return FALSE;
+
+    default:
+        return FALSE;
+    }
 }
 
 #ifdef Q_OS_UNIX
