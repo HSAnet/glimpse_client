@@ -113,13 +113,13 @@ int main(int argc, char* argv[])
         passwd* pwd = getpwnam(user.constData());
         if (pwd) {
             if (-1 == setuid(pwd->pw_uid)) {
-                out << "Cannot set uid to " << pwd->pw_uid << ": " << strerror(errno);
+                out << "Cannot set uid to " << pwd->pw_uid << ": " << strerror(errno) << "\n";
                 return 1;
             } else {
                 LOG_DEBUG(QString("User id set to %1 (%2)").arg(pwd->pw_uid).arg(QString::fromLatin1(user)));
             }
         } else {
-            out << "No user named " << QString::fromLatin1(user) << " found";
+            out << "No user named " << QString::fromLatin1(user) << " found\n";
             return 1;
         }
     }
@@ -128,10 +128,10 @@ int main(int argc, char* argv[])
     if (parser.isSet(daemonOption)) {
         pid_t pid = fork();
         if (pid == -1) {
-            out << "fork() failed: " << strerror(errno);
+            out << "fork() failed: " << strerror(errno) << "\n";
         } else if (pid > 0) {
             // Fork successful, we're exiting now
-            out << "Daemon started with pid " << pid;
+            out << "Daemon started with pid " << pid << "\n";
             return 0;
         } else {
             // Child process
