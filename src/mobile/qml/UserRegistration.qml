@@ -7,6 +7,7 @@ Login {
 
     title: qsTr("Registration")
 
+    loginMode: false
     request: UserRegisterRequest {
     }
 

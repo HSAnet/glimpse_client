@@ -9,6 +9,7 @@ Page {
 
     height: column.height
 
+    property bool loginMode: true
     property variant request: LoginRequest {
     }
 
@@ -100,6 +101,22 @@ Page {
             }
         }
 
+        Column {
+            visible: !root.loginMode
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            Text {
+                text: qsTr("Confirm password")
+                font.pixelSize: units.gu(40)
+            }
+
+            TextField {
+                id: passwordField2
+                style: TextFieldStyle {}
+                echoMode: TextInput.Password
+            }
+        }
+
         Label {
             id: errorLabel
             color: "red"
@@ -124,6 +141,11 @@ Page {
 
                 if ( passwordField.text.length < 6 ) {
                     errorLabel.text = qsTr("Password must be 6 characters or more");
+                    return;
+                }
+
+                if ( !root.loginMode && passwordField.text != passwordField2.text ) {
+                    errorLabel.text = qsTr("Passwords don't match");
                     return;
                 }
 
