@@ -5,6 +5,7 @@
 
 #include "../webrequester.h"
 #include "../network/requests/loginrequest.h"
+#include "../network/requests/userregisterrequest.h"
 #include "../response.h"
 
 #include <QPointer>
@@ -25,7 +26,6 @@ public:
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
         connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
 
-        requester.setRequest(&request);
         requester.setResponse(&response);
     }
 
@@ -36,7 +36,9 @@ public:
     QPointer<Settings> settings;
 
     WebRequester requester;
-    LoginRequest request;
+
+    UserRegisterRequest registerRequest;
+    LoginRequest loginRequest;
     LoginResponse response;
 
     bool loggedIn;
@@ -69,14 +71,25 @@ void LoginController::Private::setRegisterdDevice(bool registeredDevice)
 
 void LoginController::Private::onFinished()
 {
-    LOG_INFO("Login successful");
+    LOG_INFO("Login/Registration successful");
+
+    // After registration we save the login data
+    if (requester.request() == &registerRequest) {
+        settings->setUserId(registerRequest.userId());
+        settings->setPassword(registerRequest.password());
+
+        LOG_DEBUG("Wrote username and password to settings");
+    }
+
+    settings->setSessionId(response.sessionId());
+
     setRegisterdDevice(response.registeredDevice());
     setLoggedIn(true);
 }
 
 void LoginController::Private::onError()
 {
-    LOG_INFO(QString("Login failed: %1").arg(requester.errorString()));
+    LOG_INFO(QString("Login/Registration failed: %1").arg(requester.errorString()));
 }
 
 LoginController::LoginController(QObject *parent)
@@ -110,11 +123,32 @@ QString LoginController::errorString() const
     return d->requester.errorString();
 }
 
+void LoginController::anonymousRegistration()
+{
+    QUuid uuid = QUuid::createUuid();
+    QString username = QString("%1@%2.anon").arg(uuid.toString()).arg(uuid.toString());
+    QString password = QUuid::createUuid().createUuid().toString();
+
+    LOG_INFO("Anonymous registration requested. Scrambled some data.");
+
+    registration(username, password);
+}
+
+void LoginController::registration(const QString &username, const QString &password)
+{
+    d->registerRequest.setUserId(username);
+    d->registerRequest.setPassword(password);
+
+    d->requester.setRequest(&d->registerRequest);
+    d->requester.start();
+}
+
 void LoginController::login()
 {
-    d->request.setUserId(d->settings->userId());
-    d->request.setPassword(d->settings->password());
+    d->loginRequest.setUserId(d->settings->userId());
+    d->loginRequest.setPassword(d->settings->password());
 
+    d->requester.setRequest(&d->loginRequest);
     d->requester.start();
 }
 

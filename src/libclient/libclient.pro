@@ -110,7 +110,6 @@ SOURCES +=  \
     log/logger.cpp \
     log/logmodel.cpp \
     controller/configcontroller.cpp \
-    controller/registrationcontroller.cpp \
     measurement/measurementplugin.cpp
 
 HEADERS += \
@@ -178,8 +177,7 @@ HEADERS += \
     qmlmodule.h \
     controller/controller.h \
     log/logmodel.h \
-    controller/configcontroller.h \
-    controller/registrationcontroller.h
+    controller/configcontroller.h
 
 OTHER_FILES += \
     libclient.pri

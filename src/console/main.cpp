@@ -3,7 +3,6 @@
 #include "log/logger.h"
 #include "settings.h"
 #include "controller/logincontroller.h"
-#include "controller/registrationcontroller.h"
 
 #include <QTextStream>
 #include <QCoreApplication>
@@ -165,7 +164,7 @@ int main(int argc, char* argv[])
     if (passwordOption) {
         switch(loginData.type) {
         case LoginData::Register:
-            client->registrationController()->registration(loginData.userId, loginData.password);
+            client->loginController()->registration(loginData.userId, loginData.password);
             break;
 
         case LoginData::Login:
@@ -175,7 +174,7 @@ int main(int argc, char* argv[])
             break;
         }
     } else if (parser.isSet(registerAnonymous)) {
-        client->registrationController()->anonymousRegistration();
+        client->loginController()->anonymousRegistration();
     }
 
     int value = app.exec();

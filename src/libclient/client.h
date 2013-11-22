@@ -31,7 +31,6 @@ class CLIENT_API Client : public QObject
     Q_PROPERTY(ReportController* reportController READ reportController CONSTANT)
     Q_PROPERTY(ConfigController* configController READ configController CONSTANT)
     Q_PROPERTY(LoginController* loginController READ loginController CONSTANT)
-    Q_PROPERTY(RegistrationController* registrationController READ registrationController CONSTANT)
 
     explicit Client(QObject *parent = 0);
     ~Client();
@@ -58,7 +57,6 @@ public:
     TaskExecutor* taskExecutor() const;
 
     ConfigController* configController() const;
-    RegistrationController* registrationController() const;
     LoginController* loginController() const;
     ReportController* reportController() const;
 

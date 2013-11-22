@@ -19,6 +19,8 @@ public:
     bool isLoggedIn() const;
     bool registeredDevice() const;
 
+    Q_INVOKABLE void anonymousRegistration();
+    Q_INVOKABLE void registration(const QString& username, const QString& password);
     Q_INVOKABLE void login();
 
     // Controller interface
@@ -28,6 +30,10 @@ public:
     bool init(NetworkManager* networkManager, Settings* settings);
 
 signals:
+    void registrationFinished();
+    void loginFinished();
+    void error();
+
     void loggedInChanged();
     void registeredDeviceChanged();
 

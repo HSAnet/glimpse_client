@@ -2,7 +2,6 @@
 #include "controller/controlcontroller.h"
 #include "controller/reportcontroller.h"
 #include "controller/logincontroller.h"
-#include "controller/registrationcontroller.h"
 #include "controller/configcontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
@@ -73,7 +72,6 @@ public:
 
     ControlController controlController;
     ReportController reportController;
-    RegistrationController registrationController;
     LoginController loginController;
     ConfigController configController;
 
@@ -295,7 +293,6 @@ bool Client::init()
     d->controlController.init(&d->networkManager, &d->scheduler, &d->settings);
     d->reportController.init(&d->reportScheduler, &d->settings);
     d->loginController.init(&d->networkManager, &d->settings);
-    d->registrationController.init(&d->networkManager, &d->settings);
 
     return true;
 }
@@ -367,11 +364,6 @@ TaskExecutor *Client::taskExecutor() const
 ConfigController *Client::configController() const
 {
     return &d->configController;
-}
-
-RegistrationController *Client::registrationController() const
-{
-    return &d->registrationController;
 }
 
 LoginController *Client::loginController() const
