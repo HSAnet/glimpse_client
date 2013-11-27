@@ -51,6 +51,7 @@ public:
         scheduler.setExecutor(&executor);
 
         connect(&executor, SIGNAL(finished(TestDefinitionPtr,ResultPtr)), this, SLOT(taskFinished(TestDefinitionPtr,ResultPtr)));
+        connect(&loginController, SIGNAL(loginFinished()), this, SLOT(loginStatusChanged()));
     }
 
     Client* q;
@@ -104,6 +105,7 @@ public slots:
     void handleSigTerm();
 #endif // Q_OS_UNIX
     void taskFinished(const TestDefinitionPtr& test, const ResultPtr& result);
+    void loginStatusChanged();
 };
 
 #ifdef Q_OS_UNIX
@@ -252,6 +254,11 @@ void Client::Private::taskFinished(const TestDefinitionPtr &test, const ResultPt
     reportScheduler.addReport(report);
 }
 
+void Client::Private::loginStatusChanged()
+{
+    configController.update();
+}
+
 Client::Client(QObject *parent)
 : QObject(parent)
 , d(new Private(this))
@@ -295,6 +302,16 @@ bool Client::init()
     d->loginController.init(&d->networkManager, &d->settings);
 
     return true;
+}
+
+bool Client::autoLogin()
+{
+    if (d->settings.hasLoginData()) {
+        d->loginController.login();
+        return true;
+    }
+
+    return false;
 }
 
 void Client::btc()

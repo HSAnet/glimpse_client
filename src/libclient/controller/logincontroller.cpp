@@ -71,10 +71,13 @@ void LoginController::Private::setRegisterdDevice(bool registeredDevice)
 
 void LoginController::Private::onFinished()
 {
+    bool isLogin = true;
+
     LOG_INFO("Login/Registration successful");
 
     // After registration we save the login data
     if (requester.request() == &registerRequest) {
+        isLogin = false;
         settings->setUserId(registerRequest.userId());
         settings->setPassword(registerRequest.password());
 
@@ -85,6 +88,11 @@ void LoginController::Private::onFinished()
 
     setRegisterdDevice(response.registeredDevice());
     setLoggedIn(true);
+
+    if(isLogin)
+        emit q->loginFinished();
+    else
+        emit q->registrationFinished();
 }
 
 void LoginController::Private::onError()

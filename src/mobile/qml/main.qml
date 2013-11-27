@@ -15,6 +15,9 @@ Rectangle {
             console.log("Unable to initialize client");
             Qt.quit();
         }
+
+        // Maybe we can log in automatically from here
+        client.autoLogin();
     }
 
     // Implements back key navigation

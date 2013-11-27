@@ -8,6 +8,7 @@
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
+#include <QTimer>
 #include <QDebug>
 
 #ifdef Q_OS_UNIX
@@ -19,6 +20,34 @@
 #endif // Q_OS_UNIX
 
 LOGGER(main);
+
+class LoginWatcher : public QObject
+{
+    Q_OBJECT
+public:
+    LoginWatcher(LoginController* controller)
+    : m_controller(controller)
+    {
+        connect(controller, SIGNAL(statusChanged()), this, SLOT(onStatusChanged()));
+    }
+
+private slots:
+    void onStatusChanged() {
+        switch(m_controller->status()) {
+        case LoginController::Error:
+            LOG_INFO("Login/Registration failed, quitting.");
+            qApp->quit();
+            break;
+
+        case LoginController::Finished:
+            deleteLater();
+            break;
+        }
+    }
+
+protected:
+    LoginController* m_controller;
+};
 
 struct LoginData {
     enum Type
@@ -62,6 +91,9 @@ int main(int argc, char* argv[])
     parser.addOption(pidFileOption);
 
 #endif // Q_OS_UNIX
+
+    QCommandLineOption controllerUrl("controller", "Override the controller host", "hostname:port");
+    parser.addOption(controllerUrl);
 
     QCommandLineOption registerAnonymous("register-anonymous", "Register anonymous on server");
     parser.addOption(registerAnonymous);
@@ -161,6 +193,12 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    if (parser.isSet(controllerUrl)) {
+        client->settings()->config()->setControllerAddress(parser.value(controllerUrl));
+    }
+
+    new LoginWatcher(client->loginController());
+
     if (passwordOption) {
         switch(loginData.type) {
         case LoginData::Register:
@@ -175,9 +213,21 @@ int main(int argc, char* argv[])
         }
     } else if (parser.isSet(registerAnonymous)) {
         client->loginController()->anonymousRegistration();
+    } else {
+        if (!client->autoLogin()) {
+            LOG_ERROR("No login data found for autologin");
+            return 1;
+        }
     }
 
     int value = app.exec();
-    out << "Application shutting down.";
+    out << "Application shutting down.\n";
+
+    Client::instance()->deleteLater();
+    QTimer::singleShot(1, &app, SLOT(quit()));
+    app.exec();
+
     return value;
 }
+
+#include "main.moc"
