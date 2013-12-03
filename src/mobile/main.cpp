@@ -102,8 +102,7 @@ int main(int argc, char* argv[])
     QmlModule::initializeEngine(engine);
 
     // Allow QFileSelector to be automatically applied on qml scripting
-    QQmlFileSelector selector;
-    engine->setUrlInterceptor(&selector);
+    QQmlFileSelector selector(engine);
 
 #if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS)
     QFileSelector desktopSelector;
