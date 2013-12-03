@@ -36,7 +36,7 @@ Settings::StorageType Settings::init()
 
     // Create new settings
     if ( newSettings ) {
-        d->config.setControllerAddress("141.82.49.82:5105");
+        d->config.setControllerAddress("141.82.49.89:5105");
 
         LOG_INFO("Created new settings for this device");
 
