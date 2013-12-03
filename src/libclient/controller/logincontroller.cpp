@@ -25,6 +25,7 @@ public:
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
         connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
+        connect(&requester, SIGNAL(started()), q, SIGNAL(started()));
 
         requester.setResponse(&response);
     }
@@ -89,6 +90,8 @@ void LoginController::Private::onFinished()
     setRegisterdDevice(response.registeredDevice());
     setLoggedIn(true);
 
+    emit q->finished();
+
     if(isLogin)
         emit q->loginFinished();
     else
@@ -98,6 +101,7 @@ void LoginController::Private::onFinished()
 void LoginController::Private::onError()
 {
     LOG_INFO(QString("Login/Registration failed: %1").arg(requester.errorString()));
+    emit q->error();
 }
 
 LoginController::LoginController(QObject *parent)

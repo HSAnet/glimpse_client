@@ -27,6 +27,10 @@ public:
 
 signals:
     void statusChanged();
+
+    void started();
+    void error();
+    void finished();
 };
 
 #endif // CONTROLLER_H
