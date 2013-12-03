@@ -13,6 +13,31 @@ Page {
 
     activity: client.loginController.status == Controller.Running
 
+    function login() {
+        if ( !mailField.acceptableInput ) {
+            errorLabel.text = qsTr("Mail is not valid");
+            return;
+        }
+
+        if ( passwordField.text.length < 6 ) {
+            errorLabel.text = qsTr("Password must be 6 characters or more");
+            return;
+        }
+
+        if ( !root.loginMode && passwordField.text != passwordField2.text ) {
+            errorLabel.text = qsTr("Passwords don't match");
+            return;
+        }
+
+        if (root.loginMode) {
+            client.settings.userId = mailField.text;
+            client.settings.password = passwordField.text;
+            client.loginController.login();
+        } else {
+            client.loginController.registration(mailField.text, passwordField.text);
+        }
+    }
+
     Connections {
         id: requester
 
@@ -36,7 +61,7 @@ Page {
                     replace: true
                 }
 
-                console.log("Pushing device registration")
+                console.log("Pushing device registration");
 
                 pageStack.push(properties);
             }
@@ -58,10 +83,11 @@ Page {
 
             TextField {
                 id: mailField
-                text: client.settings.userId
+                text: root.loginMode ? client.settings.userId : ""
                 validator: RegExpValidator {
                     regExp: /.+@.+\..+/
                 }
+                onAccepted: passwordField.forceActiveFocus()
             }
         }
 
@@ -77,6 +103,12 @@ Page {
                 id: passwordField
                 text: client.settings.password
                 echoMode: TextInput.Password
+                onAccepted: {
+                    if (root.loginMode)
+                        root.login();
+                    else
+                        passwordField2.forceActiveFocus();
+                }
             }
         }
 
@@ -92,6 +124,7 @@ Page {
             TextField {
                 id: passwordField2
                 echoMode: TextInput.Password
+                onAccepted: root.login()
             }
         }
 
@@ -111,30 +144,7 @@ Page {
         Button {
             text: root.buttonTitle
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: {
-                if ( !mailField.acceptableInput ) {
-                    errorLabel.text = qsTr("Mail is not valid");
-                    return;
-                }
-
-                if ( passwordField.text.length < 6 ) {
-                    errorLabel.text = qsTr("Password must be 6 characters or more");
-                    return;
-                }
-
-                if ( !root.loginMode && passwordField.text != passwordField2.text ) {
-                    errorLabel.text = qsTr("Passwords don't match");
-                    return;
-                }
-
-                if (root.loginMode) {
-                    client.settings.userId = mailField.text;
-                    client.settings.password = passwordField.text;
-                    client.loginController.login();
-                } else {
-                    client.loginController.registration(mailField.text, passwordField.text);
-                }
-            }
+            onClicked: root.login()
         }
     }
 }
