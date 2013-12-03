@@ -37,12 +37,16 @@ Rectangle {
     }
 
     function nextPage(componentName, properties) {
-        var params = {
-            item: Qt.resolvedUrl(componentName),
-            properties: properties
-        }
+        if (typeof(componentName) == "string") {
+            var params = {
+                item: Qt.resolvedUrl(componentName),
+                properties: properties
+            }
 
-        pageStack.push(params);
+            pageStack.push(params);
+        } else {
+            pageStack.push(componentName);
+        }
     }
 
     Binding {
