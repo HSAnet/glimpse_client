@@ -42,6 +42,9 @@ private slots:
         case LoginController::Finished:
             deleteLater();
             break;
+
+        default:
+            break;
         }
     }
 
