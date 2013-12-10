@@ -36,6 +36,7 @@ public:
     WebRequester requester;
     GetConfigRequest request;
     //GetConfigResponse response;
+    GetConfigResponse* response;
 
     // Functions
 public slots:
@@ -73,7 +74,8 @@ bool ConfigController::init(NetworkManager *networkManager, Settings *settings)
     d->settings = settings;
 
     // FIXME: This is a evil hack
-    d->requester.setResponse(settings->config());
+    d->response = settings->config();
+    d->requester.setResponse(d->response);
 
     return true;
 }

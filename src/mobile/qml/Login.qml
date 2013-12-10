@@ -1,6 +1,5 @@
 import QtQuick 2.0
 import mplane 1.0
-import "android"
 import "controls"
 
 Page {
@@ -10,42 +9,49 @@ Page {
     height: column.height
 
     property bool loginMode: true
-    property variant request: LoginRequest {
-    }
-
     property string buttonTitle: qsTr("Login")
 
-    activity: requester.status == WebRequester.Running
+    activity: client.loginController.status == Controller.Running
 
-    WebRequester {
+    function login() {
+        if ( !mailField.acceptableInput ) {
+            errorLabel.text = qsTr("Mail is not valid");
+            return;
+        }
+
+        if ( passwordField.text.length < 6 ) {
+            errorLabel.text = qsTr("Password must be 6 characters or more");
+            return;
+        }
+
+        if ( !root.loginMode && passwordField.text != passwordField2.text ) {
+            errorLabel.text = qsTr("Passwords don't match");
+            return;
+        }
+
+        if (root.loginMode) {
+            client.settings.userId = mailField.text;
+            client.settings.password = passwordField.text;
+            client.loginController.login();
+        } else {
+            client.loginController.registration(mailField.text, passwordField.text);
+        }
+    }
+
+    Connections {
         id: requester
 
-        request: root.request
-
-        response: LoginResponse {
-            id: response
-        }
-
-        onStarted: {
-            request.userId = mailField.text;
-            request.password = passwordField.text;
-
-            // Store these values for later use
-            client.settings.userId = request.userId
-            client.settings.password = request.password
-
-            console.log("Login sent")
-        }
+        target: client.loginController
 
         onError: {
-            console.log("Login error: " + requester.errorString())
-            errorLabel.text = requester.errorString();
+            console.log("Login error: " + target.errorString())
+            errorLabel.text = target.errorString();
         }
 
         onFinished: {
             console.log("Login finished")
 
-            if ( response.registeredDevice ) {
+            if ( target.registeredDevice ) {
                 console.log("Device is already registered");
                 pageStack.pop();
             }
@@ -55,7 +61,7 @@ Page {
                     replace: true
                 }
 
-                console.log("Pushing device registration")
+                console.log("Pushing device registration");
 
                 pageStack.push(properties);
             }
@@ -71,17 +77,17 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
 
             Text {
-                text: "Mail"
+                text: qsTr("Mail")
                 font.pixelSize: units.gu(40)
             }
 
             TextField {
                 id: mailField
-                style: TextFieldStyle {}
-                text: client.settings.userId
+                text: root.loginMode ? client.settings.userId : ""
                 validator: RegExpValidator {
                     regExp: /.+@.+\..+/
                 }
+                onAccepted: passwordField.forceActiveFocus()
             }
         }
 
@@ -89,15 +95,20 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
 
             Text {
-                text: "Password"
+                text: qsTr("Password")
                 font.pixelSize: units.gu(40)
             }
 
             TextField {
                 id: passwordField
-                style: TextFieldStyle {}
                 text: client.settings.password
                 echoMode: TextInput.Password
+                onAccepted: {
+                    if (root.loginMode)
+                        root.login();
+                    else
+                        passwordField2.forceActiveFocus();
+                }
             }
         }
 
@@ -112,8 +123,8 @@ Page {
 
             TextField {
                 id: passwordField2
-                style: TextFieldStyle {}
                 echoMode: TextInput.Password
+                onAccepted: root.login()
             }
         }
 
@@ -133,24 +144,7 @@ Page {
         Button {
             text: root.buttonTitle
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: {
-                if ( !mailField.acceptableInput ) {
-                    errorLabel.text = qsTr("Mail is not valid");
-                    return;
-                }
-
-                if ( passwordField.text.length < 6 ) {
-                    errorLabel.text = qsTr("Password must be 6 characters or more");
-                    return;
-                }
-
-                if ( !root.loginMode && passwordField.text != passwordField2.text ) {
-                    errorLabel.text = qsTr("Passwords don't match");
-                    return;
-                }
-
-                requester.start()
-            }
+            onClicked: root.login()
         }
     }
 }

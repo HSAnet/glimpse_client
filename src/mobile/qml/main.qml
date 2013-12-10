@@ -6,7 +6,6 @@ Rectangle {
     id: app
     width: units.gu(768)
     height: units.gu(1200)
-    clip: true
     color: "#efeff4"
 
     Component.onCompleted: {
@@ -15,6 +14,9 @@ Rectangle {
             console.log("Unable to initialize client");
             Qt.quit();
         }
+
+        // Maybe we can log in automatically from here
+        client.autoLogin();
     }
 
     // Implements back key navigation
@@ -35,12 +37,16 @@ Rectangle {
     }
 
     function nextPage(componentName, properties) {
-        var params = {
-            item: Qt.resolvedUrl(componentName),
-            properties: properties
-        }
+        if (typeof(componentName) == "string") {
+            var params = {
+                item: Qt.resolvedUrl(componentName),
+                properties: properties
+            }
 
-        pageStack.push(params);
+            pageStack.push(params);
+        } else {
+            pageStack.push(componentName);
+        }
     }
 
     Binding {
@@ -52,7 +58,7 @@ Rectangle {
     Rectangle {
         color: "#f7f7f8"
         width: parent.width
-        height: 22
+        height: title.y + 2
         z: 1
         visible: Qt.platform.os == "ios"
     }

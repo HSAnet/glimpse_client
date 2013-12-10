@@ -6,14 +6,15 @@ Login {
     id: root
 
     title: qsTr("Registration")
-
     loginMode: false
-    request: UserRegisterRequest {
-    }
-
     buttonTitle: qsTr("Register")
 
+    function registerAnonymous() {
+        client.loginController.anonymousRegistration();
+    }
+
     Column {
+        id: column
         anchors {
             left: parent.left
             right: parent.right
@@ -34,6 +35,7 @@ Login {
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("I don't want to register")
+            onClicked: root.registerAnonymous()
         }
     }
 }

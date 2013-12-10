@@ -33,6 +33,8 @@ public:
 
     StorageType init();
 
+    bool hasLoginData() const;
+
     void setDeviceId(const QString& deviceId);
     QString deviceId() const;
 
