@@ -24,6 +24,9 @@
 #elif defined(Q_OS_OSX)
 #include "macprocessmodel.h"
 #include "macimageprovider.h"
+#elif defined(Q_OS_LINUX)
+#include "linuxprocessmodel.h"
+#include "linuximageprovider.h"
 #endif
 
 #include <QQuickImageProvider>
@@ -100,6 +103,8 @@ void QmlModule::registerTypes()
     qmlRegisterType<AndroidProcessModel>(MODULE_URI, 1, 0, "ProcessModel");
 #elif defined(Q_OS_OSX)
     qmlRegisterType<MacProcessModel>(MODULE_URI, 1, 0, "ProcessModel");
+#elif defined(Q_OS_LINUX)
+    qmlRegisterType<LinuxProcessModel>(MODULE_URI, 1, 0, "ProcessModel");
 #endif
 }
 
@@ -112,6 +117,8 @@ void QmlModule::initializeEngine(QQmlEngine *engine)
     engine->addImageProvider("android", new AndroidImageProvider);
 #elif defined(Q_OS_OSX)
     engine->addImageProvider("android", new MacImageProvider);
+#elif defined(Q_OS_LINUX)
+    engine->addImageProvider("android", new LinuxImageProvider);
 #endif
 }
 

@@ -1,3 +1,4 @@
+#include <gdk/gdk.h>
 #include "client.h"
 #include "storage/storagepaths.h"
 #include "log/logger.h"
@@ -67,6 +68,9 @@ void loadFonts(const QString& path)
 
 int main(int argc, char* argv[])
 {
+#if defined(Q_OS_LINUX)
+    gdk_init (&argc, &argv);
+#endif
     QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
     QCoreApplication::setOrganizationName("HS-Augsburg");
     QCoreApplication::setApplicationName("mPlaneClient");

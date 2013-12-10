@@ -48,6 +48,11 @@ android {
 
 osx:QT += macextras
 
+linux {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += libwnck-1.0
+}
+
 SOURCES += \
     main.cpp
 

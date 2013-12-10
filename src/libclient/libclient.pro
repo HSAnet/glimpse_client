@@ -34,6 +34,10 @@ android {
 
     unix: SOURCES += deviceinfo_unix.cpp
     else: SOURCES += deviceinfo.cpp
+    linux: SOURCES += linuxprocessmodel.cpp
+    linux: HEADERS += linuxprocessmodel.h
+    CONFIG += link_pkgconfig
+    PKGCONFIG += libwnck-1.0
 }
 
 osx {
@@ -110,7 +114,8 @@ SOURCES +=  \
     log/logger.cpp \
     log/logmodel.cpp \
     controller/configcontroller.cpp \
-    measurement/measurementplugin.cpp
+    measurement/measurementplugin.cpp \
+    linuximageprovider.cpp
 
 HEADERS += \
     export.h \
@@ -177,7 +182,8 @@ HEADERS += \
     qmlmodule.h \
     controller/controller.h \
     log/logmodel.h \
-    controller/configcontroller.h
+    controller/configcontroller.h \
+    linuximageprovider.h
 
 OTHER_FILES += \
     libclient.pri
