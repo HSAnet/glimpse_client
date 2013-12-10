@@ -132,6 +132,19 @@ Item {
         return __currentItem
     }
 
+    function insert(index, item) {
+        if (__recursionGuard(true))
+            return
+
+        JSArray.stackView.splice(0, 0, {itemComponent:item, loaded: false, index: index, properties: item["properties"]})
+        __depth++
+
+        for(var i=index; i < __depth; ++i)
+            JSArray.stackView[i].index = i
+
+        __recursionGuard(false)
+    }
+
     /*! Pops one or more items off the stack. The function takes a property list as argument
         which can contain one or more of the following properties:
         \list
