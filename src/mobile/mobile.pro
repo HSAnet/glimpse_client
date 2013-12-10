@@ -48,7 +48,7 @@ android {
 
 osx:QT += macextras
 
-linux {
+!android:linux {
     CONFIG += link_pkgconfig
     PKGCONFIG += libwnck-1.0
 }
