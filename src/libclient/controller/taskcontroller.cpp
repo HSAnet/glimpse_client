@@ -52,6 +52,7 @@ public:
     Private(TaskController* q)
     : q(q)
     {
+        connect(&requester, SIGNAL(error()), this, SLOT(error()));
         connect(&requester, SIGNAL(finished()), this, SLOT(finished()));
         connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
         connect(&requester, SIGNAL(started()), q, SIGNAL(started()));
@@ -75,6 +76,7 @@ public:
 
 public slots:
     void finished();
+    void error();
 };
 
 void TaskController::Private::finished()
@@ -82,6 +84,11 @@ void TaskController::Private::finished()
     foreach(const TestDefinitionPtr& testDefinition, response.tasks()) {
         scheduler->enqueue(testDefinition);
     }
+}
+
+void TaskController::Private::error()
+{
+    LOG_ERROR(QString("Error fetching tasks: %1").arg(requester.errorString()));
 }
 
 TaskController::TaskController(QObject *parent)
