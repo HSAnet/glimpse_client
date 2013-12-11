@@ -1,25 +1,29 @@
 #ifndef CONTROLCONTROLLER_H
 #define CONTROLCONTROLLER_H
 
-#include "../export.h"
-
-#include <QObject>
+#include "controller.h"
 
 class NetworkManager;
 class Scheduler;
 class Settings;
 
-class CLIENT_API ControlController : public QObject
+class CLIENT_API TaskController : public Controller
 {
     Q_OBJECT
 
 public:
-    ControlController(QObject* parent = 0);
-    ~ControlController();
+    TaskController(QObject* parent = 0);
+    ~TaskController();
 
     bool init(NetworkManager* networkManager,
               Scheduler* scheduler,
               Settings* settings);
+
+    // Controller interface
+    Status status() const;
+    QString errorString() const;
+
+    Q_INVOKABLE void fetchTasks();
 
 signals:
 

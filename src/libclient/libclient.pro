@@ -104,7 +104,6 @@ SOURCES +=  \
     network/udpsocket.cpp \
     network/tcpsocket.cpp \
     controller/logincontroller.cpp \
-    controller/controlcontroller.cpp \
     measurement/btc/btc_plugin.cpp \
     measurement/upnp/upnp.cpp \
     measurement/upnp/upnp_plugin.cpp \
@@ -121,6 +120,8 @@ SOURCES +=  \
     log/logmodel.cpp \
     controller/configcontroller.cpp \
     measurement/measurementplugin.cpp \
+    controller/taskcontroller.cpp \
+    network/requests/gettasksrequest.cpp
 
 HEADERS += \
     export.h \
@@ -170,7 +171,6 @@ HEADERS += \
     network/udpsocket.h \
     network/tcpsocket.h \
     controller/logincontroller.h \
-    controller/controlcontroller.h \
     log/logger.h \
     measurement/measurementplugin.h \
     measurement/btc/btc_plugin.h \
@@ -188,6 +188,8 @@ HEADERS += \
     controller/controller.h \
     log/logmodel.h \
     controller/configcontroller.h \
+    controller/taskcontroller.h \
+    network/requests/gettasksrequest.h
 
 OTHER_FILES += \
     libclient.pri

@@ -12,6 +12,7 @@
 #include "controller/logincontroller.h"
 #include "controller/reportcontroller.h"
 #include "controller/configcontroller.h"
+#include "controller/taskcontroller.h"
 #include "response.h"
 #include "webrequester.h"
 #include "connectiontester.h"
@@ -71,6 +72,7 @@ void QmlModule::registerTypes()
     qmlRegisterUncreatableType<Controller>(MODULE_URI, 1, 0, "Controller", "uncreatable type");
     qmlRegisterUncreatableType<ConfigController>(MODULE_URI, 1, 0, "ConfigController", "uncreatable type");
     qmlRegisterUncreatableType<LoginController>(MODULE_URI, 1, 0, "LoginController", "uncreatable type");
+    qmlRegisterUncreatableType<TaskController>(MODULE_URI, 1, 0, "TaskController", "uncreatable type");
     qmlRegisterUncreatableType<ReportController>(MODULE_URI, 1, 0, "ReportController", "uncreatable type");
     qmlRegisterUncreatableType<ReportScheduler>(MODULE_URI, 1, 0, "ReportScheduler", "uncreatable type");
     qmlRegisterType<ReportModel>(MODULE_URI, 1, 0, "ReportModel");
