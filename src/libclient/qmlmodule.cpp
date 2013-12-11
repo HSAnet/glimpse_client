@@ -77,9 +77,6 @@ void QmlModule::registerTypes()
     qmlRegisterUncreatableType<ReportScheduler>(MODULE_URI, 1, 0, "ReportScheduler", "uncreatable type");
     qmlRegisterType<ReportModel>(MODULE_URI, 1, 0, "ReportModel");
 
-    // Common objects
-    qmlRegisterType<TimingInformation>(MODULE_URI, 1, 0, "TimingInformation");
-
     // Requests
     qmlRegisterUncreatableType<Request>(MODULE_URI, 1, 0, "Request", "abstract class");
     qmlRegisterType<RegisterDeviceRequest>(MODULE_URI, 1, 0, "RegisterDeviceRequest");

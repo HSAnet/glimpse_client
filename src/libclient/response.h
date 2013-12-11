@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QVariantMap>
 
+#include "timing/timing.h"
+
 // TODO: Remove QObject base if we don't use it anymore in DeviceRegistration.qml
 
 class Response : public QObject
@@ -48,24 +50,6 @@ public:
     bool fillFromVariant(const QVariantMap &variant);
 };
 
-class TimingInformation : public Response
-{
-    Q_OBJECT
-
-public:
-    TimingInformation(QObject* parent = 0);
-
-    bool fillFromVariant(const QVariantMap &variant);
-    QVariant toVariant() const;
-
-    QString type() const;
-    int interval() const;
-
-protected:
-    QString m_type;
-    int m_interval;
-};
-
 class GetConfigResponse : public Response
 {
     Q_OBJECT
@@ -79,18 +63,18 @@ public:
 
     void setControllerAddress(const QString& controllerAddress);
     QString controllerAddress() const;
-    TimingInformation *fetchTaskSchedule() const;
+    TimingPtr fetchTaskSchedule() const;
 
     QString keepaliveAddress() const;
-    TimingInformation* keepaliveSchedule() const;
-    TimingInformation* updateConfigSchedule() const;
+    TimingPtr keepaliveSchedule() const;
+    TimingPtr updateConfigSchedule() const;
 
 protected:
     QString m_controllerAddress;
-    TimingInformation* m_fetchTaskSchedule;
+    TimingPtr m_fetchTaskSchedule;
     QString m_keepaliveAddress;
-    TimingInformation* m_keepaliveSchedule;
-    TimingInformation* m_updateConfigSchedule;
+    TimingPtr m_keepaliveSchedule;
+    TimingPtr m_updateConfigSchedule;
 };
 
 #endif // RESPONSE_H
