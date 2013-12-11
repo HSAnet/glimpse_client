@@ -1,4 +1,7 @@
+#ifdef HAVE_WNCK
 #include <gdk/gdk.h>
+#endif // HAVE_WNCK
+
 #include "client.h"
 #include "storage/storagepaths.h"
 #include "log/logger.h"
@@ -68,9 +71,10 @@ void loadFonts(const QString& path)
 
 int main(int argc, char* argv[])
 {
-#if defined(Q_OS_LINUX)
+#ifdef HAVE_WNCK
     gdk_init (&argc, &argv);
-#endif
+#endif // HAVE_WNCK
+
     QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
     QCoreApplication::setOrganizationName("HS-Augsburg");
     QCoreApplication::setApplicationName("mPlaneClient");
