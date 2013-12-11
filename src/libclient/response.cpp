@@ -11,11 +11,6 @@ Response::~Response()
 {
 }
 
-QString Response::errorText() const
-{
-    return m_errorText;
-}
-
 void Response::finished()
 {
 }
@@ -29,8 +24,6 @@ bool LoginResponse::fillFromVariant(const QVariantMap &variant)
 {
     m_sessionId = variant.value("session_id").toString();
     m_registeredDevice = variant.value("registered_device", true).toBool();
-
-    emit responseChanged();
 
     return !m_sessionId.isEmpty();
 }
@@ -81,7 +74,6 @@ bool TimingInformation::fillFromVariant(const QVariantMap &variant)
     m_type = variant.value("type").toString();
     m_interval = variant.value("interval").toInt();
 
-    emit responseChanged();
     return true;
 }
 
@@ -120,7 +112,6 @@ bool GetConfigResponse::fillFromVariant(const QVariantMap &variant)
     m_keepaliveSchedule->fillFromVariant( qvariant_cast<QVariantMap>(variant.value("keepalive_schedule")) );
     m_updateConfigSchedule->fillFromVariant( qvariant_cast<QVariantMap>(variant.value("update_config_schedule")) );
 
-    emit responseChanged();
     return true;
 }
 

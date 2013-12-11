@@ -90,8 +90,6 @@ void QmlModule::registerTypes()
 
     // Responses
     qmlRegisterUncreatableType<Response>(MODULE_URI, 1, 0, "Response", "abstract class");
-    qmlRegisterType<RegisterUserResponse>(MODULE_URI, 1, 0, "UserRegisterResponse");
-    qmlRegisterType<LoginResponse>(MODULE_URI, 1, 0, "LoginResponse");
     qmlRegisterType<RegisterDeviceResponse>(MODULE_URI, 1, 0, "RegisterDeviceResponse");
     qmlRegisterType<GetConfigResponse>(MODULE_URI, 1, 0, "GetConfigResponse");
 
