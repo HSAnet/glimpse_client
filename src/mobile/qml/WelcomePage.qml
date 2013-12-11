@@ -2,6 +2,10 @@ import QtQuick 2.0
 import "controls"
 
 FlickablePage {
+    id: root
+
+    readonly property bool isWizard: true
+
     title: qsTr("Welcome to glimpse")
 
     contentHeight: column.height

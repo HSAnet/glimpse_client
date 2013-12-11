@@ -16,7 +16,11 @@ Rectangle {
         }
 
         // Maybe we can log in automatically from here
-        client.autoLogin();
+        if (client.autoLogin()) {
+            nextPage("WelcomeLoginPage.qml");
+        } else {
+            nextPage("WelcomePage.qml");
+        }
     }
 
     // Implements back key navigation
@@ -33,6 +37,19 @@ Rectangle {
                 pageStack.pop();
                 event.accepted = true;
             } else { Qt.quit(); }
+        }
+    }
+
+    function menuPage() {
+        var params = {
+            item: Qt.resolvedUrl("MenuPage.qml"),
+        }
+
+        if ( pageStack.depth > 0 ) {
+            pageStack.insert(0, params);
+            pageStack.pop(null);
+        } else {
+           nextPage(params);
         }
     }
 
@@ -197,8 +214,5 @@ Rectangle {
             right: parent.right
             bottom: parent.bottom
         }
-
-        initialItem: MenuPage {}
-        //initialItem: WelcomePage {}
     }
 }
