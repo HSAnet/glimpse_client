@@ -2,8 +2,13 @@
 #include "../types.h"
 
 #include <QList>
+#include <QMutexLocker>
 
 typedef QList<LogAppender*> LogAppenderList;
+
+namespace {
+    QMutex mutex;
+}
 
 LogAppenderList& appenders()
 {
@@ -57,6 +62,8 @@ void Logger::logError(const QString &funcName, const QString &message)
 
 void Logger::log(Logger::Level level, const QString &funcName, const QString &message)
 {
+    QMutexLocker locker(&mutex);
+
     real_log(level, m_name, funcName, message);
 
     foreach(LogAppender* appender, appenders())
