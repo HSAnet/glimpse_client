@@ -120,13 +120,10 @@ SOURCES +=  \
     log/logmodel.cpp \
     controller/configcontroller.cpp \
     measurement/measurementplugin.cpp \
-<<<<<<< HEAD
     measurement/http/httpgetrequest.cpp \
-    measurement/http/httpgetrequest_definition.cpp
-=======
+    measurement/http/httpgetrequest_definition.cpp \
     controller/taskcontroller.cpp \
     network/requests/gettasksrequest.cpp
->>>>>>> dec6c2b0106962f41d55fa5a619dc2e2970740f8
 
 HEADERS += \
     export.h \
@@ -193,13 +190,10 @@ HEADERS += \
     controller/controller.h \
     log/logmodel.h \
     controller/configcontroller.h \
-<<<<<<< HEAD
     measurement/http/httpgetrequest.h \
-    measurement/http/httpgetrequest_definition.h
-=======
+    measurement/http/httpgetrequest_definition.h \
     controller/taskcontroller.h \
     network/requests/gettasksrequest.h
->>>>>>> dec6c2b0106962f41d55fa5a619dc2e2970740f8
 
 OTHER_FILES += \
     libclient.pri
