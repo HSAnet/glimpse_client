@@ -12,9 +12,6 @@ public:
     Private(SchedulerModel* q)
     : q(q)
     {
-        QTimer* timer = new QTimer(this);
-        connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-        timer->start(100);
     }
 
     SchedulerModel* q;
@@ -23,17 +20,10 @@ public:
     TestDefinitionList tests;
 
 public slots:
-    void update();
-
     void testAdded(const TestDefinitionPtr &test, int position);
     void testRemoved(const TestDefinitionPtr &test, int position);
     void testMoved(const TestDefinitionPtr &test, int from, int to);
 };
-
-void SchedulerModel::Private::update()
-{
-    emit q->dataChanged(q->index(0,0), q->index(q->rowCount(QModelIndex()), q->columnCount(QModelIndex())));
-}
 
 void SchedulerModel::Private::testAdded(const TestDefinitionPtr& test, int position)
 {
