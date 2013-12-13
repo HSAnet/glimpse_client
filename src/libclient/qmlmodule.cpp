@@ -12,6 +12,7 @@
 #include "controller/logincontroller.h"
 #include "controller/reportcontroller.h"
 #include "controller/configcontroller.h"
+#include "controller/taskcontroller.h"
 #include "response.h"
 #include "webrequester.h"
 #include "connectiontester.h"
@@ -24,6 +25,9 @@
 #elif defined(Q_OS_OSX)
 #include "macprocessmodel.h"
 #include "macimageprovider.h"
+#elif defined(Q_OS_LINUX)
+#include "linuxprocessmodel.h"
+#include "linuximageprovider.h"
 #endif
 
 #include <QQuickImageProvider>
@@ -68,12 +72,10 @@ void QmlModule::registerTypes()
     qmlRegisterUncreatableType<Controller>(MODULE_URI, 1, 0, "Controller", "uncreatable type");
     qmlRegisterUncreatableType<ConfigController>(MODULE_URI, 1, 0, "ConfigController", "uncreatable type");
     qmlRegisterUncreatableType<LoginController>(MODULE_URI, 1, 0, "LoginController", "uncreatable type");
+    qmlRegisterUncreatableType<TaskController>(MODULE_URI, 1, 0, "TaskController", "uncreatable type");
     qmlRegisterUncreatableType<ReportController>(MODULE_URI, 1, 0, "ReportController", "uncreatable type");
     qmlRegisterUncreatableType<ReportScheduler>(MODULE_URI, 1, 0, "ReportScheduler", "uncreatable type");
     qmlRegisterType<ReportModel>(MODULE_URI, 1, 0, "ReportModel");
-
-    // Common objects
-    qmlRegisterType<TimingInformation>(MODULE_URI, 1, 0, "TimingInformation");
 
     // Requests
     qmlRegisterUncreatableType<Request>(MODULE_URI, 1, 0, "Request", "abstract class");
@@ -85,8 +87,6 @@ void QmlModule::registerTypes()
 
     // Responses
     qmlRegisterUncreatableType<Response>(MODULE_URI, 1, 0, "Response", "abstract class");
-    qmlRegisterType<RegisterUserResponse>(MODULE_URI, 1, 0, "UserRegisterResponse");
-    qmlRegisterType<LoginResponse>(MODULE_URI, 1, 0, "LoginResponse");
     qmlRegisterType<RegisterDeviceResponse>(MODULE_URI, 1, 0, "RegisterDeviceResponse");
     qmlRegisterType<GetConfigResponse>(MODULE_URI, 1, 0, "GetConfigResponse");
 
@@ -100,6 +100,8 @@ void QmlModule::registerTypes()
     qmlRegisterType<AndroidProcessModel>(MODULE_URI, 1, 0, "ProcessModel");
 #elif defined(Q_OS_OSX)
     qmlRegisterType<MacProcessModel>(MODULE_URI, 1, 0, "ProcessModel");
+#elif defined(Q_OS_LINUX)
+    qmlRegisterType<LinuxProcessModel>(MODULE_URI, 1, 0, "ProcessModel");
 #endif
 }
 
@@ -112,6 +114,8 @@ void QmlModule::initializeEngine(QQmlEngine *engine)
     engine->addImageProvider("android", new AndroidImageProvider);
 #elif defined(Q_OS_OSX)
     engine->addImageProvider("android", new MacImageProvider);
+#elif defined(Q_OS_LINUX)
+    engine->addImageProvider("android", new LinuxImageProvider);
 #endif
 }
 

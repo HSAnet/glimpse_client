@@ -159,7 +159,8 @@ void NetworkManager::Private::updateSocket()
 
 void NetworkManager::Private::updateTimer()
 {
-    int interval = settings->config()->keepaliveSchedule()->interval();
+    // FIXME: This is not correct. TimeLeft() may be less than the real interval!
+    int interval = settings->config()->keepaliveSchedule()->timeLeft();
     if (interval < 1000) {
         LOG_INFO("Keepalive interval < 1 sec will not be accepted.");
         return;

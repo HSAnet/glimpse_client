@@ -34,6 +34,16 @@ android {
 
     unix: SOURCES += deviceinfo_unix.cpp
     else: SOURCES += deviceinfo.cpp
+
+    linux {
+        CONFIG += link_pkgconfig
+        PKGCONFIG += libwnck-1.0
+
+        HEADERS += linuximageprovider.h \
+                   linuxprocessmodel.h
+        SOURCES += linuximageprovider.cpp \
+                   linuxprocessmodel.cpp
+    }
 }
 
 osx {
@@ -94,7 +104,6 @@ SOURCES +=  \
     network/udpsocket.cpp \
     network/tcpsocket.cpp \
     controller/logincontroller.cpp \
-    controller/controlcontroller.cpp \
     measurement/btc/btc_plugin.cpp \
     measurement/upnp/upnp.cpp \
     measurement/upnp/upnp_plugin.cpp \
@@ -111,8 +120,13 @@ SOURCES +=  \
     log/logmodel.cpp \
     controller/configcontroller.cpp \
     measurement/measurementplugin.cpp \
+<<<<<<< HEAD
     measurement/http/httpgetrequest.cpp \
     measurement/http/httpgetrequest_definition.cpp
+=======
+    controller/taskcontroller.cpp \
+    network/requests/gettasksrequest.cpp
+>>>>>>> dec6c2b0106962f41d55fa5a619dc2e2970740f8
 
 HEADERS += \
     export.h \
@@ -162,7 +176,6 @@ HEADERS += \
     network/udpsocket.h \
     network/tcpsocket.h \
     controller/logincontroller.h \
-    controller/controlcontroller.h \
     log/logger.h \
     measurement/measurementplugin.h \
     measurement/btc/btc_plugin.h \
@@ -180,8 +193,13 @@ HEADERS += \
     controller/controller.h \
     log/logmodel.h \
     controller/configcontroller.h \
+<<<<<<< HEAD
     measurement/http/httpgetrequest.h \
     measurement/http/httpgetrequest_definition.h
+=======
+    controller/taskcontroller.h \
+    network/requests/gettasksrequest.h
+>>>>>>> dec6c2b0106962f41d55fa5a619dc2e2970740f8
 
 OTHER_FILES += \
     libclient.pri

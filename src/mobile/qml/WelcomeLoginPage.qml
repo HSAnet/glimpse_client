@@ -7,11 +7,10 @@ Page {
     title: qsTr("First time login")
     activity: loginPage.activity
 
-    onActivityChanged: console.log("activity:" + activity)
-
     Login {
         id: loginPage
         width: parent.width
+        isWizard: true
     }
 
     Column {

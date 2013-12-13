@@ -2,6 +2,8 @@
 #include "client.h"
 #include "settings.h"
 
+#include "timing/timingfactory.h"
+
 Response::Response(QObject *parent)
 : QObject(parent)
 {
@@ -9,11 +11,6 @@ Response::Response(QObject *parent)
 
 Response::~Response()
 {
-}
-
-QString Response::errorText() const
-{
-    return m_errorText;
 }
 
 void Response::finished()
@@ -29,8 +26,6 @@ bool LoginResponse::fillFromVariant(const QVariantMap &variant)
 {
     m_sessionId = variant.value("session_id").toString();
     m_registeredDevice = variant.value("registered_device", true).toBool();
-
-    emit responseChanged();
 
     return !m_sessionId.isEmpty();
 }
@@ -70,57 +65,19 @@ bool RegisterDeviceResponse::fillFromVariant(const QVariantMap &variant)
 }
 
 
-TimingInformation::TimingInformation(QObject *parent)
-: Response(parent)
-, m_interval(0)
-{
-}
-
-bool TimingInformation::fillFromVariant(const QVariantMap &variant)
-{
-    m_type = variant.value("type").toString();
-    m_interval = variant.value("interval").toInt();
-
-    emit responseChanged();
-    return true;
-}
-
-QVariant TimingInformation::toVariant() const
-{
-    QVariantMap map;
-    map.insert("type", m_type);
-    map.insert("interval", m_interval);
-    return map;
-}
-
-QString TimingInformation::type() const
-{
-    return m_type;
-}
-
-int TimingInformation::interval() const
-{
-    return m_interval;
-}
-
-
 GetConfigResponse::GetConfigResponse(QObject *parent)
 : Response(parent)
-, m_fetchTaskSchedule(new TimingInformation(this))
-, m_keepaliveSchedule(new TimingInformation(this))
-, m_updateConfigSchedule(new TimingInformation(this))
 {
 }
 
 bool GetConfigResponse::fillFromVariant(const QVariantMap &variant)
 {
     m_controllerAddress = variant.value("controller_address").toString();
-    m_fetchTaskSchedule->fillFromVariant( qvariant_cast<QVariantMap>(variant.value("fetch_task_schedule")) );
+    m_fetchTaskSchedule = TimingFactory::timingFromVariant(variant.value("fetch_task_schedule"));
     m_keepaliveAddress = variant.value("keepalive_address").toString();
-    m_keepaliveSchedule->fillFromVariant( qvariant_cast<QVariantMap>(variant.value("keepalive_schedule")) );
-    m_updateConfigSchedule->fillFromVariant( qvariant_cast<QVariantMap>(variant.value("update_config_schedule")) );
+    m_keepaliveSchedule = TimingFactory::timingFromVariant(variant.value("keepalive_schedule"));
+    m_updateConfigSchedule = TimingFactory::timingFromVariant(variant.value("update_config_schedule"));
 
-    emit responseChanged();
     return true;
 }
 
@@ -149,7 +106,7 @@ QString GetConfigResponse::controllerAddress() const
     return m_controllerAddress;
 }
 
-TimingInformation *GetConfigResponse::fetchTaskSchedule() const
+TimingPtr GetConfigResponse::fetchTaskSchedule() const
 {
     return m_fetchTaskSchedule;
 }
@@ -159,12 +116,12 @@ QString GetConfigResponse::keepaliveAddress() const
     return m_keepaliveAddress;
 }
 
-TimingInformation *GetConfigResponse::keepaliveSchedule() const
+TimingPtr GetConfigResponse::keepaliveSchedule() const
 {
     return m_keepaliveSchedule;
 }
 
-TimingInformation *GetConfigResponse::updateConfigSchedule() const
+TimingPtr GetConfigResponse::updateConfigSchedule() const
 {
     return m_updateConfigSchedule;
 }

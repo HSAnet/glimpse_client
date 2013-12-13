@@ -8,6 +8,7 @@ Page {
 
     height: column.height
 
+    property bool isWizard: false
     property bool loginMode: true
     property string buttonTitle: qsTr("Login")
 
@@ -52,18 +53,29 @@ Page {
             console.log("Login finished")
 
             if ( target.registeredDevice ) {
-                console.log("Device is already registered");
-                pageStack.pop();
+                console.log("Device is already registered: " + root.isWizard);
+
+                if ( root.isWizard )
+                    app.menuPage();
+                else
+                    pageStack.pop();
             }
             else {
                 var properties = {
                     item: Qt.resolvedUrl("DeviceRegistration.qml"),
-                    replace: true
+                    replace: true,
+                    properties: {
+                        isWizard: root.isWizard
+                    }
                 }
 
                 console.log("Pushing device registration");
 
-                pageStack.push(properties);
+                if ( root.isWizard ) {
+                    pageStack.insert(0, properties);
+                    pageStack.pop(null);
+                } else
+                    pageStack.push(properties);
             }
         }
     }
@@ -101,7 +113,7 @@ Page {
 
             TextField {
                 id: passwordField
-                text: client.settings.password
+                text: root.loginMode ? client.settings.password : ""
                 echoMode: TextInput.Password
                 onAccepted: {
                     if (root.loginMode)

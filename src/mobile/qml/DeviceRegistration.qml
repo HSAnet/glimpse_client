@@ -4,9 +4,11 @@ import "controls"
 
 Page {
     id: root
-    property string title: "Device registration"
 
-    property bool activity: requester.status == WebRequester.Running
+    property bool isWizard: false
+
+    title: qsTr("Device registration")
+    activity: requester.status == WebRequester.Running
 
     anchors.margins: units.gu(20)
 
@@ -35,7 +37,11 @@ Page {
         }
         onFinished: {
             console.log("Device Registration finished")
-            pageStack.pop();
+
+            if ( root.isWizard )
+                app.menuPage();
+            else
+                pageStack.pop();
         }
     }
 

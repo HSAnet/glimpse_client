@@ -1,5 +1,5 @@
 #include "client.h"
-#include "controller/controlcontroller.h"
+#include "controller/taskcontroller.h"
 #include "controller/reportcontroller.h"
 #include "controller/logincontroller.h"
 #include "controller/configcontroller.h"
@@ -71,7 +71,7 @@ public:
     Settings settings;
     NetworkManager networkManager;
 
-    ControlController controlController;
+    TaskController taskController;
     ReportController reportController;
     LoginController loginController;
     ConfigController configController;
@@ -297,9 +297,9 @@ bool Client::init()
     // Initialize controllers
     d->networkManager.init(&d->scheduler, &d->settings);
     d->configController.init(&d->networkManager, &d->settings);
-    d->controlController.init(&d->networkManager, &d->scheduler, &d->settings);
     d->reportController.init(&d->reportScheduler, &d->settings);
     d->loginController.init(&d->networkManager, &d->settings);
+    d->taskController.init(&d->networkManager, &d->scheduler, &d->settings);
 
     return true;
 }
@@ -391,6 +391,11 @@ LoginController *Client::loginController() const
 ReportController *Client::reportController() const
 {
     return &d->reportController;
+}
+
+TaskController *Client::taskController() const
+{
+    return &d->taskController;
 }
 
 Settings *Client::settings() const
