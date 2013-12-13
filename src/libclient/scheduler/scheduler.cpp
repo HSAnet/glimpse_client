@@ -7,6 +7,7 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QPointer>
+#include <QSet>
 
 LOGGER(Scheduler);
 
@@ -28,7 +29,9 @@ public:
     // Properties
     QDir path;
     QTimer timer;
+
     TestDefinitionList tests;
+    QSet<QUuid> testIds;
 
     QPointer<TaskExecutor> executor;
 
@@ -62,6 +65,9 @@ void Scheduler::Private::updateTimer()
 
 int Scheduler::Private::enqueue(const TestDefinitionPtr& testDefinition)
 {
+    if ( testIds.contains(testDefinition->id()) )
+        return -1;
+
     bool wasEmpty = tests.isEmpty();
 
     int timeLeft = testDefinition->timing()->timeLeft();
@@ -70,6 +76,7 @@ int Scheduler::Private::enqueue(const TestDefinitionPtr& testDefinition)
         const TestDefinitionPtr& td = tests.at(i);
         if (timeLeft < td->timing()->timeLeft()) {
             tests.insert(i, testDefinition);
+            testIds.insert(testDefinition->id());
 
             if ( wasEmpty || i == 0 )
                 updateTimer();
@@ -101,6 +108,7 @@ void Scheduler::Private::timeout()
 
         if (!td->timing()->reset()) {
             emit q->testRemoved(td, i);
+            testIds.remove(td->id());
 
             if (tests.isEmpty())
                 break;
