@@ -29,9 +29,9 @@ QVariant TestDefinition::toVariant() const
 {
     QVariantMap hash;
     hash.insert("id", uuidToString(d->id));
-    hash.insert("name", d->name);
+    hash.insert("method", d->name);
     hash.insert("timing", d->timing->toVariant());
-    hash.insert("measurement_definition", d->measurementDefinition);
+    hash.insert("parameters", d->measurementDefinition);
     return hash;
 }
 
@@ -40,9 +40,9 @@ TestDefinitionPtr TestDefinition::fromVariant(const QVariant &variant)
     QVariantMap hash = variant.toMap();
 
     return TestDefinitionPtr(new TestDefinition(hash.value("id").toUuid(),
-                                                hash.value("name").toString(),
+                                                hash.value("method").toString(),
                                                 TimingFactory::timingFromVariant(hash.value("timing")),
-                                                hash.value("measurement_definition")));
+                                                hash.value("parameters")));
 }
 
 QUuid TestDefinition::id() const

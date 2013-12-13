@@ -5,19 +5,19 @@ class PeriodicTiming::Private
 public:
     QDateTime start;
     QDateTime end;
-    int interval;
+    int period;
 
     QDateTime lastExecute;
 };
 
-PeriodicTiming::PeriodicTiming(int interval, const QDateTime &start, const QDateTime &end)
+PeriodicTiming::PeriodicTiming(int period, const QDateTime &start, const QDateTime &end)
 : d(new Private)
 {
-    d->interval = interval;
+    d->period = period;
     d->start = start;
     d->end = end;
 
-    reset();
+    //reset();
 }
 
 PeriodicTiming::~PeriodicTiming()
@@ -33,12 +33,19 @@ QString PeriodicTiming::type() const
 bool PeriodicTiming::reset()
 {
     d->lastExecute = QDateTime::currentDateTime();
+
+    if (nextRun() > d->end)
+        return false;
+
     return true;
 }
 
 QDateTime PeriodicTiming::nextRun() const
 {
-    return d->lastExecute.addMSecs(d->interval);
+    if ( d->lastExecute.isNull() )
+        return QDateTime::currentDateTime();
+    else
+        return d->lastExecute.addMSecs(d->period);
 }
 
 QVariant PeriodicTiming::toVariant() const
@@ -47,7 +54,7 @@ QVariant PeriodicTiming::toVariant() const
     hash.insert("type", type());
     hash.insert("start", d->start);
     hash.insert("end", d->end);
-    hash.insert("interval", d->interval);
+    hash.insert("period", d->period);
     return hash;
 }
 
@@ -55,7 +62,7 @@ TimingPtr PeriodicTiming::fromVariant(const QVariant &variant)
 {
     QVariantMap hash = variant.toMap();
 
-    return TimingPtr(new PeriodicTiming(hash.value("interval").toInt(),
+    return TimingPtr(new PeriodicTiming(hash.value("period").toInt(),
                                         hash.value("start").toDateTime(),
                                         hash.value("end").toDateTime()));
 }

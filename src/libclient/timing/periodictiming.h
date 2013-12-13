@@ -6,7 +6,7 @@
 class CLIENT_API PeriodicTiming : public Timing
 {
 public:
-    PeriodicTiming(int interval,
+    PeriodicTiming(int period,
                    const QDateTime& start = QDateTime(),
                    const QDateTime& end = QDateTime());
     ~PeriodicTiming();
@@ -17,7 +17,7 @@ public:
     // Getters
     QDateTime start() const;
     QDateTime end() const;
-    int interval() const;
+    int period() const;
 
     // Timing interface
     QString type() const;

@@ -27,7 +27,7 @@ public slots:
 
         // TODO: Check the timing (too long ago?)
         currentTest = test;
-        measurement = factory.createMeasurement(test->name());
+        MeasurementPtr measurement = factory.createMeasurement(test->name());
         if ( !measurement.isNull() ) {
             connect(measurement.data(), SIGNAL(finished()), this, SLOT(measurementFinished()));
 
@@ -35,6 +35,7 @@ public slots:
 
             if (measurement->prepare(networkManager, definition)) {
                 if (measurement->start()) {
+                    this->measurement = measurement;
                     return;
                 }
             }
@@ -69,9 +70,9 @@ public:
     {
         // Should we really have a background thread running
         // all the time?
+        executor.moveToThread(&taskThread);
         taskThread.setObjectName("TaskExecutorThread");
         taskThread.start();
-        executor.moveToThread(&taskThread);
 
         connect(&executor, SIGNAL(started(TestDefinitionPtr)), this, SLOT(onStarted()));
         connect(&executor, SIGNAL(finished(TestDefinitionPtr,ResultPtr)), this, SLOT(onFinished()));
