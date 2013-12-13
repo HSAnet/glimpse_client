@@ -110,7 +110,9 @@ SOURCES +=  \
     log/logger.cpp \
     log/logmodel.cpp \
     controller/configcontroller.cpp \
-    measurement/measurementplugin.cpp
+    measurement/measurementplugin.cpp \
+    measurement/http/httpgetrequest.cpp \
+    measurement/http/httpgetrequest_definition.cpp
 
 HEADERS += \
     export.h \
@@ -177,7 +179,9 @@ HEADERS += \
     qmlmodule.h \
     controller/controller.h \
     log/logmodel.h \
-    controller/configcontroller.h
+    controller/configcontroller.h \
+    measurement/http/httpgetrequest.h \
+    measurement/http/httpgetrequest_definition.h
 
 OTHER_FILES += \
     libclient.pri
