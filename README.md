@@ -1,6 +1,10 @@
 glimpse_client
 ==============
 
+### Build Status
+* Linux: <img src="http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebug)/statusIcon"/>
+* Android armv7: <img src="http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebugBundledAndroidArmv7)/statusIcon"/>
+
 ### Build requirements
 * Mobile UI requires at least Qt 5.2.0
 * Console version may also work with Qt 4.8
