@@ -8,7 +8,7 @@ glimpse_client
 ### Build requirements
 * Mobile UI requires at least Qt 5.2.0
 * Console version may also work with Qt 4.8
-* **Linux**: libwnck-dev package
+* **Linux**: libwnck (Arch & Gentoo) libwnck-dev (Debian & Ubuntu based) libwnck-devel (for RPM)
 * **Android**: Android SDK and NDK
 
 ### Building
