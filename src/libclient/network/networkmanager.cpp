@@ -4,6 +4,7 @@
 #include "../scheduler/scheduler.h"
 #include "../settings.h"
 #include "../timing/immediatetiming.h"
+#include "../timing/periodictiming.h"
 
 #include "tcpsocket.h"
 #include "udpsocket.h"
@@ -159,8 +160,14 @@ void NetworkManager::Private::updateSocket()
 
 void NetworkManager::Private::updateTimer()
 {
-    // FIXME: This is not correct. TimeLeft() may be less than the real interval!
-    int interval = settings->config()->keepaliveSchedule()->timeLeft();
+    TimingPtr timing = settings->config()->keepaliveSchedule();
+    if (!timing)
+        return;
+
+    QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
+    Q_ASSERT(periodicTiming);
+
+    int interval = periodicTiming->period();
     if (interval < 1000) {
         LOG_INFO("Keepalive interval < 1 sec will not be accepted.");
         return;

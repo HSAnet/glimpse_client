@@ -94,6 +94,7 @@ QVariant GetConfigResponse::toVariant() const
 
 void GetConfigResponse::finished()
 {
+    emit responseChanged();
 }
 
 void GetConfigResponse::setControllerAddress(const QString &controllerAddress)

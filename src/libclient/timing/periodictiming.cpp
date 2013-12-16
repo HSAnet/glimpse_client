@@ -66,3 +66,18 @@ TimingPtr PeriodicTiming::fromVariant(const QVariant &variant)
                                         hash.value("start").toDateTime(),
                                         hash.value("end").toDateTime()));
 }
+
+QDateTime PeriodicTiming::start() const
+{
+    return d->start;
+}
+
+QDateTime PeriodicTiming::end() const
+{
+    return d->end;
+}
+
+int PeriodicTiming::period() const
+{
+    return d->period;
+}

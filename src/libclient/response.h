@@ -69,6 +69,9 @@ public:
     TimingPtr keepaliveSchedule() const;
     TimingPtr updateConfigSchedule() const;
 
+signals:
+    void responseChanged();
+
 protected:
     QString m_controllerAddress;
     TimingPtr m_fetchTaskSchedule;
