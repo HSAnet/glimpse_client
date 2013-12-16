@@ -27,7 +27,7 @@ public slots:
 
         // TODO: Check the timing (too long ago?)
         currentTest = test;
-        MeasurementPtr measurement = factory.createMeasurement(test->name());
+        measurement = factory.createMeasurement(test->name());
         if ( !measurement.isNull() ) {
             connect(measurement.data(), SIGNAL(finished()), this, SLOT(measurementFinished()));
 
@@ -94,7 +94,10 @@ public:
     QThread taskThread;
     InternalTaskExecutor executor;
 
+    TestDefinitionList queue;
+
     // Functions
+
 public slots:
     void onStarted();
     void onFinished();
@@ -102,20 +105,26 @@ public slots:
 
 void TaskExecutor::Private::onStarted()
 {
-    running = true;
-    emit q->runningChanged(running);
+    if (!running) {
+        running = true;
+        emit q->runningChanged(running);
+    }
 }
 
 void TaskExecutor::Private::onFinished()
 {
-    running = false;
-    emit q->runningChanged(running);
+    if (queue.isEmpty()) {
+        running = false;
+        emit q->runningChanged(running);
+    } else {
+        TestDefinitionPtr test = queue.takeFirst();
+        QMetaObject::invokeMethod(&executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinitionPtr, test));
+    }
 }
 
 TaskExecutor::TaskExecutor()
 : d(new Private(this))
 {
-
 }
 
 TaskExecutor::~TaskExecutor()
@@ -140,7 +149,14 @@ bool TaskExecutor::isRunning() const
 
 void TaskExecutor::execute(const TestDefinitionPtr &test)
 {
-    QMetaObject::invokeMethod(&d->executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinitionPtr, test));
+    if (d->running == false) {
+        d->running = true;
+        emit runningChanged(d->running);
+
+        QMetaObject::invokeMethod(&d->executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinitionPtr, test));
+    }
+    else
+        d->queue.append(test);
 }
 
 #include "taskexecutor.moc"
