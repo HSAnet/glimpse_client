@@ -16,6 +16,7 @@ public:
     ReportList reports() const;
 
     void addReport(const ReportPtr& report);
+    void modifyReport(const ReportPtr& report); // FIXME: This should not belong here
     void removeReport(const ReportPtr& report);
 
 signals:

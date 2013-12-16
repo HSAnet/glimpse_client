@@ -251,7 +251,11 @@ void Client::Private::taskFinished(const TestDefinitionPtr &test, const ResultPt
     results.append(result);
 
     ReportPtr report(new Report(test->id(), QDateTime::currentDateTime(), results));
-    reportScheduler.addReport(report);
+
+    if (oldReport)
+        reportScheduler.modifyReport(report);
+    else
+        reportScheduler.addReport(report);
 }
 
 void Client::Private::loginStatusChanged()

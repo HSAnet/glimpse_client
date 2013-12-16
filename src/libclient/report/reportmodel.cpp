@@ -4,6 +4,7 @@
 
 #include <QPointer>
 #include <QUuid>
+#include <QHash>
 
 class ReportModel::Private : public QObject
 {
@@ -18,6 +19,8 @@ public:
     ReportModel* q;
 
     QPointer<ReportScheduler> scheduler;
+
+    QHash<QUuid, int> identToReport;
     ReportList reports;
 
 public slots:
@@ -31,29 +34,31 @@ void ReportModel::Private::reportAdded(const ReportPtr& report)
     int position = reports.size();
 
     q->beginInsertRows(QModelIndex(), position, position);
+    identToReport.insert(report->taskId(), position);
     reports.append(report);
     q->endInsertRows();
 }
 
 void ReportModel::Private::reportModified(const ReportPtr& report)
 {
-    // TODO: Move entries
-    /*
-    q->beginMoveRows(QModelIndex(), from, from,
-                     QModelIndex(), to+1);
-    reports.move(from, to);
-    q->endMoveRows();
-    */
+    int pos = identToReport.value(report->taskId());
+    Q_ASSERT(pos != -1);
+
+    // No need to change identToReport here
+    reports.replace(pos, report);
+
+    QModelIndex index = q->indexFromTaskId(report->taskId());
+    Q_ASSERT(index.isValid());
+    emit q->dataChanged(index, index);
 }
 
 void ReportModel::Private::reportRemoved(const ReportPtr& report)
 {
-    Q_UNUSED(report);
-
-    int position = reports.indexOf(report);
+    int position = identToReport.value(report->taskId());
     Q_ASSERT(position != -1);
 
     q->beginRemoveRows(QModelIndex(), position, position);
+    identToReport.remove(report->taskId());
     reports.removeAt(position);
     q->endRemoveRows();
 }
@@ -95,6 +100,15 @@ void ReportModel::setScheduler(ReportScheduler *scheduler)
 ReportScheduler *ReportModel::scheduler() const
 {
     return d->scheduler;
+}
+
+QModelIndex ReportModel::indexFromTaskId(const QUuid &taskId) const
+{
+    int pos = d->identToReport.value(taskId);
+    if ( pos == -1 )
+        return QModelIndex();
+    else
+        return createIndex(pos, 0);
 }
 
 void ReportModel::reset()

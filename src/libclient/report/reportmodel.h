@@ -27,6 +27,8 @@ public:
     void setScheduler(ReportScheduler* scheduler);
     ReportScheduler* scheduler() const;
 
+    QModelIndex indexFromTaskId(const QUuid& taskId) const;
+
     Q_INVOKABLE void reset();
     Q_INVOKABLE QVariant get(int index) const;
 

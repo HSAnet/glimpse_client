@@ -35,18 +35,21 @@ ReportList ReportScheduler::reports() const
 
 void ReportScheduler::addReport(const ReportPtr &report)
 {
+    d->reports.append(report);
+    emit reportAdded(report);
+}
+
+void ReportScheduler::modifyReport(const ReportPtr &report)
+{
     for(int i=0; i < d->reports.size(); ++i) {
         const ReportPtr& r = d->reports.at(i);
 
         if (r->taskId() == report->taskId()) {
             d->reports.replace(i, report);
-            emit reportAdded(report);
+            emit reportModified(report);
             return;
         }
     }
-
-    d->reports.append(report);
-    emit reportAdded(report);
 }
 
 void ReportScheduler::removeReport(const ReportPtr &report)

@@ -45,6 +45,7 @@ public:
 
 public slots:
     void reportAdded(const ReportPtr& report);
+    void reportModified(const ReportPtr& report);
     void reportRemoved(const ReportPtr& report);
 };
 
@@ -74,6 +75,12 @@ void ReportStorage::Private::reportAdded(const ReportPtr &report)
     store(report);
 }
 
+void ReportStorage::Private::reportModified(const ReportPtr &report)
+{
+    // Treat it like it was added for now
+    reportAdded(report);
+}
+
 void ReportStorage::Private::reportRemoved(const ReportPtr &report)
 {
     if ( !realTime )
@@ -89,6 +96,7 @@ ReportStorage::ReportStorage(ReportScheduler *scheduler, QObject *parent)
     d->scheduler = scheduler;
 
     connect(scheduler, SIGNAL(reportAdded(ReportPtr)), d, SLOT(reportAdded(ReportPtr)));
+    connect(scheduler, SIGNAL(reportModified(ReportPtr)), d, SLOT(reportModified(ReportPtr)));
     connect(scheduler, SIGNAL(reportRemoved(ReportPtr)), d, SLOT(reportRemoved(ReportPtr)));
 }
 
