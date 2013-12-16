@@ -105,6 +105,7 @@ int main(int argc, char* argv[])
     QmlModule::registerTypes();
 
     QtQuick2ApplicationViewer* view = new QtQuick2ApplicationViewer;
+    QObject::connect(view, SIGNAL(closing(QQuickCloseEvent*)), &app, SLOT(quit()));
 
     QQmlEngine* engine = view->engine();
     QmlModule::initializeEngine(engine);
@@ -140,11 +141,15 @@ int main(int argc, char* argv[])
 
     int returnCode = app.exec();
 
+    LOG_INFO("Cleaning up before shutdown");
+
     // Cleanly shutdown
     delete view;
     Client::instance()->deleteLater();
     QTimer::singleShot(1, &app, SLOT(quit()));
     app.exec();
+
+    LOG_INFO("Shutdown complete");
 
     return returnCode;
 }
