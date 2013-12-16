@@ -5,6 +5,7 @@
 #include "../webrequester.h"
 #include "../network/requests/gettasksrequest.h"
 #include "../task/task.h"
+#include "../task/taskvalidator.h"
 #include "../log/logger.h"
 
 #include <QPointer>
@@ -31,8 +32,13 @@ public:
         QVariantList tasks = variant.value("tasks").toList();
         foreach(const QVariant& taskVariant, tasks) {
             TestDefinitionPtr test = TestDefinition::fromVariant(taskVariant);
-            if (test)
+
+            if (m_validator.validate(test) == TaskValidator::Valid)
                 m_tasks.append(test);
+            else {
+                // TODO: Get more information
+                LOG_DEBUG(QString("Received invalid task, ignoring."));
+            }
         }
 
         LOG_DEBUG(QString("Received %1 tasks").arg(m_tasks.size()));
@@ -41,6 +47,7 @@ public:
     }
 
 protected:
+    TaskValidator m_validator;
     TestDefinitionList m_tasks;
 };
 
