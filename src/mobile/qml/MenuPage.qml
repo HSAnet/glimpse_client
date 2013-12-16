@@ -135,6 +135,12 @@ ListPage {
         }
 
         ListElement {
+            text: "Force fetch tasks"
+            func: "fetchTasks"
+            group: "utils"
+        }
+
+        ListElement {
             text: "Event log"
             url: "EventLogPage.qml"
             group: "utils"

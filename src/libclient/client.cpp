@@ -342,6 +342,10 @@ void Client::ping()
     d->scheduler.enqueue(testDefinition);
 }
 
+void Client::fetchTasks()
+{
+    d->taskController.fetchTasks();
+}
 
 void Client::setStatus(Client::Status status)
 {
