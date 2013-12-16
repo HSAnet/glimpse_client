@@ -16,6 +16,10 @@ public:
     };
 
     ValidationResult validate(const TestDefinitionPtr& testDefinition);
+
+protected:
+    class Private;
+    Private* d;
 };
 
 #endif // TASKVALIDATOR_H
