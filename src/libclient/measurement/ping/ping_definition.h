@@ -11,7 +11,7 @@ typedef QList<PingDefinitionPtr> PingDefinitionList;
 class PingDefinition : public MeasurementDefinition
 {
 public:
-    PingDefinition(const QString& host, quint16 count, quint16 timeout);
+    PingDefinition(const QString& host, quint16 count, quint16 timeout, quint16 interval);
     ~PingDefinition();
 
     // Storage
@@ -20,7 +20,8 @@ public:
     // Getters
     QString host;
     quint16 count;
-    quint16 timeout;
+    quint32 timeout; // in ms
+    quint32 interval; // in ms
 
     // Serializable interface
     QVariant toVariant() const;

@@ -44,14 +44,16 @@ bool Ping::start()
 #ifdef Q_OS_LINUX
     args << "-c" << QString::number(definition->count)
          << "-n" // Don't resolve hostnames
-         << "-W" << QString::number(definition->timeout);
+         << "-W" << QString::number((float)definition->timeout / 1000)
+         << "-i" << QString::number((float)definition->interval / 1000);
 #elif defined(Q_OS_MAC)
     args << "-c" << QString::number(definition->count)
-         << "-t" << QString::number(definition->timeout * definition->count);
+         << "-W" << QString::number(definition->timeout)
+         << "-i" << QString::number((float)definition->interval / 1000);
 #elif defined(Q_OS_WIN)
     args << "-n" << QString::number(definition->count)
          << "-4" // ipv4
-         << "-w" << QString::number(definition->timeout * 1000);
+         << "-w" << QString::number(definition->timeout);
 #else
 #error Platform ping code missing!
 #endif

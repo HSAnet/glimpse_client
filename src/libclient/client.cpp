@@ -336,7 +336,7 @@ void Client::upnp()
 
 void Client::ping()
 {
-    PingDefinition pingDef("141.82.49.80", 4, 2);
+    PingDefinition pingDef("measure-it.de", 4, 2000, 200);
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "ping", timing, pingDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
