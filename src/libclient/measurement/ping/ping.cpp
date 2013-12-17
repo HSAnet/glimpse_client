@@ -38,8 +38,6 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 
 bool Ping::start()
 {
-    // TODO LOG_INFO(QString("Connect to %1:%2").arg(definition->host).arg(definition->port));
-
     QStringList args;
 #ifdef Q_OS_LINUX
     args << "-c" << QString::number(definition->count)
@@ -89,8 +87,8 @@ bool Ping::stop()
 ResultPtr Ping::result() const
 {
     QVariantList res;
-    foreach(int val, pingTime) {
-        res<<val;
+    foreach(float val, pingTime) {
+        res<<QString::number(val, 'f', 3);
     }
 
     return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
@@ -120,7 +118,7 @@ void Ping::readyRead()
     re.setPattern("=(\\d+)ms");
 #elif defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     // 64 bytes from 193.99.144.80: icmp_seq=0 ttl=245 time=32.031 ms
-    re.setPattern("time=(\\d+).*ms");
+    re.setPattern("time=(\\d+.*)ms");
 #else
 #error Platform code not implemented
 #endif
@@ -129,7 +127,7 @@ void Ping::readyRead()
         if ( re.indexIn(line) == -1 )
             continue;
 
-        int time = re.cap(1).toInt();
+        float time = re.cap(1).toFloat();
         pingTime.append(time);
 
         emit ping(time);
@@ -140,10 +138,10 @@ void Ping::waitForFinished() {
     process.waitForFinished(1000);
 }
 
-int Ping::averagePingTime() {
-    int time = 0;
-    foreach(int t, pingTime)
+float Ping::averagePingTime() {
+    float time = 0;
+    foreach(float t, pingTime)
         time += t;
 
-    return qRound( time / (double)pingTime.size() );
+    return time / pingTime.size();
 }

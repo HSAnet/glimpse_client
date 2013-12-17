@@ -21,14 +21,14 @@ public:
     bool start();
     bool stop();
     void waitForFinished();
-    int averagePingTime();
+    float averagePingTime();
     ResultPtr result() const;
 
 private:
     void setStatus(Status status);
 
     PingDefinitionPtr definition;
-    QList<int> pingTime;
+    QList<float> pingTime;
     QProcess process;
     QTextStream stream;
     Status currentStatus;
