@@ -2,6 +2,7 @@
 #include "btc/btc_plugin.h"
 #include "upnp/upnp_plugin.h"
 #include "ping/ping_plugin.h"
+#include "packettrains/packettrainsplugin.h"
 #include "../log/logger.h"
 
 #include <QHash>
@@ -17,6 +18,7 @@ public:
         addPlugin(new BulkTransportCapacityPlugin);
         addPlugin(new UPnPPlugin);
         addPlugin(new PingPlugin);
+        addPlugin(new PacketTrainsPlugin);
     }
 
     ~Private()

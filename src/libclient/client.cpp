@@ -32,6 +32,7 @@
 #include "task/task.h"
 #include "measurement/btc/btc_definition.h"
 #include "measurement/ping/ping_definition.h"
+#include "measurement/packettrains/packettrainsdefinition.h"
 
 LOGGER(Client);
 
@@ -323,7 +324,7 @@ void Client::btc()
     BulkTransportCapacityDefinition btcDef("141.82.49.80", 3365, 1024*50);
 
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "btc_ma", timing, btcDef.toVariant()));
+    TestDefinitionPtr testDefinition(new TestDefinition("7ba297e2-e13c-4478-886d-e9cf60cd33e5", "btc_ma", timing, btcDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -338,7 +339,16 @@ void Client::ping()
 {
     PingDefinition pingDef("measure-it.de", 4, 2000, 200);
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition(QUuid::createUuid(), "ping", timing, pingDef.toVariant()));
+    TestDefinitionPtr testDefinition(new TestDefinition("fe8189e7-afce-4ec8-863d-c4525c13ad73", "ping", timing, pingDef.toVariant()));
+    d->scheduler.enqueue(testDefinition);
+}
+
+void Client::packetTrains()
+{
+    PacketTrainsDefinition packetTrainsDef("141.82.51.240", 5106, 1000, 48, 1);
+
+    TimingPtr timing(new ImmediateTiming());
+    TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832177", "packettrains_ma", timing, packetTrainsDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
 }
 

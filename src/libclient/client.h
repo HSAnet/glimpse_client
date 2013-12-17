@@ -71,6 +71,7 @@ public slots:
     void btc();
     void upnp();
     void ping();
+    void packetTrains();
     void fetchTasks();
 
 signals:

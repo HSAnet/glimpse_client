@@ -135,6 +135,12 @@ ListPage {
         }
 
         ListElement {
+            text: "Packet Trains"
+            func: "packetTrains"
+            group: "test"
+        }
+
+        ListElement {
             text: "Force fetch tasks"
             func: "fetchTasks"
             group: "utils"
