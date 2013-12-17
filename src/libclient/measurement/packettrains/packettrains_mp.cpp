@@ -16,10 +16,6 @@ PacketTrainsMP::PacketTrainsMP()
 
 bool PacketTrainsMP::start()
 {
-    // Start listening
-    if(!m_udpSocket->bind(definition->port))
-        return false;
-
     // Timer for eval function
     m_timer.setInterval(1000);
     m_timer.setSingleShot(true);
@@ -43,12 +39,13 @@ void PacketTrainsMP::readPendingDatagrams()
         clock_gettime(CLOCK_MONOTONIC_RAW, &timestamp); // TODO try QTime
 
         QByteArray buffer;
-        buffer.resize(definition->packetSize);
+        buffer.resize(m_udpSocket->pendingDatagramSize());
         QHostAddress sender;
         quint16 senderPort;
 
         m_udpSocket->readDatagram(buffer.data(), buffer.size(), &sender, &senderPort);
         message = reinterpret_cast<msg*>(buffer.data());
+        message->type = (msgtype) ntohs(message->type);
 
         switch(message->type)
         {
@@ -78,6 +75,7 @@ void PacketTrainsMP::readPendingDatagrams()
             else
             {
                 // TODO error case
+                qDebug() << "error case";
             }
 
             m_timer.start();
@@ -97,7 +95,7 @@ void PacketTrainsMP::eval()
 
         for (int i = 0; i < l.size(); i++) {
             if (l[i].id != l[i].r_id) {
-                    cout<<"packages out of order"<<endl;
+                    qDebug() <<"packages out of order";
                     //return;
             }
         }
@@ -118,6 +116,8 @@ void PacketTrainsMP::eval()
             LOG_ERROR("Ignoring train due to infinite rate");
         }
     }
+
+    emit finished();
 }
 
 void PacketTrainsMP::handleError(QAbstractSocket::SocketError socketError)
@@ -144,11 +144,15 @@ bool PacketTrainsMP::prepare(NetworkManager *networkManager, const MeasurementDe
         LOG_WARNING("Definition is empty");
     }
 
+    // FIXME: This socket should come from NetworkManager
     m_udpSocket = new QUdpSocket(this);
     if (!(m_udpSocket->bind(definition->port))) {
         LOG_ERROR("Preparation failed (binding port failed)");
         return false;
     }
+
+    // FIXME: We need to know the remote address here
+    m_udpSocket->writeDatagram(QByteArray(), QHostAddress("10.0.1.11"), definition->port);
 
     if (!m_udpSocket) {
         LOG_ERROR("Preparation failed");
