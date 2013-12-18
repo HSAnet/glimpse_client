@@ -58,8 +58,7 @@ void PacketTrainsMP::readPendingDatagrams()
         }
         else
         {
-            // TODO error case
-            qDebug() << "error case";
+            qDebug() << "error, something went wrong"; // TODO
         }
 
         m_timer.start();
@@ -76,7 +75,6 @@ void PacketTrainsMP::eval()
         for (int i = 0; i < l.size(); i++) {
             if (l[i].id != l[i].r_id) {
                     qDebug() <<"packages out of order";
-                    //return;
             }
         }
 

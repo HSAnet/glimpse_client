@@ -3,6 +3,7 @@
 
 #include <QVariant>
 #include <QSharedPointer>
+#include <time.h>
 
 #include "../measurementdefinition.h"
 
