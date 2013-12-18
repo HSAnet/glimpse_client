@@ -36,7 +36,11 @@ void PacketTrainsMP::readPendingDatagrams()
     while(m_udpSocket->hasPendingDatagrams())
     {
         // get time first
-        clock_gettime(CLOCK_MONOTONIC_RAW, &timestamp); // TODO try QTime
+#if defined(Q_OS_ANDROID)
+        clock_gettime(CLOCK_MONOTONIC_HR, &message->otime);
+#else
+        clock_gettime(CLOCK_MONOTONIC_RAW, &message->otime);
+#endif
 
         QByteArray buffer;
         buffer.resize(m_udpSocket->pendingDatagramSize());

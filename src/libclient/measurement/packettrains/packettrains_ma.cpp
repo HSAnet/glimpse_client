@@ -42,7 +42,13 @@ bool PacketTrainsMA::start()
     {
         message->iter = htons(i / definition->trainLength);
         message->id = i % definition->trainLength;
+
+#if defined(Q_OS_ANDROID)
+        clock_gettime(CLOCK_MONOTONIC_HR, &message->otime);
+#else
         clock_gettime(CLOCK_MONOTONIC_RAW, &message->otime);
+#endif
+
         m_udpSocket->writeDatagram(buffer, QHostAddress(definition->host), definition->port);
 
         dispersion.tv_nsec = disp[i / definition->trainLength];
