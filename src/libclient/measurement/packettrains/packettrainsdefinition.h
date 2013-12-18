@@ -26,33 +26,16 @@ public:
     static PacketTrainsDefinitionPtr fromVariant(const QVariant &variant);
 };
 
-enum msgtype {
-        MSG_CTRL,
-        MSG_MSRMNT
-};
 
 /*
  * to identify out-of-order packets a recv counter could be added
  */
-struct msrmnt {
+struct msg {
         quint16 iter;  // train number
         quint8 id;  // packet number (sender)
         quint8 r_id;  // packet number (receiver)
         struct timespec otime;  // originate timestamp
         struct timespec rtime;  // received timestamp
-};
-
-struct ctrl {
-        quint16 iter;
-        quint16 size;
-};
-
-struct msg {
-        enum msgtype type;
-        union {
-                struct msrmnt m;
-                struct ctrl c;
-        } data;
 };
 
 #endif // PACKETTRAINSDEFINITION_H

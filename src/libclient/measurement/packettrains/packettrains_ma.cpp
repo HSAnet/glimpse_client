@@ -16,22 +16,11 @@ PacketTrainsMA::PacketTrainsMA()
 
 bool PacketTrainsMA::start()
 {
-    // ctrl
     QByteArray buffer;
-    buffer.resize(1500);
+    buffer.resize(definition->packetSize);
+    buffer.clear();
 
     struct msg* message = reinterpret_cast<msg*>(buffer.data());
-    message->type = (msgtype)htons(MSG_CTRL);
-    message->data.c.iter = htons(definition->iterations); // information in definition
-    message->data.c.size = htons(definition->packetSize); // information not necessary
-
-    m_udpSocket->writeDatagram(buffer, QHostAddress(definition->host), definition->port);
-
-    // trains
-    buffer.clear();
-    buffer.resize(definition->packetSize);
-    message = reinterpret_cast<msg*>(buffer.data());
-    message->type = (msgtype)htons(MSG_MSRMNT);
 
     // calculate disperson
     quint64 disp[definition->iterations];
@@ -52,9 +41,9 @@ bool PacketTrainsMA::start()
     // send trains
     for(int i = 0; i < definition->trainLength * definition->iterations; i++)
     {
-        message->data.m.iter = htons(i / definition->trainLength);
-        message->data.m.id = i % definition->trainLength;
-        clock_gettime(CLOCK_MONOTONIC_RAW, &message->data.m.otime);
+        message->iter = htons(i / definition->trainLength);
+        message->id = i % definition->trainLength;
+        clock_gettime(CLOCK_MONOTONIC_RAW, &message->otime);
         m_udpSocket->writeDatagram(buffer, QHostAddress(definition->host), definition->port);
 
         dispersion.tv_nsec = disp[i / definition->trainLength];

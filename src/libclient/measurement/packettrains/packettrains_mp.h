@@ -22,7 +22,7 @@ private:
     PacketTrainsDefinitionPtr definition;
     QUdpSocket* m_udpSocket;
     QTimer m_timer;
-    QList<QList<struct msrmnt> > m_rec;
+    QList<QList<struct msg> > m_rec;
     quint16 m_packetsReceived;
     QList<int> m_sendSpeed;
     QList<int> m_recvSpeed;

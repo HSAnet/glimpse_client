@@ -30,7 +30,7 @@ bool PacketTrainsMP::start()
 void PacketTrainsMP::readPendingDatagrams()
 {
     struct timespec timestamp;
-    struct msg *message;
+    struct msg* message;
     quint16 iter;
 
     while(m_udpSocket->hasPendingDatagrams())
@@ -40,55 +40,37 @@ void PacketTrainsMP::readPendingDatagrams()
 
         QByteArray buffer;
         buffer.resize(m_udpSocket->pendingDatagramSize());
+
         QHostAddress sender;
         quint16 senderPort;
 
         m_udpSocket->readDatagram(buffer.data(), buffer.size(), &sender, &senderPort);
         message = reinterpret_cast<msg*>(buffer.data());
-        message->type = (msgtype) ntohs(message->type);
 
-        switch(message->type)
+
+
+        message->rtime = timestamp;
+        message->r_id = m_packetsReceived++;
+
+        iter = ntohs(message->iter);
+
+        if(iter < m_rec.size())
         {
-        case MSG_CTRL: // new train
-            m_packetsReceived = 0;
-
-            m_rec.clear();
-
-            for(int i=0; i<ntohs(message->data.c.iter); i++)
-            {
-                m_rec.append(QList<msrmnt>());
-            }
-            // TODO answer ack
-
-            m_timer.start();
-            break;
-        case MSG_MSRMNT: // train data
-            message->data.m.rtime = timestamp;
-            message->data.m.r_id = m_packetsReceived++;
-
-            iter = ntohs(message->data.m.iter);
-
-            if(iter < m_rec.size())
-            {
-                m_rec[iter].append(message->data.m);
-            }
-            else
-            {
-                // TODO error case
-                qDebug() << "error case";
-            }
-
-            m_timer.start();
-            break;
-        default:
-            qDebug() << "Error: Unkown message type";
+            m_rec[iter].append(*message);
         }
+        else
+        {
+            // TODO error case
+            qDebug() << "error case";
+        }
+
+        m_timer.start();
     }
 }
 
 void PacketTrainsMP::eval()
 {
-    foreach(const QList<msrmnt> &l, m_rec)
+    foreach(const QList<msg> &l, m_rec)
     {
         quint64 ts_otime[2] = {0}, ts_rtime[2] = {2};
         double srate = 0, rrate = 0;
@@ -163,6 +145,14 @@ bool PacketTrainsMP::prepare(NetworkManager *networkManager, const MeasurementDe
 
     // Signal for errors
     connect(m_udpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(handleError(QAbstractSocket::SocketError)));
+
+    m_packetsReceived = 0;
+    m_rec.clear();
+
+    for(int i=0; i<definition->iterations; i++)
+    {
+        m_rec.append(QList<msg>());
+    }
 
     return true;
 }
