@@ -40,12 +40,12 @@ struct msrmnt {
         quint8 r_id;  // packet number (receiver)
         struct timespec otime;  // originate timestamp
         struct timespec rtime;  // received timestamp
-} __attribute__((packed));
+};
 
 struct ctrl {
         quint16 iter;
         quint16 size;
-} __attribute__((packed));
+};
 
 struct msg {
         enum msgtype type;
@@ -53,6 +53,6 @@ struct msg {
                 struct msrmnt m;
                 struct ctrl c;
         } data;
-} __attribute__((packed));
+};
 
 #endif // PACKETTRAINSDEFINITION_H

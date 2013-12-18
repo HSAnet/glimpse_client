@@ -27,7 +27,7 @@ PacketTrainsDefinitionPtr PacketTrainsDefinition::fromVariant(const QVariant &va
     QVariantMap map = variant.toMap();
     return PacketTrainsDefinitionPtr(new PacketTrainsDefinition(map.value("host").toString(),
                                                                 map.value("port").toUInt(),
-                                                                map.value("initialDataSize").toUInt(),
+                                                                map.value("packetSize").toUInt(),
                                                                 map.value("trainLength").toUInt(),
                                                                 map.value("iterations").toUInt()));
 }

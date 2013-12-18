@@ -372,8 +372,11 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
 
         LOG_ERROR(QString("Unable to connect tcp socket in %3 tries to %1: %2").arg(hostname).arg(socket->errorString()).arg(tries));
     } else {
-        if (!socket->waitForReadyRead(5000))
+        if (!socket->waitForReadyRead(5000)) {
             LOG_ERROR("Remote did not answer for 5 sec, aborting connection.");
+        } else {
+            return socket;
+        }
     }
 
     delete socket;
