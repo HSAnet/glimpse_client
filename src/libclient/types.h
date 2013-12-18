@@ -45,6 +45,15 @@ QList<QSharedPointer<T> > ptrListFromVariant(const QVariant& variant) {
     return lst;
 }
 
+template <typename T>
+QVariantList listToVariant(const QList<T>& list) {
+    QVariantList lst;
+    foreach(T entry, list) {
+        lst.append(entry);
+    }
+    return lst;
+}
+
 /// Converts a QUuid to a QString. It removes the braces
 /// and makes it readable by QML's implementation of
 /// JSON.stringify()

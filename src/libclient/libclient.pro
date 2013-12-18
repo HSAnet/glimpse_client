@@ -123,7 +123,11 @@ SOURCES +=  \
     measurement/http/httpgetrequest.cpp \
     measurement/http/httpgetrequest_definition.cpp \
     controller/taskcontroller.cpp \
-    network/requests/gettasksrequest.cpp
+    network/requests/gettasksrequest.cpp \
+    measurement/packettrains/packettrainsdefinition.cpp \
+    measurement/packettrains/packettrains_ma.cpp \
+    measurement/packettrains/packettrains_mp.cpp \
+    measurement/packettrains/packettrainsplugin.cpp
 
 HEADERS += \
     export.h \
@@ -193,7 +197,11 @@ HEADERS += \
     measurement/http/httpgetrequest.h \
     measurement/http/httpgetrequest_definition.h \
     controller/taskcontroller.h \
-    network/requests/gettasksrequest.h
+    network/requests/gettasksrequest.h \
+    measurement/packettrains/packettrainsdefinition.h \
+    measurement/packettrains/packettrains_mp.h \
+    measurement/packettrains/packettrains_ma.h \
+    measurement/packettrains/packettrainsplugin.h
 
 OTHER_FILES += \
     libclient.pri
