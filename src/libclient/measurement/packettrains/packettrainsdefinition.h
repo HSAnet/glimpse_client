@@ -26,10 +26,6 @@ public:
     static PacketTrainsDefinitionPtr fromVariant(const QVariant &variant);
 };
 
-
-/*
- * to identify out-of-order packets a recv counter could be added
- */
 struct msg {
         quint16 iter;  // train number
         quint8 id;  // packet number (sender)

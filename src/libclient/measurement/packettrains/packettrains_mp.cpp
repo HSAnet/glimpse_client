@@ -47,8 +47,6 @@ void PacketTrainsMP::readPendingDatagrams()
         m_udpSocket->readDatagram(buffer.data(), buffer.size(), &sender, &senderPort);
         message = reinterpret_cast<msg*>(buffer.data());
 
-
-
         message->rtime = timestamp;
         message->r_id = m_packetsReceived++;
 

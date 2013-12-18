@@ -18,7 +18,6 @@ bool PacketTrainsMA::start()
 {
     QByteArray buffer;
     buffer.resize(definition->packetSize);
-    buffer.clear();
 
     struct msg* message = reinterpret_cast<msg*>(buffer.data());
 
