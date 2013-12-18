@@ -81,7 +81,7 @@ void PacketTrainsMP::readPendingDatagrams()
             m_timer.start();
             break;
         default:
-            cout<<"Error: Unkown message type"<<endl;
+            qDebug() << "Error: Unkown message type";
         }
     }
 }
@@ -108,8 +108,8 @@ void PacketTrainsMP::eval()
         rrate = (double) definition->packetSize * l.size() / (ts_rtime[1] - ts_rtime[0]) * 1000000000;
         // ignore infinite rates
         if (ts_otime[0] != ts_rtime[1] && ts_rtime[0] != ts_rtime[1]) {
-            m_recvSpeed.append(rrate / 1048576 * 8);
-            m_sendSpeed.append(srate / 1048576 * 8);
+            m_recvSpeed.append(rrate / 1024 * 8);
+            m_sendSpeed.append(srate / 1024 * 8);
             //cout<<"sending @ "<<fixed<<setprecision(2)<<srate / 1048576 * 8<<" MBit/s"<<endl;
             //cout<<"receiving @ "<<fixed<<setprecision(2)<<rrate / 1048576 * 8<<" MBit/s"<<endl;
         } else {
@@ -152,7 +152,7 @@ bool PacketTrainsMP::prepare(NetworkManager *networkManager, const MeasurementDe
     }
 
     // FIXME: We need to know the remote address here
-    m_udpSocket->writeDatagram(QByteArray(), QHostAddress("10.0.1.11"), definition->port);
+    m_udpSocket->writeDatagram(QByteArray(), QHostAddress("192.168.178.38"), definition->port);
 
     if (!m_udpSocket) {
         LOG_ERROR("Preparation failed");

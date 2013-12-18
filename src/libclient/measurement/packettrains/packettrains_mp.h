@@ -24,8 +24,8 @@ private:
     QTimer m_timer;
     QList<QList<struct msrmnt> > m_rec;
     quint16 m_packetsReceived;
-    QList<float> m_sendSpeed;
-    QList<float> m_recvSpeed;
+    QList<int> m_sendSpeed;
+    QList<int> m_recvSpeed;
 
 public slots:
     void readPendingDatagrams();
