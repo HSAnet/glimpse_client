@@ -2,6 +2,7 @@
 #include "../networkhelper.h"
 #include "../log/logger.h"
 #include "../scheduler/scheduler.h"
+#include "../task/taskexecutor.h"
 #include "../settings.h"
 #include "../timing/immediatetiming.h"
 #include "../timing/periodictiming.h"
@@ -194,7 +195,8 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
             TimingPtr timing(new ImmediateTiming);
             TestDefinitionPtr testDefinition(new TestDefinition(request.taskId, request.measurement, timing, request.measurementDefinition));
 
-            scheduler->enqueue(testDefinition);
+            // Bypass scheduler and run directly on the executor
+            scheduler->executor()->execute(testDefinition);
         } else {
             LOG_ERROR(QString("Invalid JSon from master server: %1").arg(error.errorString()));
         }
