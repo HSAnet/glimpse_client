@@ -8,6 +8,14 @@
 
 class NetworkManager;
 
+#include "../measurement/measurement.h"
+class MeasurementObserver
+{
+public:
+    virtual ~MeasurementObserver() {}
+    virtual void created(const MeasurementPtr& measurement) = 0;
+};
+
 class TaskExecutor : public QObject
 {
     Q_OBJECT
@@ -22,7 +30,7 @@ public:
 
     bool isRunning() const;
 
-    void execute(const TestDefinitionPtr &test);
+    void execute(const TestDefinitionPtr &test, MeasurementObserver* observer = NULL);
 
 signals:
     void runningChanged(bool running);

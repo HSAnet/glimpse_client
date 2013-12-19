@@ -9,6 +9,7 @@
 class Measurement;
 typedef QSharedPointer<Measurement> MeasurementPtr;
 
+class QAbstractSocket;
 class NetworkManager;
 
 class CLIENT_API Measurement : public QObject
@@ -18,6 +19,9 @@ class CLIENT_API Measurement : public QObject
 public:
     Measurement(QObject* parent = 0);
     ~Measurement();
+
+    void setPeerSocket(QAbstractSocket* peerSocket);
+    QAbstractSocket* peerSocket() const;
 
     enum Status
     {
@@ -40,6 +44,10 @@ public:
 signals:
     void started();
     void finished();
+
+protected:
+    class Private;
+    Private* d;
 };
 
 #endif // MEASUREMENT_H

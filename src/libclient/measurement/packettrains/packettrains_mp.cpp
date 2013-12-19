@@ -134,15 +134,7 @@ bool PacketTrainsMP::prepare(NetworkManager *networkManager, const MeasurementDe
         LOG_WARNING("Definition is empty");
     }
 
-    // FIXME: This socket should come from NetworkManager
-    m_udpSocket = new QUdpSocket(this);
-    if (!(m_udpSocket->bind(definition->port))) {
-        LOG_ERROR("Preparation failed (binding port failed)");
-        return false;
-    }
-
-    // FIXME: We need to know the remote address here
-    m_udpSocket->writeDatagram(QByteArray(), QHostAddress("192.168.178.38"), definition->port);
+    m_udpSocket = qobject_cast<QUdpSocket*>(peerSocket());
 
     if (!m_udpSocket) {
         LOG_ERROR("Preparation failed");
