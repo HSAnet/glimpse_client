@@ -16,6 +16,12 @@ PacketTrainsMP::PacketTrainsMP()
 
 bool PacketTrainsMP::start()
 {
+    // Timeout for "nothing happens after start"
+    connect(&m_timeout, SIGNAL(timeout()), this, SIGNAL(finished()));
+    m_timeout.setInterval(5000);
+    m_timeout.setSingleShot(true);
+    m_timeout.start();
+
     // Timer for eval function
     m_timer.setInterval(1000);
     m_timer.setSingleShot(true);
@@ -29,6 +35,8 @@ bool PacketTrainsMP::start()
 
 void PacketTrainsMP::readPendingDatagrams()
 {
+    m_timeout.start();
+
     struct timespec timestamp;
     struct msg* message;
     quint16 iter;
@@ -159,6 +167,7 @@ bool PacketTrainsMP::prepare(NetworkManager *networkManager, const MeasurementDe
 
 bool PacketTrainsMP::stop()
 {
+    m_timeout.stop();
     return true;
 }
 

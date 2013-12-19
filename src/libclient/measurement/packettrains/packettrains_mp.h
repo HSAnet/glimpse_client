@@ -27,6 +27,8 @@ private:
     QList<int> m_sendSpeed;
     QList<int> m_recvSpeed;
 
+    QTimer m_timeout;
+
 public slots:
     void readPendingDatagrams();
     void eval();
