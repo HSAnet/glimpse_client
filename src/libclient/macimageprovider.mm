@@ -1,6 +1,6 @@
 #include "macimageprovider.h"
 
-#include <QtMacExtras>
+#include <QtMac>
 
 #import <AppKit/NSRunningApplication.h>
 #import <AppKit/NSImage.h>

@@ -1,7 +1,7 @@
 #include "macprocessmodel.h"
 
 #include <QStringList>
-#include <QMacFunctions>
+#include <QtMac>
 
 #import <AppKit/NSWorkspace.h>
 #import <AppKit/NSRunningApplication.h>
