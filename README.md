@@ -3,6 +3,7 @@ glimpse_client
 
 ### Build Status
 * Linux: <img src="http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebug)/statusIcon"/>
+* Mac: <img src="http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientDebugMac)/statusIcon"/>
 * Android armv7: <img src="http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebugBundledAndroidArmv7)/statusIcon"/>
 
 ### Build requirements
