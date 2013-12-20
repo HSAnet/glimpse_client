@@ -83,6 +83,9 @@ bool GetConfigResponse::fillFromVariant(const QVariantMap &variant)
 
 QVariant GetConfigResponse::toVariant() const
 {
+    if (m_fetchTaskSchedule.isNull())
+        return QVariant();
+
     QVariantMap map;
     map.insert("controller_address", m_controllerAddress);
     map.insert("fetch_task_schedule", m_fetchTaskSchedule->toVariant());
