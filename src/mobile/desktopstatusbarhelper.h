@@ -16,7 +16,7 @@ public:
     DesktopStatusBarHelper(QObject* parent = 0)
     : QObject(parent)
     {
-        m_menu.addAction(tr("Speedtest"), Client::instance(), SLOT(speedTest()));
+        m_menu.addAction(tr("Speedtest"), Client::instance(), SLOT(ping()));
 
         QIcon icon;
 #ifndef Q_OS_MAC
