@@ -52,7 +52,7 @@ public:
         scheduler.setExecutor(&executor);
 
         connect(&executor, SIGNAL(finished(TestDefinitionPtr,ResultPtr)), this, SLOT(taskFinished(TestDefinitionPtr,ResultPtr)));
-        connect(&loginController, SIGNAL(loginFinished()), this, SLOT(loginStatusChanged()));
+        connect(&loginController, SIGNAL(finished()), this, SLOT(loginStatusChanged()));
     }
 
     Client* q;
