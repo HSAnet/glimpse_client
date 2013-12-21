@@ -7,9 +7,11 @@
 #include "../webrequester.h"
 #include "../network/requests/request.h"
 #include "../response.h"
+#include "../timing/periodictiming.h"
 
 #include <QPointer>
 #include <QStringList>
+#include <QTimer>
 
 LOGGER(ReportController);
 
@@ -82,6 +84,7 @@ public:
     Private(ReportController* q)
     : q(q)
     {
+        connect(&timer, SIGNAL(timeout()), q, SLOT(sendReports()));
         connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
@@ -100,10 +103,31 @@ public:
     ReportPost post;
     ReportResponse response;
 
+    QTimer timer;
+
 public slots:
+    void updateTimer();
     void onFinished();
     void onError();
 };
+
+void ReportController::Private::updateTimer()
+{
+    TimingPtr timing = settings->config()->reportSchedule();
+    if (timing.isNull()) {
+        timer.stop();
+        return;
+    }
+
+    QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
+    Q_ASSERT(periodicTiming);
+
+    int period = periodicTiming->period();
+    timer.setInterval(period);
+    timer.start();
+
+    LOG_INFO(QString("Report schedule set to %1 sec.").arg(period/1000));
+}
 
 void ReportController::Private::onFinished()
 {
@@ -145,6 +169,10 @@ bool ReportController::init(ReportScheduler *scheduler, Settings *settings)
 {
     d->scheduler = scheduler;
     d->settings = settings;
+
+    connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(updateTimer()));
+    d->updateTimer();
+
     return true;
 }
 

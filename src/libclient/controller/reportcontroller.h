@@ -14,13 +14,14 @@ public:
     explicit ReportController(QObject* parent = 0);
     ~ReportController();
 
-    Q_INVOKABLE void sendReports();
-
     // Controller interface
     Status status() const;
     QString errorString() const;
 
     bool init(ReportScheduler* scheduler, Settings* settings);
+
+public slots:
+    void sendReports();
 
 protected:
     class Private;

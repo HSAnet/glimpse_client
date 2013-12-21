@@ -77,6 +77,7 @@ bool GetConfigResponse::fillFromVariant(const QVariantMap &variant)
     m_keepaliveAddress = variant.value("keepalive_address").toString();
     m_keepaliveSchedule = TimingFactory::timingFromVariant(variant.value("keepalive_schedule"));
     m_updateConfigSchedule = TimingFactory::timingFromVariant(variant.value("update_config_schedule"));
+    m_reportSchedule = TimingFactory::timingFromVariant(variant.value("report_schedule"));
 
     return true;
 }
@@ -92,6 +93,7 @@ QVariant GetConfigResponse::toVariant() const
     map.insert("keepalive_address", m_keepaliveAddress);
     map.insert("keepalive_schedule", m_keepaliveSchedule->toVariant());
     map.insert("update_config_schedule", m_updateConfigSchedule->toVariant());
+    map.insert("report_schedule", m_reportSchedule->toVariant());
     return map;
 }
 
@@ -128,4 +130,9 @@ TimingPtr GetConfigResponse::keepaliveSchedule() const
 TimingPtr GetConfigResponse::updateConfigSchedule() const
 {
     return m_updateConfigSchedule;
+}
+
+TimingPtr GetConfigResponse::reportSchedule() const
+{
+    return m_reportSchedule;
 }

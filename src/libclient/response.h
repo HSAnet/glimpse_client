@@ -69,6 +69,8 @@ public:
     TimingPtr keepaliveSchedule() const;
     TimingPtr updateConfigSchedule() const;
 
+    TimingPtr reportSchedule() const;
+
 signals:
     void responseChanged();
 
@@ -78,6 +80,7 @@ protected:
     QString m_keepaliveAddress;
     TimingPtr m_keepaliveSchedule;
     TimingPtr m_updateConfigSchedule;
+    TimingPtr m_reportSchedule;
 };
 
 #endif // RESPONSE_H
