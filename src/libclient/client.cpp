@@ -353,11 +353,6 @@ void Client::packetTrains()
     d->scheduler.enqueue(testDefinition);
 }
 
-void Client::fetchTasks()
-{
-    d->taskController.fetchTasks();
-}
-
 void Client::setStatus(Client::Status status)
 {
     if ( d->status == status )

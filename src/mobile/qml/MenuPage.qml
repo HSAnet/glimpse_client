@@ -5,6 +5,7 @@ import "controls"
 ListPage {
     id: root
     title: "Glimpse"
+    /*
     actionTitle: qsTr("Settings")
 
     function actionClicked() {
@@ -13,6 +14,7 @@ ListPage {
         else
             root.state = "settings";
     }
+    */
 
     Rectangle {
         id: settingsPanel
@@ -80,24 +82,24 @@ ListPage {
         showArrow: model.showArrow
     }
 
+    section.delegate: Label {
+        anchors {
+            left: parent.left
+            right: parent.right
+            rightMargin: 10
+        }
+        height: headerHeight
+        horizontalAlignment: Text.AlignRight
+        verticalAlignment: Text.AlignBottom
+        text: section
+        color: "gray"
+    }
+
     model: ListModel {
+        /*
         ListElement {
             text: "Registration"
             url: "UserRegistration.qml"
-            group: "pages"
-            showArrow: true
-        }
-
-        ListElement {
-            text: "Scheduler"
-            url: "SchedulerPage.qml"
-            group: "pages"
-            showArrow: true
-        }
-
-        ListElement {
-            text: "Reports"
-            url: "ReportsPage.qml"
             group: "pages"
             showArrow: true
         }
@@ -115,41 +117,58 @@ ListPage {
             group: "pages"
             showArrow: true
         }
+        */
 
         ListElement {
             text: "Btc"
             func: "btc"
-            group: "test"
+            group: "Measurements"
         }
 
         ListElement {
             text: "Upnp"
             func: "upnp"
-            group: "test"
+            group: "Measurements"
         }
 
         ListElement {
             text: "Ping"
             func: "ping"
-            group: "test"
+            group: "Measurements"
         }
 
         ListElement {
             text: "Packet Trains"
             func: "packetTrains"
-            group: "test"
+            group: "Measurements"
         }
 
+        /*
         ListElement {
             text: "Force fetch tasks"
             func: "fetchTasks"
             group: "utils"
         }
+        */
+
+        ListElement {
+            text: "Scheduler"
+            url: "SchedulerPage.qml"
+            group: "Services"
+            showArrow: true
+        }
+
+        ListElement {
+            text: "Reports"
+            url: "ReportsPage.qml"
+            group: "Services"
+            showArrow: true
+        }
 
         ListElement {
             text: "Event log"
             url: "EventLogPage.qml"
-            group: "utils"
+            group: "Services"
             showArrow: true
         }
     }

@@ -72,7 +72,6 @@ public slots:
     void upnp();
     void ping();
     void packetTrains();
-    void fetchTasks();
 
 signals:
     void statusChanged();
