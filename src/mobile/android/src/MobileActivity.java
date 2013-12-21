@@ -31,7 +31,7 @@ public class MobileActivity extends QtActivity {
     }
 
     public void onCreate(Bundle savedInstanceState) {
-        makeThemeTranslucent();
+        //makeThemeTranslucent();
 
         super.onCreate(savedInstanceState);
     }
