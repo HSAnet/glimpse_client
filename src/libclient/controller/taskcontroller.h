@@ -23,7 +23,8 @@ public:
     Status status() const;
     QString errorString() const;
 
-    Q_INVOKABLE void fetchTasks();
+public slots:
+    void fetchTasks();
 
 signals:
 

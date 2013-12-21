@@ -7,8 +7,10 @@
 #include "../task/task.h"
 #include "../task/taskvalidator.h"
 #include "../log/logger.h"
+#include "../timing/periodictiming.h"
 
 #include <QPointer>
+#include <QTimer>
 
 LOGGER(TaskController);
 
@@ -59,6 +61,7 @@ public:
     Private(TaskController* q)
     : q(q)
     {
+        connect(&timer, SIGNAL(timeout()), q, SLOT(fetchTasks()));
         connect(&requester, SIGNAL(error()), this, SLOT(error()));
         connect(&requester, SIGNAL(finished()), this, SLOT(finished()));
         connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
@@ -81,10 +84,31 @@ public:
     GetTasksRequest request;
     GetTasksResponse response;
 
+    QTimer timer;
+
 public slots:
+    void updateTimer();
     void finished();
     void error();
 };
+
+void TaskController::Private::updateTimer()
+{
+    TimingPtr timing = settings->config()->fetchTaskSchedule();
+    if (timing.isNull()) {
+        timer.stop();
+        return;
+    }
+
+    QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
+    Q_ASSERT(periodicTiming);
+
+    int period = periodicTiming->period();
+    timer.setInterval(period);
+    timer.start();
+
+    LOG_INFO(QString("Fetch Tasks schedule set to %1 sec.").arg(period/1000));
+}
 
 void TaskController::Private::finished()
 {
@@ -114,6 +138,9 @@ bool TaskController::init(NetworkManager *networkManager, Scheduler *scheduler, 
     d->scheduler = scheduler;
     d->settings = settings;
     d->networkManager = networkManager;
+
+    connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(updateTimer()));
+    d->updateTimer();
 
     return true;
 }

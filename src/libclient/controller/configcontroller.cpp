@@ -6,8 +6,10 @@
 #include "../webrequester.h"
 #include "../network/requests/getconfigrequest.h"
 #include "../response.h"
+#include "../timing/periodictiming.h"
 
 #include <QPointer>
+#include <QTimer>
 
 LOGGER(ConfigController);
 
@@ -19,6 +21,7 @@ public:
     Private(ConfigController* q)
     : q(q)
     {
+        connect(&timer, SIGNAL(timeout()), q, SLOT(update()));
         connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
@@ -38,11 +41,32 @@ public:
     //GetConfigResponse response;
     GetConfigResponse* response;
 
+    QTimer timer;
+
     // Functions
 public slots:
+    void updateTimer();
     void onFinished();
     void onError();
 };
+
+void ConfigController::Private::updateTimer()
+{
+    TimingPtr timing = settings->config()->updateConfigSchedule();
+    if (timing.isNull()) {
+        timer.stop();
+        return;
+    }
+
+    QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
+    Q_ASSERT(periodicTiming);
+
+    int period = periodicTiming->period();
+    timer.setInterval(period);
+    timer.start();
+
+    LOG_INFO(QString("Update Config schedule set to %1 sec.").arg(period/1000));
+}
 
 void ConfigController::Private::onFinished()
 {
@@ -76,6 +100,9 @@ bool ConfigController::init(NetworkManager *networkManager, Settings *settings)
     // FIXME: This is a evil hack
     d->response = settings->config();
     d->requester.setResponse(d->response);
+    connect(d->response, SIGNAL(responseChanged()), d, SLOT(updateTimer()));
+
+    d->updateTimer();
 
     return true;
 }

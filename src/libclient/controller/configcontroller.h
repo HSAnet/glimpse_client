@@ -14,13 +14,14 @@ public:
     explicit ConfigController(QObject *parent = 0);
     ~ConfigController();
 
-    Q_INVOKABLE void update();
-
     // Controller interface
     Status status() const;
     QString errorString() const;
 
     bool init(NetworkManager* networkManager, Settings* settings);
+
+public slots:
+    void update();
 
 protected:
     class Private;
