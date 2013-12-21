@@ -262,6 +262,7 @@ void Client::Private::taskFinished(const TestDefinitionPtr &test, const ResultPt
 void Client::Private::loginStatusChanged()
 {
     configController.update();
+    taskController.fetchTasks();
 }
 
 Client::Client(QObject *parent)
