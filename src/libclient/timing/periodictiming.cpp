@@ -34,18 +34,23 @@ bool PeriodicTiming::reset()
 {
     d->lastExecute = QDateTime::currentDateTime();
 
-    if (nextRun() > d->end)
-        return false;
-
-    return true;
+    return !nextRun().isNull();
 }
 
 QDateTime PeriodicTiming::nextRun() const
 {
+    QDateTime nextRun;
+
     if ( d->lastExecute.isNull() )
-        return QDateTime::currentDateTime();
+        nextRun = QDateTime::currentDateTime();
     else
-        return d->lastExecute.addMSecs(d->period);
+        nextRun = d->lastExecute.addMSecs(d->period);
+
+    // Stop if we exceed the end time
+    if (d->end.isValid() && d->end < nextRun)
+        return QDateTime();
+
+    return nextRun;
 }
 
 QVariant PeriodicTiming::toVariant() const
