@@ -42,6 +42,12 @@ TaskValidator::ValidationResult TaskValidator::validate(const TestDefinitionPtr 
         return Invalid;
     }
 
+    // Check the timing
+    if (testDefinition->timing()->nextRun().isNull()) {
+        LOG_INFO(QString("Measurement '%1' has no next run, ignoring").arg(testDefinition->name()));
+        return Invalid;
+    }
+
     // TODO: Signature checks etc.
 
     return Valid;
