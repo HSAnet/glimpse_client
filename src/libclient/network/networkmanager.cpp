@@ -212,6 +212,11 @@ public:
 void NetworkManager::Private::processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port)
 {
     QString hostAndPort = QString("%1:%2").arg(host.toString()).arg(port);
+    if (datagram.isEmpty()) {
+        LOG_DEBUG(QString("Received empty datagram from %1").arg(hostAndPort));
+        return;
+    }
+
     LOG_DEBUG(QString("Received datagram from %1: %2").arg(hostAndPort).arg(QString::fromUtf8(datagram)));
 //    if (settings->config()->keepaliveAddress() == hostAndPort) {
         // Master server
@@ -234,8 +239,8 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
                 tempObs->networkManager = q;
                 tempObs->socketType = request.protocol;
                 tempObs->localPort = 5106; // FIXME: Don't hardcode this here
-                tempObs->host = request.peer;
-                tempObs->port = request.port;
+                tempObs->host = host; //request.peer;
+                tempObs->port = port;
 
                 observer = tempObs;
             }
