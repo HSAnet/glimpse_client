@@ -254,7 +254,7 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
             // Bypass scheduler and run directly on the executor
             scheduler->executor()->execute(testDefinition, observer);
         } else {
-            LOG_ERROR(QString("Invalid JSon from master server: %1").arg(error.errorString()));
+            LOG_ERROR(QString("Invalid JSon: %1").arg(error.errorString()));
         }
 //    } else {
         // TODO: Process incoming data
@@ -399,6 +399,7 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
     // If for some reason our packet gets routed back to us, don't handle it
     d->handledConnectionIds.insert(request.connectionId);
 
+    QUdpSocket* testSocket = d->socket.data();
     if ( socketType != TcpSocket ) {
         if (!socket->bind(remote.port)) {
             LOG_ERROR(QString("Unable to bind source port to %1").arg(remote.port));
@@ -408,15 +409,17 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
 
         QUdpSocket* udpSocket = qobject_cast<QUdpSocket*>(socket);
         udpSocket->writeDatagram(QByteArray(), QHostAddress(remote.host), remote.port);
+
+        testSocket = udpSocket;
     }
 
     QByteArray data = QJsonDocument::fromVariant(request.toVariant()).toJson();
 
     // Step one: Send test offer to peer directly
-    d->socket->writeDatagram(data, QHostAddress(remote.host), d->localPort);
+    testSocket->writeDatagram(data, QHostAddress(remote.host), d->localPort);
 
     // Step two: Send test offer to peer via alive-server
-    d->socket->writeDatagram(data, QHostAddress(aliveRemote.host), aliveRemote.port);
+    testSocket->writeDatagram(data, QHostAddress(aliveRemote.host), aliveRemote.port);
 
     LOG_TRACE("Sent test offer to peer and alive-server");
 
@@ -434,10 +437,11 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
 
         LOG_ERROR(QString("Unable to connect tcp socket in %3 tries to %1: %2").arg(hostname).arg(socket->errorString()).arg(tries));
     } else {
-        if (!socket->waitForReadyRead(5000)) {
+        if (!testSocket->waitForReadyRead(5000)) {
             LOG_ERROR("Remote did not answer for 5 sec, aborting connection.");
         } else {
             // TODO: Read the first (empty) datagram
+            testSocket->readDatagram(0, 0);
             return socket;
         }
     }

@@ -45,9 +45,9 @@ void PacketTrainsMP::readPendingDatagrams()
     {
         // get time first
 #if defined(Q_OS_ANDROID)
-        clock_gettime(CLOCK_MONOTONIC_HR, &message->otime);
+        clock_gettime(CLOCK_MONOTONIC_HR, &timestamp);
 #else
-        clock_gettime(CLOCK_MONOTONIC_RAW, &message->otime);
+        clock_gettime(CLOCK_MONOTONIC_RAW, &timestamp);
 #endif
 
         QByteArray buffer;
@@ -98,8 +98,8 @@ void PacketTrainsMP::eval()
         rrate = (double) definition->packetSize * l.size() / (ts_rtime[1] - ts_rtime[0]) * 1000000000;
         // ignore infinite rates
         if (ts_otime[0] != ts_rtime[1] && ts_rtime[0] != ts_rtime[1]) {
-            m_recvSpeed.append(rrate / 1024 * 8);
-            m_sendSpeed.append(srate / 1024 * 8);
+            m_recvSpeed.append(rrate / 1024);
+            m_sendSpeed.append(srate / 1024);
             //cout<<"sending @ "<<fixed<<setprecision(2)<<srate / 1048576 * 8<<" MBit/s"<<endl;
             //cout<<"receiving @ "<<fixed<<setprecision(2)<<rrate / 1048576 * 8<<" MBit/s"<<endl;
         } else {
