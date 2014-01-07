@@ -9,18 +9,22 @@ LOGGER(BulkTransportCapacityMA);
 BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
 : Measurement(parent)
 , m_downloadSpeed(0.0)
+, m_status(Unknown)
 {
 }
 
 bool BulkTransportCapacityMA::start()
 {
-    //LOG_INFO(QString("Connect to %1:%2").arg(definition->host).arg(definition->port));
-    //m_tcpSocket->connectToHost(definition->host, definition->port);
+    m_status = BulkTransportCapacityMA::Running;
+    sendInitialRequest();
     return true;
 }
 
 void BulkTransportCapacityMA::sendRequest(quint64 bytes)
 {
+    // invalidate timer
+    m_time.invalidate();
+
     m_bytesExpected = bytes;
     QDataStream out(m_tcpSocket);
     out<<bytes;
@@ -34,9 +38,9 @@ void BulkTransportCapacityMA::sendInitialRequest()
 
 void BulkTransportCapacityMA::receiveResponse()
 {
-    int time = m_time.elapsed();
+    qint64 time = m_time.nsecsElapsed();
 
-    if(m_time.isNull())
+    if(!m_time.isValid())
     {
         m_bytesReceived = 0;
         m_totalBytesReceived = m_tcpSocket->bytesAvailable();
@@ -47,6 +51,9 @@ void BulkTransportCapacityMA::receiveResponse()
     else
     {
         qint64 bytes = m_tcpSocket->bytesAvailable();
+        qreal downloadSpeed = (bytes / 1024.0) / ((((time - m_lasttime) / 1000.0) / 1000) / 1000); // kbyte/s
+        LOG_INFO(QString("Tmp Speed: %1 KByte/s").arg(downloadSpeed, 0, 'f', 0).arg(time).arg(m_lasttime).arg(bytes));
+
         m_bytesReceived += bytes;
         m_totalBytesReceived += bytes;
         m_tcpSocket->readAll();
@@ -57,15 +64,13 @@ void BulkTransportCapacityMA::receiveResponse()
     {
         if (m_preTest)
         {
-            qreal downloadSpeed = ((qreal)m_bytesReceived / 1024) / ((qreal)m_lasttime / 1000); // kbyte/s
+            qreal downloadSpeed = (m_bytesReceived / 1024.0) / (((m_lasttime / 1000.0) / 1000) / 1000); // kbyte/s
 
             LOG_INFO(QString("Speed: %1 KByte/s").arg(downloadSpeed, 0, 'f', 0));
 
             // TODO this is were the magic happens
-            m_bytesExpected = 5*1025*1024;
+            m_bytesExpected = 1024*1024*2; // 5 MB
 
-            // set timer to zero
-            m_time = QTime();
             m_preTest = false;
 
             LOG_INFO("Sending test data size to server");
@@ -75,8 +80,10 @@ void BulkTransportCapacityMA::receiveResponse()
         }
         else
         {
-            m_downloadSpeed = ((qreal)m_bytesReceived / 1024) / ((qreal)m_lasttime / 1000); // kbyte/s
+            m_downloadSpeed = (m_bytesReceived / 1024.0) / (((m_lasttime / 1000.0) / 1000) / 1000); // kbyte/s
             LOG_INFO(QString("Speed: %1 KByte/s").arg(m_downloadSpeed, 0, 'f', 0));
+
+            m_status = BulkTransportCapacityMA::Finished;
 
             emit finished();
         }
@@ -85,7 +92,9 @@ void BulkTransportCapacityMA::receiveResponse()
 
 void BulkTransportCapacityMA::serverDisconnected()
 {
-    LOG_WARNING("Server closed connection, this should not happen");
+    if (m_status != BulkTransportCapacityMA::Finished) {
+        LOG_WARNING("Server closed connection, this should not happen");
+    }
 }
 
 void BulkTransportCapacityMA::handleError(QAbstractSocket::SocketError socketError)
@@ -99,7 +108,7 @@ void BulkTransportCapacityMA::handleError(QAbstractSocket::SocketError socketErr
 
 Measurement::Status BulkTransportCapacityMA::status() const
 {
-    return Unknown;
+    return m_status;
 }
 
 bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
@@ -130,11 +139,6 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const Meas
     // Signal for end of data transmission
     connect(m_tcpSocket, SIGNAL(disconnected()), this, SLOT(serverDisconnected()));
 
-    // Signal to start measurement when the client is connected
-    //connect(m_tcpSocket, SIGNAL(connected()), this, SLOT(sendInitialRequest()));
-
-    sendInitialRequest();
-
     return true;
 }
 
@@ -142,7 +146,10 @@ bool BulkTransportCapacityMA::stop()
 {
     if (m_tcpSocket) {
         m_tcpSocket->disconnectFromHost();
-        m_tcpSocket->waitForDisconnected(1000);
+        if (m_tcpSocket->state() != QTcpSocket::UnconnectedState &&
+            !m_tcpSocket->waitForDisconnected(1000)) {
+            return false;
+        }
     }
 
     return true;

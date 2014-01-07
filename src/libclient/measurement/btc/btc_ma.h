@@ -6,7 +6,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
-#include <QTime>
+#include <QElapsedTimer>
 
 class BulkTransportCapacityMA : public Measurement
 {
@@ -28,12 +28,13 @@ private:
     BulkTransportCapacityDefinitionPtr definition;
     bool m_preTest;
     QTcpSocket *m_tcpSocket;
-    QTime m_time;
+    QElapsedTimer m_time;
     quint64 m_bytesReceived; // without first packets
     quint64 m_totalBytesReceived; // with first packets
     quint64 m_bytesExpected;
     int m_lasttime;
     qreal m_downloadSpeed;
+    Status m_status;
 
 private slots:
     void sendInitialRequest();
