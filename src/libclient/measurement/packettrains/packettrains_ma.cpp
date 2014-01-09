@@ -18,6 +18,23 @@ using namespace std;
 
 LOGGER(PacketTrainsMA);
 
+namespace help
+{
+#ifdef Q_OS_WIN
+inline void nanosleep(qint64 ns)
+{
+    std::this_thread::sleep_for(std::chrono::nanoseconds(ns));
+}
+#else
+inline void nanosleep(qint64 ns)
+{
+    struct timespec delay;
+    delay.tv_sec = 0;
+    delay.tv_nsec = ns;
+    ::nanosleep(&delay, NULL);
+}
+#endif
+}
 
 PacketTrainsMA::PacketTrainsMA()
 {
@@ -54,10 +71,10 @@ bool PacketTrainsMA::start()
 
         m_udpSocket->writeDatagram(buffer, QHostAddress(definition->host), definition->port);
 
-        std::this_thread::sleep_for(std::chrono::nanoseconds(i / definition->trainLength));
+        help::nanosleep(i / definition->trainLength);
         if(i % definition->trainLength == definition->trainLength -1)
         {
-            std::this_thread::sleep_for(std::chrono::nanoseconds(delay));
+            help::nanosleep(delay);
         }
     }
 
