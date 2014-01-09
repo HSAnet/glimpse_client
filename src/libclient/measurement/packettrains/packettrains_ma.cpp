@@ -9,12 +9,11 @@ using namespace std;
 
 #ifdef Q_OS_WIN
 #include <WinSock2.h>
+#include <chrono>
+#include <thread>
 #else
 #include <arpa/inet.h>
 #endif
-
-#include <chrono>
-#include <thread>
 
 LOGGER(PacketTrainsMA);
 
