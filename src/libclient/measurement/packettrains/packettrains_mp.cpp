@@ -1,12 +1,17 @@
 #include "packettrains_mp.h"
 #include <QUdpSocket>
-#include <arpa/inet.h>
 #include <iostream>
 using namespace std;
 #include <iomanip>
 #include "../../log/logger.h"
 #include "../../network/networkmanager.h"
 #include "../../types.h"
+
+#ifdef Q_OS_WIN
+#include <WinSock2.h>
+#else
+#include <arpa/inet.h>
+#endif
 
 LOGGER(PacketTrainsMA);
 
@@ -27,6 +32,8 @@ bool PacketTrainsMP::start()
     m_timer.setSingleShot(true);
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(eval()));
 
+    m_receiveTimer.invalidate();
+
     // Signal for new packets
     connect(m_udpSocket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
 
@@ -37,18 +44,17 @@ void PacketTrainsMP::readPendingDatagrams()
 {
     m_timeout.start();
 
-    struct timespec timestamp;
+    qint64 timestamp;
     struct msg* message;
     quint16 iter;
+
+    if (!m_receiveTimer.isValid())
+        m_receiveTimer.start();
 
     while(m_udpSocket->hasPendingDatagrams())
     {
         // get time first
-#if defined(Q_OS_ANDROID)
-        clock_gettime(CLOCK_MONOTONIC_HR, &timestamp);
-#else
-        clock_gettime(CLOCK_MONOTONIC_RAW, &timestamp);
-#endif
+        timestamp = m_receiveTimer.nsecsElapsed();
 
         QByteArray buffer;
         buffer.resize(m_udpSocket->pendingDatagramSize());
@@ -90,10 +96,18 @@ void PacketTrainsMP::eval()
             }
         }
 
+        /*
         ts_otime[0] = l.first().otime.tv_sec * 1000000000 + l.first().otime.tv_nsec;
         ts_otime[1] = l.last().otime.tv_sec * 1000000000 + l.last().otime.tv_nsec;
         ts_rtime[0] = l.first().rtime.tv_sec * 1000000000 + l.first().rtime.tv_nsec;
         ts_rtime[1] = l.last().rtime.tv_sec * 1000000000 + l.last().rtime.tv_nsec;
+        */
+
+        ts_otime[0] = l.first().otime;
+        ts_otime[1] = l.last().otime;
+        ts_rtime[0] = l.first().rtime;
+        ts_rtime[1] = l.last().rtime;
+
         srate = (double) definition->packetSize * l.size() / (ts_otime[1] - ts_otime[0]) * 1000000000;
         rrate = (double) definition->packetSize * l.size() / (ts_rtime[1] - ts_rtime[0]) * 1000000000;
         // ignore infinite rates
