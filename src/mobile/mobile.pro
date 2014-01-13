@@ -46,7 +46,10 @@ android {
     SOURCES += desktopstatusbarhelper.cpp
 }
 
-osx:QT += macextras
+osx {
+    QT += macextras
+    LIBS += -framework AppKit -framework CoreFoundation
+}
 
 !android:linux {
     CONFIG += link_pkgconfig
