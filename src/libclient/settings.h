@@ -49,6 +49,9 @@ public:
 
     GetConfigResponse* config() const;
 
+public slots:
+    void sync();
+
 signals:
     void deviceIdChanged(const QString& deviceId);
     void userIdChanged(const QString& userId);

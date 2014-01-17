@@ -9,9 +9,17 @@ LOGGER(Settings);
 class Settings::Private
 {
 public:
+    void sync();
+
     GetConfigResponse config;
     QSettings settings;
 };
+
+void Settings::Private::sync()
+{
+    settings.setValue("config", config.toVariant());
+    settings.sync();
+}
 
 Settings::Settings(QObject *parent)
 : QObject(parent)
@@ -21,7 +29,7 @@ Settings::Settings(QObject *parent)
 
 Settings::~Settings()
 {
-    d->settings.setValue("config", d->config.toVariant());
+    d->sync();
     delete d;
 }
 
@@ -109,4 +117,9 @@ QString Settings::sessionId() const
 GetConfigResponse *Settings::config() const
 {
     return &d->config;
+}
+
+void Settings::sync()
+{
+    d->sync();
 }

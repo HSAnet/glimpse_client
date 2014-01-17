@@ -7,6 +7,7 @@
 #include "log/logger.h"
 #include "log/logmodel.h"
 #include "qmlmodule.h"
+#include "settings.h"
 
 #include "qtquick2applicationviewer.h"
 
@@ -69,6 +70,24 @@ void loadFonts(const QString& path)
     }
 }
 
+class SuspendHelper : public QObject
+{
+    Q_OBJECT
+
+public slots:
+    void applicationStateChanged(Qt::ApplicationState state) {
+#ifdef Q_OS_ANDROID
+        if (state != Qt::ApplicationSuspended)
+            return;
+
+        Settings* settings = Client::instance()->settings();
+        settings->sync();
+
+        LOG_DEBUG("Application suspended, settings saved.");
+#endif // Q_OS_ANDROID
+    }
+};
+
 int main(int argc, char* argv[])
 {
 #ifdef HAVE_WNCK
@@ -81,6 +100,8 @@ int main(int argc, char* argv[])
 
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     QGuiApplication app(argc, argv);
+    SuspendHelper suspend;
+    QObject::connect(&app, SIGNAL(applicationStateChanged(Qt::ApplicationState)), &suspend, SLOT(applicationStateChanged(Qt::ApplicationState)));
 #else
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(true);
@@ -153,3 +174,5 @@ int main(int argc, char* argv[])
 
     return returnCode;
 }
+
+#include "main.moc"
