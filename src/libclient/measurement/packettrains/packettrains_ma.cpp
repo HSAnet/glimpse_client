@@ -1,14 +1,39 @@
 #include "packettrains_ma.h"
 #include <QUdpSocket>
-#include <arpa/inet.h>
+#include <QElapsedTimer>
 #include <iostream>
 using namespace std;
 #include <iomanip>
 #include "../../log/logger.h"
 #include "../../network/networkmanager.h"
 
+#ifdef Q_OS_WIN
+#include <WinSock2.h>
+#include <chrono>
+#include <thread>
+#else
+#include <arpa/inet.h>
+#endif
+
 LOGGER(PacketTrainsMA);
 
+namespace help
+{
+#ifdef Q_OS_WIN
+inline void nanosleep(qint64 ns)
+{
+    std::this_thread::sleep_for(std::chrono::nanoseconds(ns));
+}
+#else
+inline void nanosleep(qint64 ns)
+{
+    struct timespec delay;
+    delay.tv_sec = 0;
+    delay.tv_nsec = ns;
+    ::nanosleep(&delay, NULL);
+}
+#endif
+}
 
 PacketTrainsMA::PacketTrainsMA()
 : m_udpSocket(NULL)
@@ -23,20 +48,18 @@ bool PacketTrainsMA::start()
     struct msg* message = reinterpret_cast<msg*>(buffer.data());
 
     // calculate disperson
-    quint64 disp[definition->iterations];
+    quint64* disp = new quint64[definition->iterations];
     quint64 R_MIN = 10485760;
     quint64 R_MAX = 262144000;
-    struct timespec dispersion;
-    dispersion.tv_sec = 0;
-    dispersion.tv_nsec = 0;
-    struct timespec delay;
-    delay.tv_sec = 0;
-    delay.tv_nsec = 200000000;
+    qint64 delay = 200000000;
 
     for(int i = 0; i < definition->iterations; i++)
     {
-        disp[i] = (uint64_t) (definition->packetSize * 1000000000.0 / ((R_MAX - R_MIN) / definition->iterations * i + R_MIN)); // Linear Rate
+        disp[i] = (quint64) (definition->packetSize * 1000000000.0 / ((R_MAX - R_MIN) / definition->iterations * i + R_MIN)); // Linear Rate
     }
+
+    QElapsedTimer timer;
+    timer.start();
 
     // send trains
     for(int i = 0; i < definition->trainLength * definition->iterations; i++)
@@ -44,21 +67,18 @@ bool PacketTrainsMA::start()
         message->iter = htons(i / definition->trainLength);
         message->id = i % definition->trainLength;
 
-#if defined(Q_OS_ANDROID)
-        clock_gettime(CLOCK_MONOTONIC_HR, &message->otime);
-#else
-        clock_gettime(CLOCK_MONOTONIC_RAW, &message->otime);
-#endif
+        message->otime = timer.nsecsElapsed();
 
         m_udpSocket->writeDatagram(buffer, QHostAddress(definition->host), definition->port);
 
-        dispersion.tv_nsec = disp[i / definition->trainLength];
-        nanosleep(&dispersion, NULL);
+        help::nanosleep(i / definition->trainLength);
         if(i % definition->trainLength == definition->trainLength -1)
         {
-            nanosleep(&delay, NULL);
+            help::nanosleep(delay);
         }
     }
+
+    delete disp;
 
     emit finished();
     return true;

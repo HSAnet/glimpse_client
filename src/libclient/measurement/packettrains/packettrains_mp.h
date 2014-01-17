@@ -3,6 +3,7 @@
 
 #include <QTimer>
 #include <QUdpSocket>
+#include <QElapsedTimer>
 
 #include "../measurement.h"
 #include "packettrainsdefinition.h"
@@ -28,6 +29,8 @@ private:
     QList<int> m_recvSpeed;
 
     QTimer m_timeout;
+
+    QElapsedTimer m_receiveTimer;
 
 public slots:
     void readPendingDatagrams();
