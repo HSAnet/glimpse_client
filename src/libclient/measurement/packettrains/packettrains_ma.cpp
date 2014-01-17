@@ -11,6 +11,7 @@ LOGGER(PacketTrainsMA);
 
 
 PacketTrainsMA::PacketTrainsMA()
+: m_udpSocket(NULL)
 {
 }
 

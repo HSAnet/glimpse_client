@@ -11,6 +11,7 @@ using namespace std;
 LOGGER(PacketTrainsMA);
 
 PacketTrainsMP::PacketTrainsMP()
+: m_udpSocket(NULL)
 {
 }
 

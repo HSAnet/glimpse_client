@@ -1,6 +1,7 @@
 #include "deviceinfo.h"
 
 DeviceInfo::DeviceInfo()
+: d(NULL)
 {
 }
 

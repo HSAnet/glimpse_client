@@ -6,14 +6,15 @@ LOGGER(HTTPGetRequest);
 
 
 HTTPGetRequest::HTTPGetRequest(QObject *parent)
-    : Measurement(parent)
-    , currentStatus(HTTPGetRequest::Unknown)
+: Measurement(parent)
+, currentStatus(HTTPGetRequest::Unknown)
+, nam(NULL)
+, reply(NULL)
 {
 }
 
 HTTPGetRequest::~HTTPGetRequest()
 {
-
 }
 
 bool HTTPGetRequest::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)

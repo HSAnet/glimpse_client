@@ -3,6 +3,7 @@
 #include <QStandardPaths>
 
 StoragePaths::StoragePaths()
+: d(NULL)
 {
 }
 

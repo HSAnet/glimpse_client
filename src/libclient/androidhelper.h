@@ -11,7 +11,10 @@ JavaVM* CLIENT_API javaVM();
 class CLIENT_API Java
 {
 public:
-    Java() {
+    Java()
+    : valid(false)
+    , env(NULL)
+    {
         attach();
     }
 

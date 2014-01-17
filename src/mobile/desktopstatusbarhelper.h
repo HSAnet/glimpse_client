@@ -15,6 +15,7 @@ class DesktopStatusBarHelper : public QObject
 public:
     DesktopStatusBarHelper(QObject* parent = 0)
     : QObject(parent)
+    , m_visible(false)
     {
         m_menu.addAction(tr("Speedtest"), Client::instance(), SLOT(speedTest()));
 

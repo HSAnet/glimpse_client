@@ -8,6 +8,7 @@ LOGGER(BulkTransportCapacityMP);
 
 BulkTransportCapacityMP::BulkTransportCapacityMP(QObject *parent)
 : Measurement(parent)
+, m_tcpServer(NULL)
 {
     resetServer();
 }

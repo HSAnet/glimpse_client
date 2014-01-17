@@ -19,6 +19,7 @@ void Response::finished()
 
 LoginResponse::LoginResponse(QObject *parent)
 : Response(parent)
+, m_registeredDevice(false)
 {
 }
 

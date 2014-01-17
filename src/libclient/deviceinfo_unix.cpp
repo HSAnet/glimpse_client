@@ -8,6 +8,7 @@
 LOGGER(DeviceInfo);
 
 DeviceInfo::DeviceInfo()
+: d(NULL)
 {
 }
 

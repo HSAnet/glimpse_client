@@ -22,6 +22,7 @@ QDir StoragePaths::Private::cache;
 QDir StoragePaths::Private::crashDumps;
 
 StoragePaths::StoragePaths()
+: d(NULL)
 {
     if (StoragePaths::Private::initialized)
         return;

@@ -83,8 +83,6 @@ bool PacketTrain::stop()
 
 bool PacketTrain::isFinished() const
 {
-    return running;
-
     if ( master )
         return packetCounter >= 100;
     else

@@ -8,7 +8,10 @@ LOGGER(BulkTransportCapacityMA);
 
 BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
 : Measurement(parent)
+, m_preTest(true)
+, m_tcpSocket(NULL)
 , m_downloadSpeed(0.0)
+, m_lasttime(-1)
 , m_status(Unknown)
 {
 }

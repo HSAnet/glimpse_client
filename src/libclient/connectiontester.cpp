@@ -197,14 +197,14 @@ QString ConnectionTester::Private::findDefaultDNS() const
         }
     }
 
-    delete addresses;
+    free(addresses);
     return dns;
 #elif defined(Q_OS_MAC)
     return scutilHelper("show State:/Network/Global/DNS", "0");
 #else
 #error Platform dns code missing!
-#endif
     return QString();
+#endif
 }
 
 bool ConnectionTester::Private::canPing(const QString &host, int* averagePing) const
