@@ -78,7 +78,7 @@ bool PacketTrainsMA::start()
         }
     }
 
-    delete disp;
+    delete[] disp;
 
     emit finished();
     return true;
