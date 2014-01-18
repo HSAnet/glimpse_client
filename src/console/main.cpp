@@ -90,8 +90,8 @@ int main(int argc, char* argv[])
     QCommandLineOption daemonOption("daemon", "Run as daemon");
     parser.addOption(daemonOption);
 
-    QCommandLineOption pidFileOption("pidfile", "Set the pidfile", "path");
-    parser.addOption(pidFileOption);
+    //QCommandLineOption pidFileOption("pidfile", "Set the pidfile", "path");
+    //parser.addOption(pidFileOption);
 
 #endif // Q_OS_UNIX
 
