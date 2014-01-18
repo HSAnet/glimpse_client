@@ -44,6 +44,12 @@ android {
         SOURCES += linuximageprovider.cpp \
                    linuxprocessmodel.cpp
     }
+    windows {
+        HEADERS += windowsprocessmodel.h \
+        		   windowsimageprovider.h
+        SOURCES += windowsprocessmodel.cpp \
+                   windowsimageprovider.cpp
+    }
 }
 
 osx {
