@@ -24,7 +24,7 @@ public:
     {
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
-        connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
+        connect(&requester, SIGNAL(statusChanged(WebRequester::Status)), q, SIGNAL(statusChanged()));
         connect(&requester, SIGNAL(started()), q, SIGNAL(started()));
 
         requester.setResponse(&response);

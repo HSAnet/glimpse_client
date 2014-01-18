@@ -64,7 +64,7 @@ public:
         connect(&timer, SIGNAL(timeout()), q, SLOT(fetchTasks()));
         connect(&requester, SIGNAL(error()), this, SLOT(error()));
         connect(&requester, SIGNAL(finished()), this, SLOT(finished()));
-        connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
+        connect(&requester, SIGNAL(statusChanged(WebRequester::Status)), q, SIGNAL(statusChanged()));
         connect(&requester, SIGNAL(started()), q, SIGNAL(started()));
         connect(&requester, SIGNAL(finished()), q, SIGNAL(finished()));
         connect(&requester, SIGNAL(error()), q, SIGNAL(error()));

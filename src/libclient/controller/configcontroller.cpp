@@ -22,7 +22,7 @@ public:
     : q(q)
     {
         connect(&timer, SIGNAL(timeout()), q, SLOT(update()));
-        connect(&requester, SIGNAL(statusChanged(Status)), q, SIGNAL(statusChanged()));
+        connect(&requester, SIGNAL(statusChanged(WebRequester::Status)), q, SIGNAL(statusChanged()));
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
 
