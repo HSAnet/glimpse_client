@@ -4,6 +4,9 @@
 #include "settings.h"
 #include "controller/logincontroller.h"
 
+#include "webrequester.h"
+#include "network/requests/registerdevicerequest.h"
+
 #include <QTextStream>
 #include <QCoreApplication>
 #include <QCommandLineParser>
@@ -20,6 +23,55 @@
 #endif // Q_OS_UNIX
 
 LOGGER(main);
+
+class DeviceRegistrationWatcher : public QObject
+{
+    Q_OBJECT
+
+public:
+    DeviceRegistrationWatcher(LoginController* controller)
+    : m_controller(controller)
+    {
+        connect(controller, SIGNAL(finished()), this, SLOT(onLoginOrRegistrationFinished()));
+        connect(&m_requester, SIGNAL(statusChanged(WebRequester::Status)), this, SLOT(onStatusChanged(WebRequester::Status)));
+
+        m_requester.setRequest(&m_request);
+        m_requester.setResponse(&m_response);
+    }
+
+private slots:
+    void onLoginOrRegistrationFinished() {
+        // Already registered?
+        if (m_controller->registeredDevice())
+            return;
+
+        LOG_INFO("Automatically registering device");
+        m_requester.start();
+    }
+
+    void onStatusChanged(WebRequester::Status status) {
+        switch(status) {
+        case WebRequester::Error:
+            LOG_ERROR(QString("Device registration failed, quitting. (%1)").arg(m_requester.errorString()));
+            qApp->quit();
+            break;
+
+        case WebRequester::Finished:
+            LOG_INFO("Device successfully registered");
+            break;
+
+        default:
+            break;
+        }
+    }
+
+protected:
+    LoginController* m_controller;
+
+    WebRequester m_requester;
+    RegisterDeviceRequest m_request;
+    RegisterDeviceResponse m_response;
+};
 
 class LoginWatcher : public QObject
 {
@@ -40,6 +92,7 @@ private slots:
             break;
 
         case LoginController::Finished:
+            LOG_INFO("Login successful");
             deleteLater();
             break;
 
@@ -201,6 +254,7 @@ int main(int argc, char* argv[])
     }
 
     new LoginWatcher(client->loginController());
+    new DeviceRegistrationWatcher(client->loginController());
 
     if (passwordOption) {
         switch(loginData.type) {
