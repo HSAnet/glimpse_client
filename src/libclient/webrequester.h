@@ -51,7 +51,7 @@ public slots:
     void start();
 
 signals:
-    void statusChanged(Status status);
+    void statusChanged(WebRequester::Status status);
     void urlChanged(const QUrl& url);
     void requestChanged(Request* request);
     void responseChanged(Response* response);
