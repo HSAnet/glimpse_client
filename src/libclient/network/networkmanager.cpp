@@ -371,6 +371,10 @@ QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType soc
     return socket;
 }
 
+int func(char test[16]) {
+    return sizeof(test);
+}
+
 QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, const QString &measurement, const QVariant &definition, NetworkManager::SocketType socketType)
 {
     QAbstractSocket* socket = d->createSocket(socketType);
@@ -441,8 +445,14 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
             LOG_ERROR("Remote did not answer for 5 sec, aborting connection.");
         } else {
             // TODO: Read the first (empty) datagram
-            testSocket->readDatagram(0, 0);
-            return socket;
+            QHostAddress packetHost;
+            testSocket->readDatagram(0, 0, &packetHost);
+
+            if (packetHost != QHostAddress(remote.host)) {
+                LOG_ERROR("Received connection packet from wrong host!");
+            } else {
+                return socket;
+            }
         }
     }
 

@@ -47,7 +47,7 @@ void WebRequester::Private::setStatus(WebRequester::Status status)
         this->status = status;
         emit q->statusChanged(status);
 
-        switch(status) {
+        switch (status) {
         case Running: emit q->started(); break;
         case Finished: emit q->finished(); break;
         case Error: emit q->error(); break;

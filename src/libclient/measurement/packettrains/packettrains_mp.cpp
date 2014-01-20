@@ -52,7 +52,7 @@ void PacketTrainsMP::readPendingDatagrams()
     if (!m_receiveTimer.isValid())
         m_receiveTimer.start();
 
-    while(m_udpSocket->hasPendingDatagrams())
+    while (m_udpSocket->hasPendingDatagrams())
     {
         // get time first
         timestamp = m_receiveTimer.nsecsElapsed();

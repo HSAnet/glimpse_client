@@ -72,7 +72,7 @@ bool PacketTrainsMA::start()
         m_udpSocket->writeDatagram(buffer, QHostAddress(definition->host), definition->port);
 
         help::nanosleep(i / definition->trainLength);
-        if(i % definition->trainLength == definition->trainLength -1)
+        if (i % definition->trainLength == definition->trainLength -1)
         {
             help::nanosleep(delay);
         }
@@ -86,7 +86,7 @@ bool PacketTrainsMA::start()
 
 void PacketTrainsMA::handleError(QAbstractSocket::SocketError socketError)
 {
-    if(socketError == QAbstractSocket::RemoteHostClosedError)
+    if (socketError == QAbstractSocket::RemoteHostClosedError)
         return;
 
     QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());

@@ -108,7 +108,7 @@ QVariant SchedulerModel::get(int index) const
 
     QVariantMap hash;
     QHashIterator<int, QByteArray> iter(roleNames());
-    while(iter.hasNext()) {
+    while (iter.hasNext()) {
         iter.next();
         hash.insert(iter.value(), data(idx, iter.key()));
     }
