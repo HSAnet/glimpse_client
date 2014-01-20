@@ -12,4 +12,4 @@ android/assets/--Managed_by_Qt_Creator--
 setup/Output
 *.pro.user*
 src/mobile/qmlresources.qrc
-
+build-install
