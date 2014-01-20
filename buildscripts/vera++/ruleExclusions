@@ -1,0 +1,12 @@
+set ruleExclusions(T003) {
+	packettrains_ma.cpp
+}
+
+set ruleExclusions(T007) {
+	logger.h
+}
+
+set ruleExclusions(T017) {
+	logger.h
+}
+
