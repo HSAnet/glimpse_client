@@ -404,11 +404,6 @@ QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType soc
     return socket;
 }
 
-int func(char test[16])
-{
-    return sizeof(test);
-}
-
 QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, const QString &measurement, const QVariant &definition, NetworkManager::SocketType socketType)
 {
     QAbstractSocket* socket = d->createSocket(socketType);
