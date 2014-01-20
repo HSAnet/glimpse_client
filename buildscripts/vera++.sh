@@ -1,11 +1,9 @@
-#/bin/sh
+#!/bin/sh
 
 cd `dirname $0`
 cd ..
 
-BUILD_INSTALL="build-install"
-REPORT_NAME="$BUILD_INSTALL/checkstyle.xml"
+PROFILE_NAME="client"
+PARAMS="-P max-line-length=200"
 
-mkdir -p $BUILD_INSTALL
-
-find src/ -name "*.h" -or -name "*.c" -or -name "*.cpp" | vera++ --checkstyle-report $REPORT_NAME
+find src/ -name "*.h" -or -name "*.c" -or -name "*.cpp" | vera++ --root buildscripts/vera++ --profile $PROFILE_NAME $PARAMS $@
