@@ -28,7 +28,8 @@ LOGGER(NetworkManager);
 class PeerRequest
 {
 public:
-    QVariant toVariant() {
+    QVariant toVariant()
+    {
         QVariantMap map;
         map.insert("type", "peer_request");
         map.insert("connectionId", connectionId);
@@ -40,7 +41,8 @@ public:
         return map;
     }
 
-    static PeerRequest fromVariant(const QVariant& variant) {
+    static PeerRequest fromVariant(const QVariant& variant)
+    {
         QVariantMap map = variant.toMap();
 
         PeerRequest request;
@@ -67,7 +69,7 @@ class NetworkManager::Private : public QObject
 
 public:
     Private(NetworkManager* q)
-    : q(q)
+        : q(q)
     {
         connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
     }
@@ -106,7 +108,8 @@ QAbstractSocket *NetworkManager::Private::createSocket(NetworkManager::SocketTyp
 {
     QAbstractSocket* socket = NULL;
 
-    switch (socketType) {
+    switch (socketType)
+    {
     case TcpSocket:
         socket = new ::TcpSocket;
         break;
@@ -123,7 +126,8 @@ QAbstractSocket *NetworkManager::Private::createSocket(NetworkManager::SocketTyp
         break;
     }
 
-    if (socket) {
+    if (socket)
+    {
         connect(socket, SIGNAL(destroyed(QObject*)), this, SLOT(socketDestroyed(QObject*)));
     }
 
@@ -134,7 +138,9 @@ void NetworkManager::Private::socketDestroyed(QObject *obj)
 {
     QString hostname = objectHash.key(obj);
     if (hostname.isEmpty())
+    {
         return;
+    }
 
     objectHash.remove(hostname);
     socketHash.remove(hostname);
@@ -142,7 +148,8 @@ void NetworkManager::Private::socketDestroyed(QObject *obj)
 
 void NetworkManager::Private::updateSocket()
 {
-    if (!socket.isNull()) {
+    if (!socket.isNull())
+    {
         delete socket.data();
         socket.clear();
     }
@@ -150,14 +157,17 @@ void NetworkManager::Private::updateSocket()
     QString keepaliveAddress = settings->config()->keepaliveAddress();
     RemoteHost remote = NetworkHelper::remoteHost(keepaliveAddress);
     if (!remote.isValid())
+    {
         return;
+    }
 
     localPort = remote.port;
 
     socket = qobject_cast<QUdpSocket*>( q->createConnection(NetworkManager::UdpSocket) );
     socket->setParent(this);
     connect(socket.data(), SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
-    if (!socket->bind(remote.port)) {
+    if (!socket->bind(remote.port))
+    {
         LOG_ERROR(QString("Unable to bind port %1: %2").arg(remote.port).arg(socket->errorString()));
     }
 }
@@ -166,16 +176,21 @@ void NetworkManager::Private::updateTimer()
 {
     TimingPtr timing = settings->config()->keepaliveSchedule();
     if (!timing)
+    {
         return;
+    }
 
     QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
     Q_ASSERT(periodicTiming);
 
     int interval = periodicTiming->period();
-    if (interval < 1000) {
+    if (interval < 1000)
+    {
         LOG_INFO("Keepalive interval < 1 sec will not be accepted.");
         return;
-    } else {
+    }
+    else
+    {
         LOG_INFO(QString("Keepalive set to %1 sec.").arg(interval/1000));
     }
 
@@ -194,11 +209,13 @@ public:
     quint16 port;
 
     // MeasurementObserver interface
-    void created(const MeasurementPtr &measurement) {
+    void created(const MeasurementPtr &measurement)
+    {
         QAbstractSocket* socket = networkManager->createConnection(socketType);
 
         QUdpSocket* udpSocket = qobject_cast<QUdpSocket*>(socket);
-        if (!udpSocket->bind(localPort)) {
+        if (!udpSocket->bind(localPort))
+        {
             LOG_ERROR("Cannot bind socket");
             return;
         }
@@ -212,52 +229,58 @@ public:
 void NetworkManager::Private::processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port)
 {
     QString hostAndPort = QString("%1:%2").arg(host.toString()).arg(port);
-    if (datagram.isEmpty()) {
+    if (datagram.isEmpty())
+    {
         LOG_DEBUG(QString("Received empty datagram from %1").arg(hostAndPort));
         return;
     }
 
     LOG_DEBUG(QString("Received datagram from %1: %2").arg(hostAndPort).arg(QString::fromUtf8(datagram)));
 //    if (settings->config()->keepaliveAddress() == hostAndPort) {
-        // Master server
-        QJsonParseError error;
-        QJsonDocument document = QJsonDocument::fromJson(datagram, &error);
+    // Master server
+    QJsonParseError error;
+    QJsonDocument document = QJsonDocument::fromJson(datagram, &error);
 
-        if (error.error == QJsonParseError::NoError) {
-            PeerRequest request = PeerRequest::fromVariant(document.toVariant());
+    if (error.error == QJsonParseError::NoError)
+    {
+        PeerRequest request = PeerRequest::fromVariant(document.toVariant());
 
-            if (handledConnectionIds.contains(request.connectionId)) {
-                LOG_DEBUG("Connection id is already handled, skipping second try");
-                return;
-            }
-
-            handledConnectionIds.insert(request.connectionId);
-
-            MeasurementObserver* observer = NULL;
-            if (request.protocol == NetworkManager::UdpSocket) {
-                NetworkManagerMeasurementObserver* tempObs = new NetworkManagerMeasurementObserver;
-                tempObs->networkManager = q;
-                tempObs->socketType = request.protocol;
-                tempObs->localPort = 5106; // FIXME: Don't hardcode this here
-                tempObs->host = host; //request.peer;
-                tempObs->port = port;
-
-                observer = tempObs;
-            }
-
-            // FIXME: We can't assign the Peer socket to Measurement since this is created in a separate thread
-            //        and we can't access.
-
-            TimingPtr timing(new ImmediateTiming);
-            TestDefinitionPtr testDefinition(new TestDefinition(request.connectionId, request.measurement, timing, request.measurementDefinition));
-
-            // Bypass scheduler and run directly on the executor
-            scheduler->executor()->execute(testDefinition, observer);
-        } else {
-            LOG_ERROR(QString("Invalid JSon: %1").arg(error.errorString()));
+        if (handledConnectionIds.contains(request.connectionId))
+        {
+            LOG_DEBUG("Connection id is already handled, skipping second try");
+            return;
         }
+
+        handledConnectionIds.insert(request.connectionId);
+
+        MeasurementObserver* observer = NULL;
+        if (request.protocol == NetworkManager::UdpSocket)
+        {
+            NetworkManagerMeasurementObserver* tempObs = new NetworkManagerMeasurementObserver;
+            tempObs->networkManager = q;
+            tempObs->socketType = request.protocol;
+            tempObs->localPort = 5106; // FIXME: Don't hardcode this here
+            tempObs->host = host; //request.peer;
+            tempObs->port = port;
+
+            observer = tempObs;
+        }
+
+        // FIXME: We can't assign the Peer socket to Measurement since this is created in a separate thread
+        //        and we can't access.
+
+        TimingPtr timing(new ImmediateTiming);
+        TestDefinitionPtr testDefinition(new TestDefinition(request.connectionId, request.measurement, timing, request.measurementDefinition));
+
+        // Bypass scheduler and run directly on the executor
+        scheduler->executor()->execute(testDefinition, observer);
+    }
+    else
+    {
+        LOG_ERROR(QString("Invalid JSon: %1").arg(error.errorString()));
+    }
 //    } else {
-        // TODO: Process incoming data
+    // TODO: Process incoming data
 //    }
 }
 
@@ -273,13 +296,15 @@ void NetworkManager::Private::responseChanged()
 void NetworkManager::Private::timeout()
 {
     RemoteHost remote = NetworkHelper::remoteHost(settings->config()->keepaliveAddress());
-    if (!remote.isValid()) {
+    if (!remote.isValid())
+    {
         LOG_INFO("Invalid keepalive host");
         return;
     }
 
     QString sessionId = settings->sessionId();
-    if (sessionId.isEmpty()) {
+    if (sessionId.isEmpty())
+    {
         LOG_INFO("Empty session id");
         return;
     }
@@ -301,7 +326,8 @@ void NetworkManager::Private::timeout()
 
 void NetworkManager::Private::onDatagramReady()
 {
-    while (socket->hasPendingDatagrams()) {
+    while (socket->hasPendingDatagrams())
+    {
         QByteArray datagram;
         datagram.resize(socket->pendingDatagramSize());
 
@@ -339,12 +365,18 @@ bool NetworkManager::init(Scheduler* scheduler, Settings *settings)
 void NetworkManager::setRunning(bool running)
 {
     if (isRunning() == running)
+    {
         return;
+    }
 
     if ( !running )
+    {
         d->timer.stop();
+    }
     else
+    {
         d->updateTimer();
+    }
 }
 
 bool NetworkManager::isRunning() const
@@ -360,7 +392,8 @@ QAbstractSocket *NetworkManager::connection(const QString &hostname, NetworkMana
 QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType socketType)
 {
     QAbstractSocket* socket = d->createSocket(socketType);
-    if ( !socket ) {
+    if ( !socket )
+    {
         qDebug() << "Unknown socket type requested";
         return NULL;
     }
@@ -371,14 +404,16 @@ QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType soc
     return socket;
 }
 
-int func(char test[16]) {
+int func(char test[16])
+{
     return sizeof(test);
 }
 
 QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, const QString &measurement, const QVariant &definition, NetworkManager::SocketType socketType)
 {
     QAbstractSocket* socket = d->createSocket(socketType);
-    if ( !socket ) {
+    if ( !socket )
+    {
         qDebug() << "Unknown socket type requested";
         return NULL;
     }
@@ -386,7 +421,8 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
     RemoteHost remote = NetworkHelper::remoteHost(hostname);
     RemoteHost aliveRemote = NetworkHelper::remoteHost(d->settings->config()->keepaliveAddress());
 
-    if (!aliveRemote.isValid()) {
+    if (!aliveRemote.isValid())
+    {
         LOG_ERROR(QString("Invalid alive remote: '%1' can't talk to alive server").arg(d->settings->config()->keepaliveAddress()));
         delete socket;
         return NULL;
@@ -404,8 +440,10 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
     d->handledConnectionIds.insert(request.connectionId);
 
     QUdpSocket* testSocket = d->socket.data();
-    if ( socketType != TcpSocket ) {
-        if (!socket->bind(remote.port)) {
+    if ( socketType != TcpSocket )
+    {
+        if (!socket->bind(remote.port))
+        {
             LOG_ERROR(QString("Unable to bind source port to %1").arg(remote.port));
             delete socket;
             return NULL;
@@ -427,30 +465,42 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
 
     LOG_TRACE("Sent test offer to peer and alive-server");
 
-    if ( socketType != UdpSocket ) {
+    if ( socketType != UdpSocket )
+    {
         // Final step: Connect to remote host
         //if (socket->waitForReadyRead(5000))
         //    return socket;
 
         const int tries = 20;
-        for(int i=0; i < tries; ++i) {
+        for (int i=0; i < tries; ++i)
+        {
             socket->connectToHost(remote.host, remote.port);
             if (socket->waitForConnected(5000/tries))
+            {
                 return socket;
+            }
         }
 
         LOG_ERROR(QString("Unable to connect tcp socket in %3 tries to %1: %2").arg(hostname).arg(socket->errorString()).arg(tries));
-    } else {
-        if (!testSocket->waitForReadyRead(5000)) {
+    }
+    else
+    {
+        if (!testSocket->waitForReadyRead(5000))
+        {
             LOG_ERROR("Remote did not answer for 5 sec, aborting connection.");
-        } else {
+        }
+        else
+        {
             // TODO: Read the first (empty) datagram
             QHostAddress packetHost;
             testSocket->readDatagram(0, 0, &packetHost);
 
-            if (packetHost != QHostAddress(remote.host)) {
+            if (packetHost != QHostAddress(remote.host))
+            {
                 LOG_ERROR("Received connection packet from wrong host!");
-            } else {
+            }
+            else
+            {
                 return socket;
             }
         }

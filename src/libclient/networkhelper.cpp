@@ -62,27 +62,39 @@ QHostAddress NetworkHelper::localIpAddress()
 
     QHostAddress hostIp;
 #if defined(Q_OS_WIN) || defined(Q_OS_MAC)
-    foreach(QHostAddress addr, hostNameLookupAddressList){
-        if (addr.protocol() == QAbstractSocket::IPv4Protocol && interfaceAddressList.contains(addr)){
-            if (isLocalIpAddress(addr)){
+    foreach(QHostAddress addr, hostNameLookupAddressList)
+    {
+        if (addr.protocol() == QAbstractSocket::IPv4Protocol && interfaceAddressList.contains(addr))
+        {
+            if (isLocalIpAddress(addr))
+            {
                 qDebug()<<__FUNCTION__<<addr<<" is local ip";
                 hostIp = addr;
                 break;
-            }else if (isLinkLocalAddress(addr)){
+            }
+            else if (isLinkLocalAddress(addr))
+            {
                 qDebug()<<__FUNCTION__<<addr<<" is Link Local Address";
                 hostIp = addr;
-            } else {
+            }
+            else
+            {
                 qDebug() << __FUNCTION__ << addr << "is some different address";
             }
         }
     }
 #else
-    foreach(const QHostAddress& addr, interfaceAddressList) {
+    foreach(const QHostAddress& addr, interfaceAddressList)
+    {
         if ( addr.protocol() != QAbstractSocket::IPv4Protocol )
+        {
             interfaceAddressList.removeAll(addr);
+        }
 
         if ( addr.toString().startsWith("127.") )
+        {
             interfaceAddressList.removeAll(addr);
+        }
     }
 
     hostIp = interfaceAddressList.first();
@@ -97,11 +109,14 @@ RemoteHost NetworkHelper::remoteHost(const QString &hostname)
 {
     RemoteHost host;
 
-    if (hostname.contains(':')) {
+    if (hostname.contains(':'))
+    {
         QStringList parts = hostname.split(':');
         host.host = parts.at(0);
         host.port = parts.at(1).toInt();
-    } else {
+    }
+    else
+    {
         host.host = hostname;
         host.port = 1337;
     }

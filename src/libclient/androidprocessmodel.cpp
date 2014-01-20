@@ -56,7 +56,9 @@ AndroidProcessModel::~AndroidProcessModel()
 int AndroidProcessModel::rowCount(const QModelIndex &parent) const
 {
     if ( parent.isValid() )
+    {
         return 0;
+    }
 
     return d->processes.size();
 }
@@ -65,11 +67,14 @@ QVariant AndroidProcessModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
     if (row < 0 || row >= d->processes.size())
+    {
         return QVariant();
+    }
 
     const ProcessInfo& info = d->processes.at(row);
 
-    switch (role) {
+    switch (role)
+    {
     case PackageNameRole:
         return info.packageName;
 
@@ -101,7 +106,8 @@ void AndroidProcessModel::reload()
     jobject processList = env->CallObjectMethod(processHelper, d->runningProcesses);
 
     jint size = env->CallIntMethod(processList, d->listSize);
-    for (int i=0; i < size; ++i) {
+    for (int i=0; i < size; ++i)
+    {
         jobject jprocess = env->CallObjectMethod(processList, d->listGet, i);
         jstring jpackageName = (jstring)env->GetObjectField(jprocess, d->packageName);
         jstring jdisplayName = (jstring)env->GetObjectField(jprocess, d->displayName);
@@ -118,13 +124,15 @@ void AndroidProcessModel::reload()
     endResetModel();
 }
 
-namespace {
-    static int init_AndroidProcessModel() {
-        Java::registerClass("de/hsaugsburg/informatik/mplane/ProcessHelper");
-        Java::registerClass("de/hsaugsburg/informatik/mplane/ProcessHelper$ProcessInfo");
-        Java::registerClass("java/util/List");
-        return 1;
-    }
+namespace
+{
+static int init_AndroidProcessModel()
+{
+    Java::registerClass("de/hsaugsburg/informatik/mplane/ProcessHelper");
+    Java::registerClass("de/hsaugsburg/informatik/mplane/ProcessHelper$ProcessInfo");
+    Java::registerClass("java/util/List");
+    return 1;
+}
 
-    static int __AndroidProcessModel = init_AndroidProcessModel();
+static int __AndroidProcessModel = init_AndroidProcessModel();
 }

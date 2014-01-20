@@ -29,7 +29,9 @@ QImage LinuxImageProvider::requestImage(const QString &id, QSize *size, const QS
         int winID = wnck_window_get_pid(window);
 
         if (!(id.toInt() == winID))
+        {
             continue;
+        }
 
         GdkPixbuf* icon = wnck_window_get_icon(window);
         gchar * buffer = 0;

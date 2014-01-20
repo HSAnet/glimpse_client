@@ -40,17 +40,22 @@ public:
     }
 
 private slots:
-    void onLoginOrRegistrationFinished() {
+    void onLoginOrRegistrationFinished()
+    {
         // Already registered?
         if (m_controller->registeredDevice())
+        {
             return;
+        }
 
         LOG_INFO("Automatically registering device");
         m_requester.start();
     }
 
-    void onStatusChanged(WebRequester::Status status) {
-        switch (status) {
+    void onStatusChanged(WebRequester::Status status)
+    {
+        switch (status)
+        {
         case WebRequester::Error:
             LOG_ERROR(QString("Device registration failed, quitting. (%1)").arg(m_requester.errorString()));
             qApp->quit();
@@ -78,14 +83,16 @@ class LoginWatcher : public QObject
     Q_OBJECT
 public:
     LoginWatcher(LoginController* controller)
-    : m_controller(controller)
+        : m_controller(controller)
     {
         connect(controller, SIGNAL(statusChanged()), this, SLOT(onStatusChanged()));
     }
 
 private slots:
-    void onStatusChanged() {
-        switch (m_controller->status()) {
+    void onStatusChanged()
+    {
+        switch (m_controller->status())
+        {
         case LoginController::Error:
             LOG_INFO("Login/Registration failed, quitting.");
             qApp->quit();
@@ -105,7 +112,8 @@ protected:
     LoginController* m_controller;
 };
 
-struct LoginData {
+struct LoginData
+{
     enum Type
     {
         Register,
@@ -162,12 +170,14 @@ int main(int argc, char* argv[])
 
     parser.process(app);
 
-    if (parser.isSet(registerOption) && parser.isSet(registerAnonymous)) {
+    if (parser.isSet(registerOption) && parser.isSet(registerAnonymous))
+    {
         out << "'--register' and '--register-anonymous' cannot be set on the same time.\n";
         return 1;
     }
 
-    if ((parser.isSet(registerAnonymous)||parser.isSet(registerOption)) && parser.isSet(loginOption)) {
+    if ((parser.isSet(registerAnonymous)||parser.isSet(registerOption)) && parser.isSet(loginOption))
+    {
         out << "'--register(-anonymous)' and '--login' cannot be set on the same time.\n";
         return 1;
     }
@@ -175,20 +185,24 @@ int main(int argc, char* argv[])
     QCommandLineOption* passwordOption = NULL;
     LoginData loginData;
 
-    if (parser.isSet(registerOption)) {
+    if (parser.isSet(registerOption))
+    {
         loginData.type = LoginData::Register;
         passwordOption = &registerOption;
     }
-    if (parser.isSet(loginOption)) {
+    if (parser.isSet(loginOption))
+    {
         loginData.type = LoginData::Login;
         passwordOption = &loginOption;
     }
 
-    if (passwordOption) {
+    if (passwordOption)
+    {
         loginData.userId = parser.value(*passwordOption);
 
         ConsoleTools tools;
-        do {
+        do
+        {
             out << "Password: ";
             out.flush();
             loginData.password = tools.readPassword();
@@ -196,38 +210,53 @@ int main(int argc, char* argv[])
     }
 
 #ifdef Q_OS_UNIX
-    if (parser.isSet(userOption)) {
+    if (parser.isSet(userOption))
+    {
         QByteArray user = parser.value(userOption).toLatin1();
         passwd* pwd = getpwnam(user.constData());
-        if (pwd) {
-            if (-1 == setuid(pwd->pw_uid)) {
+        if (pwd)
+        {
+            if (-1 == setuid(pwd->pw_uid))
+            {
                 out << "Cannot set uid to " << pwd->pw_uid << ": " << strerror(errno) << "\n";
                 return 1;
-            } else {
+            }
+            else
+            {
                 LOG_DEBUG(QString("User id set to %1 (%2)").arg(pwd->pw_uid).arg(QString::fromLatin1(user)));
             }
-        } else {
+        }
+        else
+        {
             out << "No user named " << QString::fromLatin1(user) << " found\n";
             return 1;
         }
     }
 
     // NOTE: This should be the last option since this creates a process fork!
-    if (parser.isSet(daemonOption)) {
+    if (parser.isSet(daemonOption))
+    {
         pid_t pid = fork();
-        if (pid == -1) {
+        if (pid == -1)
+        {
             out << "fork() failed: " << strerror(errno) << "\n";
-        } else if (pid > 0) {
+        }
+        else if (pid > 0)
+        {
             // Fork successful, we're exiting now
             out << "Daemon started with pid " << pid << "\n";
             return 0;
-        } else {
+        }
+        else
+        {
             // Child process
             umask(0);
 
             pid_t sid = setsid();
             if (sid < 0)
+            {
                 return 1;
+            }
 
             //chdir("/");
 
@@ -244,20 +273,24 @@ int main(int argc, char* argv[])
     // Initialize the client instance
     Client* client = Client::instance();
 
-    if (!client->init()) {
+    if (!client->init())
+    {
         LOG_ERROR("Client initialization failed")
         return 1;
     }
 
-    if (parser.isSet(controllerUrl)) {
+    if (parser.isSet(controllerUrl))
+    {
         client->settings()->config()->setControllerAddress(parser.value(controllerUrl));
     }
 
     new LoginWatcher(client->loginController());
     new DeviceRegistrationWatcher(client->loginController());
 
-    if (passwordOption) {
-        switch (loginData.type) {
+    if (passwordOption)
+    {
+        switch (loginData.type)
+        {
         case LoginData::Register:
             client->loginController()->registration(loginData.userId, loginData.password);
             break;
@@ -268,10 +301,15 @@ int main(int argc, char* argv[])
             client->loginController()->login();
             break;
         }
-    } else if (parser.isSet(registerAnonymous)) {
+    }
+    else if (parser.isSet(registerAnonymous))
+    {
         client->loginController()->anonymousRegistration();
-    } else {
-        if (!client->autoLogin()) {
+    }
+    else
+    {
+        if (!client->autoLogin())
+        {
             LOG_ERROR("No login data found for autologin");
             return 1;
         }

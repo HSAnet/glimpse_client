@@ -20,7 +20,8 @@ public:
     MeasurementPtr measurement;
 
 public slots:
-    void execute(const TestDefinitionPtr& test, MeasurementObserver* observer) {
+    void execute(const TestDefinitionPtr& test, MeasurementObserver* observer)
+    {
         LOG_INFO(QString("Starting execution of %1").arg(test->name()));
 
         emit started(test);
@@ -28,23 +29,29 @@ public slots:
         // TODO: Check the timing (too long ago?)
         currentTest = test;
         measurement = factory.createMeasurement(test->name());
-        if ( !measurement.isNull() ) {
+        if ( !measurement.isNull() )
+        {
             connect(measurement.data(), SIGNAL(finished()), this, SLOT(measurementFinished()));
 
-            if (observer) {
+            if (observer)
+            {
                 observer->created(measurement);
                 delete observer;
             }
 
             MeasurementDefinitionPtr definition = factory.createMeasurementDefinition(test->name(), test->measurementDefinition());
 
-            if (measurement->prepare(networkManager, definition)) {
-                if (measurement->start()) {
+            if (measurement->prepare(networkManager, definition))
+            {
+                if (measurement->start())
+                {
                     this->measurement = measurement;
                     return;
                 }
             }
-        } else {
+        }
+        else
+        {
             LOG_ERROR(QString("Unable to create measurement: %1").arg(test->name()));
         }
 
@@ -52,7 +59,8 @@ public slots:
         emit finished(test, ResultPtr());
     }
 
-    void measurementFinished() {
+    void measurementFinished()
+    {
         measurement->disconnect(this, SLOT(measurementFinished()));
         LOG_INFO(QString("Finished execution of %1 (success)").arg(currentTest->name()));
         emit finished(currentTest, measurement->result());
@@ -117,7 +125,8 @@ public slots:
 
 void TaskExecutor::Private::onStarted()
 {
-    if (!running) {
+    if (!running)
+    {
         running = true;
         emit q->runningChanged(running);
     }
@@ -127,17 +136,20 @@ Q_DECLARE_METATYPE(MeasurementObserver*);
 
 void TaskExecutor::Private::onFinished()
 {
-    if (queue.isEmpty()) {
+    if (queue.isEmpty())
+    {
         running = false;
         emit q->runningChanged(running);
-    } else {
+    }
+    else
+    {
         QueueEntry entry = queue.takeFirst();
         QMetaObject::invokeMethod(&executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinitionPtr, entry.definition), Q_ARG(MeasurementObserver*, entry.observer));
     }
 }
 
 TaskExecutor::TaskExecutor()
-: d(new Private(this))
+    : d(new Private(this))
 {
     qRegisterMetaType<MeasurementObserver*>();
 }
@@ -164,12 +176,15 @@ bool TaskExecutor::isRunning() const
 
 void TaskExecutor::execute(const TestDefinitionPtr &test, MeasurementObserver *observer)
 {
-    if (d->running == false) {
+    if (d->running == false)
+    {
         d->running = true;
         emit runningChanged(d->running);
 
         QMetaObject::invokeMethod(&d->executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinitionPtr, test), Q_ARG(MeasurementObserver*, observer));
-    } else {
+    }
+    else
+    {
         TaskExecutor::Private::QueueEntry entry;
         entry.definition = test;
         entry.observer = observer;

@@ -144,7 +144,9 @@ void Client::Private::setupUnixSignalHandlers()
     Int.sa_flags |= SA_RESTART;
 
     if (sigaction(SIGINT, &Int, 0) > 0)
-       return;
+    {
+        return;
+    }
 
     hup.sa_handler = Client::Private::hupSignalHandler;
     sigemptyset(&hup.sa_mask);
@@ -152,7 +154,9 @@ void Client::Private::setupUnixSignalHandlers()
     hup.sa_flags |= SA_RESTART;
 
     if (sigaction(SIGHUP, &hup, 0) > 0)
+    {
        return;
+    }
 
     term.sa_handler = Client::Private::termSignalHandler;
     sigemptyset(&term.sa_mask);
@@ -160,16 +164,24 @@ void Client::Private::setupUnixSignalHandlers()
     term.sa_flags |= SA_RESTART;
 
     if (sigaction(SIGTERM, &term, 0) > 0)
-       return;
+    {
+        return;
+    }
 
     if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigintFd))
-       qFatal("Couldn't create INT socketpair");
+    {
+        qFatal("Couldn't create INT socketpair");
+    }
 
     if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sighupFd))
-       qFatal("Couldn't create HUP socketpair");
+    {
+        qFatal("Couldn't create HUP socketpair");
+    }
 
     if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigtermFd))
-       qFatal("Couldn't create TERM socketpair");
+    {
+        qFatal("Couldn't create TERM socketpair");
+    }
 
     snInt = new QSocketNotifier(sigintFd[1], QSocketNotifier::Read, this);
     connect(snInt, SIGNAL(activated(int)), this, SLOT(handleSigInt()));
@@ -187,7 +199,8 @@ void Client::Private::setupUnixSignalHandlers()
 #ifdef Q_OS_WIN
 BOOL Client::Private::CtrlHandler(DWORD ctrlType)
 {
-    switch (ctrlType) {
+    switch (ctrlType)
+    {
     case CTRL_C_EVENT:
     case CTRL_CLOSE_EVENT:
         LOG_INFO("Close requested, quitting.");
@@ -254,9 +267,13 @@ void Client::Private::taskFinished(const TestDefinitionPtr &test, const ResultPt
     ReportPtr report(new Report(test->id(), QDateTime::currentDateTime(), results));
 
     if (oldReport)
+    {
         reportScheduler.modifyReport(report);
+    }
     else
+    {
         reportScheduler.addReport(report);
+    }
 }
 
 void Client::Private::loginStatusChanged()
@@ -283,7 +300,9 @@ Client *Client::instance()
     static Client* ins = NULL;
 
     if ( !ins )
+    {
         ins = new Client();
+    }
 
     return ins;
 }
@@ -312,7 +331,8 @@ bool Client::init()
 
 bool Client::autoLogin()
 {
-    if (d->settings.hasLoginData()) {
+    if (d->settings.hasLoginData())
+    {
         d->loginController.login();
         return true;
     }
@@ -356,7 +376,9 @@ void Client::packetTrains()
 void Client::setStatus(Client::Status status)
 {
     if ( d->status == status )
+    {
         return;
+    }
 
     d->status = status;
     emit statusChanged();

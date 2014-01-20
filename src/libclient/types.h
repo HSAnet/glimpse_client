@@ -28,27 +28,36 @@ enum RequestType
     className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator(enumName)).keyToValue(value)
 
 template <typename T>
-QVariantList ptrListToVariant(const QList<T>& list) {
+QVariantList ptrListToVariant(const QList<T>& list)
+{
     QVariantList lst;
-    foreach(T entry, list) {
+    foreach(T entry, list)
+    {
         if (!entry.isNull())
+        {
             lst.append(entry->toVariant());
+        }
     }
     return lst;
 }
 
 template <typename T>
-QList<QSharedPointer<T> > ptrListFromVariant(const QVariant& variant) {
+QList<QSharedPointer<T> > ptrListFromVariant(const QVariant& variant)
+{
     QList<QSharedPointer<T> > lst;
     foreach(const QVariant& entry, variant.toList())
+    {
         lst.append(T::fromVariant(entry));
+    }
     return lst;
 }
 
 template <typename T>
-QVariantList listToVariant(const QList<T>& list) {
+QVariantList listToVariant(const QList<T>& list)
+{
     QVariantList lst;
-    foreach(T entry, list) {
+    foreach(T entry, list)
+    {
         lst.append(entry);
     }
     return lst;

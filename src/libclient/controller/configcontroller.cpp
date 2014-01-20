@@ -53,7 +53,8 @@ public slots:
 void ConfigController::Private::updateTimer()
 {
     TimingPtr timing = settings->config()->updateConfigSchedule();
-    if (timing.isNull()) {
+    if (timing.isNull())
+    {
         timer.stop();
         return;
     }

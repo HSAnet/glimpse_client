@@ -13,7 +13,8 @@ public:
     {
         hConsole = ::GetStdHandle(STD_INPUT_HANDLE);
 
-        if (hConsole == INVALID_HANDLE_VALUE) {
+        if (hConsole == INVALID_HANDLE_VALUE)
+        {
             LOG_ERROR("Unable to get console handle");
         }
     }

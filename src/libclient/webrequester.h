@@ -22,7 +22,8 @@ public:
     explicit WebRequester(QObject *parent = 0);
     ~WebRequester();
 
-    enum Status {
+    enum Status
+    {
         Unknown,
         Running,
         Finished,

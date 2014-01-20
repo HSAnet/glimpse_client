@@ -45,27 +45,37 @@ void loadFonts(const QString& path)
 {
     QDir dir(path);
 
-    if (dir.exists()) {
+    if (dir.exists())
+    {
         QStringList nameFilters;
         nameFilters.append("*.ttf");
 
         int ok = 0;
 
-        foreach(const QString& name, dir.entryList(nameFilters, QDir::NoDotAndDotDot|QDir::Files)) {
+        foreach(const QString& name, dir.entryList(nameFilters, QDir::NoDotAndDotDot|QDir::Files))
+        {
             int id = QFontDatabase::addApplicationFont(dir.absoluteFilePath(name));
-            if (id == -1) {
+            if (id == -1)
+            {
                 LOG_ERROR(QString("Failed to load font: %1").arg(dir.absoluteFilePath(name)));
-            } else {
+            }
+            else
+            {
                 ++ok;
             }
         }
 
-        if (ok) {
+        if (ok)
+        {
             LOG_INFO(QString("Loaded %1 fonts").arg(ok));
-        } else {
+        }
+        else
+        {
             LOG_INFO("All fonts failed to load.");
         }
-    } else {
+    }
+    else
+    {
         LOG_ERROR(QString("Font directory does not exist: %1").arg(path));
     }
 }
@@ -75,10 +85,13 @@ class SuspendHelper : public QObject
     Q_OBJECT
 
 public slots:
-    void applicationStateChanged(Qt::ApplicationState state) {
+    void applicationStateChanged(Qt::ApplicationState state)
+    {
 #ifdef Q_OS_ANDROID
         if (state != Qt::ApplicationSuspended)
+        {
             return;
+        }
 
         Settings* settings = Client::instance()->settings();
         settings->sync();
@@ -111,10 +124,14 @@ int main(int argc, char* argv[])
 
 #ifdef HAVE_BREAKPAD
     QDir crashdumpDir = StoragePaths().crashDumpDirectory();
-    if (!crashdumpDir.exists()) {
-        if (!QDir::root().mkpath(crashdumpDir.absolutePath())) {
+    if (!crashdumpDir.exists())
+    {
+        if (!QDir::root().mkpath(crashdumpDir.absolutePath()))
+        {
             LOG_ERROR(QString("Failed to create crashdump directory: %1").arg(crashdumpDir.absolutePath()));
-        } else {
+        }
+        else
+        {
             LOG_INFO("Crashdump directory created");
         }
     }

@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>tray.png</file>
-        <file>tray_mac.png</file>
-        <file>tray_mac_active.png</file>
-    </qresource>
-</RCC>

@@ -22,10 +22,14 @@ public:
     , dir(StoragePaths().schedulerDirectory())
     , realTime(true)
     {
-        if (!dir.exists()) {
-            if (!QDir::root().mkpath(dir.absolutePath())) {
+        if (!dir.exists())
+        {
+            if (!QDir::root().mkpath(dir.absolutePath()))
+            {
                 LOG_ERROR(QString("Unable to create path %1").arg(dir.absolutePath()));
-            } else {
+            }
+            else
+            {
                 LOG_INFO("Scheduler storage directory created");
             }
         }
@@ -52,10 +56,13 @@ void SchedulerStorage::Private::store(const TestDefinitionPtr& test)
     QJsonDocument document = QJsonDocument::fromVariant(test->toVariant());
 
     QFile file(dir.absoluteFilePath(fileNameForTest(test)));
-    if (file.open(QIODevice::WriteOnly)) {
+    if (file.open(QIODevice::WriteOnly))
+    {
         file.write(document.toJson());
         file.close();
-    } else {
+    }
+    else
+    {
         LOG_ERROR(QString("Unable to open file: %1").arg(file.errorString()));
     }
 }
@@ -70,7 +77,9 @@ void SchedulerStorage::Private::testAdded(const TestDefinitionPtr& test, int pos
     Q_UNUSED(position);
 
     if (!realTime || loading)
+    {
         return;
+    }
 
     store(test);
 }
@@ -80,12 +89,17 @@ void SchedulerStorage::Private::testRemoved(const TestDefinitionPtr& test, int p
     Q_UNUSED(position);
 
     if (!realTime)
+    {
         return;
+    }
 
     QString fileName = fileNameForTest(test);
-    if (!dir.remove(fileName)) {
+    if (!dir.remove(fileName))
+    {
         LOG_WARNING(QString("Unable to remove file: %1").arg(dir.absoluteFilePath(fileName)));
-    } else {
+    }
+    else
+    {
         LOG_DEBUG(QString("Deleted file: %1").arg(dir.absoluteFilePath(fileName)));
     }
 }
@@ -118,19 +132,25 @@ bool SchedulerStorage::isRealtime() const
 void SchedulerStorage::storeData()
 {
     if (d->realTime)
+    {
         return;
+    }
 
     foreach(const TestDefinitionPtr& test, d->scheduler->tests())
+    {
         d->store(test);
+    }
 }
 
 void SchedulerStorage::loadData()
 {
     d->loading = true;
 
-    foreach(const QString& fileName, d->dir.entryList(QDir::Files)) {
+    foreach(const QString& fileName, d->dir.entryList(QDir::Files))
+    {
         QFile file(d->dir.absoluteFilePath(fileName));
-        if (!file.open(QIODevice::ReadOnly)) {
+        if (!file.open(QIODevice::ReadOnly))
+        {
             LOG_DEBUG(QString("Error opening %1: %2").arg(d->dir.absoluteFilePath(fileName)).arg(file.errorString()));
             continue;
         }
@@ -138,11 +158,16 @@ void SchedulerStorage::loadData()
         QJsonParseError error;
         QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
 
-        if (error.error == QJsonParseError::NoError) {
+        if (error.error == QJsonParseError::NoError)
+        {
             TestDefinitionPtr test = TestDefinition::fromVariant(document.toVariant());
             if (test)
+            {
                 d->scheduler->enqueue(test);
-        } else {
+            }
+        }
+        else
+        {
             LOG_ERROR(QString("Error reading %1: %2").arg(d->dir.absoluteFilePath(fileName)).arg(error.errorString()));
         }
     }

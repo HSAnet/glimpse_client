@@ -34,14 +34,17 @@ public:
         m_icon.show();
     }
 
-    void setVisible(bool visible) {
-        if ( m_visible != visible ) {
+    void setVisible(bool visible)
+    {
+        if ( m_visible != visible )
+        {
             m_visible = visible;
             emit visibleChanged(visible);
         }
     }
 
-    bool isVisible() const {
+    bool isVisible() const
+    {
         return m_visible;
     }
 

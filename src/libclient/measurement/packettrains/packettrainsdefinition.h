@@ -27,7 +27,8 @@ public:
     static PacketTrainsDefinitionPtr fromVariant(const QVariant &variant);
 };
 
-struct msg {
+struct msg
+{
         quint16 iter;  // train number
         quint8 id;  // packet number (sender)
         quint8 r_id;  // packet number (receiver)

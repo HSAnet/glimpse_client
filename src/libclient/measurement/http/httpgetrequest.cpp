@@ -21,7 +21,8 @@ bool HTTPGetRequest::prepare(NetworkManager *networkManager, const MeasurementDe
 {
     Q_UNUSED(networkManager);
     definition = measurementDefinition.dynamicCast<HTTPGetRequestDefinition>();
-    if ( definition.isNull() ) {
+    if ( definition.isNull() )
+    {
         LOG_WARNING("Definition is empty");
         return false;
     }
@@ -52,7 +53,8 @@ bool HTTPGetRequest::start()
 
 void HTTPGetRequest::setStatus(Status status)
 {
-    if (currentStatus != status) {
+    if (currentStatus != status)
+    {
         currentStatus = status;
         emit statusChanged(status);
     }

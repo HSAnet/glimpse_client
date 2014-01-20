@@ -45,15 +45,21 @@ public slots:
 
 void Scheduler::Private::updateTimer()
 {
-    if (tests.isEmpty()) {
+    if (tests.isEmpty())
+    {
         timer.stop();
         LOG_DEBUG("Scheduling timer stopped");
-    } else {
+    }
+    else
+    {
         const TestDefinitionPtr td = tests.at(0);
         int ms = td->timing()->timeLeft();
         if ( ms > 0 )
+        {
             timer.start( ms );
-        else {
+        }
+        else
+        {
             // If we would call timeout() directly, the testAdded() signal
             // would be emitted after execution.
             timer.start(1);
@@ -66,20 +72,26 @@ void Scheduler::Private::updateTimer()
 int Scheduler::Private::enqueue(const TestDefinitionPtr& testDefinition)
 {
     if ( testIds.contains(testDefinition->id()) )
+    {
         return -1;
+    }
 
     bool wasEmpty = tests.isEmpty();
 
     int timeLeft = testDefinition->timing()->timeLeft();
 
-    for(int i=0; i < tests.size(); ++i) {
+    for (int i=0; i < tests.size(); ++i)
+    {
         const TestDefinitionPtr& td = tests.at(i);
-        if (timeLeft < td->timing()->timeLeft()) {
+        if (timeLeft < td->timing()->timeLeft())
+        {
             tests.insert(i, testDefinition);
             testIds.insert(testDefinition->id());
 
             if ( wasEmpty || i == 0 )
+            {
                 updateTimer();
+            }
 
             return i;
         }
@@ -88,35 +100,48 @@ int Scheduler::Private::enqueue(const TestDefinitionPtr& testDefinition)
     tests.append(testDefinition);
 
     if ( wasEmpty )
+    {
         updateTimer();
+    }
 
     return tests.size()-1;
 }
 
 void Scheduler::Private::timeout()
 {
-    for(int i=0; i < tests.size(); ++i) {
+    for (int i=0; i < tests.size(); ++i)
+    {
         TestDefinitionPtr td = tests.at(i);
 
         // We assume they are already sorted - WRONG, SO WRONG!
         if ( td->timing()->timeLeft() > 0 )
+        {
             continue;
+        }
 
         q->execute(td);
 
         tests.removeAt(i);
 
-        if (!td->timing()->reset()) {
+        if (!td->timing()->reset())
+        {
             emit q->testRemoved(td, i);
             testIds.remove(td->id());
 
             if (tests.isEmpty())
+            {
                 break;
+            }
             else
+            {
                 --i;
-        } else {
+            }
+        }
+        else
+        {
             int pos = enqueue(td);
-            if (pos != i) {
+            if (pos != i)
+            {
                 LOG_DEBUG(QString("%1 moved from %2 to %3").arg(td->name()).arg(i).arg(pos));
                 emit q->testMoved(td, i, pos);
             }

@@ -72,22 +72,26 @@ CalendarTiming::~CalendarTiming()
     delete d;
 }
 
-bool CalendarTiming::reset() {
+bool CalendarTiming::reset()
+{
     return true;
 }
 
-QDateTime CalendarTiming::nextRun() const {
+QDateTime CalendarTiming::nextRun() const
+{
     return QDateTime(); // never
 }
 
-QVariant CalendarTiming::toVariant() const {
+QVariant CalendarTiming::toVariant() const
+{
     QVariantMap hash;
     hash.insert("type", type());
     hash.insert("randomness", d->randomness.toVariant());
     return hash;
 }
 
-TimingPtr CalendarTiming::fromVariant(const QVariant &variant) {
+TimingPtr CalendarTiming::fromVariant(const QVariant &variant)
+{
     Q_UNUSED(variant);
     return TimingPtr(new CalendarTiming);
 }

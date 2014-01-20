@@ -54,13 +54,18 @@ QString StatusBarHelper::message() const
 
 void StatusBarHelper::setVisible(bool visible)
 {
-    if (visible != m_isVisible) {
+    if (visible != m_isVisible)
+    {
         m_isVisible = visible;
 
         if ( visible )
+        {
             showIcon();
+        }
         else
+        {
             hideIcon();
+        }
 
         emit visibleChanged(visible);
     }
@@ -71,11 +76,13 @@ bool StatusBarHelper::isVisible() const
     return m_isVisible;
 }
 
-namespace {
-    static int init_StatusBarHelper() {
-        Java::registerClass("de/hsaugsburg/informatik/mplane/StatusBarHelper");
-        return 1;
-    }
+namespace
+{
+static int init_StatusBarHelper()
+{
+    Java::registerClass("de/hsaugsburg/informatik/mplane/StatusBarHelper");
+    return 1;
+}
 
-    static int __StatusBarHelper = init_StatusBarHelper();
+static int __StatusBarHelper = init_StatusBarHelper();
 }

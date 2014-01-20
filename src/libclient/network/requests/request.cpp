@@ -20,7 +20,8 @@ Request::~Request()
 
 void Request::setDeviceId(const QString& deviceId)
 {
-    if ( d->deviceId != deviceId ) {
+    if ( d->deviceId != deviceId )
+    {
         d->deviceId = deviceId;
         emit deviceIdChanged(deviceId);
     }
@@ -33,7 +34,8 @@ QString Request::deviceId() const
 
 void Request::setSessionId(const QString &sessionId)
 {
-    if ( d->sessionId != sessionId ) {
+    if ( d->sessionId != sessionId )
+    {
         d->sessionId = sessionId;
         emit sessionIdChanged(sessionId);
     }

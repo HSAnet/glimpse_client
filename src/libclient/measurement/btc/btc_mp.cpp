@@ -79,7 +79,9 @@ void BulkTransportCapacityMP::receiveRequest()
 void BulkTransportCapacityMP::handleError(QAbstractSocket::SocketError socketError)
 {
     if (socketError == QAbstractSocket::RemoteHostClosedError)
+    {
         return;
+    }
 
     QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());
     LOG_ERROR(QString("Socket Error: %1").arg(socket->errorString()));
@@ -93,7 +95,8 @@ Measurement::Status BulkTransportCapacityMP::status() const
 bool BulkTransportCapacityMP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     definition = measurementDefinition.dynamicCast<BulkTransportCapacityDefinition>();
-    if ( definition.isNull() ) {
+    if ( definition.isNull() )
+    {
         LOG_WARNING("Definition is empty");
     }
 

@@ -4,18 +4,21 @@
 #include <QList>
 #include <QHash>
 #include <QDebug>
+#include <QCoreApplication>
 
 LOGGER(Java);
 
-namespace {
-    static JavaVM* g_vm = NULL;
+namespace
+{
+static JavaVM* g_vm = NULL;
 
-    QList<const char*>& registeredClasses() {
-        static QList<const char*> classes;
-        return classes;
-    }
+QList<const char*>& registeredClasses()
+{
+    static QList<const char*> classes;
+    return classes;
+}
 
-    static QHash<QByteArray, jclass> classMap;
+static QHash<QByteArray, jclass> classMap;
 }
 
 QString getQString(const Java& env, jstring str)
@@ -26,6 +29,45 @@ QString getQString(const Java& env, jstring str)
     return msg;
 }
 
+static void logInfo(JNIEnv* env, const QString& tag, const QString& message)
+{
+    jclass c = env->FindClass("android/util/Log");
+    if (c)
+    {
+        jmethodID m = env->GetStaticMethodID(c, "i", "(Ljava/lang/String;Ljava/lang/String;)I");
+
+        jstring jTag = env->NewString((const jchar*)tag.constData(), tag.length());
+        jstring jMessage = env->NewString((const jchar*)message.constData(), message.length());
+        env->CallStaticIntMethod(c, m, tag.constData(), jTag, jMessage);
+        env->DeleteLocalRef(jMessage);
+        env->DeleteLocalRef(jTag);
+
+        env->DeleteLocalRef(c);
+
+        if (env->ExceptionCheck())
+        {
+            printf("Exception!!\n");
+            env->ExceptionClear();
+        }
+    }
+}
+
+static void dispatchOnDestroy(JNIEnv *env, jclass clazz)
+{
+    Q_UNUSED(clazz);
+
+    //logInfo(env, "mPlane", "Quitting Application");
+
+    //qApp->quit();
+}
+
+static JNINativeMethod method_table[] =
+{
+    { "dispatchOnDestroy", "()V", (void*)dispatchOnDestroy }
+};
+
+static int method_table_size = sizeof(method_table) / sizeof(method_table[0]);
+
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*)
 {
     g_vm = vm;
@@ -33,11 +75,26 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*)
     JNIEnv* env;
     vm->GetEnv((void**)&env, JNI_VERSION_1_6);
 
-    foreach(const char* className, registeredClasses()) {
-        jclass clazz = env->FindClass(className);
-        if ( clazz ) {
+    jclass clazz = env->FindClass("de/hsaugsburg/informatik/mplane/MobileActivity");
+    if (clazz)
+    {
+        //env->RegisterNatives(clazz, method_table, method_table_size);
+        env->DeleteLocalRef(clazz);
+    }
+    else
+    {
+        return JNI_ERR;
+    }
+
+    foreach(const char* className, registeredClasses())
+    {
+        clazz = env->FindClass(className);
+        if ( clazz )
+        {
             classMap.insert(className, (jclass)env->NewGlobalRef(clazz));
-        } else {
+        }
+        else
+        {
             LOG_ERROR(QString("Failed to find class %1").arg(className));
         }
     }
@@ -51,7 +108,9 @@ JNIEXPORT void JNI_OnUnload(JavaVM* vm, void*)
     vm->GetEnv((void**)&env, JNI_VERSION_1_6);
 
     foreach(jclass clazz, classMap)
+    {
         env->DeleteGlobalRef(clazz);
+    }
 }
 
 JavaVM* javaVM()
@@ -82,7 +141,9 @@ JNIEnv *Java::operator ->() const
 void Java::registerClass(const char *className)
 {
     if (!registeredClasses().contains(className))
+    {
         registeredClasses().append(className);
+    }
 }
 
 jclass Java::findClass(const QByteArray &className) const
@@ -93,10 +154,13 @@ jclass Java::findClass(const QByteArray &className) const
 jobject Java::createInstance(jclass clazz) const
 {
     if ( clazz == NULL )
+    {
         return NULL;
+    }
 
     jmethodID constructor = env->GetMethodID(clazz, "<init>", "()V");
-    if ( !constructor ) {
+    if ( !constructor )
+    {
         jmethodID nameId = env->GetMethodID(clazz, "getName", "()Ljava/lang/String;");
         QString className = getQString(*this, (jstring)env->CallObjectMethod(clazz, nameId));
         LOG_WARNING(QString("No default contructor found for class %1").arg(className));

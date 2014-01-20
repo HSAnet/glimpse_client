@@ -73,7 +73,7 @@ void MacProcessModel::reload()
     NSWorkspace* workspace = [NSWorkspace sharedWorkspace];
     NSArray* runningApplications = [workspace runningApplications];
 
-    for(NSRunningApplication* application in runningApplications) {
+    for (NSRunningApplication* application in runningApplications) {
         ProcessInfo info;
         info.localizedName = QtMac::fromNSString([application localizedName]);
         info.bundleName = QtMac::fromNSString([application bundleIdentifier]);

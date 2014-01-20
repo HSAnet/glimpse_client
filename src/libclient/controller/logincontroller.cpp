@@ -56,7 +56,8 @@ public slots:
 
 void LoginController::Private::setLoggedIn(bool loggedIn)
 {
-    if (this->loggedIn != loggedIn) {
+    if (this->loggedIn != loggedIn)
+    {
         this->loggedIn = loggedIn;
         emit q->loggedInChanged();
     }
@@ -64,7 +65,8 @@ void LoginController::Private::setLoggedIn(bool loggedIn)
 
 void LoginController::Private::setRegisterdDevice(bool registeredDevice)
 {
-    if (this->registeredDevice != registeredDevice) {
+    if (this->registeredDevice != registeredDevice)
+    {
         this->registeredDevice = registeredDevice;
         emit q->registeredDeviceChanged();
     }
@@ -77,7 +79,8 @@ void LoginController::Private::onFinished()
     LOG_INFO("Login/Registration successful");
 
     // After registration we save the login data
-    if (requester.request() == &registerRequest) {
+    if (requester.request() == &registerRequest)
+    {
         isLogin = false;
         settings->setUserId(registerRequest.userId());
         settings->setPassword(registerRequest.password());
@@ -93,9 +96,13 @@ void LoginController::Private::onFinished()
     emit q->finished();
 
     if (isLogin)
+    {
         emit q->loginFinished();
+    }
     else
+    {
         emit q->registrationFinished();
+    }
 }
 
 void LoginController::Private::onError()

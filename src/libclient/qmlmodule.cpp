@@ -40,14 +40,17 @@ class Time : public QObject
     Q_OBJECT
 
 public:
-    Time(QObject* parent = 0) : QObject(parent) {
+    Time(QObject* parent = 0) : QObject(parent)
+    {
     }
 
-    Q_INVOKABLE int restart() {
+    Q_INVOKABLE int restart()
+    {
         return time.restart();
     }
 
-    Q_INVOKABLE int elapsed() const {
+    Q_INVOKABLE int elapsed() const
+    {
         return time.elapsed();
     }
 

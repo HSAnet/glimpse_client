@@ -77,9 +77,12 @@ ReportModel::~ReportModel()
 void ReportModel::setScheduler(ReportScheduler *scheduler)
 {
     if (d->scheduler == scheduler)
+    {
         return;
+    }
 
-    if (d->scheduler) {
+    if (d->scheduler)
+    {
         disconnect(d->scheduler.data(), SIGNAL(reportAdded(ReportPtr)), d, SLOT(reportAdded(ReportPtr)));
         disconnect(d->scheduler.data(), SIGNAL(reportModified(ReportPtr)), d, SLOT(reportModified(ReportPtr)));
         disconnect(d->scheduler.data(), SIGNAL(reportRemoved(ReportPtr)), d, SLOT(reportRemoved(ReportPtr)));
@@ -87,7 +90,8 @@ void ReportModel::setScheduler(ReportScheduler *scheduler)
 
     d->scheduler = scheduler;
 
-    if (d->scheduler) {
+    if (d->scheduler)
+    {
         connect(d->scheduler.data(), SIGNAL(reportAdded(ReportPtr)), d, SLOT(reportAdded(ReportPtr)));
         connect(d->scheduler.data(), SIGNAL(reportModified(ReportPtr)), d, SLOT(reportModified(ReportPtr)));
         connect(d->scheduler.data(), SIGNAL(reportRemoved(ReportPtr)), d, SLOT(reportRemoved(ReportPtr)));
@@ -106,9 +110,13 @@ QModelIndex ReportModel::indexFromTaskId(const QUuid &taskId) const
 {
     int pos = d->identToReport.value(taskId);
     if ( pos == -1 )
+    {
         return QModelIndex();
+    }
     else
+    {
         return createIndex(pos, 0);
+    }
 }
 
 void ReportModel::reset()
@@ -116,7 +124,9 @@ void ReportModel::reset()
     beginResetModel();
 
     if (!d->scheduler.isNull())
+    {
         d->reports = d->scheduler->reports();
+    }
 
     endResetModel();
 }
@@ -124,7 +134,9 @@ void ReportModel::reset()
 QVariant ReportModel::get(int index) const
 {
     if (index < 0 || index >= d->reports.size())
+    {
         return QVariant();
+    }
 
     const ReportPtr& report = d->reports.at(index);
     return report->toVariant();
@@ -142,7 +154,9 @@ QHash<int, QByteArray> ReportModel::roleNames() const
 int ReportModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
+    {
         return 0;
+    }
 
     return d->reports.size();
 }
@@ -158,12 +172,17 @@ QVariant ReportModel::data(const QModelIndex &index, int role) const
     const ReportPtr& report = d->reports.at(index.row());
 
     if (role == Qt::DisplayRole)
+    {
         role = TaskIdRole + index.column();
+    }
 
-    switch (role) {
-    case TaskIdRole: return uuidToString(report->taskId());
-    case DateTimeRole: return report->dateTime();
-    //case ResultsRole: return report->results(); // FIXME: Scripting can't do anything with that
+    switch (role)
+    {
+    case TaskIdRole:
+        return uuidToString(report->taskId());
+    case DateTimeRole:
+        return report->dateTime();
+        //case ResultsRole: return report->results(); // FIXME: Scripting can't do anything with that
     }
 
     return QVariant();
@@ -172,14 +191,20 @@ QVariant ReportModel::data(const QModelIndex &index, int role) const
 QVariant ReportModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole || orientation != Qt::Horizontal)
+    {
         return QVariant();
+    }
 
     section += TaskIdRole;
 
-    switch (section) {
-    case TaskIdRole: return tr("Task Id");
-    case DateTimeRole: return tr("Date-Time");
-    case ResultsRole: return tr("Results");
+    switch (section)
+    {
+    case TaskIdRole:
+        return tr("Task Id");
+    case DateTimeRole:
+        return tr("Date-Time");
+    case ResultsRole:
+        return tr("Results");
 
     default:
         return QVariant();

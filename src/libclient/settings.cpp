@@ -43,13 +43,16 @@ Settings::StorageType Settings::init()
     LOG_INFO(QString("Device ID: %1").arg(deviceId()));
 
     // Create new settings
-    if ( newSettings ) {
+    if ( newSettings )
+    {
         d->config.setControllerAddress("141.82.51.240:5105");
 
         LOG_INFO("Created new settings for this device");
 
         return NewSettings;
-    } else {
+    }
+    else
+    {
         d->config.fillFromVariant( qvariant_cast<QVariantMap>(d->settings.value("config")) );
 
         LOG_INFO("Loaded existing settings for this device");
@@ -64,7 +67,8 @@ bool Settings::hasLoginData() const
 
 void Settings::setDeviceId(const QString &deviceId)
 {
-    if ( this->deviceId() != deviceId ) {
+    if ( this->deviceId() != deviceId )
+    {
         d->settings.setValue("device-id", deviceId);
         emit deviceIdChanged(deviceId);
     }
@@ -77,7 +81,8 @@ QString Settings::deviceId() const
 
 void Settings::setUserId(const QString &userId)
 {
-    if ( this->userId() != userId ) {
+    if ( this->userId() != userId )
+    {
         d->settings.setValue("user-id", userId);
         emit userIdChanged(userId);
     }
@@ -90,7 +95,8 @@ QString Settings::userId() const
 
 void Settings::setPassword(const QString &password)
 {
-    if ( this->password() != password ) {
+    if ( this->password() != password )
+    {
         d->settings.setValue("password", password);
         emit passwordChanged(password);
     }
@@ -103,7 +109,8 @@ QString Settings::password() const
 
 void Settings::setSessionId(const QString &sessionId)
 {
-    if ( this->sessionId() != sessionId ) {
+    if ( this->sessionId() != sessionId )
+    {
         d->settings.setValue("session-id", sessionId);
         emit sessionIdChanged(sessionId);
     }

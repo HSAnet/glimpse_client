@@ -37,7 +37,8 @@ Units::Units(QObject *parent)
     QList<QScreen*> screens = app->screens();
     LOG_DEBUG(QString("Found %1 screens for this device").arg(screens.size()));
 
-    if ( !screens.isEmpty() ) {
+    if ( !screens.isEmpty() )
+    {
         QScreen* screen = screens.at(0);
 
         QSize size = screen->size();
@@ -64,10 +65,13 @@ Units::~Units()
 float Units::gu(float value) const
 {
     const float ratio = d->gridUnit / DEFAULT_GRID_UNIT_PX;
-    if (value <= 2.0) {
+    if (value <= 2.0)
+    {
         // for values under 2dp, return only multiples of the value
         return qRound(value * qFloor(ratio));
-    } else {
+    }
+    else
+    {
         return qRound(value * ratio);
     }
 }
@@ -79,7 +83,8 @@ float Units::dp(float value) const
 
 void Units::setGridUnit(float gridUnit)
 {
-    if (d->gridUnit != gridUnit) {
+    if (d->gridUnit != gridUnit)
+    {
         d->gridUnit = gridUnit;
         emit gridUnitChanged();
     }

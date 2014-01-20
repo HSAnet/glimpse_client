@@ -6,17 +6,21 @@
 QStringList BulkTransportCapacityPlugin::measurements() const
 {
     return QStringList()
-            << "btc_ma"
-            << "btc_mp";
+           << "btc_ma"
+           << "btc_mp";
 }
 
 MeasurementPtr BulkTransportCapacityPlugin::createMeasurement(const QString &name)
 {
     if (name == "btc_ma")
+    {
         return MeasurementPtr(new BulkTransportCapacityMA);
+    }
 
     if (name == "btc_mp")
+    {
         return MeasurementPtr(new BulkTransportCapacityMP);
+    }
 
     return MeasurementPtr();
 }

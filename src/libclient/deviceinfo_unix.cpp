@@ -18,13 +18,15 @@ DeviceInfo::~DeviceInfo()
 
 QString DeviceInfo::deviceId() const
 {
-    if (int ret = setfsent() != 1) {
+    if (int ret = setfsent() != 1)
+    {
         LOG_ERROR(QString("Error opening fstab: setfsent returned %1").arg(ret));
         return QString();
     }
 
     fstab* tab = getfsfile("/");
-    if (!tab) {
+    if (!tab)
+    {
         LOG_ERROR("Mount point / not found!");
         endfsent();
         return QString();
@@ -33,8 +35,11 @@ QString DeviceInfo::deviceId() const
     QByteArray uuid = QByteArray::fromRawData(tab->fs_spec, strlen(tab->fs_spec));
 
     if (uuid.indexOf("UUID=") == 0)
+    {
         uuid.remove(0, 5);
-    else {
+    }
+    else
+    {
         LOG_ERROR(QString("fs_spec does not contain an UUID: %1").arg(QString::fromLatin1(uuid)));
     }
 

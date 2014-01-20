@@ -61,7 +61,9 @@ LogModel::~LogModel()
 int LogModel::rowCount(const QModelIndex &parent) const
 {
     if ( parent.isValid() )
+    {
         return 0;
+    }
 
     return d->lines.size();
 }
@@ -70,14 +72,20 @@ QVariant LogModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
     if (row < 0 || row >= d->lines.size())
+    {
         return QVariant();
+    }
 
     const LogMessage& msg = d->lines.at(row);
 
-    switch (role) {
-    case LevelRole: return msg.level;
-    case NameRole: return msg.name;
-    case MessageRole: return msg.message;
+    switch (role)
+    {
+    case LevelRole:
+        return msg.level;
+    case NameRole:
+        return msg.name;
+    case MessageRole:
+        return msg.message;
 
     default:
         break;

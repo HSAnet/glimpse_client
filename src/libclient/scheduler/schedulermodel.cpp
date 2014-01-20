@@ -65,9 +65,12 @@ SchedulerModel::~SchedulerModel()
 void SchedulerModel::setScheduler(Scheduler *scheduler)
 {
     if (d->scheduler == scheduler)
+    {
         return;
+    }
 
-    if (d->scheduler) {
+    if (d->scheduler)
+    {
         disconnect(d->scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr,int)), d, SLOT(testAdded(TestDefinitionPtr,int)));
         disconnect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr,int)), d, SLOT(testRemoved(TestDefinitionPtr,int)));
         disconnect(d->scheduler.data(), SIGNAL(testMoved(TestDefinitionPtr,int,int)), d, SLOT(testMoved(TestDefinitionPtr,int,int)));
@@ -75,7 +78,8 @@ void SchedulerModel::setScheduler(Scheduler *scheduler)
 
     d->scheduler = scheduler;
 
-    if (d->scheduler) {
+    if (d->scheduler)
+    {
         connect(d->scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr,int)), d, SLOT(testAdded(TestDefinitionPtr,int)));
         connect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr,int)), d, SLOT(testRemoved(TestDefinitionPtr,int)));
         connect(d->scheduler.data(), SIGNAL(testMoved(TestDefinitionPtr,int,int)), d, SLOT(testMoved(TestDefinitionPtr,int,int)));
@@ -95,7 +99,9 @@ void SchedulerModel::reset()
     beginResetModel();
 
     if (!d->scheduler.isNull())
+    {
         d->tests = d->scheduler->tests();
+    }
 
     endResetModel();
 }
@@ -104,11 +110,14 @@ QVariant SchedulerModel::get(int index) const
 {
     QModelIndex idx = this->index(index, 0);
     if (!idx.isValid())
+    {
         return QVariant();
+    }
 
     QVariantMap hash;
     QHashIterator<int, QByteArray> iter(roleNames());
-    while (iter.hasNext()) {
+    while (iter.hasNext())
+    {
         iter.next();
         hash.insert(iter.value(), data(idx, iter.key()));
     }
@@ -130,7 +139,9 @@ QHash<int, QByteArray> SchedulerModel::roleNames() const
 int SchedulerModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
+    {
         return 0;
+    }
 
     return d->tests.size();
 }
@@ -146,14 +157,22 @@ QVariant SchedulerModel::data(const QModelIndex &index, int role) const
     const TestDefinitionPtr& testDefinition = d->tests.at(index.row());
 
     if (role == Qt::DisplayRole)
+    {
         role = NameRole + index.column();
+    }
 
-    switch (role) {
-    case NameRole: return testDefinition->name();
-    case NextRunRole: return testDefinition->timing()->nextRun();
-    case TimeLeftRole: return testDefinition->timing()->timeLeft();
-    case TypeRole: return testDefinition->timing()->type();
-    case IdRole: return testDefinition->id();
+    switch (role)
+    {
+    case NameRole:
+        return testDefinition->name();
+    case NextRunRole:
+        return testDefinition->timing()->nextRun();
+    case TimeLeftRole:
+        return testDefinition->timing()->timeLeft();
+    case TypeRole:
+        return testDefinition->timing()->type();
+    case IdRole:
+        return testDefinition->id();
     }
 
     return QVariant();
@@ -162,16 +181,24 @@ QVariant SchedulerModel::data(const QModelIndex &index, int role) const
 QVariant SchedulerModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole || orientation != Qt::Horizontal)
+    {
         return QVariant();
+    }
 
     section += NameRole;
 
-    switch (section) {
-    case NameRole: return tr("Name");
-    case NextRunRole: return tr("Next Run");
-    case TimeLeftRole: return tr("Time left");
-    case TypeRole: return tr("Type");
-    case IdRole: return tr("Id");
+    switch (section)
+    {
+    case NameRole:
+        return tr("Name");
+    case NextRunRole:
+        return tr("Next Run");
+    case TimeLeftRole:
+        return tr("Time left");
+    case TypeRole:
+        return tr("Type");
+    case IdRole:
+        return tr("Id");
 
     default:
         return QVariant();

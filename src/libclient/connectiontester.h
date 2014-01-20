@@ -100,7 +100,8 @@ private slots:
     void onFinished();
 
 protected:
-    struct RowData {
+    struct RowData
+    {
         ConnectionTester::TestType testType;
         bool success;
         bool finished;

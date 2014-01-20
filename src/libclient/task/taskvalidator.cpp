@@ -30,20 +30,22 @@ TaskValidator::ValidationResult TaskValidator::validate(const TestDefinitionPtr 
 {
     // Simple checks
     if (testDefinition.isNull()
-        || testDefinition->id().isNull()
-        || testDefinition->timing().isNull())
+            || testDefinition->id().isNull()
+            || testDefinition->timing().isNull())
     {
         return Invalid;
     }
 
     // Check if we have the measurment
-    if (d->availableMeasurements.contains(testDefinition->name()) == false) {
+    if (d->availableMeasurements.contains(testDefinition->name()) == false)
+    {
         LOG_WARNING(QString("Measurement named '%1' does not exist").arg(testDefinition->name()));
         return Invalid;
     }
 
     // Check the timing
-    if (testDefinition->timing()->nextRun().isNull()) {
+    if (testDefinition->timing()->nextRun().isNull())
+    {
         LOG_INFO(QString("Measurement '%1' has no next run, ignoring").arg(testDefinition->name()));
         return Invalid;
     }

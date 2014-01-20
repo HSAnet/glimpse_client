@@ -42,13 +42,19 @@ QDateTime PeriodicTiming::nextRun() const
     QDateTime nextRun;
 
     if ( d->lastExecute.isNull() )
+    {
         nextRun = QDateTime::currentDateTime();
+    }
     else
+    {
         nextRun = d->lastExecute.addMSecs(d->period);
+    }
 
     // Stop if we exceed the end time
     if (d->end.isValid() && d->end < nextRun)
+    {
         return QDateTime();
+    }
 
     return nextRun;
 }

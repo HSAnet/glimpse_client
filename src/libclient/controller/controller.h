@@ -15,7 +15,8 @@ public:
     explicit Controller(QObject* parent = 0);
     ~Controller();
 
-    enum Status {
+    enum Status
+    {
         Unknown,
         Running,
         Finished,

@@ -24,10 +24,14 @@ bool NatPortTimes::isMaster() const
 bool NatPortTimes::initialize(const PeerList &peers, bool master, QUdpSocket *socket)
 {
     if ( isInitialized )
+    {
         return true;
+    }
 
     if ( !puncher.bind(32010) )
+    {
         return false;
+    }
 
     this->master = master;
     this->peers = peers;
@@ -43,7 +47,9 @@ void NatPortTimes::uninitialize()
 bool NatPortTimes::start()
 {
     foreach(const Peer& peer, peers)
+    {
         puncher.writeDatagram(QByteArray(), peer.host, peer.port);
+    }
 
     return true;
 }
@@ -69,7 +75,8 @@ QVariant NatPortTimes::data(int role) const
 
 void NatPortTimes::readyRead()
 {
-    while ( puncher.hasPendingDatagrams() ) {
+    while ( puncher.hasPendingDatagrams() )
+    {
         QByteArray datagram;
         datagram.resize(puncher.pendingDatagramSize());
 
@@ -79,7 +86,8 @@ void NatPortTimes::readyRead()
         puncher.readDatagram(datagram.data(), datagram.size(), &host, &port);
 
         // Throw away the first datagram
-        if (!gotFirstPacket) {
+        if (!gotFirstPacket)
+        {
             gotFirstPacket = true;
             continue;
         }

@@ -18,7 +18,8 @@ public:
         attach();
     }
 
-    ~Java() {
+    ~Java()
+    {
         detach();
     }
 

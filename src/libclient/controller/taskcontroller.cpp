@@ -24,20 +24,26 @@ public:
     {
     }
 
-    TestDefinitionList tasks() const {
+    TestDefinitionList tasks() const
+    {
         return m_tasks;
     }
 
-    bool fillFromVariant(const QVariantMap &variant) {
+    bool fillFromVariant(const QVariantMap &variant)
+    {
         m_tasks.clear();
 
         QVariantList tasks = variant.value("tasks").toList();
-        foreach(const QVariant& taskVariant, tasks) {
+        foreach(const QVariant& taskVariant, tasks)
+        {
             TestDefinitionPtr test = TestDefinition::fromVariant(taskVariant);
 
             if (m_validator.validate(test) == TaskValidator::Valid)
+            {
                 m_tasks.append(test);
-            else {
+            }
+            else
+            {
                 // TODO: Get more information
                 LOG_DEBUG(QString("Received invalid task, ignoring."));
             }
@@ -95,7 +101,8 @@ public slots:
 void TaskController::Private::updateTimer()
 {
     TimingPtr timing = settings->config()->fetchTaskSchedule();
-    if (timing.isNull()) {
+    if (timing.isNull())
+    {
         timer.stop();
         return;
     }
@@ -112,7 +119,8 @@ void TaskController::Private::updateTimer()
 
 void TaskController::Private::finished()
 {
-    foreach(const TestDefinitionPtr& testDefinition, response.tasks()) {
+    foreach(const TestDefinitionPtr& testDefinition, response.tasks())
+    {
         scheduler->enqueue(testDefinition);
     }
 }

@@ -22,7 +22,7 @@ namespace help
 #ifdef Q_OS_WIN
 inline void nanosleep(qint64 ns)
 {
-    std::this_thread::sleep_for(std::chrono::nanoseconds(ns));
+    std::this_thread::sleep_for (std::chrono::nanoseconds(ns));
 }
 #else
 inline void nanosleep(qint64 ns)
@@ -53,7 +53,7 @@ bool PacketTrainsMA::start()
     quint64 R_MAX = 262144000;
     qint64 delay = 200000000;
 
-    for(int i = 0; i < definition->iterations; i++)
+    for (int i = 0; i < definition->iterations; i++)
     {
         disp[i] = (quint64) (definition->packetSize * 1000000000.0 / ((R_MAX - R_MIN) / definition->iterations * i + R_MIN)); // Linear Rate
     }
@@ -62,7 +62,7 @@ bool PacketTrainsMA::start()
     timer.start();
 
     // send trains
-    for(int i = 0; i < definition->trainLength * definition->iterations; i++)
+    for (int i = 0; i < definition->trainLength * definition->iterations; i++)
     {
         message->iter = htons(i / definition->trainLength);
         message->id = i % definition->trainLength;
@@ -87,7 +87,9 @@ bool PacketTrainsMA::start()
 void PacketTrainsMA::handleError(QAbstractSocket::SocketError socketError)
 {
     if (socketError == QAbstractSocket::RemoteHostClosedError)
+    {
         return;
+    }
 
     QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());
     cout<<"Socket Error: "<<socket->errorString().toStdString()<<endl;
@@ -102,14 +104,16 @@ Measurement::Status PacketTrainsMA::status() const
 bool PacketTrainsMA::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     definition = measurementDefinition.dynamicCast<PacketTrainsDefinition>();
-    if ( definition.isNull() ) {
+    if ( definition.isNull() )
+    {
         LOG_WARNING("Definition is empty");
     }
 
     QString hostname = QString("%1:%2").arg(definition->host).arg(definition->port);
 
     m_udpSocket = qobject_cast<QUdpSocket*>(networkManager->establishConnection(hostname, "packettrains_mp", definition->toVariant(), NetworkManager::UdpSocket));
-    if (!m_udpSocket) {
+    if (!m_udpSocket)
+    {
         LOG_ERROR("Preparation failed");
         return false;
     }

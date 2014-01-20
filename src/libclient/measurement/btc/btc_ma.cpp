@@ -95,7 +95,8 @@ void BulkTransportCapacityMA::receiveResponse()
 
 void BulkTransportCapacityMA::serverDisconnected()
 {
-    if (m_status != BulkTransportCapacityMA::Finished) {
+    if (m_status != BulkTransportCapacityMA::Finished)
+    {
         LOG_WARNING("Server closed connection, this should not happen");
     }
 }
@@ -103,7 +104,9 @@ void BulkTransportCapacityMA::serverDisconnected()
 void BulkTransportCapacityMA::handleError(QAbstractSocket::SocketError socketError)
 {
     if (socketError == QAbstractSocket::RemoteHostClosedError)
+    {
         return;
+    }
 
     QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());
     LOG_ERROR(QString("Socket Error: %1").arg(socket->errorString()));
@@ -117,14 +120,16 @@ Measurement::Status BulkTransportCapacityMA::status() const
 bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     definition = measurementDefinition.dynamicCast<BulkTransportCapacityDefinition>();
-    if ( definition.isNull() ) {
+    if ( definition.isNull() )
+    {
         LOG_WARNING("Definition is empty");
     }
 
     QString hostname = QString("%1:%2").arg(definition->host).arg(definition->port);
 
     m_tcpSocket = qobject_cast<QTcpSocket*>(networkManager->establishConnection(hostname, "btc_mp", definition->toVariant(), NetworkManager::TcpSocket));
-    if (!m_tcpSocket) {
+    if (!m_tcpSocket)
+    {
         LOG_ERROR("Preparation failed");
         return false;
     }
@@ -147,10 +152,12 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const Meas
 
 bool BulkTransportCapacityMA::stop()
 {
-    if (m_tcpSocket) {
+    if (m_tcpSocket)
+    {
         m_tcpSocket->disconnectFromHost();
         if (m_tcpSocket->state() != QTcpSocket::UnconnectedState &&
-            !m_tcpSocket->waitForDisconnected(1000)) {
+                !m_tcpSocket->waitForDisconnected(1000))
+        {
             return false;
         }
     }

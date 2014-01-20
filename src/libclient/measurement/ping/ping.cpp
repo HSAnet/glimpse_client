@@ -22,7 +22,8 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 {
     Q_UNUSED(networkManager);
     definition = measurementDefinition.dynamicCast<PingDefinition>();
-    if ( definition.isNull() ) {
+    if ( definition.isNull() )
+    {
         LOG_WARNING("Definition is empty");
         return false;
     }
@@ -72,7 +73,8 @@ Measurement::Status Ping::status() const
 
 void Ping::setStatus(Status status)
 {
-    if (currentStatus != status) {
+    if (currentStatus != status)
+    {
         currentStatus = status;
         emit statusChanged(status);
     }
@@ -87,7 +89,8 @@ bool Ping::stop()
 ResultPtr Ping::result() const
 {
     QVariantList res;
-    foreach(float val, pingTime) {
+    foreach(float val, pingTime)
+    {
         res<<QString::number(val, 'f', 3);
     }
 
@@ -123,9 +126,12 @@ void Ping::readyRead()
 #error Platform code not implemented
 #endif
 
-    for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine()) {
+    for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine())
+    {
         if ( re.indexIn(line) == -1 )
+        {
             continue;
+        }
 
         float time = re.cap(1).toFloat();
         pingTime.append(time);
@@ -134,14 +140,18 @@ void Ping::readyRead()
     }
 }
 
-void Ping::waitForFinished() {
+void Ping::waitForFinished()
+{
     process.waitForFinished(1000);
 }
 
-float Ping::averagePingTime() {
+float Ping::averagePingTime()
+{
     float time = 0;
     foreach(float t, pingTime)
+    {
         time += t;
+    }
 
     return time / pingTime.size();
 }

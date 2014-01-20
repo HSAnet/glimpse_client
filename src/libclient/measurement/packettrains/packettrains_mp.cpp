@@ -50,7 +50,9 @@ void PacketTrainsMP::readPendingDatagrams()
     quint16 iter;
 
     if (!m_receiveTimer.isValid())
+    {
         m_receiveTimer.start();
+    }
 
     while (m_udpSocket->hasPendingDatagrams())
     {
@@ -91,9 +93,11 @@ void PacketTrainsMP::eval()
         quint64 ts_otime[2] = {0}, ts_rtime[2] = {2};
         double srate = 0, rrate = 0;
 
-        for (int i = 0; i < l.size(); i++) {
-            if (l[i].id != l[i].r_id) {
-                    qDebug() <<"packages out of order";
+        for (int i = 0; i < l.size(); i++)
+        {
+            if (l[i].id != l[i].r_id)
+            {
+                qDebug() <<"packages out of order";
             }
         }
 
@@ -112,12 +116,15 @@ void PacketTrainsMP::eval()
         srate = (double) definition->packetSize * l.size() / (ts_otime[1] - ts_otime[0]) * 1000000000;
         rrate = (double) definition->packetSize * l.size() / (ts_rtime[1] - ts_rtime[0]) * 1000000000;
         // ignore infinite rates
-        if (ts_otime[0] != ts_rtime[1] && ts_rtime[0] != ts_rtime[1]) {
+        if (ts_otime[0] != ts_rtime[1] && ts_rtime[0] != ts_rtime[1])
+        {
             m_recvSpeed.append(rrate / 1024);
             m_sendSpeed.append(srate / 1024);
             //cout<<"sending @ "<<fixed<<setprecision(2)<<srate / 1048576 * 8<<" MBit/s"<<endl;
             //cout<<"receiving @ "<<fixed<<setprecision(2)<<rrate / 1048576 * 8<<" MBit/s"<<endl;
-        } else {
+        }
+        else
+        {
             LOG_ERROR("Ignoring train due to infinite rate");
         }
     }
@@ -128,12 +135,13 @@ void PacketTrainsMP::eval()
 void PacketTrainsMP::handleError(QAbstractSocket::SocketError socketError)
 {
     if (socketError == QAbstractSocket::RemoteHostClosedError)
+    {
         return;
+    }
 
     QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());
     cout<<"Socket Error: "<<socket->errorString().toStdString()<<endl;
 }
-
 
 Measurement::Status PacketTrainsMP::status() const
 {
@@ -145,13 +153,15 @@ bool PacketTrainsMP::prepare(NetworkManager *networkManager, const MeasurementDe
     Q_UNUSED(networkManager);
 
     definition = measurementDefinition.dynamicCast<PacketTrainsDefinition>();
-    if ( definition.isNull() ) {
+    if ( definition.isNull() )
+    {
         LOG_WARNING("Definition is empty");
     }
 
     m_udpSocket = qobject_cast<QUdpSocket*>(peerSocket());
 
-    if (!m_udpSocket) {
+    if (!m_udpSocket)
+    {
         LOG_ERROR("Preparation failed");
         return false;
     }
@@ -164,7 +174,7 @@ bool PacketTrainsMP::prepare(NetworkManager *networkManager, const MeasurementDe
     m_packetsReceived = 0;
     m_rec.clear();
 
-    for(int i=0; i<definition->iterations; i++)
+    for (int i=0; i<definition->iterations; i++)
     {
         m_rec.append(QList<msg>());
     }

@@ -27,16 +27,19 @@ public:
     {
     }
 
-    void setReports(const ReportList& reports) {
+    void setReports(const ReportList& reports)
+    {
         m_reports = reports;
     }
 
-    ReportList reports() const {
+    ReportList reports() const
+    {
         return m_reports;
     }
 
     // Request interface
-    QVariant toVariant() const {
+    QVariant toVariant() const
+    {
         QVariantMap map;
         map.insert("session_id", sessionId());
         map.insert("reports", ptrListToVariant(m_reports));
@@ -61,17 +64,21 @@ public:
     QStringList taskIds;
 
     // Response interface
-    bool fillFromVariant(const QVariantMap &variant) {
+    bool fillFromVariant(const QVariantMap &variant)
+    {
         this->taskIds.clear();
 
         QVariantList taskIds = variant.value("successful_task_ids").toList();
         foreach(const QVariant& id, taskIds)
+        {
             this->taskIds.append(id.toString());
+        }
 
         return true;
     }
 
-    void finished() {
+    void finished()
+    {
     }
 };
 
@@ -114,7 +121,8 @@ public slots:
 void ReportController::Private::updateTimer()
 {
     TimingPtr timing = settings->config()->reportSchedule();
-    if (timing.isNull()) {
+    if (timing.isNull())
+    {
         timer.stop();
         return;
     }
@@ -134,11 +142,15 @@ void ReportController::Private::onFinished()
     QStringList taskIds = response.taskIds;
     LOG_INFO(QString("%1 Reports successfully sent").arg(taskIds.size()));
 
-    foreach(const QString& taskId, taskIds) {
+    foreach(const QString& taskId, taskIds)
+    {
         ReportPtr report = scheduler->reportByTaskId(taskId);
-        if ( report.isNull() ) {
+        if ( report.isNull() )
+        {
             LOG_ERROR(QString("No task with id %1 found.").arg(taskId));
-        } else {
+        }
+        else
+        {
             scheduler->removeReport(report);
         }
     }
@@ -185,7 +197,8 @@ void ReportController::sendReports()
 {
     ReportList reports = d->scheduler->reports();
 
-    if ( reports.isEmpty() ) {
+    if ( reports.isEmpty() )
+    {
         LOG_INFO("No reports to send");
         return;
     }

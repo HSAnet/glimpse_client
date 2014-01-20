@@ -43,14 +43,22 @@ public slots:
 
 void WebRequester::Private::setStatus(WebRequester::Status status)
 {
-    if ( this->status != status ) {
+    if ( this->status != status )
+    {
         this->status = status;
         emit q->statusChanged(status);
 
-        switch (status) {
-        case Running: emit q->started(); break;
-        case Finished: emit q->finished(); break;
-        case Error: emit q->error(); break;
+        switch (status)
+        {
+        case Running:
+            emit q->started();
+            break;
+        case Finished:
+            emit q->finished();
+            break;
+        case Error:
+            emit q->error();
+            break;
 
         default:
             break;
@@ -62,37 +70,52 @@ void WebRequester::Private::requestFinished()
 {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
 
-    if (reply->error() == QNetworkReply::NoError) {
+    if (reply->error() == QNetworkReply::NoError)
+    {
         QJsonParseError error;
         QJsonDocument document = QJsonDocument::fromJson(reply->readAll(), &error);
 
-        if ( error.error == QJsonParseError::NoError ) {
+        if ( error.error == QJsonParseError::NoError )
+        {
             QJsonObject root = document.object();
 
             QString replyError = root.value("error").toString();
-            if ( replyError.isEmpty() ) {
+            if ( replyError.isEmpty() )
+            {
                 jsonData = root;
 
-                if ( !response.isNull() ) {
-                    if ( response->fillFromVariant( root.toVariantMap() ) ) {
+                if ( !response.isNull() )
+                {
+                    if ( response->fillFromVariant( root.toVariantMap() ) )
+                    {
                         response->finished();
                         setStatus(WebRequester::Finished);
                     }
                     else
+                    {
                         setStatus(WebRequester::Error);
-                } else {
+                    }
+                }
+                else
+                {
                     LOG_WARNING("No response object set");
                     setStatus(WebRequester::Finished);
                 }
-            } else {
+            }
+            else
+            {
                 errorString = replyError;
                 setStatus(WebRequester::Error);
             }
-        } else {
+        }
+        else
+        {
             errorString = error.errorString();
             setStatus(WebRequester::Error);
         }
-    } else {
+    }
+    else
+    {
         errorString = reply->errorString();
         setStatus(WebRequester::Error);
     }
@@ -118,7 +141,8 @@ WebRequester::Status WebRequester::status() const
 
 void WebRequester::setUrl(const QUrl &url)
 {
-    if ( d->url != url ) {
+    if ( d->url != url )
+    {
         d->url = url;
         emit urlChanged(url);
     }
@@ -131,7 +155,8 @@ QUrl WebRequester::url() const
 
 void WebRequester::setRequest(Request *request)
 {
-    if ( d->request != request ) {
+    if ( d->request != request )
+    {
         d->request = request;
         emit requestChanged(request);
     }
@@ -144,7 +169,8 @@ Request *WebRequester::request() const
 
 void WebRequester::setResponse(Response *response)
 {
-    if ( d->response != response ) {
+    if ( d->response != response )
+    {
         d->response = response;
         emit responseChanged(response);
     }
@@ -186,7 +212,8 @@ void WebRequester::start()
     }
     */
 
-    if ( !d->request ) {
+    if ( !d->request )
+    {
         d->errorString = tr("No request to start");
         d->setStatus(Error);
         LOG_ERROR("No request to start");
@@ -194,7 +221,8 @@ void WebRequester::start()
     }
 
     int pathIdx = d->request->metaObject()->indexOfClassInfo("path");
-    if ( pathIdx == -1 ) {
+    if ( pathIdx == -1 )
+    {
         d->errorString = tr("No path found for request");
         d->setStatus(Error);
         LOG_ERROR("No path found for request");

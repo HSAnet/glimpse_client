@@ -25,7 +25,9 @@ StoragePaths::StoragePaths()
 : d(NULL)
 {
     if (StoragePaths::Private::initialized)
+    {
         return;
+    }
 
     QAndroidJniObject storageHelper("de/hsaugsburg/informatik/mplane/StorageHelper");
 

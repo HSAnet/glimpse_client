@@ -34,9 +34,12 @@ bool PacketTrain::isMaster() const
 bool PacketTrain::initialize(const PeerList &peers, bool master, QUdpSocket *socket)
 {
     if ( isInitialized )
+    {
         return false;
+    }
 
-    if ( peers.isEmpty() ) {
+    if ( peers.isEmpty() )
+    {
         qDebug() << "Peer list is empty, can't initialize packettrain test";
         return false;
     }
@@ -61,7 +64,8 @@ bool PacketTrain::start()
     timeouter.start();
 
     // Master waits for incoming packets
-    if ( master ) {
+    if ( master )
+    {
         return true;
     }
 
@@ -84,18 +88,25 @@ bool PacketTrain::stop()
 bool PacketTrain::isFinished() const
 {
     if ( master )
+    {
         return packetCounter >= 100;
+    }
     else
+    {
         return !timer.isActive();
+    }
 }
 
 void PacketTrain::processDatagram(const QByteArray &datagram, const QHostAddress &host, quint16 port)
 {
     QString peer = Peer(host, port).toString();
     if ( !respondingPeers.contains(peer) )
+    {
         respondingPeers.append(peer);
+    }
 
-    if ( master ) {
+    if ( master )
+    {
         emit packetCountChanged(packetCounter++);
     }
 
@@ -122,7 +133,8 @@ QVariant PacketTrain::result() const
 void PacketTrain::timeout()
 {
     emit packetCountChanged(packetCounter);
-    if ( packetCounter++ >= 100 ) {
+    if ( packetCounter++ >= 100 )
+    {
         stop();
         return;
     }
@@ -131,7 +143,8 @@ void PacketTrain::timeout()
     data.resize(512);
     data.fill('X');
 
-    foreach(const Peer& peer, peers) {
+    foreach(const Peer& peer, peers)
+    {
         socket->writeDatagram(data, peer.host, peer.port);
     }
 }

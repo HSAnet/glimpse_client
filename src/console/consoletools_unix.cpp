@@ -23,7 +23,8 @@ ConsoleTools::~ConsoleTools()
 
 bool ConsoleTools::enableEcho()
 {
-    if (tcsetattr(fileno(stdin), TCSANOW, &d->oflags) != 0) {
+    if (tcsetattr(fileno(stdin), TCSANOW, &d->oflags) != 0)
+    {
         //perror("tcsetattr");
         return false;
     }
@@ -39,7 +40,8 @@ bool ConsoleTools::disableEcho()
     nflags.c_lflag &= ~ECHO;
     nflags.c_lflag |= ECHONL;
 
-    if (tcsetattr(fileno(stdin), TCSANOW, &nflags) != 0) {
+    if (tcsetattr(fileno(stdin), TCSANOW, &nflags) != 0)
+    {
         //perror("tcsetattr");
         return false;
     }

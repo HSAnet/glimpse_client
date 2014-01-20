@@ -39,7 +39,9 @@ void MeasurementFactory::Private::addPlugin(MeasurementPlugin *plugin)
     plugins.append(plugin);
 
     foreach(const QString& name, plugin->measurements())
+    {
         pluginNameHash.insert(name, plugin);
+    }
 }
 
 MeasurementFactory::MeasurementFactory()
@@ -65,7 +67,9 @@ QStringList MeasurementFactory::availableMeasurements() const
 MeasurementPtr MeasurementFactory::createMeasurement(const QString &name)
 {
     if (MeasurementPlugin* plugin = d->pluginNameHash.value(name))
+    {
         return plugin->createMeasurement(name);
+    }
 
     return MeasurementPtr();
 }
@@ -73,9 +77,13 @@ MeasurementPtr MeasurementFactory::createMeasurement(const QString &name)
 MeasurementDefinitionPtr MeasurementFactory::createMeasurementDefinition(const QString &name, const QVariant &data)
 {
     if (MeasurementPlugin* plugin = d->pluginNameHash.value(name))
+    {
         return plugin->createMeasurementDefinition(name, data);
+    }
     else
+    {
         LOG_DEBUG(QString("No measurement named '%1'' found.").arg(name));
+    }
 
     return MeasurementDefinitionPtr();
 }

@@ -31,13 +31,17 @@ QImage AndroidImageProvider::requestImage(const QString &id, QSize *size, const 
     env->DeleteLocalRef(packageName);
 
     if (bm == NULL)
+    {
         return QImage();
+    }
 
     jint width = env->CallIntMethod(bm, m_getWidth);
     jint height = env->CallIntMethod(bm, m_getHeight);
 
     if (size)
+    {
         *size = QSize(width, height);
+    }
 
     jintArray pixels = env->NewIntArray(width * height);
     env->CallVoidMethod(bm, m_getPixels, pixels, 0, width, 0, 0, width, height);
@@ -65,12 +69,14 @@ void AndroidImageProvider::cleanupHandler(void *info)
     delete cleanupInfo;
 }
 
-namespace {
-    static int init_AndroidImageProvider() {
-        Java::registerClass("de/hsaugsburg/informatik/mplane/ImageHelper");
-        Java::registerClass("android/graphics/Bitmap");
-        return 1;
-    }
+namespace
+{
+static int init_AndroidImageProvider()
+{
+    Java::registerClass("de/hsaugsburg/informatik/mplane/ImageHelper");
+    Java::registerClass("android/graphics/Bitmap");
+    return 1;
+}
 
-    static int __AndroidImageProvider = init_AndroidImageProvider();
+static int __AndroidImageProvider = init_AndroidImageProvider();
 }

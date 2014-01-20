@@ -6,17 +6,21 @@
 QStringList PacketTrainsPlugin::measurements() const
 {
     return QStringList()
-            << "packettrains_ma"
-            << "packettrains_mp";
+           << "packettrains_ma"
+           << "packettrains_mp";
 }
 
 MeasurementPtr PacketTrainsPlugin::createMeasurement(const QString &name)
 {
     if (name == "packettrains_ma")
+    {
         return MeasurementPtr(new PacketTrainsMA);
+    }
 
     if (name == "packettrains_mp")
+    {
         return MeasurementPtr(new PacketTrainsMP);
+    }
 
     return MeasurementPtr();
 }

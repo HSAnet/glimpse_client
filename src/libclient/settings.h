@@ -26,7 +26,8 @@ public:
     explicit Settings(QObject *parent = 0);
     ~Settings();
 
-    enum StorageType {
+    enum StorageType
+    {
         NewSettings,
         ExistingSettings
     };

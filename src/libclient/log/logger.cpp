@@ -6,8 +6,9 @@
 
 typedef QList<LogAppender*> LogAppenderList;
 
-namespace {
-    QMutex mutex;
+namespace
+{
+QMutex mutex;
 }
 
 LogAppenderList& appenders()
@@ -67,5 +68,7 @@ void Logger::log(Logger::Level level, const QString &funcName, const QString &me
     real_log(level, m_name, funcName, message);
 
     foreach(LogAppender* appender, appenders())
+    {
         appender->log(level, m_name, funcName, message);
+    }
 }

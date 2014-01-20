@@ -5,12 +5,23 @@
 void Logger::real_log(Logger::Level level, const QString &name, const QString &funcName, const QString &message)
 {
     QByteArray logFuncName;
-    switch (level) {
-    case Trace: logFuncName = "i"; break;
-    case Debug: logFuncName = "d"; break;
-    case Info: logFuncName = "i"; break;
-    case Warning: logFuncName = "w"; break;
-    case Error: logFuncName = "e"; break;
+    switch (level)
+    {
+    case Trace:
+        logFuncName = "i";
+        break;
+    case Debug:
+        logFuncName = "d";
+        break;
+    case Info:
+        logFuncName = "i";
+        break;
+    case Warning:
+        logFuncName = "w";
+        break;
+    case Error:
+        logFuncName = "e";
+        break;
     }
 
     QString logMessage = QString("%1 : %2").arg(funcName).arg(message);

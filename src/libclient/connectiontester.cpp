@@ -106,21 +106,26 @@ QString ConnectionTester::Private::findDefaultGateway() const
 
 #ifdef Q_OS_LINUX
     QFile file("/proc/net/route");
-    if ( !file.open(QIODevice::ReadOnly) ) {
+    if ( !file.open(QIODevice::ReadOnly) )
+    {
         qDebug() << "Failed to open kernel route" << file.errorString();
         return QString();
     }
 
     QTextStream stream(&file);
     QString line = stream.readLine();
-    while (!line.isEmpty()) {
+    while (!line.isEmpty())
+    {
         QStringList parts = line.split('\t');
-        if ( !parts.isEmpty() ) {
-            if ( parts.at(1) == "00000000" ) { // Find the default route
+        if ( !parts.isEmpty() )
+        {
+            if ( parts.at(1) == "00000000" )   // Find the default route
+            {
                 QString ip = parts.at(2);
                 QStringList realIp;
 
-                for (int pos=0; pos < ip.size(); pos += 2) {
+                for (int pos=0; pos < ip.size(); pos += 2)
+                {
                     QString block = ip.mid(pos, 2);
 
                     realIp.prepend( QString::number(block.toInt(NULL, 16)) );
@@ -138,17 +143,22 @@ QString ConnectionTester::Private::findDefaultGateway() const
     IP_ADAPTER_INFO* pAdapterInfo = new IP_ADAPTER_INFO;
 
     ULONG outbufferLength = sizeof(IP_ADAPTER_INFO);
-    if ( ::GetAdaptersInfo(pAdapterInfo, &outbufferLength) == ERROR_BUFFER_OVERFLOW ) {
+    if ( ::GetAdaptersInfo(pAdapterInfo, &outbufferLength) == ERROR_BUFFER_OVERFLOW )
+    {
         delete pAdapterInfo;
         pAdapterInfo = (IP_ADAPTER_INFO*)malloc(outbufferLength);
     }
 
-    if ( ::GetAdaptersInfo(pAdapterInfo, &outbufferLength) == NO_ERROR ) {
+    if ( ::GetAdaptersInfo(pAdapterInfo, &outbufferLength) == NO_ERROR )
+    {
         IP_ADAPTER_INFO* pAdapter = pAdapterInfo;
-        while (pAdapter) {
+        while (pAdapter)
+        {
             QString temp = QString::fromLatin1(pAdapter->GatewayList.IpAddress.String);
             if ( temp != "0.0.0.0" )
+            {
                 gw = temp;
+            }
 
             pAdapter = pAdapter->Next;
         }
@@ -170,23 +180,31 @@ QString ConnectionTester::Private::findDefaultDNS() const
 #elif defined(Q_OS_LINUX)
     res_init();
 
-    for (int i=0; i < _res.nscount; ++i) {
+    for (int i=0; i < _res.nscount; ++i)
+    {
         return QString::fromLatin1(inet_ntoa( ((sockaddr_in*)&_res.nsaddr_list[0])->sin_addr ));
     }
 #elif defined(Q_OS_WIN)
     QString dns;
     IP_ADAPTER_ADDRESSES* addresses = NULL;
     ULONG bufferSize = 0;
-    if (::GetAdaptersAddresses(AF_INET, 0, NULL, addresses, &bufferSize) == ERROR_BUFFER_OVERFLOW) {
+    if (::GetAdaptersAddresses(AF_INET, 0, NULL, addresses, &bufferSize) == ERROR_BUFFER_OVERFLOW)
+    {
         addresses = (IP_ADAPTER_ADDRESSES*)malloc(bufferSize);
-        if (::GetAdaptersAddresses(AF_INET, 0, NULL, addresses, &bufferSize) == NO_ERROR) {
+        if (::GetAdaptersAddresses(AF_INET, 0, NULL, addresses, &bufferSize) == NO_ERROR)
+        {
             IP_ADAPTER_ADDRESSES* addr = addresses;
-            while (addr) {
-                if ( addr->OperStatus == IfOperStatusUp ) {
+            while (addr)
+            {
+                if ( addr->OperStatus == IfOperStatusUp )
+                {
                     IP_ADAPTER_DNS_SERVER_ADDRESS* p = addr->FirstDnsServerAddress;
-                    while (p) {
+                    while (p)
+                    {
                         if ( dns.isEmpty() )
+                        {
                             dns = QHostAddress(p->Address.lpSockaddr).toString();
+                        }
 
                         p = p->Next;
                     }
@@ -217,7 +235,8 @@ bool ConnectionTester::Private::canPing(const QString &host, int* averagePing) c
     ping.waitForFinished();
 
     int resultAvg = ping.averagePingTime();
-    if (averagePing) {
+    if (averagePing)
+    {
         *averagePing = resultAvg;
     }
 
@@ -246,11 +265,15 @@ QString ConnectionTester::Private::scutilHelper(const QByteArray& command, const
     sc.waitForReadyRead();
 
     QString line = stream.readLine();
-    while (!line.isEmpty()) {
+    while (!line.isEmpty())
+    {
         QStringList parts = line.split(':');
-        if ( parts.size() == 2 ) {
+        if ( parts.size() == 2 )
+        {
             if ( parts.at(0).trimmed() == searchKey )
+            {
                 result = parts.at(1).trimmed();
+            }
         }
 
         line = stream.readLine();
@@ -367,9 +390,12 @@ ConnectionTesterModel::~ConnectionTesterModel()
 void ConnectionTesterModel::setConnectionTester(ConnectionTester *connectionTester)
 {
     if (m_connectionTester == connectionTester)
+    {
         return;
+    }
 
-    if (m_connectionTester) {
+    if (m_connectionTester)
+    {
         disconnect(m_connectionTester, SIGNAL(started()), this, SLOT(onStarted()));
         disconnect(m_connectionTester, SIGNAL(finished()), this, SLOT(onFinished()));
         disconnect(m_connectionTester, SIGNAL(checkStarted(ConnectionTester::TestType)), this, SLOT(onCheckStarted(ConnectionTester::TestType)));
@@ -378,7 +404,8 @@ void ConnectionTesterModel::setConnectionTester(ConnectionTester *connectionTest
 
     m_connectionTester = connectionTester;
 
-    if (m_connectionTester) {
+    if (m_connectionTester)
+    {
         connect(m_connectionTester, SIGNAL(started()), this, SLOT(onStarted()));
         connect(m_connectionTester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(m_connectionTester, SIGNAL(checkStarted(ConnectionTester::TestType)), this, SLOT(onCheckStarted(ConnectionTester::TestType)));
@@ -396,7 +423,8 @@ QVariant ConnectionTesterModel::result() const
     // Prepare upnp data
     QVariantMap upnp;
     QListIterator<RowData> iter(m_rows);
-    while ( iter.hasNext() ) {
+    while ( iter.hasNext() )
+    {
         const RowData& row = iter.next();
 
         QString name = enumToString(ConnectionTester, "TestType", row.testType);
@@ -423,7 +451,9 @@ QHash<int, QByteArray> ConnectionTesterModel::roleNames() const
 int ConnectionTesterModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
+    {
         return 0;
+    }
 
     return m_rows.size();
 }
@@ -431,24 +461,34 @@ int ConnectionTesterModel::rowCount(const QModelIndex &parent) const
 QVariant ConnectionTesterModel::data(const QModelIndex &index, int role) const
 {
     if ( index.row() < 0 || index.row() >= m_rows.size() )
+    {
         return QVariant();
+    }
 
     const RowData& data = m_rows.at(index.row());
-    switch (role) {
+    switch (role)
+    {
     case TestNameRole:
+    {
+        switch (data.testType)
         {
-            switch (data.testType) {
-            case ConnectionTester::ActiveInterface: return tr("Online state");
-            case ConnectionTester::DefaultGateway: return tr("Gateway");
-            case ConnectionTester::DefaultDns: return tr("DNS");
-            case ConnectionTester::PingDefaultGateway: return tr("Access Gateway");
-            case ConnectionTester::PingGoogleDnsServer: return tr("Access IP");
-            case ConnectionTester::PingGoogleDomain: return tr("Access Google");
-            default:
-                break;
-            }
+        case ConnectionTester::ActiveInterface:
+            return tr("Online state");
+        case ConnectionTester::DefaultGateway:
+            return tr("Gateway");
+        case ConnectionTester::DefaultDns:
+            return tr("DNS");
+        case ConnectionTester::PingDefaultGateway:
+            return tr("Access Gateway");
+        case ConnectionTester::PingGoogleDnsServer:
+            return tr("Access IP");
+        case ConnectionTester::PingGoogleDomain:
+            return tr("Access Google");
+        default:
+            break;
         }
-        return enumToString(ConnectionTester, "TestType", data.testType);
+    }
+    return enumToString(ConnectionTester, "TestType", data.testType);
     case TestTypeRole:
         return (int)data.testType;
     case TestFinishedRole:

@@ -12,7 +12,8 @@ struct CLIENT_API Peer
     {
     }
 
-    QString toString() {
+    QString toString()
+    {
         return QString("%1:%2").arg(host.toString()).arg(port);
     }
 

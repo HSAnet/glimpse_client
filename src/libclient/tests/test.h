@@ -25,7 +25,8 @@ public:
         connect(this, SIGNAL(stopped()), this, SIGNAL(finishedChanged()));
     }
 
-    Q_INVOKABLE QString resultString() {
+    Q_INVOKABLE QString resultString()
+    {
         return QJsonDocument::fromVariant(result()).toJson();
     }
 

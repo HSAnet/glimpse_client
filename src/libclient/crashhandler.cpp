@@ -81,7 +81,9 @@ bool CrashHandler::Private::DumpCallback(const char* _dump_dir,const char* _mini
 void CrashHandler::Private::init(const QString& dumpPath)
 {
     if ( exceptionHandler != NULL )
+    {
         return;
+    }
 
 #if defined(Q_OS_WIN32)
     std::wstring pathAsStr = (const wchar_t*)dumpPath.utf16();
@@ -92,7 +94,7 @@ void CrashHandler::Private::init(const QString& dumpPath)
         /*context*/
         0,
         true
-        );
+    );
 #elif defined(Q_OS_LINUX)
     std::string pathAsStr = dumpPath.toStdString();
     google_breakpad::MinidumpDescriptor md(pathAsStr);
@@ -103,7 +105,7 @@ void CrashHandler::Private::init(const QString& dumpPath)
         /*context*/ 0,
         true,
         -1
-        );
+    );
 #elif defined(Q_OS_OSX)
     std::string pathAsStr = dumpPath.toStdString();
     exceptionHandler = new google_breakpad::ExceptionHandler(
@@ -114,7 +116,7 @@ void CrashHandler::Private::init(const QString& dumpPath)
         0,
         true,
         NULL
-        );
+    );
 #endif
 
     LOG_INFO("Crash handler initialized.");

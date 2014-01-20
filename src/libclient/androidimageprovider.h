@@ -15,7 +15,8 @@ public:
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);
 
 protected:
-    struct CleanupInfo {
+    struct CleanupInfo
+    {
         jintArray pixels;
         jint* realPixels;
     };

@@ -45,15 +45,19 @@ void SpeedTest::Private::downloadProgress(qint64 bytesReceived, qint64 bytesTota
 {
     // Start the timer on the first call
     if ( time.isNull() )
+    {
         time.restart();
-    else {
+    }
+    else
+    {
         qint64 packetCount = bytesReceived / 1452;
         qint64 realBytesReceived = packetCount * 1500; // TODO: Check if this is really the packet size
 
         averageDownloadSpeed = realBytesReceived*1000 / time.elapsed();
         emit q->averageDownloadSpeedChanged(averageDownloadSpeed);
 
-        if ( averageDownloadSpeed > maximumDownloadSpeed ) {
+        if ( averageDownloadSpeed > maximumDownloadSpeed )
+        {
             maximumDownloadSpeed = averageDownloadSpeed;
             emit q->maximumDownloadSpeedChanged(maximumDownloadSpeed);
         }
@@ -156,7 +160,9 @@ QVariant SpeedTest::result() const
 bool SpeedTest::start()
 {
     if ( d->isRunning )
+    {
         return false;
+    }
 
     QNetworkRequest request(d->downloadUrl);
 
@@ -174,7 +180,8 @@ bool SpeedTest::start()
 
 bool SpeedTest::stop()
 {
-    if ( d->isRunning ) {
+    if ( d->isRunning )
+    {
         d->reply->abort();
         emit stopped();
         return true;

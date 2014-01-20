@@ -23,10 +23,14 @@ public:
     , dir(StoragePaths().reportDirectory())
     , realTime(true)
     {
-        if (!dir.exists()) {
-            if (!QDir::root().mkpath(dir.absolutePath())) {
+        if (!dir.exists())
+        {
+            if (!QDir::root().mkpath(dir.absolutePath()))
+            {
                 LOG_ERROR(QString("Unable to create path %1").arg(dir.absolutePath()));
-            } else {
+            }
+            else
+            {
                 LOG_INFO("Report storage directory created");
             }
         }
@@ -54,10 +58,13 @@ void ReportStorage::Private::store(const ReportPtr &report)
     QJsonDocument document = QJsonDocument::fromVariant(report->toVariant());
 
     QFile file(dir.absoluteFilePath(fileNameForReport(report)));
-    if (file.open(QIODevice::WriteOnly)) {
+    if (file.open(QIODevice::WriteOnly))
+    {
         file.write(document.toJson());
         file.close();
-    } else {
+    }
+    else
+    {
         LOG_ERROR(QString("Unable to open file: %1").arg(file.errorString()));
     }
 }
@@ -70,7 +77,9 @@ QString ReportStorage::Private::fileNameForReport(const ReportPtr &report) const
 void ReportStorage::Private::reportAdded(const ReportPtr &report)
 {
     if ( !realTime || loading )
+    {
         return;
+    }
 
     store(report);
 }
@@ -84,7 +93,9 @@ void ReportStorage::Private::reportModified(const ReportPtr &report)
 void ReportStorage::Private::reportRemoved(const ReportPtr &report)
 {
     if ( !realTime )
+    {
         return;
+    }
 
     dir.remove(fileNameForReport(report));
 }
@@ -120,17 +131,22 @@ void ReportStorage::storeData()
     // If realtime was enabled, the files are already on disk so we don't
     // have to modify them again.
     if (d->realTime)
+    {
         return;
+    }
 
     foreach(const ReportPtr& report, d->scheduler->reports())
+    {
         d->store(report);
+    }
 }
 
 void ReportStorage::loadData()
 {
     d->loading = true;
 
-    foreach(const QString& fileName, d->dir.entryList(QDir::Files)) {
+    foreach(const QString& fileName, d->dir.entryList(QDir::Files))
+    {
         QFile file(d->dir.absoluteFilePath(fileName));
         file.open(QIODevice::ReadOnly);
 
@@ -138,10 +154,13 @@ void ReportStorage::loadData()
         QJsonParseError error;
         QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
 
-        if (error.error == QJsonParseError::NoError) {
+        if (error.error == QJsonParseError::NoError)
+        {
             ReportPtr report = Report::fromVariant(document.toVariant());
             d->scheduler->addReport(report);
-        } else {
+        }
+        else
+        {
             LOG_ERROR(QString("Error loading file %1: %2").arg(d->dir.absoluteFilePath(fileName)).arg(error.errorString()));
         }
     }

@@ -18,7 +18,11 @@ TimingPtr TimingFactory::timingFromVariant(const QVariant &variant)
 
     CreateFunction cf = factories.value(type);
     if (cf)
+    {
         return cf(variant);
+    }
     else
+    {
         return TimingPtr();
+    }
 }

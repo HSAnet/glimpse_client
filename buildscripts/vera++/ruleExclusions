@@ -6,6 +6,10 @@ set ruleExclusions(T007) {
 	logger.h
 }
 
+set ruleExclusions(T019) {
+	qtquick2applicationviewer.cpp
+}
+
 set ruleExclusions(T017) {
 	logger.h
 }
