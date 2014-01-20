@@ -57,4 +57,3 @@ void HTTPGetRequest::setStatus(Status status)
         emit statusChanged(status);
     }
 }
-

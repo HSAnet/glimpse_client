@@ -232,4 +232,3 @@ ResultPtr UPnP::result() const
 
     return ResultPtr(new Result(QDateTime::currentDateTime(), deviceResultList, QVariant()));
 }
-

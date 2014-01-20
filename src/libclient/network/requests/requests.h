@@ -8,4 +8,3 @@
 #include "manualrequest.h"
 
 #endif // REQUESTS_H
-

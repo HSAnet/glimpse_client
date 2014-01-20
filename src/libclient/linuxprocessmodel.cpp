@@ -146,4 +146,3 @@ void LinuxProcessModel::Private::onReadyRead()
 }
 
 #include "linuxprocessmodel.moc"
-

@@ -21,4 +21,3 @@ void Logger::real_log(Logger::Level level, const QString &name, const QString &f
                                               QAndroidJniObject::fromString("mPlane").object<jstring>(),
                                               QAndroidJniObject::fromString(logMessage).object<jstring>());
 }
-
