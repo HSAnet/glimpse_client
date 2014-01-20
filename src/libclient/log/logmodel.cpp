@@ -74,7 +74,7 @@ QVariant LogModel::data(const QModelIndex &index, int role) const
 
     const LogMessage& msg = d->lines.at(row);
 
-    switch(role) {
+    switch (role) {
     case LevelRole: return msg.level;
     case NameRole: return msg.name;
     case MessageRole: return msg.message;

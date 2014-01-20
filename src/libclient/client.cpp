@@ -187,7 +187,7 @@ void Client::Private::setupUnixSignalHandlers()
 #ifdef Q_OS_WIN
 BOOL Client::Private::CtrlHandler(DWORD ctrlType)
 {
-    switch(ctrlType) {
+    switch (ctrlType) {
     case CTRL_C_EVENT:
     case CTRL_CLOSE_EVENT:
         LOG_INFO("Close requested, quitting.");

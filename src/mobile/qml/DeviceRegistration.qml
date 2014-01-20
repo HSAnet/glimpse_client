@@ -24,7 +24,7 @@ Page {
         }
 
         onStatusChanged: {
-            switch(status) {
+            switch (status) {
             case WebRequester.Running:
                 console.log("Device Registration sent")
                 break;

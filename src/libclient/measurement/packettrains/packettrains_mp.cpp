@@ -71,7 +71,7 @@ void PacketTrainsMP::readPendingDatagrams()
 
         iter = ntohs(message->iter);
 
-        if(iter < m_rec.size())
+        if (iter < m_rec.size())
         {
             m_rec[iter].append(*message);
         }
@@ -127,7 +127,7 @@ void PacketTrainsMP::eval()
 
 void PacketTrainsMP::handleError(QAbstractSocket::SocketError socketError)
 {
-    if(socketError == QAbstractSocket::RemoteHostClosedError)
+    if (socketError == QAbstractSocket::RemoteHostClosedError)
         return;
 
     QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());

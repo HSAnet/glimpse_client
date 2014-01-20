@@ -160,7 +160,7 @@ QVariant ReportModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole)
         role = TaskIdRole + index.column();
 
-    switch(role) {
+    switch (role) {
     case TaskIdRole: return uuidToString(report->taskId());
     case DateTimeRole: return report->dateTime();
     //case ResultsRole: return report->results(); // FIXME: Scripting can't do anything with that
@@ -176,7 +176,7 @@ QVariant ReportModel::headerData(int section, Qt::Orientation orientation, int r
 
     section += TaskIdRole;
 
-    switch(section) {
+    switch (section) {
     case TaskIdRole: return tr("Task Id");
     case DateTimeRole: return tr("Date-Time");
     case ResultsRole: return tr("Results");

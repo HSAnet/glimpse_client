@@ -63,12 +63,12 @@ QHostAddress NetworkHelper::localIpAddress()
     QHostAddress hostIp;
 #if defined(Q_OS_WIN) || defined(Q_OS_MAC)
     foreach(QHostAddress addr, hostNameLookupAddressList){
-        if(addr.protocol() == QAbstractSocket::IPv4Protocol && interfaceAddressList.contains(addr)){
-            if(isLocalIpAddress(addr)){
+        if (addr.protocol() == QAbstractSocket::IPv4Protocol && interfaceAddressList.contains(addr)){
+            if (isLocalIpAddress(addr)){
                 qDebug()<<__FUNCTION__<<addr<<" is local ip";
                 hostIp = addr;
                 break;
-            }else if(isLinkLocalAddress(addr)){
+            }else if (isLinkLocalAddress(addr)){
                 qDebug()<<__FUNCTION__<<addr<<" is Link Local Address";
                 hostIp = addr;
             } else {

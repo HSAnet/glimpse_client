@@ -46,7 +46,7 @@ QStringList GetValuesFromNameValueList(struct NameValueParserData * pdata,
         (nv != NULL);
         nv = nv->entries.le_next)
     {
-        if(strcmp(nv->name, Name) == 0)
+        if (strcmp(nv->name, Name) == 0)
             ret.append(nv->value);
     }
 
@@ -88,7 +88,7 @@ bool UPnP::start()
             }
 
             char connectionType[64];
-            if(UPNPCOMMAND_SUCCESS == UPNP_GetConnectionTypeInfo(urls.controlURL,
+            if (UPNPCOMMAND_SUCCESS == UPNP_GetConnectionTypeInfo(urls.controlURL,
                                                                  data.first.servicetype,
                                                                  connectionType)) {
                 resultHash.insert(ConnectionType, QLatin1String(connectionType));

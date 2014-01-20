@@ -123,7 +123,7 @@ void Ping::readyRead()
 #error Platform code not implemented
 #endif
 
-    for(QString line = stream.readLine(); !line.isNull(); line = stream.readLine()) {
+    for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine()) {
         if ( re.indexIn(line) == -1 )
             continue;
 

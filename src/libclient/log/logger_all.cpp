@@ -5,7 +5,7 @@
 void Logger::real_log(Logger::Level level, const QString& name, const QString &funcName, const QString &message)
 {
     QString levelName;
-    switch(level) {
+    switch (level) {
     case Trace: levelName = "TRACE"; break;
     case Debug: levelName = "DEBUG"; break;
     case Info: levelName = "INFO"; break;

@@ -78,7 +78,7 @@ void BulkTransportCapacityMP::receiveRequest()
 
 void BulkTransportCapacityMP::handleError(QAbstractSocket::SocketError socketError)
 {
-    if(socketError == QAbstractSocket::RemoteHostClosedError)
+    if (socketError == QAbstractSocket::RemoteHostClosedError)
         return;
 
     QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());

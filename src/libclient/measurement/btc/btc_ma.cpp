@@ -43,7 +43,7 @@ void BulkTransportCapacityMA::receiveResponse()
 {
     qint64 time = m_time.nsecsElapsed();
 
-    if(!m_time.isValid())
+    if (!m_time.isValid())
     {
         m_bytesReceived = 0;
         m_totalBytesReceived = m_tcpSocket->bytesAvailable();
@@ -63,7 +63,7 @@ void BulkTransportCapacityMA::receiveResponse()
         m_lasttime = time;
     }
 
-    if(m_totalBytesReceived >= m_bytesExpected)
+    if (m_totalBytesReceived >= m_bytesExpected)
     {
         if (m_preTest)
         {
@@ -102,7 +102,7 @@ void BulkTransportCapacityMA::serverDisconnected()
 
 void BulkTransportCapacityMA::handleError(QAbstractSocket::SocketError socketError)
 {
-    if(socketError == QAbstractSocket::RemoteHostClosedError)
+    if (socketError == QAbstractSocket::RemoteHostClosedError)
         return;
 
     QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());

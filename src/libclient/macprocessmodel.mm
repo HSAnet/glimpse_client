@@ -46,7 +46,7 @@ QVariant MacProcessModel::data(const QModelIndex &index, int role) const
 {
     const ProcessInfo& app = d->apps.at(index.row());
 
-    switch(role) {
+    switch (role) {
     case DisplayNameRole: return app.localizedName;
     case BundleName: return app.bundleName;
 

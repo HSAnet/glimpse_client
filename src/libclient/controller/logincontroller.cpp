@@ -92,7 +92,7 @@ void LoginController::Private::onFinished()
 
     emit q->finished();
 
-    if(isLogin)
+    if (isLogin)
         emit q->loginFinished();
     else
         emit q->registrationFinished();

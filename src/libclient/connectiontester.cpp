@@ -120,7 +120,7 @@ QString ConnectionTester::Private::findDefaultGateway() const
                 QString ip = parts.at(2);
                 QStringList realIp;
 
-                for(int pos=0; pos < ip.size(); pos += 2) {
+                for (int pos=0; pos < ip.size(); pos += 2) {
                     QString block = ip.mid(pos, 2);
 
                     realIp.prepend( QString::number(block.toInt(NULL, 16)) );
@@ -170,7 +170,7 @@ QString ConnectionTester::Private::findDefaultDNS() const
 #elif defined(Q_OS_LINUX)
     res_init();
 
-    for(int i=0; i < _res.nscount; ++i) {
+    for (int i=0; i < _res.nscount; ++i) {
         return QString::fromLatin1(inet_ntoa( ((sockaddr_in*)&_res.nsaddr_list[0])->sin_addr ));
     }
 #elif defined(Q_OS_WIN)
@@ -221,10 +221,12 @@ bool ConnectionTester::Private::canPing(const QString &host, int* averagePing) c
         *averagePing = resultAvg;
     }
 
-    if(resultAvg > 0) {
+    if (resultAvg > 0)
+    {
         return true;
     }
-    else {
+    else
+    {
         return false;
     }
 }
@@ -432,10 +434,10 @@ QVariant ConnectionTesterModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     const RowData& data = m_rows.at(index.row());
-    switch(role) {
+    switch (role) {
     case TestNameRole:
         {
-            switch(data.testType) {
+            switch (data.testType) {
             case ConnectionTester::ActiveInterface: return tr("Online state");
             case ConnectionTester::DefaultGateway: return tr("Gateway");
             case ConnectionTester::DefaultDns: return tr("DNS");

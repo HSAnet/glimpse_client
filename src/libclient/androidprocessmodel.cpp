@@ -69,7 +69,7 @@ QVariant AndroidProcessModel::data(const QModelIndex &index, int role) const
 
     const ProcessInfo& info = d->processes.at(row);
 
-    switch(role) {
+    switch (role) {
     case PackageNameRole:
         return info.packageName;
 
@@ -101,7 +101,7 @@ void AndroidProcessModel::reload()
     jobject processList = env->CallObjectMethod(processHelper, d->runningProcesses);
 
     jint size = env->CallIntMethod(processList, d->listSize);
-    for(int i=0; i < size; ++i) {
+    for (int i=0; i < size; ++i) {
         jobject jprocess = env->CallObjectMethod(processList, d->listGet, i);
         jstring jpackageName = (jstring)env->GetObjectField(jprocess, d->packageName);
         jstring jdisplayName = (jstring)env->GetObjectField(jprocess, d->displayName);

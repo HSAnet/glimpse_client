@@ -17,7 +17,7 @@ Item {
         }
 
         onStatusChanged: {
-            switch(status) {
+            switch (status) {
             case WebRequester.Running:
                 statusText.text = qsTr("Requesting test ...");
                 break;

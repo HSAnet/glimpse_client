@@ -50,7 +50,7 @@ private slots:
     }
 
     void onStatusChanged(WebRequester::Status status) {
-        switch(status) {
+        switch (status) {
         case WebRequester::Error:
             LOG_ERROR(QString("Device registration failed, quitting. (%1)").arg(m_requester.errorString()));
             qApp->quit();
@@ -85,7 +85,7 @@ public:
 
 private slots:
     void onStatusChanged() {
-        switch(m_controller->status()) {
+        switch (m_controller->status()) {
         case LoginController::Error:
             LOG_INFO("Login/Registration failed, quitting.");
             qApp->quit();
@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
             out << "Password: ";
             out.flush();
             loginData.password = tools.readPassword();
-        } while(loginData.password.isEmpty());
+        } while (loginData.password.isEmpty());
     }
 
 #ifdef Q_OS_UNIX
@@ -257,7 +257,7 @@ int main(int argc, char* argv[])
     new DeviceRegistrationWatcher(client->loginController());
 
     if (passwordOption) {
-        switch(loginData.type) {
+        switch (loginData.type) {
         case LoginData::Register:
             client->loginController()->registration(loginData.userId, loginData.password);
             break;

@@ -106,7 +106,7 @@ QAbstractSocket *NetworkManager::Private::createSocket(NetworkManager::SocketTyp
 {
     QAbstractSocket* socket = NULL;
 
-    switch(socketType) {
+    switch (socketType) {
     case TcpSocket:
         socket = new ::TcpSocket;
         break;

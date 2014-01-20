@@ -148,7 +148,7 @@ QVariant SchedulerModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole)
         role = NameRole + index.column();
 
-    switch(role) {
+    switch (role) {
     case NameRole: return testDefinition->name();
     case NextRunRole: return testDefinition->timing()->nextRun();
     case TimeLeftRole: return testDefinition->timing()->timeLeft();
@@ -166,7 +166,7 @@ QVariant SchedulerModel::headerData(int section, Qt::Orientation orientation, in
 
     section += NameRole;
 
-    switch(section) {
+    switch (section) {
     case NameRole: return tr("Name");
     case NextRunRole: return tr("Next Run");
     case TimeLeftRole: return tr("Time left");

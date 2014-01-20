@@ -19,7 +19,7 @@ ListPage {
         height: textItem.height
 
         color: {
-            switch(model.level) {
+            switch (model.level) {
             case 0: return "orange";
             case 1: return "green";
             case 2: return "lightblue";
