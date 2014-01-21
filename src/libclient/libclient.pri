@@ -2,8 +2,6 @@ QT += network
 
 INCLUDEPATH += $$PWD
 
-DEFINES += LIBCLIENT_STATIC
-
 win32 {
     CONFIG(release, debug|release):BUILDCONFIG = "release"
     else:BUILDCONFIG = "debug"
