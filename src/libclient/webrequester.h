@@ -8,7 +8,7 @@
 #include <QJsonObject>
 #include <QUrl>
 
-class WebRequester : public QObject
+class CLIENT_API WebRequester : public QObject
 {
     Q_OBJECT
     Q_ENUMS(Status)
