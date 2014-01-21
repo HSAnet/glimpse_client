@@ -15,8 +15,13 @@ win32 {
     LIBS += -lIphlpapi
 }
 else {
-    LIBS += ../libclient/libclient.a
-    PRE_TARGETDEPS = ../libclient/libclient.a
+    contains(DEFINES, LIBCLIENT_STATIC) {
+        LIBS += ../libclient/libclient.a
+        PRE_TARGETDEPS = ../libclient/libclient.a
+    } else {
+        LIBS += -L../libclient -lclient
+        PRE_TARGETDEPS = ../libclient/libclient.so
+    }
 }
 
 win32:LIBS += -lws2_32

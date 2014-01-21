@@ -1,11 +1,15 @@
 TEMPLATE = lib
 TARGET = client
-CONFIG += staticlib
 
 QT += network concurrent qml quick
 
-staticlib:DEFINES += LIBCLIENT_STATIC
-else:DEFINES += LIBCLIENT_BUILD
+staticlib {
+    DEFINES += LIBCLIENT_STATIC
+} else {
+    DEFINES += LIBCLIENT_BUILD
+
+    win32:LIBS += -lws2_32
+}
 
 INCLUDEPATH += $$PWD
 
