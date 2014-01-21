@@ -17,6 +17,11 @@ HTTPGetRequest::~HTTPGetRequest()
 {
 }
 
+Measurement::Status HTTPGetRequest::status() const
+{
+    return currentStatus;
+}
+
 bool HTTPGetRequest::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
@@ -51,6 +56,16 @@ bool HTTPGetRequest::start()
     return true;
 }
 
+bool HTTPGetRequest::stop()
+{
+    return true;
+}
+
+ResultPtr HTTPGetRequest::result() const
+{
+    return ResultPtr();
+}
+
 void HTTPGetRequest::setStatus(Status status)
 {
     if (currentStatus != status)
@@ -58,4 +73,12 @@ void HTTPGetRequest::setStatus(Status status)
         currentStatus = status;
         emit statusChanged(status);
     }
+}
+
+void HTTPGetRequest::started()
+{
+}
+
+void HTTPGetRequest::finished(QNetworkReply *reply)
+{
 }
