@@ -132,7 +132,8 @@ SOURCES +=  \
     measurement/packettrains/packettrainsdefinition.cpp \
     measurement/packettrains/packettrains_ma.cpp \
     measurement/packettrains/packettrains_mp.cpp \
-    measurement/packettrains/packettrainsplugin.cpp
+    measurement/packettrains/packettrainsplugin.cpp \
+    controller/crashcontroller.cpp
 
 HEADERS += \
     export.h \
@@ -206,7 +207,8 @@ HEADERS += \
     measurement/packettrains/packettrainsdefinition.h \
     measurement/packettrains/packettrains_mp.h \
     measurement/packettrains/packettrains_ma.h \
-    measurement/packettrains/packettrainsplugin.h
+    measurement/packettrains/packettrainsplugin.h \
+    controller/crashcontroller.h
 
 OTHER_FILES += \
     libclient.pri

@@ -3,6 +3,7 @@
 #include "controller/reportcontroller.h"
 #include "controller/logincontroller.h"
 #include "controller/configcontroller.h"
+#include "controller/crashcontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
 #include "scheduler/schedulerstorage.h"
@@ -76,6 +77,7 @@ public:
     ReportController reportController;
     LoginController loginController;
     ConfigController configController;
+    CrashController crashController;
 
 #ifdef Q_OS_UNIX
     static int sigintFd[2];
@@ -325,6 +327,7 @@ bool Client::init()
     d->reportController.init(&d->reportScheduler, &d->settings);
     d->loginController.init(&d->networkManager, &d->settings);
     d->taskController.init(&d->networkManager, &d->scheduler, &d->settings);
+    d->crashController.init(&d->networkManager, &d->settings);
 
     return true;
 }
@@ -432,6 +435,11 @@ ReportController *Client::reportController() const
 TaskController *Client::taskController() const
 {
     return &d->taskController;
+}
+
+CrashController *Client::crashController() const
+{
+    return &d->crashController;
 }
 
 Settings *Client::settings() const
