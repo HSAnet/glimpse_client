@@ -3,6 +3,8 @@ TEMPLATE = subdirs
 SUBDIRS += 3rdparty \
            src
 
+OTHER_FILES += dist.pri
+
 src.depends = 3rdparty
 
 # Make sure "git submodule init" and "git submodule update" have been executed

@@ -15,6 +15,7 @@ QMAKE_BUNDLE_DATA += qmlimports
 
 QT += gui quick qml concurrent
 
+include(../../dist.pri)
 include(../libclient/libclient.pri)
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
