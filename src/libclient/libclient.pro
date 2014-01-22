@@ -4,8 +4,13 @@ CONFIG += staticlib
 
 QT += network concurrent qml quick
 
-staticlib:DEFINES += LIBCLIENT_STATIC
-else:DEFINES += LIBCLIENT_BUILD
+staticlib {
+    DEFINES += LIBCLIENT_STATIC
+} else {
+    DEFINES += LIBCLIENT_BUILD
+
+    win32:LIBS += -lws2_32 -lCrypt32
+}
 
 INCLUDEPATH += $$PWD
 
