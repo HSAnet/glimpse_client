@@ -35,10 +35,14 @@ static QStringList execWmicCommand(const QStringList& parameters, bool* ok = NUL
 
             // Ignore the first line
             if (lineNumber++ == 0)
+            {
                 continue;
+            }
 
             if (!line.isEmpty())
+            {
                 values.append(line);
+            }
         }
         while (!line.isNull());
     }
@@ -104,4 +108,3 @@ QString DeviceInfo::deviceId() const
 
     return QString::fromLatin1(hash.result().toHex());
 }
-
