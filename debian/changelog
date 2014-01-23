@@ -1,5 +1,5 @@
-glimpse (0.1-1) unstable; urgency=low
+glimpse (0.1alpha1-1) unstable; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial Release
 
- -- Christoph Keller <gri@unknown>  Thu, 23 Jan 2014 16:51:51 +0100
+ -- Christoph Keller <gri@not-censored.com>  Thu, 23 Jan 2014 16:51:51 +0100
