@@ -4,6 +4,7 @@ CONFIG -= app_bundle
 
 TARGET = mplane
 
+include(../../dist.pri)
 include(../libclient/libclient.pri)
 
 unix:SOURCES += consoletools_unix.cpp

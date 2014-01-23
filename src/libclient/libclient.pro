@@ -1,6 +1,5 @@
 TEMPLATE = lib
 TARGET = client
-CONFIG += staticlib
 
 QT += network concurrent qml quick
 
@@ -14,6 +13,7 @@ staticlib {
 
 INCLUDEPATH += $$PWD
 
+include(../../dist.pri)
 include(../../3rdparty/miniupnpc.pri)
 include(../../3rdparty/breakpad.pri)
 

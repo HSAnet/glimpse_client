@@ -8,7 +8,7 @@
 
 // TODO: Remove QObject base if we don't use it anymore in DeviceRegistration.qml
 
-class Response : public QObject
+class CLIENT_API Response : public QObject
 {
     Q_OBJECT
 
@@ -20,7 +20,7 @@ public:
     virtual void finished();
 };
 
-class LoginResponse : public Response
+class CLIENT_API LoginResponse : public Response
 {
     Q_OBJECT
 
@@ -40,7 +40,7 @@ protected:
 
 typedef LoginResponse RegisterUserResponse;
 
-class RegisterDeviceResponse : public Response
+class CLIENT_API RegisterDeviceResponse : public Response
 {
     Q_OBJECT
 
@@ -50,7 +50,7 @@ public:
     bool fillFromVariant(const QVariantMap &variant);
 };
 
-class GetConfigResponse : public Response
+class CLIENT_API GetConfigResponse : public Response
 {
     Q_OBJECT
 
