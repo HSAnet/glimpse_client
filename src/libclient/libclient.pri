@@ -11,8 +11,15 @@ win32 {
 
     # For upnp
     LIBS += -lIphlpapi
-}
-else {
+} else: mac {
+    contains(DEFINES, LIBCLIENT_STATIC) {
+        LIBS += ../libclient/libclient.a
+        PRE_TARGETDEPS = ../libclient/libclient.a
+    } else {
+        LIBS += -L../libclient -lclient
+        PRE_TARGETDEPS = ../libclient/libclient.dylib
+    }
+} else {
     contains(DEFINES, LIBCLIENT_STATIC) {
         LIBS += ../libclient/libclient.a
         PRE_TARGETDEPS = ../libclient/libclient.a
