@@ -3,7 +3,7 @@ TEMPLATE = app
 # Add more folders to ship with the application, here
 folder_01.source = qml
 folder_01.target = ""
-DEPLOYMENTFOLDERS = folder_01
+!mac:DEPLOYMENTFOLDERS = folder_01
 
 qmlfiles.files = $$PWD/qml $$PWD/Default-568h@2x.png
 qmlfiles.path = .

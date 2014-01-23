@@ -1,5 +1,7 @@
 win32 {
 } else: osx {
+    target.path = /
+    INSTALLS += target
 } else: ios {
 } else: android {
 } else: linux {
