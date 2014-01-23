@@ -70,12 +70,9 @@ breakpad-builtin {
 SOURCES +=  \
     client.cpp \
     connectiontester.cpp \
-    tests/packettrain.cpp \
     networkhelper.cpp \
-    tests/natporttimes.cpp \
     settings.cpp \
     webrequester.cpp \
-    tests/speedtest.cpp \
     response.cpp \
     network/requests/request.cpp \
     network/requests/userregisterrequest.cpp \
@@ -140,14 +137,9 @@ HEADERS += \
     client.h \
     types.h \
     connectiontester.h \
-    tests/packettrain.h \
-    tests/test.h \
-    tests/testinfo.h \
     networkhelper.h \
-    tests/natporttimes.h \
     settings.h \
     webrequester.h \
-    tests/speedtest.h \
     response.h \
     network/requests/request.h \
     network/requests/userregisterrequest.h \
