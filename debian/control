@@ -5,10 +5,10 @@ Maintainer: Christoph Keller <gri@not-censored.com>
 Build-Depends: debhelper (>= 8.0.0)
 Standards-Version: 3.9.2
 Homepage: http://www.measure-it.de
-#Vcs-Git: git://git.debian.org/collab-maint/glimpse.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/glimpse.git;a=summary
+Vcs-Git: git@github.com:HSAnet/glimpse_client.git
+Vcs-Browser: https://github.com/HSAnet/glimpse_client
 
 Package: glimpse
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: The glimpse measuring platform
+Depends: ${shlibs:Depends}, ${misc:Depends}, qt52quickcontrols
+Description: The glimpse measurement platform
