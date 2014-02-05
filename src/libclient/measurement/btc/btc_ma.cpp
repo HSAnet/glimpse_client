@@ -95,7 +95,7 @@ void BulkTransportCapacityMA::receiveResponse()
         {
             // calculate download speed for n slices
             int slices = 10; // TODO 10 slices, as parameter?
-            int slice_size = m_times.size() / slices;
+            int slice_size = ceil((double)m_times.size() / slices); // round up to get the correct number of slices
 
             // counters
             qint64 bytes = 0;
@@ -107,7 +107,8 @@ void BulkTransportCapacityMA::receiveResponse()
                 bytes += m_bytesReceivedList.at(i);
                 time += m_times.at(i);
 
-                if (((i+1) % slice_size) == 0) // calculate a slice
+                // calculate a slice if enough samples are added up or if this is the last iteration
+                if (((i+1) % slice_size) == 0 || i == m_times.size() - 1) // calculate a slice
                 {
                     qreal speed = (bytes / 1024.0) / (((time / 1000.0) / 1000) / 1000);
                     m_downloadSpeeds<<speed;
