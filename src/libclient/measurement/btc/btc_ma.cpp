@@ -102,12 +102,12 @@ void BulkTransportCapacityMA::receiveResponse()
             qint64 time = 0;
 
             // calculate slices
-            for(int i=0; i<m_times.size(); i++)
+            for (int i=0; i<m_times.size(); i++)
             {
                 bytes += m_bytesReceivedList.at(i);
                 time += m_times.at(i);
 
-                if(((i+1) % slice_size) == 0) // calculate a slice
+                if (((i+1) % slice_size) == 0) // calculate a slice
                 {
                     qreal speed = (bytes / 1024.0) / (((time / 1000.0) / 1000) / 1000);
                     m_downloadSpeeds<<speed;
