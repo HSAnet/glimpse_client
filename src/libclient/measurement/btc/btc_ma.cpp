@@ -3,6 +3,8 @@
 #include "../../network/networkmanager.h"
 
 #include <QDataStream>
+#include <numeric>
+#include <QtCore/QtMath>
 
 LOGGER(BulkTransportCapacityMA);
 
@@ -10,7 +12,6 @@ BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
 : Measurement(parent)
 , m_preTest(true)
 , m_tcpSocket(NULL)
-, m_downloadSpeed(0.0)
 , m_lasttime(-1)
 , m_status(Unknown)
 {
@@ -43,36 +44,45 @@ void BulkTransportCapacityMA::receiveResponse()
 {
     qint64 time = m_time.nsecsElapsed();
 
+    // if the timer is not valid this is the first response packet
     if (!m_time.isValid())
     {
+        // reset variables
         m_bytesReceived = 0;
-        m_totalBytesReceived = m_tcpSocket->bytesAvailable();
         m_lasttime = 0;
-        m_tcpSocket->readAll(); // ignor the first data received
+
+        // this packet counts to the total bytes, but not to the measurement bytes in m_bytesReceived
+        m_totalBytesReceived = m_tcpSocket->bytesAvailable();
+
+        // ignor the first data received
+        m_tcpSocket->readAll();
+
         m_time.restart();
     }
-    else
+    else // this is a response within an active measurement
     {
         qint64 bytes = m_tcpSocket->bytesAvailable();
-        qreal downloadSpeed = (bytes / 1024.0) / ((((time - m_lasttime) / 1000.0) / 1000) / 1000); // kbyte/s
-        LOG_INFO(QString("Tmp Speed: %1 KByte/s").arg(downloadSpeed, 0, 'f', 0).arg(time).arg(m_lasttime).arg(bytes));
-
+        m_bytesReceivedList<<bytes;
+        m_times<<time - m_lasttime;
         m_bytesReceived += bytes;
         m_totalBytesReceived += bytes;
-        m_tcpSocket->readAll();
+        m_tcpSocket->readAll(); // we don't care for the data-content
         m_lasttime = time;
     }
 
+    // check if all measurement data was received
     if (m_totalBytesReceived >= m_bytesExpected)
     {
+        // if this was the pretest we need to calculate the bytes for the real test
         if (m_preTest)
         {
-            qreal downloadSpeed = (m_bytesReceived / 1024.0) / (((m_lasttime / 1000.0) / 1000) / 1000); // kbyte/s
+            // get the download speed in kbyte
+            qreal downloadSpeed = (m_bytesReceived / 1024.0) / (((m_lasttime / 1000.0) / 1000) / 1000);
 
-            LOG_INFO(QString("Speed: %1 KByte/s").arg(downloadSpeed, 0, 'f', 0));
+            LOG_INFO(QString("Speed (pretest): %1 KByte/s").arg(downloadSpeed, 0, 'f', 0));
 
-            // TODO this is were the magic happens
-            m_bytesExpected = 1024*1024*2; // 5 MB
+            // Calculate new test size
+            m_bytesExpected = downloadSpeed * 1024 * 3; // should be <3 seconds if the calculated speed was correct
 
             m_preTest = false;
 
@@ -83,8 +93,51 @@ void BulkTransportCapacityMA::receiveResponse()
         }
         else
         {
-            m_downloadSpeed = (m_bytesReceived / 1024.0) / (((m_lasttime / 1000.0) / 1000) / 1000); // kbyte/s
-            LOG_INFO(QString("Speed: %1 KByte/s").arg(m_downloadSpeed, 0, 'f', 0));
+            // calculate download speed for n slices
+            int slices = 10; // TODO 10 slices, as parameter?
+            int slice_size = m_times.size() / slices;
+
+            // counters
+            qint64 bytes = 0;
+            qint64 time = 0;
+
+            // calculate slices
+            for(int i=0; i<m_times.size(); i++)
+            {
+                bytes += m_bytesReceivedList.at(i);
+                time += m_times.at(i);
+
+                if(((i+1) % slice_size) == 0) // calculate a slice
+                {
+                    qreal speed = (bytes / 1024.0) / (((time / 1000.0) / 1000) / 1000);
+                    m_downloadSpeeds<<speed;
+
+                    // reset counters
+                    bytes = 0;
+                    time = 0;
+                }
+            }
+
+            // calculate mean speed
+            qreal sum = std::accumulate(m_downloadSpeeds.begin(), m_downloadSpeeds.end(), 0.0);
+            qreal mean = sum / m_downloadSpeeds.size();
+            LOG_INFO(QString("Speed (mean): %1 KByte/s").arg(mean, 0, 'f', 0));
+
+            /* At the moment deactivated
+            // calculate standard deviation
+            qreal sq_sum = std::inner_product(speeds.begin(), speeds.end(), speeds.begin(), 0.0);
+            qreal stdev = qSqrt(sq_sum / speeds.size() - mean * mean);
+            LOG_INFO(QString("Standard deviation: %1").arg(stdev, 0, 'f', 0));
+            */
+
+            /* At the moment deactivated to get all results
+            // get ride of the lower and upper 20%
+            qSort(speeds);
+            int percentil = slices * 0.2;
+            sum = std::accumulate(speeds.begin()+percentil, speeds.end()-percentil, 0.0);
+            mean = sum / (speeds.size() - 2 * percentil);
+            LOG_INFO(QString("Speed (60 percentil mean): %1 KByte/s").arg(mean, 0, 'f', 0));
+            */
 
             m_status = BulkTransportCapacityMA::Finished;
 
@@ -167,8 +220,11 @@ bool BulkTransportCapacityMA::stop()
 
 ResultPtr BulkTransportCapacityMA::result() const
 {
-    QVariantMap map;
-    map.insert("download_speed", m_downloadSpeed);
+    QVariantList res;
+    foreach(qreal val, m_downloadSpeeds)
+    {
+        res<<QString::number(val, 'f');
+    }
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), map, QVariant()));
+    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
 }

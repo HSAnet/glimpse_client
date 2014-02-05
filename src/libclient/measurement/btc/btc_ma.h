@@ -29,12 +29,14 @@ private:
     bool m_preTest;
     QTcpSocket *m_tcpSocket;
     QElapsedTimer m_time;
-    quint64 m_bytesReceived; // without first packets
-    quint64 m_totalBytesReceived; // with first packets
-    quint64 m_bytesExpected;
-    int m_lasttime;
-    qreal m_downloadSpeed;
+    qint64 m_bytesReceived; // without first packets
+    qint64 m_totalBytesReceived; // with first packets
+    qint64 m_bytesExpected;
+    qint64 m_lasttime;
+    QVector<qreal> m_downloadSpeeds;
     Status m_status;
+    QVector<qint64> m_bytesReceivedList;
+    QVector<qint64> m_times;
 
 private slots:
     void sendInitialRequest();
