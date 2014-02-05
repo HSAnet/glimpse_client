@@ -32,6 +32,7 @@
 #include "timing/immediatetiming.h"
 #include "task/task.h"
 #include "measurement/btc/btc_definition.h"
+#include "measurement/http/httpdownload_definition.h"
 #include "measurement/ping/ping_definition.h"
 #include "measurement/packettrains/packettrainsdefinition.h"
 
@@ -346,16 +347,23 @@ bool Client::autoLogin()
 void Client::btc()
 {
     BulkTransportCapacityDefinition btcDef("141.82.51.241", 5106, 1024*50);
-
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("7ba297e2-e13c-4478-886d-e9cf60cd33e5", "btc_ma", timing, btcDef.toVariant()));
+    d->scheduler.enqueue(testDefinition);
+}
+
+void Client::http()
+{
+    HTTPDownloadDefinition httpDef("http://ipv4.download.thinkbroadband.com:81/10MB.zip", false);
+    TimingPtr timing(new ImmediateTiming());
+    TestDefinitionPtr testDefinition(new TestDefinition("39faf457-7195-4628-b313-09f034512a40", "httpdownload", timing, httpDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
 }
 
 void Client::upnp()
 {
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("{3702e527-f84f-4542-8df6-4e3d2a0ec977}", "upnp", timing, QVariant()));
+    TestDefinitionPtr testDefinition(new TestDefinition("3702e527-f84f-4542-8df6-4e3d2a0ec977", "upnp", timing, QVariant()));
     d->scheduler.enqueue(testDefinition);
 }
 
