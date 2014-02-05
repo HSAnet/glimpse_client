@@ -122,15 +122,16 @@ SOURCES +=  \
     log/logmodel.cpp \
     controller/configcontroller.cpp \
     measurement/measurementplugin.cpp \
-    measurement/http/httpgetrequest.cpp \
-    measurement/http/httpgetrequest_definition.cpp \
     controller/taskcontroller.cpp \
     network/requests/gettasksrequest.cpp \
     measurement/packettrains/packettrainsdefinition.cpp \
     measurement/packettrains/packettrains_ma.cpp \
     measurement/packettrains/packettrains_mp.cpp \
     measurement/packettrains/packettrainsplugin.cpp \
-    controller/crashcontroller.cpp
+    controller/crashcontroller.cpp \
+    measurement/http/httpdownload.cpp \
+    measurement/http/httpdownload_definition.cpp \
+    measurement/http/httpdownload_plugin.cpp
 
 HEADERS += \
     export.h \
@@ -192,15 +193,16 @@ HEADERS += \
     controller/controller.h \
     log/logmodel.h \
     controller/configcontroller.h \
-    measurement/http/httpgetrequest.h \
-    measurement/http/httpgetrequest_definition.h \
     controller/taskcontroller.h \
     network/requests/gettasksrequest.h \
     measurement/packettrains/packettrainsdefinition.h \
     measurement/packettrains/packettrains_mp.h \
     measurement/packettrains/packettrains_ma.h \
     measurement/packettrains/packettrainsplugin.h \
-    controller/crashcontroller.h
+    controller/crashcontroller.h \
+    measurement/http/httpdownload.h \
+    measurement/http/httpdownload_definition.h \
+    measurement/http/httpdownload_plugin.h
 
 OTHER_FILES += \
     libclient.pri

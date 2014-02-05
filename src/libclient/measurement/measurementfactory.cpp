@@ -1,5 +1,6 @@
 #include "measurementfactory.h"
 #include "btc/btc_plugin.h"
+#include "http/httpdownload_plugin.h"
 #include "upnp/upnp_plugin.h"
 #include "ping/ping_plugin.h"
 #include "packettrains/packettrainsplugin.h"
@@ -16,6 +17,7 @@ public:
     {
         // TODO: Don't link with plugins
         addPlugin(new BulkTransportCapacityPlugin);
+        addPlugin(new HTTPDownloadPlugin);
         addPlugin(new UPnPPlugin);
         addPlugin(new PingPlugin);
         addPlugin(new PacketTrainsPlugin);

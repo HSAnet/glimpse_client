@@ -72,6 +72,7 @@ public slots:
     bool init();
     bool autoLogin();
     void btc();
+    void http();
     void upnp();
     void ping();
     void packetTrains();

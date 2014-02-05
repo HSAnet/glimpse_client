@@ -126,6 +126,12 @@ ListPage {
         }
 
         ListElement {
+            text: "HTTP Download"
+            func: "http"
+            group: "Measurements"
+        }
+
+        ListElement {
             text: "Upnp"
             func: "upnp"
             group: "Measurements"
