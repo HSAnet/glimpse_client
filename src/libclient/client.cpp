@@ -46,6 +46,7 @@ public:
     Private(Client* q)
     : q(q)
     , status(Client::Unregistered)
+    , probeType(Client::ActiveProbe)
     , networkAccessManager(new QNetworkAccessManager(q))
     , schedulerStorage(&scheduler)
     , reportStorage(&reportScheduler)
@@ -61,6 +62,7 @@ public:
 
     // Properties
     Client::Status status;
+    Client::ProbeType probeType;
     QNetworkAccessManager* networkAccessManager;
 
     TaskExecutor executor;
@@ -282,7 +284,11 @@ void Client::Private::taskFinished(const TestDefinitionPtr &test, const ResultPt
 void Client::Private::loginStatusChanged()
 {
     configController.update();
-    taskController.fetchTasks();
+
+    if (probeType == Client::ActiveProbe)
+    {
+        taskController.fetchTasks();
+    }
 }
 
 Client::Client(QObject *parent)
@@ -310,8 +316,9 @@ Client *Client::instance()
     return ins;
 }
 
-bool Client::init()
+bool Client::init(ProbeType probeType)
 {
+    d->probeType = probeType;
     qRegisterMetaType<TestDefinitionPtr>();
     qRegisterMetaType<ResultPtr>();
 
@@ -327,8 +334,12 @@ bool Client::init()
     d->configController.init(&d->networkManager, &d->settings);
     d->reportController.init(&d->reportScheduler, &d->settings);
     d->loginController.init(&d->networkManager, &d->settings);
-    d->taskController.init(&d->networkManager, &d->scheduler, &d->settings);
     d->crashController.init(&d->networkManager, &d->settings);
+
+    if (probeType == ActiveProbe)
+    {
+        d->taskController.init(&d->networkManager, &d->scheduler, &d->settings);
+    }
 
     return true;
 }

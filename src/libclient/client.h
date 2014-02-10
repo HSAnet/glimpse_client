@@ -23,7 +23,7 @@ class QNetworkAccessManager;
 class CLIENT_API Client : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(Status)
+    Q_ENUMS(Status ProbeType)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
     Q_PROPERTY(Scheduler* scheduler READ scheduler CONSTANT)
     Q_PROPERTY(Settings* settings READ settings CONSTANT)
@@ -42,6 +42,12 @@ class CLIENT_API Client : public QObject
 public:
     /// Receives the main client instance
     static Client* instance();
+
+    enum ProbeType
+    {
+        ActiveProbe,
+        PassiveProbe
+    };
 
     enum Status
     {
@@ -69,7 +75,7 @@ public:
     Settings* settings() const;
 
 public slots:
-    bool init();
+    bool init(ProbeType probeType);
     bool autoLogin();
     void btc();
     void http();

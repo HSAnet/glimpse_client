@@ -168,6 +168,9 @@ int main(int argc, char* argv[])
     QCommandLineOption loginOption("login", "Login on server", "mail");
     parser.addOption(loginOption);
 
+    QCommandLineOption passiveOption("passive", "Passive probe which does not receive tasks");
+    parser.addOption(passiveOption);
+
     parser.process(app);
 
     if (parser.isSet(registerOption) && parser.isSet(registerAnonymous))
@@ -273,7 +276,7 @@ int main(int argc, char* argv[])
     // Initialize the client instance
     Client* client = Client::instance();
 
-    if (!client->init())
+    if (!client->init(parser.isSet(passiveOption) ? Client::PassiveProbe : Client::ActiveProbe))
     {
         LOG_ERROR("Client initialization failed")
         return 1;
