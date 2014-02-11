@@ -6,12 +6,14 @@ folder_01.target = ""
 !mac:DEPLOYMENTFOLDERS = folder_01
 
 qmlfiles.files = $$PWD/qml $$PWD/Default-568h@2x.png
-qmlfiles.path = .
+qmlfiles.path = Contents/Resources
 QMAKE_BUNDLE_DATA += qmlfiles
 
-qmlimports.files = $$[QT_INSTALL_QML]
-qmlimports.path = imports
-QMAKE_BUNDLE_DATA += qmlimports
+ios {
+    qmlimports.files = $$[QT_INSTALL_QML]
+    qmlimports.path = imports
+    QMAKE_BUNDLE_DATA += qmlimports
+}
 
 QT += gui quick qml concurrent
 

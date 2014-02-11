@@ -1,7 +1,7 @@
 win32 {
 } else: osx {
     target.path = /
-    INSTALLS += target
+    #INSTALLS *= target
 } else: ios {
 } else: android {
 } else: linux {
@@ -9,7 +9,7 @@ win32 {
     QMAKE_LFLAGS += -Wl,-z,origin \'-Wl,-rpath,\$\$ORIGIN\'
 
     target.path = /opt/glimpse
-    INSTALLS += target
+    INSTALLS *= target
 } else {
     error(No distribution for this platform defined)
 }
