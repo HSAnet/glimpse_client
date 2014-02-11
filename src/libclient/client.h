@@ -82,6 +82,7 @@ public slots:
     void upnp();
     void ping();
     void packetTrains();
+    void measureIt();
 
 signals:
     void statusChanged();

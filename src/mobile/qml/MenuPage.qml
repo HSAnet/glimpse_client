@@ -149,6 +149,12 @@ ListPage {
             group: "Measurements"
         }
 
+        ListElement {
+            text: "Measure It!"
+            func: "measureIt"
+            group: "Measurements"
+        }
+
         /*
         ListElement {
             text: "Force fetch tasks"

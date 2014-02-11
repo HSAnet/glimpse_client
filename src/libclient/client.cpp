@@ -395,6 +395,21 @@ void Client::packetTrains()
     d->scheduler.enqueue(testDefinition);
 }
 
+void Client::measureIt()
+{
+    // Ping
+    d->scheduler.enqueueOnDemandTest("10639c2a-1603-4d49-9627-b96353409903");
+
+    // BTC
+    d->scheduler.enqueueOnDemandTest("20639c2a-1603-4d49-9627-b96353409903");
+
+    // HTTP download
+    d->scheduler.enqueueOnDemandTest("30639c2a-1603-4d49-9627-b96353409903");
+
+    // PacketTrains
+    d->scheduler.enqueueOnDemandTest("40639c2a-1603-4d49-9627-b96353409903");
+}
+
 void Client::setStatus(Client::Status status)
 {
     if ( d->status == status )

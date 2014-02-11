@@ -60,6 +60,11 @@ TimingPtr TestDefinition::timing() const
     return d->timing;
 }
 
+void TestDefinition::setTiming(TimingPtr timing)
+{
+    d->timing = timing;
+}
+
 QVariant TestDefinition::measurementDefinition() const
 {
     return d->measurementDefinition;

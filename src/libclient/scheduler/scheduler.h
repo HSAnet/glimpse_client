@@ -23,6 +23,8 @@ public:
 
     void execute(const TestDefinitionPtr& testDefinition);
 
+    int enqueueOnDemandTest(const QUuid id);
+
 signals:
     void testAdded(const TestDefinitionPtr& test, int position);
     void testRemoved(const TestDefinitionPtr& test, int position);

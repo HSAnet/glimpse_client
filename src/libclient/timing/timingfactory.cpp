@@ -3,6 +3,7 @@
 #include "onofftiming.h"
 #include "calendartiming.h"
 #include "immediatetiming.h"
+#include "ondemandtiming.h"
 
 TimingPtr TimingFactory::timingFromVariant(const QVariant &variant)
 {
@@ -12,6 +13,7 @@ TimingPtr TimingFactory::timingFromVariant(const QVariant &variant)
     factories.insert("onoff", OnOffTiming::fromVariant);
     factories.insert("calendar", CalendarTiming::fromVariant);
     factories.insert("immediate", ImmediateTiming::fromVariant);
+    factories.insert("ondemand", OnDemandTiming::fromVariant);
 
     QVariantMap hash = variant.toMap();
     QString type = hash.value("type").toString();
