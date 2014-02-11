@@ -1,4 +1,6 @@
 #include "periodictiming.h"
+#include "../log/logger.h"
+LOGGER(PeriodicTiming)
 
 class PeriodicTiming::Private
 {
@@ -40,15 +42,18 @@ bool PeriodicTiming::reset()
 QDateTime PeriodicTiming::nextRun() const
 {
     QDateTime nextRun;
+    const QDateTime now = QDateTime::currentDateTime();
 
-    if ( d->lastExecute.isNull() )
+    // Check if the start time is reached
+    if (d->start > now)
     {
-        nextRun = QDateTime::currentDateTime();
+        return d->start;
     }
-    else
-    {
-        nextRun = d->lastExecute.addMSecs(d->period);
-    }
+
+    // Calculate number of completed periods
+    quint64 completedPeriods = d->start.msecsTo(now) / d->period;
+    // Add the already executed periods to the start time + 1
+    nextRun = d->start.addMSecs((completedPeriods + 1) * d->period);
 
     // Stop if we exceed the end time
     if (d->end.isValid() && d->end < nextRun)

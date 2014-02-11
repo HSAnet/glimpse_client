@@ -21,6 +21,7 @@ public:
     , path(qApp->applicationDirPath())
     {
         timer.setSingleShot(true);
+        timer.setTimerType(Qt::PreciseTimer);
         connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
     }
 
@@ -56,16 +57,17 @@ void Scheduler::Private::updateTimer()
         int ms = td->timing()->timeLeft();
         if ( ms > 0 )
         {
+            LOG_DEBUG(QString("Scheduling timer executes %1 in %2 ms").arg(td->name()).arg(ms));
             timer.start( ms );
         }
         else
         {
             // If we would call timeout() directly, the testAdded() signal
             // would be emitted after execution.
+            LOG_DEBUG(QString("Scheduling timer executes %1 now").arg(td->name()));
             timer.start(1);
         }
 
-        LOG_DEBUG(QString("Scheduling timer executes %1 in %2 ms").arg(td->name()).arg(ms));
     }
 }
 
@@ -76,11 +78,9 @@ int Scheduler::Private::enqueue(const TestDefinitionPtr& testDefinition)
         return -1;
     }
 
-    bool wasEmpty = tests.isEmpty();
-
     int timeLeft = testDefinition->timing()->timeLeft();
 
-    for (int i=0; i < tests.size(); ++i)
+    for (int i=0; i < tests.size(); i++)
     {
         const TestDefinitionPtr& td = tests.at(i);
         if (timeLeft < td->timing()->timeLeft())
@@ -88,7 +88,8 @@ int Scheduler::Private::enqueue(const TestDefinitionPtr& testDefinition)
             tests.insert(i, testDefinition);
             testIds.insert(testDefinition->id());
 
-            if ( wasEmpty || i == 0 )
+            // update the timer if this is the new first element
+            if (i == 0)
             {
                 updateTimer();
             }
@@ -99,7 +100,8 @@ int Scheduler::Private::enqueue(const TestDefinitionPtr& testDefinition)
 
     tests.append(testDefinition);
 
-    if ( wasEmpty )
+    // update the timer if the list was empty
+    if (tests.size() == 1)
     {
         updateTimer();
     }
@@ -109,46 +111,30 @@ int Scheduler::Private::enqueue(const TestDefinitionPtr& testDefinition)
 
 void Scheduler::Private::timeout()
 {
-    for (int i=0; i < tests.size(); ++i)
+    // get the test and execute it
+    TestDefinitionPtr td = tests.at(0);
+    q->execute(td);
+
+    // remove it from the list
+    tests.removeAt(0);
+    testIds.remove(td->id());
+
+    // check if it needs to be enqueued again or permanentely removed
+    if (!td->timing()->reset())
     {
-        TestDefinitionPtr td = tests.at(i);
-
-        // We assume they are already sorted - WRONG, SO WRONG!
-        if ( td->timing()->timeLeft() > 0 )
+        emit q->testRemoved(td, 0);
+        updateTimer();
+    }
+    else
+    {
+        // update the timer if another task is the next to run
+        if (enqueue(td) != 0)
         {
-            continue;
-        }
-
-        q->execute(td);
-
-        tests.removeAt(i);
-
-        if (!td->timing()->reset())
-        {
-            emit q->testRemoved(td, i);
-            testIds.remove(td->id());
-
-            if (tests.isEmpty())
-            {
-                break;
-            }
-            else
-            {
-                --i;
-            }
-        }
-        else
-        {
-            int pos = enqueue(td);
-            if (pos != i)
-            {
-                LOG_DEBUG(QString("%1 moved from %2 to %3").arg(td->name()).arg(i).arg(pos));
-                emit q->testMoved(td, i, pos);
-            }
+            updateTimer();
         }
     }
 
-    updateTimer();
+
 }
 
 Scheduler::Scheduler()
