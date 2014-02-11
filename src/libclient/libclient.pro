@@ -3,6 +3,8 @@ TARGET = client
 
 QT += network concurrent qml quick
 
+osx:CONFIG += staticlib
+
 staticlib {
     DEFINES += LIBCLIENT_STATIC
 } else {
