@@ -1,6 +1,7 @@
 #include "logger.h"
 
 #include <QDebug>
+#include <QTime>
 
 void Logger::real_log(Logger::Level level, const QString& name, const QString &funcName, const QString &message)
 {
@@ -24,5 +25,5 @@ void Logger::real_log(Logger::Level level, const QString& name, const QString &f
         break;
     }
 
-    qDebug() << levelName << funcName << ":" << message;
+    qDebug() << QTime::currentTime().toString() << levelName << funcName << ":" << message;
 }
