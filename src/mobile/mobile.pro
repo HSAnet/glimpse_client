@@ -51,7 +51,7 @@ android {
 
 osx {
     QT += macextras
-    LIBS += -framework AppKit -framework CoreFoundation
+    LIBS += -framework AppKit -framework CoreFoundation -framework DiskArbitration
 }
 
 !android:linux {

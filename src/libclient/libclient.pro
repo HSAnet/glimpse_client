@@ -39,7 +39,8 @@ android {
     SOURCES += storage/storagepaths.cpp \
                log/logger_all.cpp
 
-    unix: SOURCES += deviceinfo_unix.cpp
+    osx: SOURCES += deviceinfo_osx.cpp
+    else:unix: SOURCES += deviceinfo_unix.cpp
     else: SOURCES += deviceinfo.cpp
 
     linux {
@@ -55,7 +56,7 @@ android {
 
 osx {
     QT += macextras
-    LIBS += -framework AppKit
+    LIBS += -framework AppKit -framework DiskArbitration
 
     HEADERS += macprocessmodel.h \
                macimageprovider.h
