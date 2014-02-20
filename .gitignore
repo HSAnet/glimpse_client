@@ -13,3 +13,4 @@ setup/Output
 *.pro.user*
 src/mobile/qmlresources.qrc
 build-install
+debian/glimpse
