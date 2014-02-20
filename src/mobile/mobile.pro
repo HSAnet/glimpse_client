@@ -51,7 +51,7 @@ android {
 
 osx {
     QT += macextras
-    LIBS += -framework AppKit -framework CoreFoundation
+    LIBS += -framework AppKit -framework CoreFoundation -framework DiskArbitration
 }
 
 !android:linux {
@@ -75,32 +75,4 @@ RESOURCES += \
 include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
 qtcAddDeployment()
 
-OTHER_FILES += \
-    qml/main.qml \
-    qml/packettrain.qml \
-    qml/android/TextFieldStyle.qml \
-    qml/android/TabViewStyle.qml \
-    qml/android/SliderStyle.qml \
-    qml/android/ProgressBarStyle.qml \
-    qml/android/ButtonStyle.qml \
-    qml/android/AndroidDelegate.qml \
-    qml/android/images/toolbar.png \
-    qml/android/images/textinput.png \
-    qml/android/images/tabs_standard.png \
-    qml/android/images/tab_selected.png \
-    qml/android/images/navigation_previous_item.png \
-    qml/android/images/navigation_next_item.png \
-    qml/android/images/button_pressed.png \
-    qml/android/images/button_default.png \
-    qml/Settings.qml \
-    qml/Tests.qml \
-    qml/android/Spinner.qml \
-    qml/Card.qml \
-    qml/CardListDelegate.qml \
-    qml/speedtest.qml \
-    qml/ResultPage.qml \
-    qml/Slow.qml \
-    qml/UserRegistration.qml \
-    qml/DeviceRegistration.qml \
-    qml/Login.qml \
-    qml/WelcomePage.qml
+OTHER_FILES += $$files(qml/*)
