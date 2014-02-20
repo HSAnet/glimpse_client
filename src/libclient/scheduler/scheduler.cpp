@@ -185,15 +185,13 @@ void Scheduler::execute(const TestDefinitionPtr &testDefinition)
     d->executor->execute(testDefinition);
 }
 
-int Scheduler::enqueueOnDemandTest(const QUuid id)
+int Scheduler::executeOnDemandTest(const QUuid id)
 {
     foreach(TestDefinitionPtr td, d->onDemandTests)
     {
         if (td->id() == id)
         {
-            td->setTiming(TimingPtr(new OnDemandTiming()));
-            int pos = d->enqueue(td);
-            emit testAdded(td, pos);
+            execute(td);
 
             return 1;
         }
