@@ -1,6 +1,4 @@
 #include "periodictiming.h"
-#include "../log/logger.h"
-LOGGER(PeriodicTiming)
 
 class PeriodicTiming::Private
 {
@@ -18,8 +16,6 @@ PeriodicTiming::PeriodicTiming(int period, const QDateTime &start, const QDateTi
     d->period = period;
     d->start = start;
     d->end = end;
-
-    //reset();
 }
 
 PeriodicTiming::~PeriodicTiming()

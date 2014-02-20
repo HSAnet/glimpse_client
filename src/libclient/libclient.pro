@@ -134,7 +134,8 @@ SOURCES +=  \
     controller/crashcontroller.cpp \
     measurement/http/httpdownload.cpp \
     measurement/http/httpdownload_definition.cpp \
-    measurement/http/httpdownload_plugin.cpp
+    measurement/http/httpdownload_plugin.cpp \
+    timing/ondemandtiming.cpp
 
 HEADERS += \
     export.h \
@@ -205,7 +206,8 @@ HEADERS += \
     controller/crashcontroller.h \
     measurement/http/httpdownload.h \
     measurement/http/httpdownload_definition.h \
-    measurement/http/httpdownload_plugin.h
+    measurement/http/httpdownload_plugin.h \
+    timing/ondemandtiming.h
 
 OTHER_FILES += \
     libclient.pri

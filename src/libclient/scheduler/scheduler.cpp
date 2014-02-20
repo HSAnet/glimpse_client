@@ -1,6 +1,7 @@
 #include "scheduler.h"
 #include "../task/taskexecutor.h"
 #include "../log/logger.h"
+#include "../timing/ondemandtiming.h"
 
 #include <QDir>
 #include <QTimer>
@@ -32,6 +33,7 @@ public:
     QTimer timer;
 
     TestDefinitionList tests;
+    TestDefinitionList onDemandTests;
     QSet<QUuid> testIds;
 
     QPointer<TaskExecutor> executor;
@@ -133,8 +135,6 @@ void Scheduler::Private::timeout()
             updateTimer();
         }
     }
-
-
 }
 
 Scheduler::Scheduler()
@@ -164,8 +164,15 @@ TestDefinitionList Scheduler::tests() const
 
 void Scheduler::enqueue(const TestDefinitionPtr &testDefinition)
 {
-    int pos = d->enqueue(testDefinition);
-    emit testAdded(testDefinition, pos);
+    if (testDefinition->timing()->type() != "ondemand")
+    {
+        int pos = d->enqueue(testDefinition);
+        emit testAdded(testDefinition, pos);
+    }
+    else
+    {
+        d->onDemandTests.append(testDefinition);
+    }
 }
 
 void Scheduler::dequeue()
@@ -176,6 +183,21 @@ void Scheduler::dequeue()
 void Scheduler::execute(const TestDefinitionPtr &testDefinition)
 {
     d->executor->execute(testDefinition);
+}
+
+int Scheduler::executeOnDemandTest(const QUuid &id)
+{
+    foreach(TestDefinitionPtr td, d->onDemandTests)
+    {
+        if (td->id() == id)
+        {
+            execute(td);
+
+            return 1;
+        }
+    }
+
+    return -1;
 }
 
 #include "scheduler.moc"
