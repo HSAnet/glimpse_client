@@ -7,6 +7,15 @@
 
 LOGGER(DeviceInfo);
 
+namespace
+{
+    static const char* FSEntries[] = {
+        "/",
+        "/boot",
+        NULL
+    };
+}
+
 DeviceInfo::DeviceInfo()
 : d(NULL)
 {
@@ -24,26 +33,36 @@ QString DeviceInfo::deviceId() const
         return QString();
     }
 
-    fstab* tab = getfsfile("/");
-    if (!tab)
-    {
-        LOG_ERROR("Mount point / not found!");
-        endfsent();
-        return QString();
-    }
+    QByteArray uuid;
 
-    QByteArray uuid = QByteArray::fromRawData(tab->fs_spec, strlen(tab->fs_spec));
+    for(const char** fsentry=FSEntries; *fsentry != NULL; ++fsentry)
+    {
+        fstab* tab = getfsfile(*fsentry);
+        if (!tab)
+        {
+            continue;
+        }
 
-    if (uuid.indexOf("UUID=") == 0)
-    {
-        uuid.remove(0, 5);
-    }
-    else
-    {
-        LOG_ERROR(QString("fs_spec does not contain an UUID: %1").arg(QString::fromLatin1(uuid)));
+        uuid = QByteArray::fromRawData(tab->fs_spec, strlen(tab->fs_spec));
+
+        if (uuid.indexOf("UUID=") == 0)
+        {
+            uuid.remove(0, 5);
+            break;
+        }
+        else
+        {
+            uuid.clear();
+        }
     }
 
     endfsent();
+
+    if (uuid.isEmpty())
+    {
+        LOG_ERROR("No HDD UID found!");
+        return QString();
+    }
 
     LOG_INFO(QString("HDD UUID: %1").arg(QString::fromLatin1(uuid)));
 
