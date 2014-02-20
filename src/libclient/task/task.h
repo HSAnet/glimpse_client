@@ -24,9 +24,6 @@ public:
     QString name() const;
     TimingPtr timing() const;
 
-    // Setter
-    void setTiming(TimingPtr& timing);
-
     QVariant measurementDefinition() const;
 
     // Serializable interface
