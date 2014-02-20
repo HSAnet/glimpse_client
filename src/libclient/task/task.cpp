@@ -60,7 +60,7 @@ TimingPtr TestDefinition::timing() const
     return d->timing;
 }
 
-void TestDefinition::setTiming(TimingPtr timing)
+void TestDefinition::setTiming(TimingPtr &timing)
 {
     d->timing = timing;
 }

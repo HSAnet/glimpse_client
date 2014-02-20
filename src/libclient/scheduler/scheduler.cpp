@@ -185,7 +185,7 @@ void Scheduler::execute(const TestDefinitionPtr &testDefinition)
     d->executor->execute(testDefinition);
 }
 
-int Scheduler::executeOnDemandTest(const QUuid id)
+int Scheduler::executeOnDemandTest(const QUuid &id)
 {
     foreach(TestDefinitionPtr td, d->onDemandTests)
     {

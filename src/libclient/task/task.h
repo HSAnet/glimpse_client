@@ -25,7 +25,7 @@ public:
     TimingPtr timing() const;
 
     // Setter
-    void setTiming(TimingPtr timing);
+    void setTiming(TimingPtr& timing);
 
     QVariant measurementDefinition() const;
 
