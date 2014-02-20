@@ -23,15 +23,18 @@ QString DeviceInfo::deviceId() const
     DADiskRef disk;
     CFDictionaryRef descDict;
     DASessionRef session = DASessionCreate(NULL);
-    if (session) {
+    if (session)
+    {
         char *mountPoint = "/";
         CFURLRef url = CFURLCreateFromFileSystemRepresentation(NULL, (const UInt8 *)mountPoint, strlen(mountPoint), TRUE);
         disk = DADiskCreateFromVolumePath(NULL, session, url);
         CFRelease(url);
 
-        if (disk) {
+        if (disk)
+        {
             descDict = DADiskCopyDescription(disk);
-            if (descDict) {
+            if (descDict)
+            {
                 CFTypeRef value = (CFTypeRef)CFDictionaryGetValue(descDict,
                                                                   CFSTR("DAVolumeUUID"));
                 CFStringRef strValue = CFStringCreateWithFormat(NULL, NULL,
