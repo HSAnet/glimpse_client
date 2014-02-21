@@ -211,7 +211,6 @@ Rectangle {
         id: pageStack
         anchors {
             top: title.bottom
-            topMargin: units.gu(5)
             left: parent.left
             right: parent.right
             bottom: parent.bottom
