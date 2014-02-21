@@ -48,7 +48,7 @@ Item {
 
             highlight: Item {
                    Rectangle {
-                       height: 3
+                       height: units.gu(5)
                        width: parent.width
                        color: "#f8c580"
                    }
