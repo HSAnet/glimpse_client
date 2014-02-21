@@ -42,7 +42,7 @@ Rectangle {
 
     function menuPage() {
         var params = {
-            item: Qt.resolvedUrl("MenuPage.qml"),
+            item: Qt.resolvedUrl("MainPage.qml"),
         }
 
         if ( pageStack.depth > 0 ) {
@@ -82,18 +82,18 @@ Rectangle {
 
     Rectangle {
         id: title
-        color: "#f7f7f8"
+        color: "#373737"
         y: Qt.platform.os == "ios" ? 20 : 0
         width: parent.width
         height: units.gu(45*2)
         z: 1
 
-        Rectangle {
-            width: parent.width
-            anchors.bottom: parent.bottom
-            height: 1 //units.gu(2)
-            color: "#b3b3b6"
-        }
+//        Rectangle {
+//            width: parent.width
+//            anchors.bottom: parent.bottom
+//            height: 1 //units.gu(2)
+//            color: "#b3b3b6"
+//        }
 
         BackButton {
             id: backButton
@@ -125,7 +125,9 @@ Rectangle {
         Label {
             id: pageTitle
             anchors.centerIn: parent
-            font.bold: true
+            color: "#ffffff"
+            font.weight: Font.Normal
+            font.family: "Helvetica Neue"
             //font.pixelSize: units.gu(45)
             text: {
                 var item = pageStack.currentItem;
