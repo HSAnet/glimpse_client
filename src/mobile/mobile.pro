@@ -75,4 +75,7 @@ RESOURCES += \
 include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
 qtcAddDeployment()
 
-OTHER_FILES += $$files(qml/*)
+OTHER_FILES += $$files(qml/*) \
+               $$files(qml/controls/*) \
+               $$files(qml/android/*)
+
