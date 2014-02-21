@@ -9,26 +9,23 @@ Page {
         id: tab
         anchors.fill: parent
 
-        Rectangle {
+        Item {
             property string title: "Home"
 
-            color: "red"
             width: tab.contentWidth
             height: tab.contentHeight
         }
 
-        Rectangle {
+        Item {
             property string title: "History"
 
-            color: "blue"
             width: tab.contentWidth
             height: tab.contentHeight
         }
 
-        Rectangle {
+        Item {
             property string title: "Campaigns"
 
-            color: "blue"
             width: tab.contentWidth
             height: tab.contentHeight
         }

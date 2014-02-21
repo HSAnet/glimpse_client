@@ -6,7 +6,7 @@ Rectangle {
     id: app
     width: units.gu(768)
     height: units.gu(1200)
-    color: "#efeff4"
+    color: "#d1e0e0"
 
     Component.onCompleted: {
         // Initialize the client
