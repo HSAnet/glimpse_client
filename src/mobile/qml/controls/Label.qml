@@ -2,7 +2,8 @@ import QtQuick 2.0
 
 Text {
     font {
-        family: "Roboto Light"
+        weight: Font.Normal
+        family: "Helvetica Neue"
         pixelSize: units.gu(40)
     }
 }
