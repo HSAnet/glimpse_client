@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQml.Models 2.1
+import mplane 1.0
 
 Item {
     id: root
@@ -54,13 +55,12 @@ Item {
             }
 
 
-            delegate: Text {
+            delegate: Label {
                 id: nameText
                 height: ListView.view.height
                 verticalAlignment: Text.AlignVCenter
                 text: model.title
-                font.family: "Helvetica"
-                font.pointSize: 20
+                font.pixelSize: units.gu(35)
 
                 MouseArea {
                     anchors.fill: parent
