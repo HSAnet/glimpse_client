@@ -10,7 +10,7 @@ Page {
         anchors.fill: parent
 
         Rectangle {
-            property string title: "rot"
+            property string title: "Home"
 
             color: "red"
             width: tab.contentWidth
@@ -18,7 +18,15 @@ Page {
         }
 
         Rectangle {
-            property string title: "blau"
+            property string title: "History"
+
+            color: "blue"
+            width: tab.contentWidth
+            height: tab.contentHeight
+        }
+
+        Rectangle {
+            property string title: "Campaigns"
 
             color: "blue"
             width: tab.contentWidth
