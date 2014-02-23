@@ -9,7 +9,7 @@ Item {
     property bool activity
 
     property bool spacing: true
-    readonly property int spacingValue: units.gu(100)
+    readonly property int spacingValue: units.gu(40)
 
     y: spacing ? spacingValue : 0
     width: parent.width
