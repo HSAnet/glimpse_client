@@ -11,12 +11,13 @@ Page{
         width: app.width
         height: 200
 
-        Label {
-            id: label
+        Text {
+            id: historyTitle
             text: qsTr("History")
-            anchors {
-                leftMargin: 20
-                topMargin: 5
+            font {
+                weight: Font.Normal
+                family: "Helvetica Neue"
+                pixelSize: units.gu(35)
             }
         }
     }
