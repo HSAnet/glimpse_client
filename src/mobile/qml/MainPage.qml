@@ -14,6 +14,10 @@ Page {
 
             width: tab.contentWidth
             height: tab.contentHeight
+
+            HomePage {
+
+            }
         }
 
         Item {
