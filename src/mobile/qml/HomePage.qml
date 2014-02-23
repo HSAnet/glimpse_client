@@ -12,21 +12,20 @@ Page{
         anchors {
             horizontalCenter: parent.horizontalCenter
         }
+//        ListPage {
 
-        ListPage {
-
-        }
-
+//        }
     }
 
     Rectangle {
         id: historyPanel
         color: "white"
         width: app.width
-        height: 200
+        height: 180
 
         anchors {
             top: notificationPanel.bottom
+            topMargin: 20
         }
 
         Text {
@@ -51,7 +50,7 @@ Page{
             topMargin: 18
         }
 
-        Item {
+        Button {
             id: button1
             width: app.width / 3
             height: parent.height
@@ -72,7 +71,7 @@ Page{
             }
         }
 
-        Item {
+        Button {
             id: button2
             width: app.width / 3
             height: parent.height
@@ -97,7 +96,7 @@ Page{
             }
         }
 
-        Item {
+        Button {
             id: button3
             width: app.width / 3
             height: parent.height
