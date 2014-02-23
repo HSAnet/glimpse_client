@@ -121,4 +121,26 @@ Page{
             }
         }
     }
+
+    Rectangle {
+        id: campaignsPanel
+        color: "white"
+        width: app.width
+        height: 100
+
+        anchors {
+            top: buttonPanel.bottom
+            topMargin: 20
+        }
+
+        Text {
+            id: campaignsTitle
+            text: qsTr("Campaigns")
+            font {
+                weight: Font.Normal
+                family: "Helvetica Neue"
+                pixelSize: units.gu(35)
+            }
+        }
+    }
 }
