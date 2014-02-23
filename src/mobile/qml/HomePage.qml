@@ -6,13 +6,101 @@ Page{
     title: "Home"
 
     Rectangle {
+        id: historyPanel
         color: "white"
         width: app.width
-        height: 100
+        height: 200
 
         Label {
             id: label
             text: qsTr("History")
+            anchors {
+                leftMargin: 20
+                topMargin: 5
+            }
+        }
+    }
+
+    Rectangle {
+        id: buttonPanel
+        width: app.width
+        height: 100
+        color: "#f8c580"
+
+        anchors {
+            top: historyPanel.bottom
+            topMargin: 18
+        }
+
+        Item {
+            id: button1
+            width: app.width / 3
+            height: parent.height
+
+            Text {
+                text: qsTr("MEASURE IT")
+                color: "white"
+                width: parent.width
+                height: parent.height
+                font {
+                    weight: Font.Bold
+                    family: "Helvetica Neue"
+                    pixelSize: units.gu(25)
+                }
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+
+        Item {
+            id: button2
+            width: app.width / 3
+            height: parent.height
+
+            anchors {
+                left: button1.right
+            }
+
+            Text {
+                text: qsTr("MY NET IS NOT WORKING")
+                color: "white"
+                width: parent.width
+                height: parent.height
+                font {
+                    weight: Font.Bold
+                    family: "Helvetica Neue"
+                    pixelSize: units.gu(25)
+                }
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+
+        Item {
+            id: button3
+            width: app.width / 3
+            height: parent.height
+
+            anchors {
+                left: button2.right
+            }
+
+            Text {
+                text: qsTr("MY NET IS POOR")
+                color: "white"
+                width: parent.width
+                height: parent.height
+                font {
+                    weight: Font.Bold
+                    family: "Helvetica Neue"
+                    pixelSize: units.gu(25)
+                }
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
 }
