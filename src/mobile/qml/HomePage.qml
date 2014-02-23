@@ -3,13 +3,31 @@ import mplane 1.0 as Mplane
 import "controls"
 
 Page{
-    title: "Home"
+    Rectangle {
+        id: notificationPanel
+        color: "#becbcb"
+        width: app.width - 50
+        height: 100
+
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+        }
+
+        ListPage {
+
+        }
+
+    }
 
     Rectangle {
         id: historyPanel
         color: "white"
         width: app.width
         height: 200
+
+        anchors {
+            top: notificationPanel.bottom
+        }
 
         Text {
             id: historyTitle
