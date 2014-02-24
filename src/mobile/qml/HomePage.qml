@@ -25,7 +25,7 @@ Page{
 
         anchors {
             top: notificationPanel.bottom
-            topMargin: 20
+            topMargin: 15
         }
 
         Text {
