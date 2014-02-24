@@ -95,6 +95,16 @@ Rectangle {
 //            color: "#b3b3b6"
 //        }
 
+
+        Image{
+            id: settings
+            anchors.right: parent.right
+            source: "images/settings.png"
+            anchors.verticalCenter: parent.verticalCenter
+            height: 25; width: 25
+            anchors.rightMargin: 20
+        }
+
         BackButton {
             id: backButton
 
