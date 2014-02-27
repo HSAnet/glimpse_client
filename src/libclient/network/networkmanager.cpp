@@ -22,6 +22,7 @@
 #include <QReadWriteLock>
 #include <QTimer>
 #include <QDebug>
+#include <QNetworkConfigurationManager>
 
 LOGGER(NetworkManager);
 
@@ -89,6 +90,8 @@ public:
     QSet<QUuid> handledConnectionIds;
 
     quint16 localPort;
+
+    QNetworkConfigurationManager ncm;
 
     // Functions
     QAbstractSocket* createSocket(NetworkManager::SocketType socketType);
@@ -359,6 +362,8 @@ bool NetworkManager::init(Scheduler* scheduler, Settings *settings)
     d->settings = settings;
     d->responseChanged();
 
+    emit d->ncm.updateConfigurations();
+
     return true;
 }
 
@@ -382,6 +387,24 @@ void NetworkManager::setRunning(bool running)
 bool NetworkManager::isRunning() const
 {
     return d->timer.isActive();
+}
+
+bool NetworkManager::onMobileConnection() const
+{
+    QList<QNetworkConfiguration> confList = d->ncm.allConfigurations(QNetworkConfiguration::Active);
+
+    foreach(QNetworkConfiguration conf, confList)
+    {
+        LOG_INFO(QString("%1").arg(conf.name()));
+        QNetworkConfiguration::BearerType type = conf.bearerType();
+        LOG_INFO(QString("%1").arg(type));
+        if (type != QNetworkConfiguration::BearerEthernet && type != QNetworkConfiguration::BearerWLAN)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 QAbstractSocket *NetworkManager::connection(const QString &hostname, NetworkManager::SocketType socketType) const

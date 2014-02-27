@@ -176,6 +176,13 @@ bool TaskExecutor::isRunning() const
 
 void TaskExecutor::execute(const TestDefinitionPtr &test, MeasurementObserver *observer)
 {
+    // Abort if we are on a mobile connection
+    if (d->executor.networkManager->onMobileConnection())
+    {
+        LOG_ERROR(QString("Unable to execute measurement, we are on a mobile connection: %1").arg(test->name()));
+        return;
+    }
+
     if (d->running == false)
     {
         d->running = true;
