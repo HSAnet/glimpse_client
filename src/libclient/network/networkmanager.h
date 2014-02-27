@@ -26,6 +26,8 @@ public:
     void setRunning(bool running);
     bool isRunning() const;
 
+    bool onMobileConnection() const;
+
     enum SocketType
     {
         TcpSocket,
