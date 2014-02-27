@@ -12,6 +12,12 @@ public:
     /// @returns A sha-224 hash or an empty string on error
     QString deviceId() const;
 
+    qreal cpuUsage() const;
+    quint32 freeMemory() const;
+    quint32 freeDiskSpace() const;
+    qint32 wifiSNR() const;
+
+
 protected:
     class Private;
     Private* d;

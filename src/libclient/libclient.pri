@@ -2,6 +2,8 @@ QT += network
 
 INCLUDEPATH += $$PWD
 
+android|osx:DEFINES += LIBCLIENT_STATIC
+
 win32 {
     CONFIG(release, debug|release):BUILDCONFIG = "release"
     else:BUILDCONFIG = "debug"
@@ -12,8 +14,6 @@ win32 {
     # For upnp
     LIBS += -lIphlpapi
 } else: mac {
-    osx:DEFINES += LIBCLIENT_STATIC
-
     contains(DEFINES, LIBCLIENT_STATIC) {
         LIBS += ../libclient/libclient.a
         PRE_TARGETDEPS = ../libclient/libclient.a
