@@ -58,3 +58,8 @@ QString DeviceInfo::deviceId() const
 
     return QString::fromLatin1(hash.result().toHex());
 }
+
+qreal DeviceInfo::cpuUsage() const
+{
+    return -1.0;
+}
