@@ -157,8 +157,10 @@ int main(int argc, char* argv[])
     selector.setSelector(&desktopSelector);
 #endif
 
+    Client* client = Client::instance();
+
     QQmlContext* rootContext = view->rootContext();
-    rootContext->setContextProperty("client", Client::instance());
+    rootContext->setContextProperty("client", client);
     rootContext->setContextProperty("logModel", &loggerModel);
 #ifdef Q_OS_ANDROID
     rootContext->setContextProperty("statusBar", new StatusBarHelper(view));
@@ -178,6 +180,9 @@ int main(int argc, char* argv[])
     view->showExpanded();
 
     int returnCode = app.exec();
+
+    LOG_INFO("Syncing settings before shutdown");
+    client->settings()->sync();
 
     LOG_INFO("Cleaning up before shutdown");
 
