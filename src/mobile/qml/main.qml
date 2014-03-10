@@ -267,17 +267,33 @@ Rectangle {
 
         Image{
             id: avatar
-            anchors.left: parent.left
             source: "images/avatar.png"
-//            anchors.verticalCenter: parent.verticalCenter
             height: 80; width: 80
-            anchors.rightMargin: 20
+
+            anchors {
+                left: parent.left
+                top: parent.top
+
+                topMargin: 20
+                leftMargin: 20
+            }
+        }
+
+        Rectangle {
+            anchors.fill: avatar
+            color: "transparent"
+            border.color: "white"
+            border.width: 4
         }
 
         Rectangle {
             id: settings_info
             anchors {
                 left: avatar.right
+                top: avatar.top
+
+                leftMargin: 10
+
             }
 
             Text {
@@ -294,6 +310,7 @@ Rectangle {
 
                 anchors {
                     top: greeting.bottom
+                    topMargin: 5
                 }
             }
 
