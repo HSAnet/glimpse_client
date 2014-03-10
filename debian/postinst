@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
+set -x
+set -e
+
+case "$1" in
+    configure)
+	service glimpse-probe start
+    ;;
+esac
+
+#DEBHELPER#

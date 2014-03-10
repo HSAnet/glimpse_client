@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
+set -x
+set -e
+
+case "$1" in
+    upgrade)
+	service glimpse-probe stop || true
+    ;;
+esac
+
+#DEBHELPER#
