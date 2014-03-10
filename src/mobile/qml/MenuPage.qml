@@ -6,65 +6,6 @@ ListPage {
     id: root
     title: "Glimpse"
 
-    actionTitle: qsTr("Settings")
-
-    function actionClicked() {
-        if (root.state == "settings")
-            root.state = "";
-        else
-            root.state = "settings";
-    }
-
-
-    Rectangle {
-        id: settingsPanel
-        parent: app
-        width: app.width - units.gu(100)
-        color: "darkgray"
-
-        anchors {
-            left: parent.right
-            top: parent.top
-            bottom: parent.bottom
-        }
-
-        Label {
-            id: label
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: qsTr("Settings")
-        }
-
-        StackView {
-            id: stackView
-
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: label.bottom
-                bottom: parent.bottom
-            }
-
-            initialItem: Settings {}
-        }
-    }
-
-    states: State {
-        name: "settings"
-
-        PropertyChanges {
-            target: app
-            x: -root.width + units.gu(100)
-        }
-    }
-
-    transitions: Transition {
-        NumberAnimation {
-            properties: "x"
-            easing.type: Easing.InOutCubic
-            duration: 150
-        }
-    }
-
     delegate: ListDelegate {
         text: model.text
         onClicked: {

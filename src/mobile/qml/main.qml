@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import mplane 1.0
 import "controls"
+import "."
 
 import QtQuick.Controls 1.0 as Controls
 import QtQuick.Window 2.0
@@ -115,7 +116,6 @@ Rectangle {
         }
     }
 
-
     Rectangle {
         id: title
         color: "#373737"
@@ -130,27 +130,6 @@ Rectangle {
 //            height: 1 //units.gu(2)
 //            color: "#b3b3b6"
 //        }
-
-
-        Image{
-            id: settings
-            anchors.right: parent.right
-            source: "images/settings.png"
-            anchors.verticalCenter: parent.verticalCenter
-            height: 25; width: 25
-            anchors.rightMargin: 20
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    if (app.state == "")
-                        app.state = "settings";
-                    else
-                        app.state = "";
-                }
-
-            }
-        }
 
         BackButton {
             id: backButton
@@ -195,44 +174,44 @@ Rectangle {
             }
         }
 
-//        Button {
-//            id: actionTitle
+        Button {
+            id: actionTitle
 
-//            anchors {
-//                left: pageTitle.right
-//                leftMargin: units.gu(20)
-//                right: indicator.left
-//                rightMargin: units.gu(15)
-//                top: parent.top
-//                bottom: parent.bottom
-//            }
+            anchors {
+                left: pageTitle.right
+                leftMargin: units.gu(20)
+                right: indicator.left
+                rightMargin: units.gu(15)
+                top: parent.top
+                bottom: parent.bottom
+            }
 
-//            Button {
-//                id: invisibleButton
-//                text: parent.text
-//                visible: false
-//            }
-//            verticalAlignment: Text.AlignVCenter
-//            horizontalAlignment: Text.AlignRight
-//            fontSizeMode: width < invisibleButton.width ? Text.HorizontalFit : Text.FixedSize
+            Button {
+                id: invisibleButton
+                text: parent.text
+                visible: false
+            }
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignRight
+            fontSizeMode: width < invisibleButton.width ? Text.HorizontalFit : Text.FixedSize
 
-//            Behavior on opacity {
-//                NumberAnimation {
-//                    duration: 250
-//                }
-//            }
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 250
+                }
+            }
 
-//            text: {
-//                var item = pageStack.currentItem;
-//                if (item && item.actionTitle)
-//                    return item.actionTitle;
-//                else
-//                    return "";
-//            }
+            text: {
+                var item = pageStack.currentItem;
+                if (item && item.actionTitle)
+                    return item.actionTitle;
+                else
+                    return "";
+            }
 
-//            opacity: text.length ? 1 : 0
-//            onClicked: pageStack.currentItem.actionClicked()
-//        }
+            opacity: text.length ? 1 : 0
+            onClicked: pageStack.currentItem.actionClicked()
+        }
 
         ActivityIndicator {
             id: indicator
@@ -273,4 +252,74 @@ Rectangle {
             bottom: parent.bottom
         }
     }
+
+    Rectangle {
+        id: settingsPanel
+        parent: app
+        width: app.width - units.gu(100)
+        color: "#333333"
+
+        anchors {
+            left: parent.right
+            top: parent.top
+            bottom: parent.bottom
+        }
+
+        Image{
+            id: avatar
+            anchors.left: parent.left
+            source: "images/avatar.png"
+//            anchors.verticalCenter: parent.verticalCenter
+            height: 80; width: 80
+            anchors.rightMargin: 20
+        }
+
+        Rectangle {
+            id: settings_info
+            anchors {
+                left: avatar.right
+            }
+
+            Text {
+                id: greeting
+                text: qsTr("Hi, User.")
+                font.pixelSize: units.gu(30)
+                color: "white";
+            }
+
+            Text {
+                id: testcounter
+                text: qsTr("Testcounter: 54")
+                color: "white";
+
+                anchors {
+                    top: greeting.bottom
+                }
+            }
+
+            Text {
+                id: last_login
+                text: qsTr("Last login: 12.2.2014")
+                color: "white";
+
+                anchors {
+                    top: testcounter.bottom
+                }
+            }
+        }
+
+        StackView {
+            id: stackView
+
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: avatar.bottom
+                bottom: parent.bottom
+            }
+
+            initialItem: Settings {}
+        }
+    }
+
 }

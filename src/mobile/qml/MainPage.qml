@@ -3,6 +3,14 @@ import "controls"
 
 Page {
     title: "glimpse."
+    actionTitle: "settings"
+
+    function actionClicked() {
+        if (app.state == "")
+            app.state = "settings";
+        else
+            app.state = "";
+    }
 
     TabView {
         id: tab
