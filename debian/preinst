@@ -8,7 +8,7 @@ set -e
 
 case "$1" in
     upgrade)
-	service glimpse stop || true
+	service glimpse-probe stop || true
     ;;
 esac
 

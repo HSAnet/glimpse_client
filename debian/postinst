@@ -8,7 +8,7 @@ set -e
 
 case "$1" in
     configure)
-	service glimpse start
+	service glimpse-probe start
     ;;
 esac
 
