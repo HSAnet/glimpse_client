@@ -13,3 +13,8 @@ setup/Output
 *.pro.user*
 src/mobile/qmlresources.qrc
 build-install
+debian/glimpse
+debian/*debhelper*
+debian/*.substvars
+debian/files
+.qmake.*
