@@ -5,7 +5,7 @@ import "controls"
 ListPage {
     id: root
     title: "Glimpse"
-    /*
+
     actionTitle: qsTr("Settings")
 
     function actionClicked() {
@@ -14,7 +14,7 @@ ListPage {
         else
             root.state = "settings";
     }
-    */
+
 
     Rectangle {
         id: settingsPanel

@@ -2,6 +2,10 @@ import QtQuick 2.0
 import mplane 1.0
 import "controls"
 
+import QtQuick.Controls 1.0 as Controls
+import QtQuick.Window 2.0
+import QtGraphicalEffects 1.0
+
 Rectangle {
     id: app
     width: units.gu(768)
@@ -80,6 +84,38 @@ Rectangle {
         visible: Qt.platform.os == "ios"
     }
 
+    transitions: [
+        Transition {
+            to: "settings"
+
+            NumberAnimation {
+                target: app
+                properties: "x"
+            }
+        },
+
+        Transition {
+            to: ""
+
+            SequentialAnimation {
+                NumberAnimation {
+                    target: app
+                    property: "x"
+                }
+            }
+        }
+    ]
+
+    states: State {
+        name: "settings"
+
+        PropertyChanges {
+            target: app
+            x: -app.width + 50
+        }
+    }
+
+
     Rectangle {
         id: title
         color: "#373737"
@@ -103,6 +139,17 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             height: 25; width: 25
             anchors.rightMargin: 20
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    if (app.state == "")
+                        app.state = "settings";
+                    else
+                        app.state = "";
+                }
+
+            }
         }
 
         BackButton {
@@ -148,44 +195,44 @@ Rectangle {
             }
         }
 
-        Button {
-            id: actionTitle
+//        Button {
+//            id: actionTitle
 
-            anchors {
-                left: pageTitle.right
-                leftMargin: units.gu(20)
-                right: indicator.left
-                rightMargin: units.gu(15)
-                top: parent.top
-                bottom: parent.bottom
-            }
+//            anchors {
+//                left: pageTitle.right
+//                leftMargin: units.gu(20)
+//                right: indicator.left
+//                rightMargin: units.gu(15)
+//                top: parent.top
+//                bottom: parent.bottom
+//            }
 
-            Button {
-                id: invisibleButton
-                text: parent.text
-                visible: false
-            }
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignRight
-            fontSizeMode: width < invisibleButton.width ? Text.HorizontalFit : Text.FixedSize
+//            Button {
+//                id: invisibleButton
+//                text: parent.text
+//                visible: false
+//            }
+//            verticalAlignment: Text.AlignVCenter
+//            horizontalAlignment: Text.AlignRight
+//            fontSizeMode: width < invisibleButton.width ? Text.HorizontalFit : Text.FixedSize
 
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: 250
-                }
-            }
+//            Behavior on opacity {
+//                NumberAnimation {
+//                    duration: 250
+//                }
+//            }
 
-            text: {
-                var item = pageStack.currentItem;
-                if (item && item.actionTitle)
-                    return item.actionTitle;
-                else
-                    return "";
-            }
+//            text: {
+//                var item = pageStack.currentItem;
+//                if (item && item.actionTitle)
+//                    return item.actionTitle;
+//                else
+//                    return "";
+//            }
 
-            opacity: text.length ? 1 : 0
-            onClicked: pageStack.currentItem.actionClicked()
-        }
+//            opacity: text.length ? 1 : 0
+//            onClicked: pageStack.currentItem.actionClicked()
+//        }
 
         ActivityIndicator {
             id: indicator

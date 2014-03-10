@@ -3,7 +3,6 @@ import "controls"
 
 Page {
     title: "glimpse."
-    spacing: false
 
     TabView {
         id: tab
@@ -15,9 +14,7 @@ Page {
             width: tab.contentWidth
             height: tab.contentHeight
 
-            HomePage {
-
-            }
+            HomePage {}
         }
 
         Item {
