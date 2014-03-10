@@ -8,9 +8,11 @@ include(../../dist.pri)
 include(../libclient/libclient.pri)
 
 # Add the service config
-service.files = glimpse-probe.conf
-service.path = /etc/init
-INSTALLS += service
+linux {
+    service.files = glimpse-probe.conf
+    service.path = /etc/init
+    INSTALLS += service
+}
 
 osx:LIBS += -framework CoreFoundation -framework DiskArbitration
 
