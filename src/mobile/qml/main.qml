@@ -300,13 +300,13 @@ Rectangle {
                 id: greeting
                 text: qsTr("Hi, User.")
                 font.pixelSize: units.gu(30)
-                color: "white";
+                color: "white"
             }
 
             Text {
                 id: testcounter
                 text: qsTr("Testcounter: 54")
-                color: "white";
+                color: "white"
 
                 anchors {
                     top: greeting.bottom
@@ -317,7 +317,7 @@ Rectangle {
             Text {
                 id: last_login
                 text: qsTr("Last login: 12.2.2014")
-                color: "white";
+                color: "white"
 
                 anchors {
                     top: testcounter.bottom
@@ -325,18 +325,102 @@ Rectangle {
             }
         }
 
-        StackView {
-            id: stackView
+//        StackView {
+//            id: stackView
 
+//            anchors {
+//                left: parent.left
+//                right: parent.right
+//                top: avatar.bottom
+//                bottom: parent.bottom
+//            }
+
+//            initialItem: Settings {}
+//        }
+
+        ListModel {
+            id: settingsModel
+
+            ListElement {
+                name: "Available Updates"
+                size: "Settings"
+            }
+            ListElement {
+                name: "Open as window"
+                size: "Settings"
+            }
+            ListElement {
+                name: "Preferences"
+                size: "Settings"
+            }
+            ListElement {
+                name: "Help"
+                size: "Settings"
+            }
+            ListElement {
+                name: "Change password"
+                size: "User"
+            }
+            ListElement {
+                name: "Logout"
+                size: "User"
+            }
+            ListElement {
+                name: "Quit"
+                size: "Other"
+            }
+        }
+
+        Component {
+            id: sectionHeading
+
+            Item {
+                width: parent.width
+                height: childrenRect.height
+
+                Text {
+                    id: section_element
+                    text: section
+                    font.pixelSize: 18
+                    color: "#7c7c7c"
+                }
+
+                Rectangle {
+                    anchors {
+                        top: section_element.bottom
+                    }
+
+                    width: parent.width
+                    height: 1
+                    color: "#7c7c7c"
+                }
+            }
+
+        }
+
+        ListView {
             anchors {
                 left: parent.left
                 right: parent.right
                 top: avatar.bottom
                 bottom: parent.bottom
-            }
 
-            initialItem: Settings {}
+                topMargin: 20
+            }
+            width: parent.width
+
+            model: settingsModel
+            delegate: Text {
+                color: "white"
+                text: name
+                font.pixelSize: 20
+                height: 35
+            }
+            section.property: "size"
+            section.criteria: ViewSection.FullString
+            section.delegate: sectionHeading
         }
+
     }
 
 }
