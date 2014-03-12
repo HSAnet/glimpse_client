@@ -12,7 +12,8 @@ LOGGER(DeviceInfo);
 
 namespace
 {
-    static const char* FSEntries[] = {
+    static const char* FSEntries[] =
+    {
         "/",
         "/boot",
         NULL
@@ -38,7 +39,7 @@ QString DeviceInfo::deviceId() const
 
     QByteArray uuid;
 
-    for(const char** fsentry=FSEntries; *fsentry != NULL; ++fsentry)
+    for (const char** fsentry=FSEntries; *fsentry != NULL; ++fsentry)
     {
         fstab* tab = getfsfile(*fsentry);
         if (!tab)
@@ -79,7 +80,9 @@ qreal DeviceInfo::cpuUsage() const
 {
     QFile file("/proc/stat");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
             return -1.0;
+    }
 
     QString load = file.readLine();
 

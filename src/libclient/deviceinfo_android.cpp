@@ -50,7 +50,9 @@ qreal DeviceInfo::cpuUsage() const
 {
     QFile file("/proc/stat");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-            return -1.0;
+    {
+        return -1.0;
+    }
 
     QString load = file.readLine();
 

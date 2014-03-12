@@ -6,10 +6,6 @@
 #include <QTextStream>
 #include <Windows.h>
 
-// cpu load
-#include "TCHAR.h"
-#include "pdh.h"
-
 LOGGER(DeviceInfo);
 
 static QStringList execWmicCommand(const QStringList& parameters, bool* ok = NULL)
@@ -115,18 +111,7 @@ QString DeviceInfo::deviceId() const
 
 qreal DeviceInfo::cpuUsage() const
 {
-    PDH_HQUERY cpuQuery;
-    PDH_HCOUNTER cpuTotal;
-
-    PdhOpenQuery(NULL, NULL, &cpuQuery);
-    PdhAddCounter(cpuQuery, L"\\Processor(_Total)\\% Processor Time", NULL, &cpuTotal);
-    PdhCollectQueryData(cpuQuery);
-
-    PDH_FMT_COUNTERVALUE counterVal;
-
-    PdhCollectQueryData(cpuQuery);
-    PdhGetFormattedCounterValue(cpuTotal, PDH_FMT_DOUBLE, NULL, &counterVal);
-    return counterVal.doubleValue;
+    return -1.0;
 }
 
 qint32 DeviceInfo::wifiSNR() const
