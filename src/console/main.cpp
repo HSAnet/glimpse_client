@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
     QCommandLineOption loginOption("login", "Login on server", "mail");
     parser.addOption(loginOption);
 
-    QCommandLineOption passiveOption("passive", "Passive probe which does not receive tasks");
+    QCommandLineOption passiveOption("passive", "Passive probe which does not receive tasks", "0/1");
     parser.addOption(passiveOption);
 
     parser.process(app);
