@@ -10,7 +10,7 @@ staticlib {
 } else {
     DEFINES += LIBCLIENT_BUILD
 
-    win32:LIBS += -lws2_32 -lCrypt32
+    win32:LIBS += -lws2_32 -lCrypt32 -lPdh
 }
 
 INCLUDEPATH += $$PWD
