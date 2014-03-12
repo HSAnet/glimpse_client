@@ -282,7 +282,7 @@ int main(int argc, char* argv[])
         client->settings()->setPassive((bool) setPassive);
     }
 
-    if (client->init())
+    if (!client->init())
     {
         LOG_ERROR("Client initialization failed")
         return 1;
