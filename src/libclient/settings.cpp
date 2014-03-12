@@ -42,11 +42,15 @@ Settings::StorageType Settings::init()
 
     LOG_INFO(QString("Device ID: %1").arg(deviceId()));
 
+    // Always set the controller address if we have none
+    if (d->config.controllerAddress().isEmpty())
+    {
+        d->config.setControllerAddress("141.82.51.240:5105");
+    }
+
     // Create new settings
     if ( newSettings )
     {
-        d->config.setControllerAddress("141.82.51.240:5105");
-
         LOG_INFO("Created new settings for this device");
 
         return NewSettings;
