@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
         ConsoleTools tools;
         do
         {
-            out << "Password: ";
+            out << '[' << argv[0] << ']' << " Password: ";
             out.flush();
             loginData.password = tools.readPassword();
         } while (loginData.password.isEmpty());
