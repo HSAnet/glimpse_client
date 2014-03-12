@@ -42,15 +42,10 @@ Settings::StorageType Settings::init()
 
     LOG_INFO(QString("Device ID: %1").arg(deviceId()));
 
-    // Always set the controller address if we have none
-    if (d->config.controllerAddress().isEmpty())
-    {
-        d->config.setControllerAddress("141.82.51.240:5105");
-    }
-
     // Create new settings
     if ( newSettings )
     {
+        d->config.setControllerAddress("141.82.51.240:5105");
         LOG_INFO("Created new settings for this device");
 
         return NewSettings;
@@ -58,6 +53,13 @@ Settings::StorageType Settings::init()
     else
     {
         d->config.fillFromVariant( qvariant_cast<QVariantMap>(d->settings.value("config")) );
+
+        // Always set the controller address if we have none
+        if (d->config.controllerAddress().isEmpty())
+        {
+            LOG_WARNING("Controller address lost, setting back default one");
+            d->config.setControllerAddress("141.82.51.240:5105");
+        }
 
         LOG_INFO("Loaded existing settings for this device");
         return ExistingSettings;

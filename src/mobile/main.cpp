@@ -149,12 +149,12 @@ int main(int argc, char* argv[])
     QmlModule::initializeEngine(engine);
 
     // Allow QFileSelector to be automatically applied on qml scripting
-    QQmlFileSelector selector(engine);
+    QQmlFileSelector* selector = new QQmlFileSelector(engine);
 
 #if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS)
     QFileSelector desktopSelector;
     desktopSelector.setExtraSelectors( QStringList() << "desktop" );
-    selector.setSelector(&desktopSelector);
+    selector->setSelector(&desktopSelector);
 #endif
 
     Client* client = Client::instance();
@@ -187,6 +187,7 @@ int main(int argc, char* argv[])
     LOG_INFO("Cleaning up before shutdown");
 
     // Cleanly shutdown
+    delete selector;
     delete view;
     Client::instance()->deleteLater();
     QTimer::singleShot(1, &app, SLOT(quit()));
