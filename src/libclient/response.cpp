@@ -102,6 +102,11 @@ QVariant GetConfigResponse::toVariant() const
 
 void GetConfigResponse::finished()
 {
+    // Sync the settings
+    Client* client = Client::instance();
+    Settings* settings = client->setting();
+    settings->sync();
+
     emit responseChanged();
 }
 
