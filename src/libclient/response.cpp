@@ -104,7 +104,7 @@ void GetConfigResponse::finished()
 {
     // Sync the settings
     Client* client = Client::instance();
-    Settings* settings = client->setting();
+    Settings* settings = client->settings();
     settings->sync();
 
     emit responseChanged();
