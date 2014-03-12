@@ -48,6 +48,9 @@ public:
     void setSessionId(const QString& sessionId);
     QString sessionId() const;
 
+    bool isPassive() const;
+    void setPassive(bool passive);
+
     GetConfigResponse* config() const;
 
 public slots:
@@ -58,6 +61,7 @@ signals:
     void userIdChanged(const QString& userId);
     void passwordChanged(const QString& password);
     void sessionIdChanged(const QString& sessionId);
+    void passiveChanged(bool passive);
 
 protected:
     class Private;

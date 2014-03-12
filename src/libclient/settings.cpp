@@ -127,6 +127,20 @@ QString Settings::sessionId() const
     return d->settings.value("session-id").toString();
 }
 
+bool Settings::isPassive() const
+{
+    return d->settings.value("passive").toBool();
+}
+
+void Settings::setPassive(bool passive)
+{
+    if ( this->isPassive() != passive )
+    {
+        d->settings.setValue("passive", passive);
+        emit passiveChanged(passive);
+    }
+}
+
 GetConfigResponse *Settings::config() const
 {
     return &d->config;

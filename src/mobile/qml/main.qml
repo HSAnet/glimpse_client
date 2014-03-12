@@ -10,7 +10,7 @@ Rectangle {
 
     Component.onCompleted: {
         // Initialize the client
-        if ( !client.init(Client.ActiveProbe) ) {
+        if ( !client.init() ) {
             console.log("Unable to initialize client");
             Qt.quit();
         }

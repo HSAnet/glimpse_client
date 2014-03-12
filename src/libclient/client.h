@@ -43,12 +43,6 @@ public:
     /// Receives the main client instance
     static Client* instance();
 
-    enum ProbeType
-    {
-        ActiveProbe,
-        PassiveProbe
-    };
-
     enum Status
     {
         Unregistered,
@@ -75,7 +69,7 @@ public:
     Settings* settings() const;
 
 public slots:
-    bool init(ProbeType probeType);
+    bool init();
     bool autoLogin();
     void btc();
     void http();

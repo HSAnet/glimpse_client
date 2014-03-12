@@ -276,7 +276,13 @@ int main(int argc, char* argv[])
     // Initialize the client instance
     Client* client = Client::instance();
 
-    if (!client->init(parser.isSet(passiveOption) ? Client::PassiveProbe : Client::ActiveProbe))
+    if (parser.isSet(passiveOption))
+    {
+        int setPassive = parser.value(passiveOption).toInt();
+        client->settings()->setPassive((bool) setPassive);
+    }
+
+    if (client->init())
     {
         LOG_ERROR("Client initialization failed")
         return 1;
