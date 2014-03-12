@@ -8,7 +8,22 @@ Homepage: http://www.measure-it.de
 Vcs-Git: git@github.com:HSAnet/glimpse_client.git
 Vcs-Browser: https://github.com/HSAnet/glimpse_client
 
+Package: libglimpse
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: The glimpse measurement platform library
+
+Package: glimpse-console
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libglimpse
+Description: The glimpse measurement platform console client
+
+Package: glimpse-gui
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libglimpse, qt52quickcontrols
+Description: The glimpse measurement platform gui client
+
 Package: glimpse
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, qt52quickcontrols
-Description: The glimpse measurement platform
+Depends: glimpse-console, glimpse-gui
+Description: The glimpse measurement platform meta package

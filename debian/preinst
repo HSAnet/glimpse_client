@@ -1,5 +1,7 @@
 #!/bin/sh
 
+SERVICE_NAME="glimpse-probe"
+
 # Source debconf library.
 . /usr/share/debconf/confmodule
 
@@ -8,7 +10,7 @@ set -e
 
 case "$1" in
     upgrade)
-	service glimpse-probe stop || true
+	service $SERVICE_NAME stop || true
     ;;
 esac
 
