@@ -18,6 +18,7 @@ ConsoleTools::ConsoleTools()
 
 ConsoleTools::~ConsoleTools()
 {
+    enableEcho();
     delete d;
 }
 
