@@ -17,7 +17,8 @@ Rectangle {
 
         // Maybe we can log in automatically from here
         if (client.autoLogin()) {
-            nextPage("WelcomeLoginPage.qml");
+            autoLoginWatcher.enabled = true;
+            menuPage();
         } else {
             nextPage("WelcomePage.qml");
         }
@@ -63,6 +64,26 @@ Rectangle {
             pageStack.push(params);
         } else {
             pageStack.push(componentName);
+        }
+    }
+
+    Connections {
+        id: autoLoginWatcher
+
+        property bool enabled: false
+
+        target: client.loginController
+        onError: {
+            if (enabled) {
+                enabled = false;
+
+                var params = {
+                    item: Qt.resolvedUrl("WelcomeLoginPage.qml")
+                }
+
+                pageStack.insert(0, params);
+                pageStack.pop(null);
+            }
         }
     }
 
