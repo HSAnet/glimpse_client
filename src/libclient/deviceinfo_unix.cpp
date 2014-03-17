@@ -56,14 +56,13 @@ QString DeviceInfo::deviceId() const
         }
         else
         {
-            uuid.clear();
-
             // No UUID in fstab
             QFileInfo info(uuid);
+            uuid.clear();
             if ( info.isSymLink() ) {
                 QString target = info.symLinkTarget();
 
-                QDir byUuidDir("/dev/disks/by-uuid");
+                QDir byUuidDir("/dev/disk/by-uuid");
                 foreach(const QFileInfo& uuidFileInfo, byUuidDir.entryInfoList(QDir::Files))
                 {
                     if (target == uuidFileInfo.symLinkTarget())
