@@ -34,6 +34,7 @@ StoragePaths::StoragePaths()
     StoragePaths::Private::scheduler = storageHelper.callObjectMethod<jstring>("getSchedulerDirectory").toString();
     StoragePaths::Private::report = storageHelper.callObjectMethod<jstring>("getReportDirectory").toString();
     StoragePaths::Private::cache = storageHelper.callObjectMethod<jstring>("getCacheDirectory").toString();
+    StoragePaths::Private::log = storageHelper.callObjectMethod<jstring>("getLogDirectory").toString();
     StoragePaths::Private::crashDumps = storageHelper.callObjectMethod<jstring>("getCrashDumpDirectory").toString();
     StoragePaths::Private::initialized = true;
 }
@@ -55,6 +56,11 @@ QDir StoragePaths::reportDirectory() const
 QDir StoragePaths::cacheDirectory() const
 {
     return StoragePaths::Private::cache;
+}
+
+QDir StoragePaths::logDirectory() const
+{
+    return StoragePaths::Private::log;
 }
 
 QDir StoragePaths::crashDumpDirectory() const

@@ -14,6 +14,7 @@ public:
     QDir schedulerDirectory() const;
     QDir reportDirectory() const;
     QDir cacheDirectory() const;
+    QDir logDirectory() const;
 
     QDir crashDumpDirectory() const;
 
