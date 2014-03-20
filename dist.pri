@@ -1,4 +1,6 @@
 win32 {
+    target.path = /
+    INSTALLS *= target
 } else: osx {
     target.path = /
     #INSTALLS *= target
