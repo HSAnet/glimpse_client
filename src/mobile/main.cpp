@@ -30,6 +30,8 @@
 #define HAVE_BREAKPAD // We always have breakpad at the moment
 #ifdef HAVE_BREAKPAD
 #include "crashhandler.h"
+
+#include <log/filelogger.h>
 #endif
 
 #ifdef Q_OS_IOS
@@ -121,6 +123,7 @@ int main(int argc, char* argv[])
 #endif
 
     LogModel loggerModel;
+    Logger::addAppender(new FileLogger);
 
 #ifdef HAVE_BREAKPAD
     QDir crashdumpDir = StoragePaths().crashDumpDirectory();

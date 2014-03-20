@@ -20,6 +20,7 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <errno.h>
+#include <log/filelogger.h>
 #endif // Q_OS_UNIX
 
 LOGGER(main);
@@ -133,6 +134,8 @@ int main(int argc, char* argv[])
     QCoreApplication::setApplicationVersion("0.1");
 
     QCoreApplication app(argc, argv);
+
+    Logger::addAppender(new FileLogger);
 
     QTextStream out(stdout);
 

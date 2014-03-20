@@ -20,6 +20,10 @@ public class StorageHelper {
                 return MobileActivity.instance.getCacheDir().getAbsolutePath();
 	}
 
+        public String getLogDirectory() {
+                return getDataDirectory();
+        }
+
         public String getCrashDumpDirectory() {
                 return getDataDirectory() + "/crashdumps";
         }

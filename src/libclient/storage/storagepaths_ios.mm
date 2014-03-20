@@ -47,6 +47,11 @@ QDir StoragePaths::cacheDirectory() const
     return dir;
 }
 
+QDir StoragePaths::logDirectory() const
+{
+    return QDir(d->applicationRootPath);
+}
+
 QDir StoragePaths::crashDumpDirectory() const
 {
     return QDir(d->applicationRootPath + "/crashdumps");
