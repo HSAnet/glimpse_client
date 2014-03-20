@@ -6,6 +6,7 @@
 #include "storage/storagepaths.h"
 #include "log/logger.h"
 #include "log/logmodel.h"
+#include <log/filelogger.h>
 #include "qmlmodule.h"
 #include "settings.h"
 
@@ -30,8 +31,6 @@
 #define HAVE_BREAKPAD // We always have breakpad at the moment
 #ifdef HAVE_BREAKPAD
 #include "crashhandler.h"
-
-#include <log/filelogger.h>
 #endif
 
 #ifdef Q_OS_IOS

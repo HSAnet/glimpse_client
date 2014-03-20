@@ -12,6 +12,7 @@ public:
     static QDir scheduler;
     static QDir report;
     static QDir cache;
+    static QDir log;
     static QDir crashDumps;
 };
 
@@ -19,6 +20,7 @@ bool StoragePaths::Private::initialized = false;
 QDir StoragePaths::Private::scheduler;
 QDir StoragePaths::Private::report;
 QDir StoragePaths::Private::cache;
+QDir StoragePaths::Private::log;
 QDir StoragePaths::Private::crashDumps;
 
 StoragePaths::StoragePaths()
