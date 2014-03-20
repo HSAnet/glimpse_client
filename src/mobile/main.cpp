@@ -6,7 +6,7 @@
 #include "storage/storagepaths.h"
 #include "log/logger.h"
 #include "log/logmodel.h"
-#include <log/filelogger.h>
+#include "log/filelogger.h"
 #include "qmlmodule.h"
 #include "settings.h"
 

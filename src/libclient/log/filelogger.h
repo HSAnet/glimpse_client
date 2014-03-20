@@ -1,13 +1,14 @@
 #ifndef FILELOGGER_H
 #define FILELOGGER_H
 
+#include "../export.h"
 #include "../log/logger.h"
 
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
 
-class FileLogger : public LogAppender
+class CLIENT_API FileLogger : public LogAppender
 {
 public:
     FileLogger();
