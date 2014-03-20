@@ -135,7 +135,8 @@ SOURCES +=  \
     measurement/http/httpdownload.cpp \
     measurement/http/httpdownload_definition.cpp \
     measurement/http/httpdownload_plugin.cpp \
-    timing/ondemandtiming.cpp
+    timing/ondemandtiming.cpp \
+    log/filelogger.cpp
 
 HEADERS += \
     export.h \
@@ -207,7 +208,8 @@ HEADERS += \
     measurement/http/httpdownload.h \
     measurement/http/httpdownload_definition.h \
     measurement/http/httpdownload_plugin.h \
-    timing/ondemandtiming.h
+    timing/ondemandtiming.h \
+    log/filelogger.h
 
 OTHER_FILES += \
     libclient.pri
