@@ -6,6 +6,7 @@
 
 #include "webrequester.h"
 #include "network/requests/registerdevicerequest.h"
+#include "log/filelogger.h"
 
 #include <QTextStream>
 #include <QCoreApplication>
@@ -20,7 +21,6 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <errno.h>
-#include <log/filelogger.h>
 #endif // Q_OS_UNIX
 
 LOGGER(main);
