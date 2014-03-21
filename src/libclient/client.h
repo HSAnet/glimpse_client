@@ -53,6 +53,9 @@ public:
     void setStatus(Status status);
     Status status() const;
 
+    // Get the version
+    static QString version();
+
     QNetworkAccessManager* networkAccessManager() const;
 
     Scheduler* scheduler() const;
@@ -67,6 +70,11 @@ public:
     CrashController* crashController() const;
 
     Settings* settings() const;
+
+    // Versioning
+    static const quint32 versionMajor = 0;
+    static const quint32 versionMinor = 1;
+    static const quint32 versionPatch = 0;
 
 public slots:
     bool init();

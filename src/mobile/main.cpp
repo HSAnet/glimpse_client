@@ -111,6 +111,7 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
     QCoreApplication::setOrganizationName("HS-Augsburg");
     QCoreApplication::setApplicationName("mPlaneClient");
+    QCoreApplication::setApplicationVersion(Client::version());
 
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     QGuiApplication app(argc, argv);
@@ -123,6 +124,8 @@ int main(int argc, char* argv[])
 
     LogModel loggerModel;
     Logger::addAppender(new FileLogger);
+
+    LOG_INFO(QString("Glimpse version %1").arg(Client::version()));
 
 #ifdef HAVE_BREAKPAD
     QDir crashdumpDir = StoragePaths().crashDumpDirectory();

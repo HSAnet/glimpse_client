@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
     QCoreApplication::setOrganizationName("HS-Augsburg");
     QCoreApplication::setApplicationName("mPlaneClient");
-    QCoreApplication::setApplicationVersion("0.1");
+    QCoreApplication::setApplicationVersion(Client::version());
 
     QCoreApplication app(argc, argv);
 
@@ -278,6 +278,8 @@ int main(int argc, char* argv[])
 
     // Initialize the client instance
     Client* client = Client::instance();
+
+    LOG_INFO(QString("Glimpse version %1").arg(Client::version()));
 
     if (parser.isSet(passiveOption))
     {

@@ -423,6 +423,11 @@ Client::Status Client::status() const
     return d->status;
 }
 
+QString Client::version()
+{
+    return QString("%1.%2.%3").arg(Client::versionMajor).arg(Client::versionMinor).arg(Client::versionPatch);
+}
+
 QNetworkAccessManager *Client::networkAccessManager() const
 {
     return d->networkAccessManager;
