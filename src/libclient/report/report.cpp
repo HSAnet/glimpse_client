@@ -9,13 +9,15 @@ public:
     QUuid taskId;
     QDateTime dateTime;
     ResultList results;
+    QString appVersion;
 };
 
-Report::Report(const QUuid &taskId, const QDateTime &dateTime, const ResultList &results)
+Report::Report(const QUuid &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results)
 : d(new Private)
 {
     d->taskId = taskId;
     d->dateTime = dateTime;
+    d->appVersion = appVersion;
     d->results = results;
 }
 
@@ -30,6 +32,7 @@ ReportPtr Report::fromVariant(const QVariant &variant)
 
     return ReportPtr(new Report(map.value("task_id").toUuid(),
                                 map.value("report_time").toDateTime(),
+                                map.value("app_version").toString(),
                                 ptrListFromVariant<Result>(map.value("results"))));
 }
 
@@ -43,6 +46,11 @@ QDateTime Report::dateTime() const
     return d->dateTime;
 }
 
+QString Report::appVersion() const
+{
+    return d->appVersion;
+}
+
 ResultList Report::results() const
 {
     return d->results;
@@ -53,6 +61,7 @@ QVariant Report::toVariant() const
     QVariantMap map;
     map.insert("task_id", uuidToString(taskId()));
     map.insert("report_time", dateTime());
+    map.insert("app_version", appVersion());
     map.insert("results", ptrListToVariant(results()));
     return map;
 }

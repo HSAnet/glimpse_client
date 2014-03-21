@@ -11,7 +11,7 @@ typedef QList<ReportPtr> ReportList;
 class CLIENT_API Report : public Serializable
 {
 public:
-    Report(const QUuid& taskId, const QDateTime& dateTime, const ResultList& results);
+    Report(const QUuid& taskId, const QDateTime& dateTime, const QString& appVersion, const ResultList& results);
     ~Report();
 
     // Storage
@@ -20,6 +20,7 @@ public:
     // Getters
     QUuid taskId() const;
     QDateTime dateTime() const;
+    QString appVersion() const;
     ResultList results() const;
 
     // Serializable interface

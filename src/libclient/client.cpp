@@ -267,7 +267,7 @@ void Client::Private::taskFinished(const TestDefinitionPtr &test, const ResultPt
     ResultList results = oldReport.isNull() ? ResultList() : oldReport->results();
     results.append(result);
 
-    ReportPtr report(new Report(test->id(), QDateTime::currentDateTime(), results));
+    ReportPtr report(new Report(test->id(), QDateTime::currentDateTime(), Client::version(), results));
 
     if (oldReport)
     {
