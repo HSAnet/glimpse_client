@@ -71,7 +71,14 @@ public:
 
     Settings* settings() const;
 
-    // Versioning
+    /* Versioning
+     *
+     * MAJOR version when you make incompatible API changes,
+     * MINOR version when you add API-functionality in a backwards-compatible manner, and
+     * PATCH version when you make backwards-compatible bug fixes.
+     *
+     * Source: http://semver.org
+     */
     static const quint32 versionMajor = 0;
     static const quint32 versionMinor = 1;
     static const quint32 versionPatch = 0;
