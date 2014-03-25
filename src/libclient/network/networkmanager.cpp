@@ -12,6 +12,7 @@
 
 #include <QDataStream>
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QPointer>
 #include <QTcpServer>
 #include <QTcpSocket>
@@ -246,6 +247,15 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
 
     if (error.error == QJsonParseError::NoError)
     {
+        QJsonObject root = document.object();
+
+        QString replyError = root.value("error").toString();
+        if ( !replyError.isEmpty() )
+        {
+            LOG_ERROR(QString("Error from server: %1").arg(root.value("error").toString()));
+            return;
+        }
+
         PeerRequest request = PeerRequest::fromVariant(document.toVariant());
 
         if (handledConnectionIds.contains(request.connectionId))
