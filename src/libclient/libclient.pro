@@ -1,7 +1,7 @@
 TEMPLATE = lib
 TARGET = client
 
-QT += network concurrent qml quick
+QT += network concurrent
 
 android|osx:CONFIG += staticlib
 
@@ -70,6 +70,12 @@ breakpad-builtin {
     else:SOURCES += crashhandler.cpp
 }
 
+qtHaveModule(quick) {
+    QT += qml quick
+    HEADERS += qmlmodule.h
+    SOURCES += qmlmodule.cpp
+}
+
 SOURCES +=  \
     client.cpp \
     connectiontester.cpp \
@@ -119,7 +125,6 @@ SOURCES +=  \
     controller/reportcontroller.cpp \
     types.cpp \
     units.cpp \
-    qmlmodule.cpp \
     controller/controller.cpp \
     log/logger.cpp \
     log/logmodel.cpp \
@@ -194,7 +199,6 @@ HEADERS += \
     controller/reportcontroller.h \
     deviceinfo.h \
     units.h \
-    qmlmodule.h \
     controller/controller.h \
     log/logmodel.h \
     controller/configcontroller.h \

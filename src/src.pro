@@ -1,14 +1,13 @@
 TEMPLATE = subdirs
-CONFIG += ordered
 
-SUBDIRS += libclient \
-           mobile
+SUBDIRS += libclient
+
+qtHaveModule(quick) {
+    SUBDIRS += mobile
+    mobile.depends = libclient
+}
 
 !android:!ios {
     SUBDIRS += console
-    #SUBDIRS += desktop
+    console.depends = libclient
 }
-
-console.depends = libclient
-desktop.depends = libclient
-mobile.depends = libclient
