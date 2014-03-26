@@ -44,13 +44,13 @@ android {
     else: SOURCES += deviceinfo.cpp
 
     linux {
-        CONFIG += link_pkgconfig
-        PKGCONFIG += libwnck-1.0
-
         HEADERS += linuxprocessmodel.h
         SOURCES += linuxprocessmodel.cpp
 
         qtHaveModule(quick) {
+            CONFIG += link_pkgconfig
+            PKGCONFIG += libwnck-1.0
+
             HEADERS += linuximageprovider.h
             SOURCES += linuximageprovider.cpp
         }

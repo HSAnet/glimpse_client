@@ -8,7 +8,8 @@ cd ..
 cd ..
 
 # Copy files via scp
-scp *_amd64.deb $PACKAGESERVER:/home/repository/$REPOSITORYPATH/binary
+scp *_amd64.deb $PACKAGESERVER:/home/repository/$REPOSITORYPATH/binary || true
+scp *_armhf.deb $PACKAGESERVER:/home/repository/$REPOSITORYPATH/raspberrypi || true
 
 # Update the Packages.gz
 ssh $PACKAGESERVER "$REPOSITORYPATH/update_packages.sh"
