@@ -19,11 +19,11 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, libglimpse (>= ${source:Version})
 Description: The glimpse measurement platform console client
 
 Package: glimpse-gui
-Architecture: any
+Architecture: amd64 i386
 Depends: ${shlibs:Depends}, ${misc:Depends}, libglimpse (>= ${source:Version}), qt52quickcontrols
 Description: The glimpse measurement platform gui client
 
 Package: glimpse
-Architecture: any
+Architecture: amd64 i386
 Depends: glimpse-console (>= ${source:Version}), glimpse-gui (>= ${source:Version})
 Description: The glimpse measurement platform meta package
