@@ -1,7 +1,7 @@
 TEMPLATE = lib
 TARGET = client
 
-QT += network
+QT += network concurrent
 
 android|osx:CONFIG += staticlib
 
