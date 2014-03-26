@@ -1,6 +1,7 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
+QT -= gui network
 
 TARGET = mplane
 
