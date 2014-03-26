@@ -47,10 +47,13 @@ android {
         CONFIG += link_pkgconfig
         PKGCONFIG += libwnck-1.0
 
-        HEADERS += linuximageprovider.h \
-                   linuxprocessmodel.h
-        SOURCES += linuximageprovider.cpp \
-                   linuxprocessmodel.cpp
+        HEADERS += linuxprocessmodel.h
+        SOURCES += linuxprocessmodel.cpp
+
+        qtHaveModule(quick) {
+            HEADERS += linuximageprovider.h
+            SOURCES += linuximageprovider.cpp
+        }
     }
 }
 
