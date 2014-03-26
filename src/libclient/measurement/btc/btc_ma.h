@@ -24,6 +24,7 @@ public:
 
 private:
     void sendRequest(quint64 bytes);
+    void calculateResult();
 
     BulkTransportCapacityDefinitionPtr definition;
     bool m_preTest;
@@ -39,7 +40,6 @@ private:
     QVector<qint64> m_times;
 
 private slots:
-    void sendInitialRequest();
     void receiveResponse();
     void serverDisconnected();
     void handleError(QAbstractSocket::SocketError socketError);
