@@ -404,6 +404,7 @@ bool NetworkManager::isRunning() const
 
 bool NetworkManager::onMobileConnection() const
 {
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     QList<QNetworkConfiguration> confList = d->ncm.allConfigurations(QNetworkConfiguration::Active);
 
     foreach(QNetworkConfiguration conf, confList)
@@ -415,6 +416,7 @@ bool NetworkManager::onMobileConnection() const
             return true;
         }
     }
+#endif
 
     return false;
 }
