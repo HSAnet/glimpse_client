@@ -3,6 +3,7 @@
 #include "log/logger.h"
 
 #include <QSettings>
+#include <QCryptographicHash>
 
 LOGGER(Settings);
 
@@ -38,7 +39,28 @@ Settings::StorageType Settings::init()
     bool newSettings = deviceId().isNull();
 
     DeviceInfo info;
-    setDeviceId(info.deviceId());
+
+    QString generatedDeviceId = info.deviceId();
+    if (generatedDeviceId.isEmpty())
+    {
+        if (deviceId().isEmpty())
+        {
+            QCryptographicHash hash(QCryptographicHash::Sha224);
+            hash.addData( QUuid::createUuid().toByteArray() );
+
+            setDeviceId(QString::fromLatin1(hash.result().toHex()));
+
+            LOG_INFO("Generated fallback device ID");
+        }
+        else
+        {
+            LOG_INFO("Took fallback device ID from config");
+        }
+    }
+    else
+    {
+        setDeviceId(info.deviceId());
+    }
 
     LOG_INFO(QString("Device ID: %1").arg(deviceId()));
 

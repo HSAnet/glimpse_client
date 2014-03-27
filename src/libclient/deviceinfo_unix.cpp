@@ -18,6 +18,23 @@ namespace
         "/boot",
         NULL
     };
+
+    QByteArray uuidForDevice(const QString& device)
+    {
+        QByteArray uuid;
+
+        QDir byUuidDir("/dev/disk/by-uuid");
+        foreach(const QFileInfo& uuidFileInfo, byUuidDir.entryInfoList(QDir::Files))
+        {
+            if (device == uuidFileInfo.symLinkTarget())
+            {
+                uuid = uuidFileInfo.fileName().toUtf8();
+                break;
+            }
+        }
+
+        return uuid;
+    }
 }
 
 DeviceInfo::DeviceInfo()
@@ -57,9 +74,20 @@ QString DeviceInfo::deviceId() const
         else
         {
             // No UUID in fstab
-            QFileInfo info(uuid);
-            uuid.clear();
             QString target;
+            QFileInfo info;
+
+            if (uuid.indexOf("LABEL=") == 0)
+            {
+                uuid.remove(0, 6);
+                info = QFileInfo(QString("/dev/disk/by-label/%1").arg(QString::fromUtf8(uuid)));
+            }
+            else
+            {
+                info = QFileInfo(uuid);
+            }
+
+            uuid.clear();
 
             if ( info.isSymLink() )
             {
@@ -70,15 +98,7 @@ QString DeviceInfo::deviceId() const
                 target = info.absoluteFilePath();
             }
 
-            QDir byUuidDir("/dev/disk/by-uuid");
-            foreach(const QFileInfo& uuidFileInfo, byUuidDir.entryInfoList(QDir::Files))
-            {
-                if (target == uuidFileInfo.symLinkTarget())
-                {
-                    uuid = uuidFileInfo.fileName().toUtf8();
-                    break;
-                }
-            }
+            uuid = uuidForDevice(target);
 
             if (!uuid.isEmpty())
             {
