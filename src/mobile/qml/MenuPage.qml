@@ -150,6 +150,12 @@ ListPage {
         }
 
         ListElement {
+            text: "Udp Ping"
+            func: "udpPing"
+            group: "Measurements"
+        }
+
+        ListElement {
             text: "Measure It!"
             func: "measureIt"
             group: "Measurements"

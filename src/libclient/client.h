@@ -91,6 +91,7 @@ public slots:
     void upnp();
     void ping();
     void packetTrains();
+    void udpPing();
     void measureIt();
 
 signals:

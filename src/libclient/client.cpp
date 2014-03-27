@@ -35,6 +35,7 @@
 #include "measurement/http/httpdownload_definition.h"
 #include "measurement/ping/ping_definition.h"
 #include "measurement/packettrains/packettrainsdefinition.h"
+#include "measurement/udpping/udpping_definition.h"
 
 LOGGER(Client);
 
@@ -392,6 +393,15 @@ void Client::packetTrains()
     d->scheduler.enqueue(testDefinition);
 }
 
+void Client::udpPing()
+{
+    UdpPingDefinition udpPingDef("measure-it.de", 3, 1000, 1000, 64, 33434, 33434, "foobar");
+
+    TimingPtr timing(new ImmediateTiming());
+    TestDefinitionPtr testDefinition(new TestDefinition("d55b0091-2a83-4b9f-b9c3-f4690c485a13", "udpping", timing, udpPingDef.toVariant()));
+    d->scheduler.enqueue(testDefinition);
+}
+
 void Client::measureIt()
 {
     // Ping
@@ -405,6 +415,9 @@ void Client::measureIt()
 
     // PacketTrains
     d->scheduler.executeOnDemandTest("40639c2a-1603-4d49-9627-b96353409903");
+
+    // UdpPing
+    d->scheduler.executeOnDemandTest("d55b0091-2a83-4b9f-b9c3-f4690c485a13");
 }
 
 void Client::setStatus(Client::Status status)
