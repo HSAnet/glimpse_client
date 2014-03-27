@@ -79,9 +79,9 @@ void UdpPing::ping(PingProbe *probe)
     }
 }
 
-int UdpPing::getAddress(const QString &address, sockaddr_any *addr) const
+bool UdpPing::getAddress(const QString &address, sockaddr_any *addr) const
 {
-    return 0;
+    return true;
 }
 
 // vim: set sts=4 sw=4 et:
