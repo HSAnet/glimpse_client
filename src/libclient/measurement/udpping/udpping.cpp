@@ -45,9 +45,9 @@ ResultPtr UdpPing::result() const
 {
     QVariantList res;
 
-    foreach(struct pingProbe probe, m_pingProbes)
+    foreach (const PingProbe &probe, m_pingProbes)
     {
-        if (probe.recvTime > 0 && probe.recvTime > 0)
+        if (probe.sendTime > 0 && probe.recvTime > 0)
         {
             res << probe.recvTime - probe.sendTime;
         }
@@ -61,16 +61,16 @@ int UdpPing::initSocket()
     return 0;
 }
 
-bool UdpPing::sendData(struct pingProbe &probe)
+bool UdpPing::sendData(PingProbe *probe)
 {
     return false;
 }
 
-void UdpPing::receiveData(struct pingProbe &probe)
+void UdpPing::receiveData(PingProbe *probe)
 {
 }
 
-void UdpPing::ping(struct pingProbe &probe)
+void UdpPing::ping(PingProbe *probe)
 {
     // send
     if (sendData(probe))
@@ -79,7 +79,7 @@ void UdpPing::ping(struct pingProbe &probe)
     }
 }
 
-int UdpPing::getAddress(QString address, sockaddr_any *addr) const
+int UdpPing::getAddress(const QString &address, sockaddr_any *addr) const
 {
     return 0;
 }

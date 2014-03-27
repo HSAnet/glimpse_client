@@ -44,7 +44,7 @@ bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitio
 
 bool UdpPing::start()
 {
-    struct pingProbe probe;
+    PingProbe probe;
 
     setStatus(UdpPing::Running);
 
@@ -57,7 +57,7 @@ bool UdpPing::start()
             emit error("socket: " + QString(strerror(errno)));
             continue;
         }
-        ping(probe);
+        ping(&probe);
         close(probe.sock);
         m_pingProbes.append(probe);
     }
@@ -77,9 +77,9 @@ ResultPtr UdpPing::result() const
 {
     QVariantList res;
 
-    foreach(struct pingProbe probe, m_pingProbes)
+    foreach (const PingProbe &probe, m_pingProbes)
     {
-        if (probe.recvTime > 0 && probe.recvTime > 0)
+        if (probe.sendTime > 0 && probe.recvTime > 0)
         {
             res << probe.recvTime - probe.sendTime;
         }
@@ -152,15 +152,15 @@ cleanup:
     return -1;
 }
 
-bool UdpPing::sendData(struct pingProbe &probe)
+bool UdpPing::sendData(PingProbe *probe)
 {
     struct timeval tv;
 
     memset(&tv, 0, sizeof(tv));
     gettimeofday(&tv, NULL);
-    probe.sendTime = tv.tv_sec * 1e6 + tv.tv_usec;
+    probe->sendTime = tv.tv_sec * 1e6 + tv.tv_usec;
 
-    if (send(probe.sock, definition->payload, sizeof(definition->payload), 0) < 0)
+    if (send(probe->sock, definition->payload, sizeof(definition->payload), 0) < 0)
     {
         emit error("send: " + QString(strerror(errno)));
         return false;
@@ -168,7 +168,7 @@ bool UdpPing::sendData(struct pingProbe &probe)
     return true;
 }
 
-void UdpPing::receiveData(struct pingProbe &probe)
+void UdpPing::receiveData(PingProbe *probe)
 {
     struct msghdr msg;
     sockaddr_any from;
@@ -191,7 +191,7 @@ void UdpPing::receiveData(struct pingProbe &probe)
     // poll here
     struct pollfd pfd;
     memset(&pfd, 0, sizeof(pfd));
-    pfd.fd = probe.sock;
+    pfd.fd = probe->sock;
     pfd.events = POLLIN | POLLERR;
     if (poll(&pfd, 1, definition->receiveTimeout) < 0)
     {
@@ -204,7 +204,7 @@ void UdpPing::receiveData(struct pingProbe &probe)
         goto cleanup;
     }
 
-    if (recvmsg(probe.sock, &msg, MSG_ERRQUEUE) < 0)
+    if (recvmsg(probe->sock, &msg, MSG_ERRQUEUE) < 0)
     {
         emit error("recvmsg: " + QString(strerror(errno)));
         goto cleanup;
@@ -220,7 +220,7 @@ void UdpPing::receiveData(struct pingProbe &probe)
             if (cm->cmsg_type == SO_TIMESTAMP)
             {
                 struct timeval *tv = (struct timeval *) ptr;
-                probe.recvTime = tv->tv_sec * 1e6 + tv->tv_usec;
+                probe->recvTime = tv->tv_sec * 1e6 + tv->tv_usec;
             }
         }
         else if (cm->cmsg_level == SOL_IP)
@@ -243,20 +243,20 @@ void UdpPing::receiveData(struct pingProbe &probe)
     }
     if (ee)
     {
-        memcpy(&probe.source, SO_EE_OFFENDER(ee), sizeof(probe.source));
+        memcpy(&probe->source, SO_EE_OFFENDER(ee), sizeof(probe->source));
         if (ee->ee_type == ICMP_TIME_EXCEEDED && ee->ee_code == ICMP_EXC_TTL)
         {
-            emit ttlExceeded(probe);
+            emit ttlExceeded(*probe);
         } else if (ee->ee_type == ICMP_DEST_UNREACH)
         {
-            emit destinationUnreachable(probe);
+            emit destinationUnreachable(*probe);
         }
     }
 cleanup:
     return;
 }
 
-void UdpPing::ping(struct pingProbe &probe)
+void UdpPing::ping(PingProbe *probe)
 {
     // send
     if (sendData(probe))
@@ -265,7 +265,7 @@ void UdpPing::ping(struct pingProbe &probe)
     }
 }
 
-int UdpPing::getAddress(QString address, sockaddr_any *addr) const
+bool UdpPing::getAddress(const QString &address, sockaddr_any *addr) const
 {
     struct addrinfo hints;
     struct addrinfo *rp = NULL, *result = NULL;
@@ -276,7 +276,7 @@ int UdpPing::getAddress(QString address, sockaddr_any *addr) const
 
     if (getaddrinfo(address.toStdString().c_str(), NULL, &hints, &result))
     {
-        return -1;
+        return false;
     }
 
     for (rp = result; rp && rp->ai_family != AF_INET; rp = rp->ai_next);
@@ -290,7 +290,7 @@ int UdpPing::getAddress(QString address, sockaddr_any *addr) const
 
     freeaddrinfo(result);
 
-    return 0;
+    return true;
 }
 
 // vim: set sts=4 sw=4 et:

@@ -24,13 +24,15 @@ class UdpPing : public Measurement
     Q_OBJECT
 
 public:
-    union sockaddr_any {
+    union sockaddr_any
+    {
         struct sockaddr sa;
         struct sockaddr_in sin;
         struct sockaddr_in6 sin6;
     };
 
-    struct pingProbe {
+    struct PingProbe
+    {
         int sock;
         quint64 sendTime;
         quint64 recvTime;
@@ -50,19 +52,19 @@ public:
 private:
     void setStatus(Status status);
     int initSocket();
-    bool sendData(struct pingProbe &probe);
-    void receiveData(struct pingProbe &probe);
-    void ping(struct pingProbe &probe);
-    int getAddress(QString address, sockaddr_any *addr) const;
+    bool sendData(PingProbe *probe);
+    void receiveData(PingProbe *probe);
+    void ping(PingProbe *probe);
+    bool getAddress(const QString &address, sockaddr_any *addr) const;
 
     UdpPingDefinitionPtr definition;
     Status currentStatus;
-    QVector<struct pingProbe> m_pingProbes;
+    QVector<PingProbe> m_pingProbes;
 
 signals:
     void statusChanged(Status status);
-    void destinationUnreachable(struct pingProbe &probe);
-    void ttlExceeded(struct pingProbe &probe);
+    void destinationUnreachable(PingProbe &probe);
+    void ttlExceeded(PingProbe &probe);
     void error(QString message);
 };
 
