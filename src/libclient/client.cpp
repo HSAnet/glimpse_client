@@ -283,7 +283,7 @@ void Client::Private::loginStatusChanged()
 {
     configController.update();
 
-    if (!settings.isPassive())
+    if (!settings.isPassive() && loginController.registeredDevice())
     {
         taskController.fetchTasks();
     }

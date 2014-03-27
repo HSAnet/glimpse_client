@@ -195,7 +195,10 @@ void NetworkManager::Private::updateTimer()
     }
     else
     {
-        LOG_INFO(QString("Keepalive set to %1 sec.").arg(interval/1000));
+        if (timer.interval() != interval)
+        {
+            LOG_INFO(QString("Keepalive set to %1 sec.").arg(interval/1000));
+        }
     }
 
     timer.setInterval(interval);
@@ -311,7 +314,7 @@ void NetworkManager::Private::timeout()
     RemoteHost remote = NetworkHelper::remoteHost(settings->config()->keepaliveAddress());
     if (!remote.isValid())
     {
-        LOG_INFO("Invalid keepalive host");
+        LOG_INFO("Invalid keepalive host (normal at first app start)");
         return;
     }
 
@@ -334,7 +337,7 @@ void NetworkManager::Private::timeout()
     QByteArray data = QJsonDocument::fromVariant(map).toJson();
     socket->writeDatagram(data, QHostAddress(remote.host), remote.port);
 
-    LOG_INFO("Alive packet sent");
+    LOG_DEBUG("Alive packet sent");
 }
 
 void NetworkManager::Private::onDatagramReady()

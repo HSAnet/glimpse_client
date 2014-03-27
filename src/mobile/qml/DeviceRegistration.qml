@@ -26,17 +26,18 @@ Page {
         onStatusChanged: {
             switch (status) {
             case WebRequester.Running:
-                console.log("Device Registration sent")
+                console.log("Device Registration sent");
                 break;
             }
         }
 
         onError: {
-            console.log("Device Registration error: " + requester.errorString())
+            console.log("Device Registration error: " + requester.errorString());
             errorLabel.text = requester.errorString();
         }
         onFinished: {
-            console.log("Device Registration finished")
+            console.log("Device Registration finished");
+            client.taskController.fetchTasks();
 
             if ( root.isWizard )
                 app.menuPage();

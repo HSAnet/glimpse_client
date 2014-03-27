@@ -111,10 +111,14 @@ void TaskController::Private::updateTimer()
     Q_ASSERT(periodicTiming);
 
     int period = periodicTiming->period();
-    timer.setInterval(period);
-    timer.start();
 
-    LOG_INFO(QString("Fetch Tasks schedule set to %1 sec.").arg(period/1000));
+    if (timer.interval() != period)
+    {
+        LOG_INFO(QString("Fetch Tasks schedule set to %1 sec.").arg(period/1000));
+        timer.setInterval(period);
+    }
+
+    timer.start();
 }
 
 void TaskController::Private::finished()

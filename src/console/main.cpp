@@ -3,6 +3,7 @@
 #include "log/logger.h"
 #include "settings.h"
 #include "controller/logincontroller.h"
+#include "controller/taskcontroller.h"
 
 #include "webrequester.h"
 #include "network/requests/registerdevicerequest.h"
@@ -63,6 +64,7 @@ private slots:
             break;
 
         case WebRequester::Finished:
+            Client::instance()->taskController()->fetchTasks();
             LOG_INFO("Device successfully registered");
             break;
 
