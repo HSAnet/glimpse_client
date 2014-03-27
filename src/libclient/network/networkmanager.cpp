@@ -411,6 +411,7 @@ bool NetworkManager::onMobileConnection() const
         QNetworkConfiguration::BearerType type = conf.bearerType();
         if (type != QNetworkConfiguration::BearerEthernet && type != QNetworkConfiguration::BearerWLAN)
         {
+            LOG_DEBUG(QString("Connection type: %1").arg(type));
             return true;
         }
     }
