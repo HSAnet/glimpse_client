@@ -69,13 +69,13 @@ void Scheduler::Private::updateTimer()
             LOG_DEBUG(QString("Scheduling timer executes %1 now").arg(td->name()));
             timer.start(1);
         }
-
     }
 }
 
 int Scheduler::Private::enqueue(const TestDefinitionPtr& testDefinition)
 {
-    if ( testIds.contains(testDefinition->id()) )
+    // abort if test-id is already in scheduler or if the test has no next run time
+    if ( testIds.contains(testDefinition->id()) || !testDefinition->timing()->nextRun().isValid())
     {
         return -1;
     }
