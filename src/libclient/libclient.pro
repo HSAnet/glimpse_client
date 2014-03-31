@@ -30,7 +30,8 @@ android {
                log/logger_android.cpp \
                deviceinfo_android.cpp \
                androidimageprovider.cpp \
-               androidprocessmodel.cpp
+               androidprocessmodel.cpp \
+               measurement/udpping/udpping.cpp
 } else: ios {
     SOURCES += log/logger_all.cpp
     OBJECTIVE_SOURCES += storage/storagepaths_ios.mm \
@@ -39,13 +40,16 @@ android {
     SOURCES += storage/storagepaths.cpp \
                log/logger_all.cpp
 
-    osx: SOURCES += deviceinfo_osx.cpp
+    osx: SOURCES += deviceinfo_osx.cpp \
+                    measurement/udpping/udpping.cpp
     else:unix: SOURCES += deviceinfo_unix.cpp
-    else: SOURCES += deviceinfo.cpp
+    else: SOURCES += deviceinfo.cpp \
+                     measurement/udpping/udpping.cpp
 
     linux {
         HEADERS += linuxprocessmodel.h
-        SOURCES += linuxprocessmodel.cpp
+        SOURCES += linuxprocessmodel.cpp \
+                   measurement/udpping/udpping_linux.cpp
 
         qtHaveModule(quick) {
             CONFIG += link_pkgconfig
@@ -144,7 +148,9 @@ SOURCES +=  \
     measurement/http/httpdownload_definition.cpp \
     measurement/http/httpdownload_plugin.cpp \
     timing/ondemandtiming.cpp \
-    log/filelogger.cpp
+    log/filelogger.cpp \
+    measurement/udpping/udpping_definition.cpp \
+    measurement/udpping/udpping_plugin.cpp
 
 HEADERS += \
     export.h \
@@ -216,7 +222,10 @@ HEADERS += \
     measurement/http/httpdownload_definition.h \
     measurement/http/httpdownload_plugin.h \
     timing/ondemandtiming.h \
-    log/filelogger.h
+    log/filelogger.h \
+    measurement/udpping/udpping.h \
+    measurement/udpping/udpping_definition.h \
+    measurement/udpping/udpping_plugin.h
 
 OTHER_FILES += \
     libclient.pri
