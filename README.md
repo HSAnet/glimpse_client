@@ -13,6 +13,10 @@ glimpse_client
 * **Linux**: libwnck (Arch & Gentoo) libwnck-dev (Debian & Ubuntu based) libwnck-devel (for RPM)
 * **Android**: Android SDK and NDK
 
+### Running requirements
+* **Linux**: openssl
+* **Windows**: [OpenSSL](http://slproweb.com/products/Win32OpenSSL.html)
+
 ### Building
 1. Download and install the latest Qt version for your platform from http://download.qt-project.org/
 2. Clone this repository or fork it first if you're going to contribute
