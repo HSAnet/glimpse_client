@@ -181,7 +181,7 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const Meas
 
     QString hostname = QString("%1:%2").arg(definition->host).arg(definition->port);
 
-    m_tcpSocket = qobject_cast<QTcpSocket*>(networkManager->establishConnection(hostname, "btc_mp", definition->toVariant(), NetworkManager::TcpSocket));
+    m_tcpSocket = qobject_cast<QTcpSocket*>(networkManager->establishConnection(hostname, taskId(), "btc_mp", definition, NetworkManager::TcpSocket));
     if (!m_tcpSocket)
     {
         LOG_ERROR("Preparation failed");
@@ -227,5 +227,5 @@ ResultPtr BulkTransportCapacityMA::result() const
         res<<QString::number(val, 'f');
     }
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant(), definition->measurementUuid));
 }

@@ -41,6 +41,9 @@ public:
 
     virtual ResultPtr result() const = 0;
 
+    QUuid taskId() const;
+    void setTaskId(const QUuid &taskId);
+
 signals:
     void started();
     void finished();
