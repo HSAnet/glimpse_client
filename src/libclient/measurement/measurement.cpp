@@ -6,8 +6,13 @@
 class Measurement::Private
 {
 public:
+    Private()
+    {
+        taskId = QUuid();
+    }
+
     QPointer<QAbstractSocket> peerSocket;
-    QUuid taskId = QUuid();
+    QUuid taskId;
 };
 
 Measurement::Measurement(QObject *parent)
@@ -39,4 +44,3 @@ void Measurement::setTaskId(const QUuid &taskId)
 {
     d->taskId = taskId;
 }
-
