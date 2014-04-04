@@ -288,6 +288,9 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
         // FIXME: We can't assign the Peer socket to Measurement since this is created in a separate thread
         //        and we can't access.
 
+        // FIXME: We have the measurementUuid (request.measurementUuid), it needs to be put into the measurementDefinition
+        //        and be available in the measurement.
+
         TimingPtr timing(new ImmediateTiming);
         TestDefinitionPtr testDefinition(new TestDefinition(request.taskId, request.measurement, timing, request.measurementDefinition));
 
