@@ -218,6 +218,8 @@ public:
     QHostAddress host;
     quint16 port;
 
+    QUuid measurementUuid;
+
     // MeasurementObserver interface
     void created(const MeasurementPtr &measurement)
     {
@@ -233,6 +235,7 @@ public:
         // ACK the connection
         udpSocket->writeDatagram(QByteArray(), host, port);
         measurement->setPeerSocket(udpSocket);
+        measurement->setMeasurementUuid(measurementUuid);
     }
 };
 
@@ -281,15 +284,13 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
             tempObs->localPort = 5106; // FIXME: Don't hardcode this here
             tempObs->host = host; //request.peer;
             tempObs->port = port;
+            tempObs->measurementUuid = request.measurementUuid;
 
             observer = tempObs;
         }
 
         // FIXME: We can't assign the Peer socket to Measurement since this is created in a separate thread
         //        and we can't access.
-
-        // FIXME: We have the measurementUuid (request.measurementUuid), it needs to be put into the measurementDefinition
-        //        and be available in the measurement.
 
         TimingPtr timing(new ImmediateTiming);
         TestDefinitionPtr testDefinition(new TestDefinition(request.taskId, request.measurement, timing, request.measurementDefinition));

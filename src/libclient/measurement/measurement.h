@@ -44,6 +44,9 @@ public:
     QUuid taskId() const;
     void setTaskId(const QUuid &taskId);
 
+    QUuid getMeasurementUuid() const;
+    void setMeasurementUuid(const QUuid &measurementUuid);
+
 signals:
     void started();
     void finished();
