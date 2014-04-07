@@ -17,7 +17,7 @@ public:
     Result(const QDateTime& dateTime,
            const QVariant& probeResult,
            const QVariant& peerResult,
-           const QUuid measureUuid = QUuid());
+           const QUuid& measureUuid = QUuid());
     ~Result();
 
     // Storage
