@@ -49,9 +49,9 @@ bool PacketTrainsMA::start()
 
     // calculate disperson
     quint64* disp = new quint64[definition->iterations];
-    quint64 R_MIN = 10485760;
-    quint64 R_MAX = 262144000;
-    qint64 delay = 200000000;
+    quint64 R_MIN = definition->rateMin;
+    quint64 R_MAX = definition->rateMax;
+    quint64 delay = definition->delay;
 
     for (int i = 0; i < definition->iterations; i++)
     {
