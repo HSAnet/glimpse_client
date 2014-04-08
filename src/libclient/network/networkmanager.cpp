@@ -91,7 +91,7 @@ public:
     QPointer<Scheduler> scheduler;
     QPointer<Settings> settings;
 
-    QSet<QUuid> handledMeasureuuIds;
+    QSet<QUuid> handledMeasureUuids;
 
     quint16 localPort;
 
@@ -267,13 +267,13 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
 
         PeerRequest request = PeerRequest::fromVariant(document.toVariant());
 
-        if (handledMeasureuuIds.contains(request.measurementUuid))
+        if (handledMeasureUuids.contains(request.measurementUuid))
         {
             LOG_DEBUG("Measurement uuid is already handled, skipping second try");
             return;
         }
 
-        handledMeasureuuIds.insert(request.measurementUuid);
+        handledMeasureUuids.insert(request.measurementUuid);
 
         MeasurementObserver* observer = NULL;
         if (request.protocol == NetworkManager::UdpSocket)
@@ -479,7 +479,7 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
     request.protocol = socketType;
 
     // If for some reason our packet gets routed back to us, don't handle it
-    d->handledMeasureuuIds.insert(measurementDefinition->measurementUuid);
+    d->handledMeasureUuids.insert(measurementDefinition->measurementUuid);
 
     QUdpSocket* testSocket = d->socket.data();
     if ( socketType != TcpSocket )
