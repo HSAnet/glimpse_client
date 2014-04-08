@@ -11,7 +11,9 @@ PingProbe receiveLoop(pcap_t *capture, PingProbe probe, sockaddr_any destination
 
 UdpPing::UdpPing(QObject *parent)
     : Measurement(parent),
-      currentStatus(Unknown)
+      currentStatus(Unknown),
+      m_device(NULL),
+      m_capture(NULL)
 {
     WSADATA wsaData;
 
