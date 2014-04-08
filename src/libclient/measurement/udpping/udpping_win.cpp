@@ -62,12 +62,14 @@ bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitio
     dst_addr.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
     strncpy(address, inet_ntoa(dst_addr.sin.sin_addr), sizeof(address));
 
-    if (pcap_createsrcstr(source, PCAP_SRC_IFLOCAL, address, NULL, NULL, errbuf) != 0) {
+    if (pcap_createsrcstr(source, PCAP_SRC_IFLOCAL, address, NULL, NULL, errbuf) != 0)
+    {
         emit error("pcap_createsrcstr: " + QString(errbuf));
         return false;
     }
 
-    if (pcap_findalldevs_ex(source, NULL, &alldevs, errbuf) != 0) {
+    if (pcap_findalldevs_ex(source, NULL, &alldevs, errbuf) != 0)
+    {
         emit error("pcap_findalldevs_ex: " + QString(errbuf));
         return false;
     }
@@ -268,7 +270,8 @@ void UdpPing::ping(PingProbe *probe)
         } else if (result.sendTime == 0 && result.recvTime == 0)
         {
             emit error("timeout");
-        } else {
+        } else
+        {
             emit error("error receiving packets");
         }
     } else
@@ -309,7 +312,8 @@ bool getAddress(const QString &address, sockaddr_any *addr)
 
 static PingProbe receiveLoop(pcap_t *capture, PingProbe probe, sockaddr_any destination)
 {
-    struct ipAddress {
+    struct ipAddress
+    {
         u_char byte1;
         u_char byte2;
         u_char byte3;
