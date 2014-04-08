@@ -5,6 +5,7 @@
 
 #include <QDateTime>
 #include <QMetaType>
+#include <QUuid>
 
 class Result;
 typedef QSharedPointer<Result> ResultPtr;
@@ -15,7 +16,8 @@ class CLIENT_API Result : public Serializable
 public:
     Result(const QDateTime& dateTime,
            const QVariant& probeResult,
-           const QVariant& peerResult);
+           const QVariant& peerResult,
+           const QUuid& measureUuid = QUuid());
     ~Result();
 
     // Storage
@@ -25,6 +27,7 @@ public:
     QDateTime dateTime() const;
     QVariant probeResult() const;
     QVariant peerResult() const;
+    QUuid measureUuid() const;
 
     // Serializable interface
     QVariant toVariant() const;

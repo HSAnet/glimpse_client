@@ -34,8 +34,9 @@ public:
     {
         QVariantMap map;
         map.insert("type", "peer_request");
-        map.insert("connectionId", connectionId);
-        map.insert("definition", measurementDefinition);
+        map.insert("measurementDefinition", measurementDefinition);
+        map.insert("taskId", taskId);
+        map.insert("measurementUuid", measurementUuid);
         map.insert("measurement", measurement);
         map.insert("peer", peer);
         map.insert("port", port);
@@ -48,8 +49,9 @@ public:
         QVariantMap map = variant.toMap();
 
         PeerRequest request;
-        request.connectionId = map.value("connectionId").toUuid();
-        request.measurementDefinition = map.value("definition");
+        request.measurementDefinition = map.value("measurementDefinition");
+        request.taskId = map.value("taskId").toUuid();
+        request.measurementUuid = map.value("measurementUuid").toUuid();
         request.measurement = map.value("measurement").toString();
         request.peer = map.value("peer").toString();
         request.port = map.value("port").toUInt();
@@ -57,8 +59,9 @@ public:
         return request;
     }
 
-    QUuid connectionId;
     QVariant measurementDefinition;
+    QUuid taskId;
+    QUuid measurementUuid;
     QString measurement;
     QString peer;
     quint16 port;
@@ -88,7 +91,7 @@ public:
     QPointer<Scheduler> scheduler;
     QPointer<Settings> settings;
 
-    QSet<QUuid> handledConnectionIds;
+    QSet<QUuid> handledMeasureUuids;
 
     quint16 localPort;
 
@@ -215,6 +218,8 @@ public:
     QHostAddress host;
     quint16 port;
 
+    QUuid measurementUuid;
+
     // MeasurementObserver interface
     void created(const MeasurementPtr &measurement)
     {
@@ -230,6 +235,7 @@ public:
         // ACK the connection
         udpSocket->writeDatagram(QByteArray(), host, port);
         measurement->setPeerSocket(udpSocket);
+        measurement->setMeasurementUuid(measurementUuid);
     }
 };
 
@@ -261,13 +267,13 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
 
         PeerRequest request = PeerRequest::fromVariant(document.toVariant());
 
-        if (handledConnectionIds.contains(request.connectionId))
+        if (handledMeasureUuids.contains(request.measurementUuid))
         {
-            LOG_DEBUG("Connection id is already handled, skipping second try");
+            LOG_DEBUG("Measurement uuid is already handled, skipping second try");
             return;
         }
 
-        handledConnectionIds.insert(request.connectionId);
+        handledMeasureUuids.insert(request.measurementUuid);
 
         MeasurementObserver* observer = NULL;
         if (request.protocol == NetworkManager::UdpSocket)
@@ -278,6 +284,7 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
             tempObs->localPort = 5106; // FIXME: Don't hardcode this here
             tempObs->host = host; //request.peer;
             tempObs->port = port;
+            tempObs->measurementUuid = request.measurementUuid;
 
             observer = tempObs;
         }
@@ -286,7 +293,7 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
         //        and we can't access.
 
         TimingPtr timing(new ImmediateTiming);
-        TestDefinitionPtr testDefinition(new TestDefinition(request.connectionId, request.measurement, timing, request.measurementDefinition));
+        TestDefinitionPtr testDefinition(new TestDefinition(request.taskId, request.measurement, timing, request.measurementDefinition));
 
         // Bypass scheduler and run directly on the executor
         scheduler->executor()->execute(testDefinition, observer);
@@ -441,7 +448,7 @@ QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType soc
     return socket;
 }
 
-QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, const QString &measurement, const QVariant &definition, NetworkManager::SocketType socketType)
+QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, const QUuid &taskId, const QString &measurement, MeasurementDefinitionPtr measurementDefinition, NetworkManager::SocketType socketType)
 {
     QAbstractSocket* socket = d->createSocket(socketType);
     if ( !socket )
@@ -460,16 +467,19 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, co
         return NULL;
     }
 
+    measurementDefinition->measurementUuid = QUuid::createUuid();
+
     PeerRequest request;
-    request.connectionId = QUuid::createUuid();
     request.measurement = measurement;
-    request.measurementDefinition = definition;
+    request.taskId = taskId;
+    request.measurementDefinition = measurementDefinition->toVariant();
+    request.measurementUuid = measurementDefinition->measurementUuid;
     request.peer = remote.host;
     request.port = aliveRemote.port;
     request.protocol = socketType;
 
     // If for some reason our packet gets routed back to us, don't handle it
-    d->handledConnectionIds.insert(request.connectionId);
+    d->handledMeasureUuids.insert(measurementDefinition->measurementUuid);
 
     QUdpSocket* testSocket = d->socket.data();
     if ( socketType != TcpSocket )

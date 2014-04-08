@@ -111,7 +111,7 @@ bool PacketTrainsMA::prepare(NetworkManager *networkManager, const MeasurementDe
 
     QString hostname = QString("%1:%2").arg(definition->host).arg(definition->port);
 
-    m_udpSocket = qobject_cast<QUdpSocket*>(networkManager->establishConnection(hostname, "packettrains_mp", definition->toVariant(), NetworkManager::UdpSocket));
+    m_udpSocket = qobject_cast<QUdpSocket*>(networkManager->establishConnection(hostname, taskId(), "packettrains_mp", definition, NetworkManager::UdpSocket));
     if (!m_udpSocket)
     {
         LOG_ERROR("Preparation failed");
@@ -133,5 +133,5 @@ bool PacketTrainsMA::stop()
 
 ResultPtr PacketTrainsMA::result() const
 {
-    return ResultPtr();
+    return ResultPtr(new Result(QDateTime::currentDateTime(), QVariant(), QVariant(), definition->measurementUuid));
 }

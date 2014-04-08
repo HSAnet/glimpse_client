@@ -28,7 +28,7 @@ public slots:
 
         // TODO: Check the timing (too long ago?)
         currentTest = test;
-        measurement = factory.createMeasurement(test->name());
+        measurement = factory.createMeasurement(test->name(), test->id());
         if ( !measurement.isNull() )
         {
             connect(measurement.data(), SIGNAL(finished()), this, SLOT(measurementFinished()));

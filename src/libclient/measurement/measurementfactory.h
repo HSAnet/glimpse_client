@@ -12,7 +12,7 @@ public:
     MeasurementPluginList plugins() const;
     QStringList availableMeasurements() const;
 
-    MeasurementPtr createMeasurement(const QString& name);
+    MeasurementPtr createMeasurement(const QString& name, const QUuid &id);
     MeasurementDefinitionPtr createMeasurementDefinition(const QString& name, const QVariant& data);
 
 protected:
