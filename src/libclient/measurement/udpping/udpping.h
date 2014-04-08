@@ -33,7 +33,7 @@ union sockaddr_any
  * This enum exists because receiveLoop() cannot directly emit signals.
  * It's meant to notify ping() about how things are to be handled.
  */
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
 enum Response
 {
     DESTINATION_UNREACHABLE,
@@ -48,7 +48,7 @@ struct PingProbe
     quint64 sendTime;
     quint64 recvTime;
     sockaddr_any source;
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
     Response response;
     quint8 icmpType;
     quint8 icmpCode;
@@ -81,7 +81,7 @@ private:
     UdpPingDefinitionPtr definition;
     Status currentStatus;
     QVector<PingProbe> m_pingProbes;
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
     pcap_if_t *m_device;
     pcap_t *m_capture;
 #endif
