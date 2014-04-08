@@ -1,32 +1,170 @@
 #include "udpping.h"
 
 #include <time.h>
-#include <windows.h>
+#include <Windows.h>
 #include <mswsock.h>
 #include <Mstcpip.h>
 #include <pcap.h>
 
-bool getAddress(const QString &address, sockaddr_any *addr);
-PingProbe receiveLoop(pcap_t *capture, PingProbe probe, sockaddr_any destination);
+namespace
+{
+
+    bool getAddress(const QString &address, sockaddr_any *addr)
+    {
+        struct addrinfo hints;
+        struct addrinfo *rp = NULL, *result = NULL;
+
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = AF_INET;
+        hints.ai_flags = AI_FQDN;
+
+        if (getaddrinfo(address.toStdString().c_str(), NULL, &hints, &result))
+        {
+            return false;
+        }
+
+        for (rp = result; rp && rp->ai_family != AF_INET; rp = rp->ai_next)
+        {
+        }
+
+        if (!rp)
+        {
+            rp = result;
+        }
+
+        memcpy(addr, rp->ai_addr, rp->ai_addrlen);
+
+        freeaddrinfo(result);
+
+        return true;
+    }
+
+    static PingProbe receiveLoop(pcap_t *capture, PingProbe probe, sockaddr_any destination)
+    {
+        struct ipAddress
+        {
+            u_char byte1;
+            u_char byte2;
+            u_char byte3;
+            u_char byte4;
+        };
+
+        int res;
+        char sourceAddress[16] = "";
+        char destinationAddress[16] = "";
+        const u_char *data;
+        pcap_pkthdr *header;
+        ipAddress *source;
+        quint8 *icmpType;
+        quint8 *icmpCode;
+        quint8 *ipProto;
+        PingProbe newProbe;
+
+        memcpy(&newProbe, &probe, sizeof(newProbe));
+
+        for (;;)
+        {
+            res = pcap_next_ex(capture, &header, &data);
+
+            ipProto = (quint8 *) (data + 23);
+            source = (ipAddress *) (data + 26);
+            icmpType = (quint8 *) (data + 34);
+            icmpCode = (quint8 *) (data + 35);
+
+            switch (res)
+            {
+            case 0:
+                // timed out
+                newProbe.sendTime = 0;
+                newProbe.recvTime = 0;
+                goto exit;
+            case -1:
+                // error indication
+                goto error;
+            default:
+                // packets received
+                // TODO: ensure the packets are really ours by checking them
+
+                // source address of the response packet
+                sprintf(sourceAddress, "%d.%d.%d.%d", source->byte1, source->byte2, source->byte3, source->byte4);
+                // destination of request packet
+                strncpy(destinationAddress, inet_ntoa(destination.sin.sin_addr), sizeof(destinationAddress));
+
+                if (*ipProto == 17)
+                {
+                    // UDP request
+                    newProbe.sendTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
+                } else if (*ipProto == 1)
+                {
+                    // ICMP response
+                    if (*icmpCode == 3 && *icmpType == 3)
+                    {
+                        // destination and port unreachable: this was a successful ping
+                        if (strncmp(sourceAddress, destinationAddress, 16) == 0)
+                        {
+                            newProbe.recvTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
+                            newProbe.response = DESTINATION_UNREACHABLE;
+                            goto exit;
+                        }
+                    } else if (*icmpCode == 0 && *icmpType == 11)
+                    {
+                        /*
+                         * TTL exceeded
+                         *
+                         * Let's missuse source and sourceAddress for the destination of the original IP header.
+                         */
+                        source = (ipAddress *) (data + 76);
+                        sprintf(sourceAddress, "%d.%d.%d.%d", source->byte1, source->byte2, source->byte3, source->byte4);
+
+                        if (strncmp(sourceAddress, destinationAddress, 16) == 0)
+                        {
+                            newProbe.recvTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
+                            newProbe.response = TTL_EXCEEDED;
+                            goto exit;
+                        }
+                    } else
+                    {
+                        /*
+                         * An unhandled ICMP packet has been captured. We need to check this and
+                         * handle it if needed.
+                         */
+                        newProbe.icmpType = *icmpType;
+                        newProbe.icmpCode = *icmpCode;
+                        newProbe.response = UNHANDLED_ICMP;
+                        goto exit;
+                    }
+                } else
+                {
+                    /*
+                     * This else-branch exists because of paranoia only.
+                     * The WinPCAP filter is set to capture certain ICMP and UDP packets only
+                     * and therefore should never end up here.
+                     */
+                    goto error;
+                }
+            }
+        }
+
+    error:
+        // error indication
+        newProbe.sendTime = -1;
+        newProbe.recvTime = -1;
+
+    exit:
+        return newProbe;
+    }
+}
 
 UdpPing::UdpPing(QObject *parent)
-    : Measurement(parent),
-      currentStatus(Unknown),
-      m_device(NULL),
-      m_capture(NULL)
+: Measurement(parent)
+, currentStatus(Unknown)
+, m_device(NULL)
+, m_capture(NULL)
 {
-    WSADATA wsaData;
-
-    // Initialize Winsock
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-    {
-        // TODO: emit error
-    }
 }
 
 UdpPing::~UdpPing()
 {
-    WSACleanup();
 }
 
 Measurement::Status UdpPing::status() const
@@ -280,151 +418,6 @@ void UdpPing::ping(PingProbe *probe)
     {
         emit error("error while sending");
     }
-}
-
-bool getAddress(const QString &address, sockaddr_any *addr)
-{
-    struct addrinfo hints;
-    struct addrinfo *rp = NULL, *result = NULL;
-
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;
-    hints.ai_flags = AI_FQDN;
-
-    if (getaddrinfo(address.toStdString().c_str(), NULL, &hints, &result))
-    {
-        return false;
-    }
-
-    for (rp = result; rp && rp->ai_family != AF_INET; rp = rp->ai_next)
-    {
-    }
-
-    if (!rp)
-    {
-        rp = result;
-    }
-
-    memcpy(addr, rp->ai_addr, rp->ai_addrlen);
-
-    freeaddrinfo(result);
-
-    return true;
-}
-
-static PingProbe receiveLoop(pcap_t *capture, PingProbe probe, sockaddr_any destination)
-{
-    struct ipAddress
-    {
-        u_char byte1;
-        u_char byte2;
-        u_char byte3;
-        u_char byte4;
-    };
-
-    int res;
-    char sourceAddress[16] = "";
-    char destinationAddress[16] = "";
-    const u_char *data;
-    pcap_pkthdr *header;
-    ipAddress *source;
-    quint8 *icmpType;
-    quint8 *icmpCode;
-    quint8 *ipProto;
-    PingProbe newProbe;
-
-    memcpy(&newProbe, &probe, sizeof(newProbe));
-
-    for (;;)
-    {
-        res = pcap_next_ex(capture, &header, &data);
-
-        ipProto = (quint8 *) (data + 23);
-        source = (ipAddress *) (data + 26);
-        icmpType = (quint8 *) (data + 34);
-        icmpCode = (quint8 *) (data + 35);
-
-        switch (res)
-        {
-        case 0:
-            // timed out
-            newProbe.sendTime = 0;
-            newProbe.recvTime = 0;
-            goto exit;
-        case -1:
-            // error indication
-            goto error;
-        default:
-            // packets received
-            // TODO: ensure the packets are really ours by checking them
-
-            // source address of the response packet
-            sprintf(sourceAddress, "%d.%d.%d.%d", source->byte1, source->byte2, source->byte3, source->byte4);
-            // destination of request packet
-            strncpy(destinationAddress, inet_ntoa(destination.sin.sin_addr), sizeof(destinationAddress));
-
-            if (*ipProto == 17)
-            {
-                // UDP request
-                newProbe.sendTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
-            } else if (*ipProto == 1)
-            {
-                // ICMP response
-                if (*icmpCode == 3 && *icmpType == 3)
-                {
-                    // destination and port unreachable: this was a successful ping
-                    if (strncmp(sourceAddress, destinationAddress, 16) == 0)
-                    {
-                        newProbe.recvTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
-                        newProbe.response = DESTINATION_UNREACHABLE;
-                        goto exit;
-                    }
-                } else if (*icmpCode == 0 && *icmpType == 11)
-                {
-                    /*
-                     * TTL exceeded
-                     *
-                     * Let's missuse source and sourceAddress for the destination of the original IP header.
-                     */
-                    source = (ipAddress *) (data + 76);
-                    sprintf(sourceAddress, "%d.%d.%d.%d", source->byte1, source->byte2, source->byte3, source->byte4);
-
-                    if (strncmp(sourceAddress, destinationAddress, 16) == 0)
-                    {
-                        newProbe.recvTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
-                        newProbe.response = TTL_EXCEEDED;
-                        goto exit;
-                    }
-                } else
-                {
-                    /*
-                     * An unhandled ICMP packet has been captured. We need to check this and
-                     * handle it if needed.
-                     */
-                    newProbe.icmpType = *icmpType;
-                    newProbe.icmpCode = *icmpCode;
-                    newProbe.response = UNHANDLED_ICMP;
-                    goto exit;
-                }
-            } else
-            {
-                /*
-                 * This else-branch exists because of paranoia only.
-                 * The WinPCAP filter is set to capture certain ICMP and UDP packets only
-                 * and therefore should never end up here.
-                 */
-                goto error;
-            }
-        }
-    }
-
-error:
-    // error indication
-    newProbe.sendTime = -1;
-    newProbe.recvTime = -1;
-
-exit:
-    return newProbe;
 }
 
 // vim: set sts=4 sw=4 et:

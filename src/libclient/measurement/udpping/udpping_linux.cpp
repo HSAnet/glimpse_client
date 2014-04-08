@@ -11,11 +11,44 @@
 
 #include "udpping.h"
 
-bool getAddress(const QString &address, sockaddr_any *addr);
+namespace
+{
+    bool getAddress(const QString &address, sockaddr_any *addr)
+    {
+        struct addrinfo hints;
+        struct addrinfo *rp = NULL, *result = NULL;
+
+        memset(&hints, 0, sizeof (hints));
+        hints.ai_family = AF_INET;
+        hints.ai_flags = AI_IDN;
+
+        if (getaddrinfo(address.toStdString().c_str(), NULL, &hints, &result))
+        {
+            return false;
+        }
+
+        for (rp = result; rp && rp->ai_family != AF_INET; rp = rp->ai_next)
+        {
+        }
+
+        if (!rp)
+        {
+            rp = result;
+        }
+
+        memcpy(addr, rp->ai_addr, rp->ai_addrlen);
+
+        freeaddrinfo(result);
+
+        return true;
+    }
+}
 
 UdpPing::UdpPing(QObject *parent)
-    : Measurement(parent),
-      currentStatus(Unknown)
+: Measurement(parent)
+, currentStatus(Unknown)
+, m_device(NULL)
+, m_capture(NULL)
 {
 }
 
@@ -266,36 +299,6 @@ void UdpPing::ping(PingProbe *probe)
     {
         receiveData(probe);
     }
-}
-
-bool getAddress(const QString &address, sockaddr_any *addr)
-{
-    struct addrinfo hints;
-    struct addrinfo *rp = NULL, *result = NULL;
-
-    memset(&hints, 0, sizeof (hints));
-    hints.ai_family = AF_INET;
-    hints.ai_flags = AI_IDN;
-
-    if (getaddrinfo(address.toStdString().c_str(), NULL, &hints, &result))
-    {
-        return false;
-    }
-
-    for (rp = result; rp && rp->ai_family != AF_INET; rp = rp->ai_next)
-    {
-    }
-
-    if (!rp)
-    {
-        rp = result;
-    }
-
-    memcpy(addr, rp->ai_addr, rp->ai_addrlen);
-
-    freeaddrinfo(result);
-
-    return true;
 }
 
 // vim: set sts=4 sw=4 et:

@@ -40,6 +40,9 @@ enum Response
     TTL_EXCEEDED,
     UNHANDLED_ICMP
 };
+#else
+typedef void pcap_if_t;
+typedef void pcap_t;
 #endif
 
 struct PingProbe
@@ -81,10 +84,9 @@ private:
     UdpPingDefinitionPtr definition;
     Status currentStatus;
     QVector<PingProbe> m_pingProbes;
-#if defined(Q_OS_WIN)
+
     pcap_if_t *m_device;
     pcap_t *m_capture;
-#endif
 
 signals:
     void statusChanged(Status status);
