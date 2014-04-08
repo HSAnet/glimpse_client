@@ -11,6 +11,8 @@
 
 #include "udpping.h"
 
+bool getAddress(const QString &address, sockaddr_any *addr);
+
 UdpPing::UdpPing(QObject *parent)
     : Measurement(parent),
       currentStatus(Unknown)
@@ -130,6 +132,7 @@ int UdpPing::initSocket()
 
     // connect
     getAddress(definition->url, &dst_addr);
+    // FIXME: dst_addr could be NULL and fail the next line
     dst_addr.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
     if (::connect(sock, (struct sockaddr *) &dst_addr, sizeof(dst_addr)) < 0)
     {
@@ -265,7 +268,7 @@ void UdpPing::ping(PingProbe *probe)
     }
 }
 
-bool UdpPing::getAddress(const QString &address, sockaddr_any *addr) const
+bool getAddress(const QString &address, sockaddr_any *addr)
 {
     struct addrinfo hints;
     struct addrinfo *rp = NULL, *result = NULL;
@@ -279,7 +282,9 @@ bool UdpPing::getAddress(const QString &address, sockaddr_any *addr) const
         return false;
     }
 
-    for (rp = result; rp && rp->ai_family != AF_INET; rp = rp->ai_next);
+    for (rp = result; rp && rp->ai_family != AF_INET; rp = rp->ai_next)
+    {
+    }
 
     if (!rp)
     {

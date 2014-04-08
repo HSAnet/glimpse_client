@@ -1,5 +1,7 @@
 #include "udpping.h"
 
+bool getAddress(const QString &address, sockaddr_any *addr);
+
 UdpPing::UdpPing(QObject *parent)
     : Measurement(parent),
       currentStatus(Unknown)
@@ -79,7 +81,7 @@ void UdpPing::ping(PingProbe *probe)
     }
 }
 
-bool UdpPing::getAddress(const QString &address, sockaddr_any *addr) const
+bool getAddress(const QString &address, sockaddr_any *addr)
 {
     return true;
 }

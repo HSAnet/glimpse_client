@@ -6,9 +6,13 @@
 #include <QVector>
 
 #if defined(Q_OS_WIN)
+#include <QtConcurrent/QtConcurrentRun>
+#include <QMutex>
 #include <winsock2.h>
 #include <Ws2ipdef.h>
+#include <WS2tcpip.h>
 #undef min
+#include<pcap.h>
 #elif defined(Q_OS_LINUX) || defined(Q_OS_OSX)
 #include <netinet/in.h>
 #else
@@ -18,26 +22,44 @@
 #include "../measurement.h"
 #include "udpping_definition.h"
 
+union sockaddr_any
+{
+    struct sockaddr sa;
+    struct sockaddr_in sin;
+    struct sockaddr_in6 sin6;
+};
+
+/*
+ * This enum exists because receiveLoop() cannot directly emit signals.
+ * It's meant to notify ping() about how things are to be handled.
+ */
+#if defined(Q_OS_WIN)
+enum Response
+{
+    DESTINATION_UNREACHABLE,
+    TTL_EXCEEDED,
+    UNHANDLED_ICMP
+};
+#endif
+
+struct PingProbe
+{
+    int sock;
+    quint64 sendTime;
+    quint64 recvTime;
+    sockaddr_any source;
+#if defined(Q_OS_WIN)
+    Response response;
+    quint8 icmpType;
+    quint8 icmpCode;
+#endif
+};
 
 class UdpPing : public Measurement
 {
     Q_OBJECT
 
 public:
-    union sockaddr_any
-    {
-        struct sockaddr sa;
-        struct sockaddr_in sin;
-        struct sockaddr_in6 sin6;
-    };
-
-    struct PingProbe
-    {
-        int sock;
-        quint64 sendTime;
-        quint64 recvTime;
-        sockaddr_any source;
-    };
 
     explicit UdpPing(QObject *parent = 0);
     ~UdpPing();
@@ -55,11 +77,14 @@ private:
     bool sendData(PingProbe *probe);
     void receiveData(PingProbe *probe);
     void ping(PingProbe *probe);
-    bool getAddress(const QString &address, sockaddr_any *addr) const;
 
     UdpPingDefinitionPtr definition;
     Status currentStatus;
     QVector<PingProbe> m_pingProbes;
+#if defined(Q_OS_WIN)
+    pcap_if_t *m_device;
+    pcap_t *m_capture;
+#endif
 
 signals:
     void statusChanged(Status status);
