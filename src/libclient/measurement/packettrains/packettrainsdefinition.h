@@ -15,13 +15,17 @@ typedef QList<PacketTrainsDefinitionPtr> PacketTrainsDefinitionList;
 class PacketTrainsDefinition : public MeasurementDefinition
 {
 public:
-    PacketTrainsDefinition(QString host, quint16 port, quint16 packetSize, quint16 trainLength, quint8 iterations);
+    PacketTrainsDefinition(QString host, quint16 port, quint16 packetSize, quint16 trainLength, quint8 iterations,
+                           quint64 rateMin, quint64 rateMax, quint64 delay);
 
     QString host;
     quint16 port;
     quint16 packetSize;
     quint16 trainLength;
     quint8 iterations;
+    quint64 rateMin;
+    quint64 rateMax;
+    quint64 delay;
 
     QVariant toVariant() const;
     static PacketTrainsDefinitionPtr fromVariant(const QVariant &variant);

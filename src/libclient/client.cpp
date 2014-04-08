@@ -386,7 +386,7 @@ void Client::ping()
 
 void Client::packetTrains()
 {
-    PacketTrainsDefinition packetTrainsDef("141.82.51.241", 5106, 1000, 48, 1);
+    PacketTrainsDefinition packetTrainsDef("141.82.51.241", 5106, 1000, 48, 1, 10485760, 262144000, 200000000);
 
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832177", "packettrains_ma", timing, packetTrainsDef.toVariant()));
