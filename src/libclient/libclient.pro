@@ -18,6 +18,7 @@ INCLUDEPATH += $$PWD
 include(../../dist.pri)
 include(../../3rdparty/miniupnpc.pri)
 include(../../3rdparty/breakpad.pri)
+include(../../3rdparty/winpcap.pri)
 
 android {
     QT += androidextras
@@ -44,7 +45,7 @@ android {
                     measurement/udpping/udpping.cpp
     else:unix: SOURCES += deviceinfo_unix.cpp
     else: SOURCES += deviceinfo.cpp \
-                     measurement/udpping/udpping.cpp
+                     measurement/udpping/udpping_win.cpp
 
     linux {
         HEADERS += linuxprocessmodel.h

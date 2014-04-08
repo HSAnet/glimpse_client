@@ -1,8 +1,20 @@
 #include "udpping.h"
 
+namespace
+{
+    bool getAddress(const QString &address, sockaddr_any *addr)
+    {
+        Q_UNUSED(address);
+        Q_UNUSED(addr);
+        return true;
+    }
+}
+
 UdpPing::UdpPing(QObject *parent)
-    : Measurement(parent),
-      currentStatus(Unknown)
+: Measurement(parent)
+, currentStatus(Unknown)
+, m_device(NULL)
+, m_capture(NULL)
 {
 }
 
@@ -77,11 +89,6 @@ void UdpPing::ping(PingProbe *probe)
     {
         receiveData(probe);
     }
-}
-
-bool UdpPing::getAddress(const QString &address, sockaddr_any *addr) const
-{
-    return true;
 }
 
 // vim: set sts=4 sw=4 et:
