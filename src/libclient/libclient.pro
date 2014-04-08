@@ -164,7 +164,10 @@ SOURCES +=  \
     measurement/udpping/udpping_plugin.cpp \
     measurement/traceroute/traceroute.cpp \
     measurement/traceroute/traceroute_definition.cpp \
-    measurement/traceroute/traceroute_plugin.cpp
+    measurement/traceroute/traceroute_plugin.cpp \
+    measurement/dnslookup/dnslookup_definition.cpp \
+    measurement/dnslookup/dnslookup_plugin.cpp \
+    measurement/dnslookup/dnslookup.cpp
 
 HEADERS += \
     export.h \
@@ -243,7 +246,10 @@ HEADERS += \
     measurement/udpping/udpping_plugin.h \
     measurement/traceroute/traceroute.h \
     measurement/traceroute/traceroute_definition.h \
-    measurement/traceroute/traceroute_plugin.h
+    measurement/traceroute/traceroute_plugin.h \
+    measurement/dnslookup/dnslookup_definition.h \
+    measurement/dnslookup/dnslookup_plugin.h \
+    measurement/dnslookup/dnslookup.h
 
 OTHER_FILES += \
     libclient.pri
