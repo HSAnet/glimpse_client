@@ -32,7 +32,7 @@ android {
                deviceinfo_android.cpp \
                androidimageprovider.cpp \
                androidprocessmodel.cpp \
-               measurement/udpping/udpping.cpp
+               measurement/udpping/udpping_linux.cpp
 } else: ios {
     SOURCES += log/logger_all.cpp
     OBJECTIVE_SOURCES += storage/storagepaths_ios.mm \

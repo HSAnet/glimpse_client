@@ -20,7 +20,6 @@ namespace
 
         memset(&hints, 0, sizeof (hints));
         hints.ai_family = AF_INET;
-        hints.ai_flags = AI_IDN;
 
         if (getaddrinfo(address.toStdString().c_str(), NULL, &hints, &result))
         {
