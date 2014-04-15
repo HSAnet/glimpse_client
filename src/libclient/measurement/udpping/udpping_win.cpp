@@ -267,20 +267,21 @@ bool UdpPing::start()
 
     setStatus(UdpPing::Running);
 
+    memset(&probe, 0, sizeof(probe));
+    probe.sock = initSocket();
+    if (probe.sock < 0)
+    {
+        emit error("initSocket");
+        return false;
+    }
+
     for (quint32 i = 0; i < definition->count; i++)
     {
-        memset(&probe, 0, sizeof(probe));
-        probe.sock = initSocket();
-        if (probe.sock < 0)
-        {
-            emit error("initSocket");
-            continue;
-        }
-
         ping(&probe);
-        closesocket(probe.sock);
         m_pingProbes.append(probe);
     }
+
+    closesocket(probe.sock);
 
     setStatus(UdpPing::Finished);
     emit finished();

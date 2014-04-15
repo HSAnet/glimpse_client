@@ -82,19 +82,21 @@ bool UdpPing::start()
 
     setStatus(UdpPing::Running);
 
+    memset(&probe, 0, sizeof(probe));
+    probe.sock = initSocket();
+    if (probe.sock < 0)
+    {
+        emit error("socket: " + QString(strerror(errno)));
+        return false;
+    }
+
     for (quint32 i = 0; i < definition->count; i++)
     {
-        memset(&probe, 0, sizeof(probe));
-        probe.sock = initSocket();
-        if (probe.sock < 0)
-        {
-            emit error("socket: " + QString(strerror(errno)));
-            continue;
-        }
         ping(&probe);
-        close(probe.sock);
         m_pingProbes.append(probe);
     }
+
+    close(probe.sock);
 
     setStatus(UdpPing::Finished);
     emit finished();
