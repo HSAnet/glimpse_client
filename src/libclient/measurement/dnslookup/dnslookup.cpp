@@ -1,27 +1,27 @@
-#include "ping.h"
+#include "dnslookup.h"
 #include "../../log/logger.h"
 
 #include <QProcess>
 
-LOGGER(Ping);
+LOGGER(Dnslookup);
 
-Ping::Ping(QObject *parent)
+Dnslookup::Dnslookup(QObject *parent)
 : Measurement(parent)
 , stream(&process)
-, currentStatus(Ping::Unknown)
+, currentStatus(Dnslookup::Unknown)
 {
 }
 
-Ping::~Ping()
+Dnslookup::~Dnslookup()
 {
     process.kill();
     process.waitForFinished(500);
 }
 
-bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
+bool Dnslookup::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
-    definition = measurementDefinition.dynamicCast<PingDefinition>();
+    definition = measurementDefinition.dynamicCast<DnslookupDefinition>();
     if ( definition.isNull() )
     {
         LOG_WARNING("Definition is empty");
@@ -32,46 +32,47 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     connect(&process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(finished(int,QProcess::ExitStatus)));
     connect(&process, SIGNAL(readyRead()), this, SLOT(readyRead()));
 
-    currentStatus = Ping::Unknown;
+    currentStatus = Dnslookup::Unknown;
 
     return true;
 }
 
-bool Ping::start()
+bool Dnslookup::start()
 {
     QStringList args;
-#ifdef Q_OS_LINUX
-    args << "-c" << QString::number(definition->count)
-         << "-n" // Don't resolve hostnames
-         << "-W" << QString::number((float)definition->timeout / 1000)
-         << "-i" << QString::number((float)definition->interval / 1000);
-#elif defined(Q_OS_MAC)
-    args << "-c" << QString::number(definition->count)
-         << "-W" << QString::number(definition->timeout)
-         << "-i" << QString::number((float)definition->interval / 1000);
-#elif defined(Q_OS_WIN)
-    args << "-n" << QString::number(definition->count)
-         << "-4" // ipv4
-         << "-w" << QString::number(definition->timeout);
-#else
-#error Platform ping code missing!
-#endif
+//#ifdef Q_OS_LINUX
+//    args << "-c" << QString::number(definition->count)
+//         << "-n" // Don't resolve hostnames
+//         << "-W" << QString::number((float)definition->timeout / 1000)
+//         << "-i" << QString::number((float)definition->interval / 1000);
+//#elif defined(Q_OS_MAC)
+//    args << "-c" << QString::number(definition->count)
+//         << "-W" << QString::number(definition->timeout)
+//         << "-i" << QString::number((float)definition->interval / 1000);
+//#elif defined(Q_OS_WIN)
+//    args << "-n" << QString::number(definition->count)
+//         << "-4" // ipv4
+//         << "-w" << QString::number(definition->timeout);
+//#else
+//#error Platform dnslookup code missing!
+//#endif
 
+//    args << definition->host;
+    args << "-q=mx ";
     args << definition->host;
-
     process.kill();
-    process.start("ping", args);
+    process.start("nslookup", args); //QDNSLookup
 
     return true;
 }
 
 
-Measurement::Status Ping::status() const
+Measurement::Status Dnslookup::status() const
 {
     return currentStatus;
 }
 
-void Ping::setStatus(Status status)
+void Dnslookup::setStatus(Status status)
 {
     if (currentStatus != status)
     {
@@ -80,78 +81,84 @@ void Ping::setStatus(Status status)
     }
 }
 
-bool Ping::stop()
+bool Dnslookup::stop()
 {
     process.kill();
     return true;
 }
 
-ResultPtr Ping::result() const
+ResultPtr Dnslookup::result() const
 {
     QVariantList res;
-    foreach(float val, pingTime)
+    foreach(QString val, dnslookupOutput)
     {
-        res<<QString::number(val, 'f', 3);
+        res << val;
     }
 
     return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
 }
 
-void Ping::started()
+void Dnslookup::started()
 {
-    pingTime.clear();
+    dnslookupTime.clear();
+    dnslookupOutput.clear();
 
-    setStatus(Ping::Running);
+    setStatus(Dnslookup::Running);
 }
 
-void Ping::finished(int exitCode, QProcess::ExitStatus exitStatus)
+void Dnslookup::finished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     Q_UNUSED(exitCode);
     Q_UNUSED(exitStatus);
 
-    setStatus(Ping::Finished);
+    setStatus(Dnslookup::Finished);
     emit Measurement::finished();
 }
 
-void Ping::readyRead()
+void Dnslookup::readyRead()
 {
-    QRegExp re;
-#if defined(Q_OS_WIN)
-    // Antwort von 193.99.144.80: Bytes=32 Zeit=32ms TTL=245
-    re.setPattern("=(\\d+)ms");
-#elif defined(Q_OS_MAC) || defined(Q_OS_LINUX)
-    // 64 bytes from 193.99.144.80: icmp_seq=0 ttl=245 time=32.031 ms
-    re.setPattern("time=(\\d+.*)ms");
-#else
-#error Platform code not implemented
-#endif
+//    QRegExp re;
+//#if defined(Q_OS_WIN)
+//    // Antwort von 193.99.144.80: Bytes=32 Zeit=32ms TTL=245
+//    re.setPattern("=(\\d+)ms");
+//#elif defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+//    // 64 bytes from 193.99.144.80: icmp_seq=0 ttl=245 time=32.031 ms
+//    re.setPattern("time=(\\d+.*)ms");
+//#else
+//#error Platform code not implemented
+//#endif
+
+//    for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine())
+//    {
+//        if ( re.indexIn(line) == -1 )
+//        {
+//            continue;
+//        }
+
+//        float time = re.cap(1).toFloat();
+//        dnslookupTime.append(time);
+
+//        emit dnslookup(time);
+//    }
 
     for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine())
     {
-        if ( re.indexIn(line) == -1 )
-        {
-            continue;
-        }
-
-        float time = re.cap(1).toFloat();
-        pingTime.append(time);
-
-        emit ping(time);
+        dnslookupOutput.append(line);
     }
 }
 
-void Ping::waitForFinished()
+void Dnslookup::waitForFinished()
 {
     process.waitForFinished(1000);
 }
 
-float Ping::averagePingTime()
+float Dnslookup::averageDnslookupTime()
 {
     float time = 0;
-    foreach(float t, pingTime)
+    foreach(float t, dnslookupTime)
     {
         time += t;
     }
 
-    return time / pingTime.size();
+    return time / dnslookupTime.size();
 }

@@ -1,19 +1,19 @@
-#include "ping_plugin.h"
-#include "ping.h"
+#include "dnslookup_plugin.h"
+#include "dnslookup.h"
 
-QStringList PingPlugin::measurements() const
+QStringList DnslookupPlugin::measurements() const
 {
-    return QStringList() << "ping";
+    return QStringList() << "dnslookup";
 }
 
-MeasurementPtr PingPlugin::createMeasurement(const QString &name)
+MeasurementPtr DnslookupPlugin::createMeasurement(const QString &name)
 {
     Q_UNUSED(name);
-    return MeasurementPtr(new Ping);
+    return MeasurementPtr(new Dnslookup);
 }
 
-MeasurementDefinitionPtr PingPlugin::createMeasurementDefinition(const QString &name, const QVariant &data)
+MeasurementDefinitionPtr DnslookupPlugin::createMeasurementDefinition(const QString &name, const QVariant &data)
 {
     Q_UNUSED(name);
-    return PingDefinition::fromVariant(data);
+    return DnslookupDefinition::fromVariant(data);
 }

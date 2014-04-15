@@ -11,7 +11,7 @@ typedef QList<DnslookupDefinitionPtr> DnslookupDefinitionList;
 class DnslookupDefinition : public MeasurementDefinition
 {
 public:
-    DnslookupDefinition(const QString& host, quint16 count, quint32 timeout, quint32 interval);
+    DnslookupDefinition(const QString& host);
     ~DnslookupDefinition();
 
     // Storage
@@ -19,9 +19,6 @@ public:
 
     // Getters
     QString host;
-    quint16 count;
-    quint32 timeout; // in ms
-    quint32 interval; // in ms
 
     // Serializable interface
     QVariant toVariant() const;

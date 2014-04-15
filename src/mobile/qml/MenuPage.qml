@@ -85,6 +85,12 @@ ListPage {
         }
 
         ListElement {
+            text: "Dnslookup"
+            func: "dnslookup"
+            group: "Measurements"
+        }
+
+        ListElement {
             text: "Packet Trains"
             func: "packetTrains"
             group: "Measurements"

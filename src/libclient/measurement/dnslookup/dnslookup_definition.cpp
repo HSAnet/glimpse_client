@@ -1,32 +1,23 @@
-#include "ping_definition.h"
+#include "dnslookup_definition.h"
 
-PingDefinition::PingDefinition(const QString& host, quint16 count, quint32 timeout, quint32 interval)
+DnslookupDefinition::DnslookupDefinition(const QString& host)
 : host(host)
-, count(count)
-, timeout(timeout)
-, interval(interval)
 {
 }
 
-PingDefinition::~PingDefinition()
+DnslookupDefinition::~DnslookupDefinition()
 {
 }
 
-QVariant PingDefinition::toVariant() const
+QVariant DnslookupDefinition::toVariant() const
 {
     QVariantMap map;
     map.insert("host", host);
-    map.insert("count", count);
-    map.insert("timeout", timeout);
-    map.insert("interval", interval);
     return map;
 }
 
-PingDefinitionPtr PingDefinition::fromVariant(const QVariant &variant)
+DnslookupDefinitionPtr DnslookupDefinition::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
-    return PingDefinitionPtr(new PingDefinition(map.value("host").toString(),
-                                                map.value("count").toUInt(),
-                                                map.value("timeout").toUInt(),
-                                                map.value("interval").toUInt()));
+    return DnslookupDefinitionPtr(new DnslookupDefinition(map.value("host").toString()));
 }
