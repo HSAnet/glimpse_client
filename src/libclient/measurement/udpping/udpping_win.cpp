@@ -316,7 +316,6 @@ int UdpPing::initSocket()
 {
     int ttl = definition->ttl ? definition->ttl : 64;
     sockaddr_any src_addr;
-    sockaddr_any m_destAddress;
     SOCKET sock = INVALID_SOCKET;
 
     memset(&src_addr, 0, sizeof(src_addr));
