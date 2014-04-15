@@ -72,7 +72,18 @@ void UdpPing::setStatus(Status status)
 bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitionPtr& measurementDefinition)
 {
     Q_UNUSED(networkManager);
+
     definition = measurementDefinition.dynamicCast<UdpPingDefinition>();
+    memset(&m_destAddress, 0, sizeof(m_destAddress));
+
+    // resolve
+    if (!getAddress(definition->url, &m_destAddress))
+    {
+        return false;
+    }
+
+    m_destAddress.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
+
     return true;
 }
 
@@ -130,10 +141,8 @@ int UdpPing::initSocket()
     int sock = 0;
     int ttl = definition->ttl ? definition->ttl : 64;
     sockaddr_any src_addr;
-    sockaddr_any dst_addr;
 
     memset(&src_addr, 0, sizeof(src_addr));
-    memset(&dst_addr, 0, sizeof(dst_addr));
 
     sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (sock < 0)
@@ -164,11 +173,7 @@ int UdpPing::initSocket()
         goto cleanup;
     }
 
-    // connect
-    getAddress(definition->url, &dst_addr);
-    // FIXME: dst_addr could be NULL and fail the next line
-    dst_addr.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
-    if (::connect(sock, (struct sockaddr *) &dst_addr, sizeof(dst_addr)) < 0)
+    if (::connect(sock, (struct sockaddr *) &m_destAddress, sizeof(m_destAddress)) < 0)
     {
         emit error("connect: " + QString(strerror(errno)));
         goto cleanup;
