@@ -184,6 +184,7 @@ QString ConnectionTester::Private::findDefaultDNS() const
     {
         return QString::fromLatin1(inet_ntoa( ((sockaddr_in*)&_res.nsaddr_list[0])->sin_addr ));
     }
+    return QString();
 #elif defined(Q_OS_WIN)
     QString dns;
     IP_ADAPTER_ADDRESSES* addresses = NULL;
