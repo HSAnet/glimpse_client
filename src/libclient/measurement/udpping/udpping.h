@@ -88,6 +88,7 @@ private:
     pcap_if_t *m_device;
     pcap_t *m_capture;
     sockaddr_any m_destAddress;
+    char *m_payload;
 
 signals:
     void statusChanged(Status status);

@@ -16,6 +16,7 @@ UdpPing::UdpPing(QObject *parent)
 , m_device(NULL)
 , m_capture(NULL)
 , m_destAddress()
+, m_payload(NULL)
 {
 }
 
@@ -76,11 +77,13 @@ int UdpPing::initSocket()
 
 bool UdpPing::sendData(PingProbe *probe)
 {
+    Q_UNUSED(probe);
     return false;
 }
 
 void UdpPing::receiveData(PingProbe *probe)
 {
+    Q_UNUSED(probe);
 }
 
 void UdpPing::ping(PingProbe *probe)
