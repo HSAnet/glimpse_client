@@ -88,7 +88,7 @@ namespace
                 // source address of the response packet
                 sprintf(sourceAddress, "%d.%d.%d.%d", source->byte1, source->byte2, source->byte3, source->byte4);
                 // destination of request packet
-                strncpy(destinationAddress, inet_ntoa(destination.sin.sin_addr), sizeof(destinationAddress));
+                strncpy(destinationAddress, inet_ntoa(destination.sin.sin_addr), sizeof(destinationAddress) - 1);
 
                 if (*ipProto == 17)
                 {
@@ -160,6 +160,7 @@ UdpPing::UdpPing(QObject *parent)
 , currentStatus(Unknown)
 , m_device(NULL)
 , m_capture(NULL)
+, m_destAddress()
 {
 }
 
@@ -189,18 +190,21 @@ bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitio
     char errbuf[PCAP_ERRBUF_SIZE] = "";
     char source[PCAP_BUF_SIZE] = "";
     char address[16] = "";
-    sockaddr_any dst_addr;
     unsigned long netmask;
     struct bpf_program fcode;
 
     definition = measurementDefinition.dynamicCast<UdpPingDefinition>();
 
-    memset(&dst_addr, 0, sizeof(dst_addr));
+    memset(&m_destAddress, 0, sizeof(m_destAddress));
 
-    // translate domain name to IP address
-    getAddress(definition->url, &dst_addr);
-    dst_addr.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
-    strncpy(address, inet_ntoa(dst_addr.sin.sin_addr), sizeof(address));
+    // resolve
+    if (!getAddress(definition->url, &m_destAddress))
+    {
+        return false;
+    }
+
+    m_destAddress.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
+    strncpy(address, inet_ntoa(m_destAddress.sin.sin_addr), sizeof(address) - 1);
 
     if (pcap_createsrcstr(source, PCAP_SRC_IFLOCAL, address, NULL, NULL, errbuf) != 0)
     {
@@ -267,20 +271,21 @@ bool UdpPing::start()
 
     setStatus(UdpPing::Running);
 
+    memset(&probe, 0, sizeof(probe));
+    probe.sock = initSocket();
+    if (probe.sock < 0)
+    {
+        emit error("initSocket");
+        return false;
+    }
+
     for (quint32 i = 0; i < definition->count; i++)
     {
-        memset(&probe, 0, sizeof(probe));
-        probe.sock = initSocket();
-        if (probe.sock < 0)
-        {
-            emit error("initSocket");
-            continue;
-        }
-
         ping(&probe);
-        closesocket(probe.sock);
         m_pingProbes.append(probe);
     }
+
+    closesocket(probe.sock);
 
     setStatus(UdpPing::Finished);
     emit finished();
@@ -312,14 +317,9 @@ int UdpPing::initSocket()
 {
     int ttl = definition->ttl ? definition->ttl : 64;
     sockaddr_any src_addr;
-    sockaddr_any dst_addr;
     SOCKET sock = INVALID_SOCKET;
 
     memset(&src_addr, 0, sizeof(src_addr));
-    memset(&dst_addr, 0, sizeof(dst_addr));
-
-    getAddress(definition->url, &dst_addr);
-    dst_addr.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
 
     sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (sock == INVALID_SOCKET)
@@ -343,7 +343,7 @@ int UdpPing::initSocket()
         goto cleanup;
     }
 
-    if (::connect(sock, (struct sockaddr *) &dst_addr, sizeof(dst_addr)) < 0)
+    if (::connect(sock, (struct sockaddr *) &m_destAddress, sizeof(m_destAddress)) < 0)
     {
         emit error("connect: " + QString(strerror(errno)));
         goto cleanup;
@@ -375,13 +375,8 @@ void UdpPing::ping(PingProbe *probe)
 {
     PingProbe result;
     QFuture<PingProbe> future;
-    sockaddr_any dst_addr;
 
-    // translate domain name to IP address
-    getAddress(definition->url, &dst_addr);
-    dst_addr.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
-
-    future = QtConcurrent::run(&receiveLoop, m_capture, *probe, dst_addr);
+    future = QtConcurrent::run(&receiveLoop, m_capture, *probe, m_destAddress);
 
     if (sendData(probe))
     {

@@ -48,6 +48,7 @@ UdpPing::UdpPing(QObject *parent)
 , currentStatus(Unknown)
 , m_device(NULL)
 , m_capture(NULL)
+, m_destAddress()
 {
 }
 
@@ -72,7 +73,18 @@ void UdpPing::setStatus(Status status)
 bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitionPtr& measurementDefinition)
 {
     Q_UNUSED(networkManager);
+
     definition = measurementDefinition.dynamicCast<UdpPingDefinition>();
+    memset(&m_destAddress, 0, sizeof(m_destAddress));
+
+    // resolve
+    if (!getAddress(definition->url, &m_destAddress))
+    {
+        return false;
+    }
+
+    m_destAddress.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
+
     return true;
 }
 
@@ -82,19 +94,21 @@ bool UdpPing::start()
 
     setStatus(UdpPing::Running);
 
+    memset(&probe, 0, sizeof(probe));
+    probe.sock = initSocket();
+    if (probe.sock < 0)
+    {
+        emit error("socket: " + QString(strerror(errno)));
+        return false;
+    }
+
     for (quint32 i = 0; i < definition->count; i++)
     {
-        memset(&probe, 0, sizeof(probe));
-        probe.sock = initSocket();
-        if (probe.sock < 0)
-        {
-            emit error("socket: " + QString(strerror(errno)));
-            continue;
-        }
         ping(&probe);
-        close(probe.sock);
         m_pingProbes.append(probe);
     }
+
+    close(probe.sock);
 
     setStatus(UdpPing::Finished);
     emit finished();
@@ -128,10 +142,8 @@ int UdpPing::initSocket()
     int sock = 0;
     int ttl = definition->ttl ? definition->ttl : 64;
     sockaddr_any src_addr;
-    sockaddr_any dst_addr;
 
     memset(&src_addr, 0, sizeof(src_addr));
-    memset(&dst_addr, 0, sizeof(dst_addr));
 
     sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (sock < 0)
@@ -162,11 +174,7 @@ int UdpPing::initSocket()
         goto cleanup;
     }
 
-    // connect
-    getAddress(definition->url, &dst_addr);
-    // FIXME: dst_addr could be NULL and fail the next line
-    dst_addr.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
-    if (::connect(sock, (struct sockaddr *) &dst_addr, sizeof(dst_addr)) < 0)
+    if (::connect(sock, (struct sockaddr *) &m_destAddress, sizeof(m_destAddress)) < 0)
     {
         emit error("connect: " + QString(strerror(errno)));
         goto cleanup;
