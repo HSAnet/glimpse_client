@@ -1,7 +1,7 @@
 #include "udpping_definition.h"
 
 UdpPingDefinition::UdpPingDefinition(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
-                  const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const QByteArray &payload)
+                  const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload)
     : url(url),
     count(count),
     interval(interval),
@@ -29,7 +29,7 @@ UdpPingDefinitionPtr UdpPingDefinition::fromVariant(const QVariant &variant)
                                                       map.value("ttl").toInt(),
                                                       map.value("destinationPort").toUInt(),
                                                       map.value("sourcePort").toUInt(),
-                                                      map.value("payload").toByteArray()));
+                                                      map.value("payload").toUInt()));
 }
 
 QVariant UdpPingDefinition::toVariant() const

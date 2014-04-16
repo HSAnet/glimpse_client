@@ -395,7 +395,7 @@ void Client::packetTrains()
 
 void Client::udpPing()
 {
-    UdpPingDefinition udpPingDef("measure-it.de", 3, 1000, 1000, 64, 33434, 33434, "foobar");
+    UdpPingDefinition udpPingDef("measure-it.de", 3, 1000, 1000, 64, 33434, 33434, 74);
 
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("d55b0091-2a83-4b9f-b9c3-f4690c485a13", "udpping", timing, udpPingDef.toVariant()));

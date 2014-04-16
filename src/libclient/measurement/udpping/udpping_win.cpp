@@ -153,6 +153,16 @@ namespace
     exit:
         return newProbe;
     }
+
+    void randomizePayload(char *payload, const quint32 size)
+    {
+        char chars[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+
+        for (quint32 i = 0; i < size; i++)
+        {
+            payload[i] = chars[qrand() % strlen(chars)];
+        }
+    }
 }
 
 UdpPing::UdpPing(QObject *parent)
@@ -161,6 +171,7 @@ UdpPing::UdpPing(QObject *parent)
 , m_device(NULL)
 , m_capture(NULL)
 , m_destAddress()
+, m_payload(NULL)
 {
 }
 
@@ -269,13 +280,22 @@ bool UdpPing::start()
 {
     PingProbe probe;
 
+    // include null-character
+    m_payload = new char[definition->payload + 1];
+    if (m_payload == NULL)
+    {
+        return false;
+    }
+    memset(m_payload, 0, definition->payload + 1);
     setStatus(UdpPing::Running);
 
     memset(&probe, 0, sizeof(probe));
+
     probe.sock = initSocket();
     if (probe.sock < 0)
     {
         emit error("initSocket");
+        free(m_payload);
         return false;
     }
 
@@ -288,6 +308,7 @@ bool UdpPing::start()
     closesocket(probe.sock);
 
     setStatus(UdpPing::Finished);
+    free(m_payload);
     emit finished();
 
     return true;
@@ -358,7 +379,10 @@ cleanup:
 
 bool UdpPing::sendData(PingProbe *probe)
 {
-    if (send(probe->sock, definition->payload, sizeof(definition->payload), 0) < 0)
+    // randomize payload to prevent caching
+    randomizePayload(m_payload, definition->payload);
+
+    if (send(probe->sock, m_payload, definition->payload, 0) < 0)
     {
         emit error("send: " + QString(strerror(errno)));
         return false;

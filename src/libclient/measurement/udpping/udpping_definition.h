@@ -13,7 +13,7 @@ class UdpPingDefinition : public MeasurementDefinition
 public:
     ~UdpPingDefinition();
     UdpPingDefinition(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
-                      const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const QByteArray &payload);
+                      const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload);
 
     // Storage
     static UdpPingDefinitionPtr fromVariant(const QVariant &variant);
@@ -27,7 +27,7 @@ public:
     int ttl;
     quint16 destinationPort;
     quint16 sourcePort;
-    QByteArray payload;
+    quint32 payload;
 
     // Serializable interface
     QVariant toVariant() const;
