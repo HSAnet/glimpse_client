@@ -15,6 +15,13 @@ staticlib {
     win32:LIBS += -lws2_32 -lCrypt32 -lPdh
 }
 
+# Add the ld.so.conf.d/glimpse.conf file
+linux:!android {
+    ldconfig.files = glimpse.conf
+    ldconfig.path = /etc/ld.so.conf.d/
+    INSTALLS += ldconfig
+}
+
 INCLUDEPATH += $$PWD
 
 include(../../dist.pri)

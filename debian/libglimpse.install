@@ -1,1 +1,2 @@
 opt/glimpse/libclient.so*
+etc/ld.so.conf.d/glimpse.conf
