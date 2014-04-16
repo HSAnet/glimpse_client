@@ -3,6 +3,8 @@ TARGET = client
 
 QT += network concurrent
 
+CONFIG += hide_symbols
+
 android|osx:CONFIG += staticlib
 
 staticlib {
