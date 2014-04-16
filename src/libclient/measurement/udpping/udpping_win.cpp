@@ -88,7 +88,7 @@ namespace
                 // source address of the response packet
                 sprintf(sourceAddress, "%d.%d.%d.%d", source->byte1, source->byte2, source->byte3, source->byte4);
                 // destination of request packet
-                strncpy(destinationAddress, inet_ntoa(destination.sin.sin_addr), sizeof(destinationAddress));
+                strncpy(destinationAddress, inet_ntoa(destination.sin.sin_addr), sizeof(destinationAddress) - 1);
 
                 if (*ipProto == 17)
                 {
@@ -204,7 +204,7 @@ bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitio
     }
 
     m_destAddress.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
-    strncpy(address, inet_ntoa(m_destAddress.sin.sin_addr), sizeof(address));
+    strncpy(address, inet_ntoa(m_destAddress.sin.sin_addr), sizeof(address) - 1);
 
     if (pcap_createsrcstr(source, PCAP_SRC_IFLOCAL, address, NULL, NULL, errbuf) != 0)
     {
