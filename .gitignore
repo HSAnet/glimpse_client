@@ -26,6 +26,7 @@ debian/tmp/
 *.so
 *.so.*
 Makefile
+Makefile.*
 moc_*.cpp
 qrc_*.cpp
 .qmake.*
