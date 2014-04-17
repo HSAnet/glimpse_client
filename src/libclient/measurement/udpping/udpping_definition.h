@@ -20,7 +20,6 @@ public:
 
     // Getters
     QString url;
-    //QHostAddress m_hostAddress;
     quint32 count;
     quint32 interval;
     quint32 receiveTimeout;

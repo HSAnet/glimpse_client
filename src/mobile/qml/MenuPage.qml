@@ -156,6 +156,12 @@ ListPage {
         }
 
         ListElement {
+            text: "Traceroute"
+            func: "traceroute"
+            group: "Measurements"
+        }
+
+        ListElement {
             text: "Measure It!"
             func: "measureIt"
             group: "Measurements"
