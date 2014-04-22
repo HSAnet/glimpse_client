@@ -428,7 +428,7 @@ void UdpPing::ping(PingProbe *probe)
 
         } else if (result.sendTime == 0 && result.recvTime == 0)
         {
-            emit error("timeout");
+            emit timeout(*probe);
         } else
         {
             emit error("error receiving packets");

@@ -95,6 +95,7 @@ signals:
     void destinationUnreachable(PingProbe &probe);
     void ttlExceeded(PingProbe &probe);
     void error(QString message);
+    void timeout(PingProbe &probe);
 };
 
 #endif // UDPPING_H

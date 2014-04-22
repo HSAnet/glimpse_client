@@ -268,6 +268,7 @@ void UdpPing::receiveData(PingProbe *probe)
 
     if (!pfd.revents)
     {
+        emit timeout(*probe);
         goto cleanup;
     }
 
