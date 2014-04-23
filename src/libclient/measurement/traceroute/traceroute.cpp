@@ -135,19 +135,28 @@ void Traceroute::destinationUnreachable(PingProbe &probe)
 {
     Hop hop = {probe, DESTINATION_UNREACHABLE};
     hops << hop;
-    mutex.unlock();
+    if (!mutex.tryLock())
+    {
+        mutex.unlock();
+    }
 }
 
 void Traceroute::ttlExceeded(PingProbe &probe)
 {
     Hop hop = {probe, TTL_EXCEEDED};
     hops << hop;
-    mutex.unlock();
+    if (!mutex.tryLock())
+    {
+        mutex.unlock();
+    }
 }
 
 void Traceroute::timeout(PingProbe &probe)
 {
     Hop hop = {probe, TIMEOUT};
     hops << hop;
-    mutex.unlock();
+    if (!mutex.tryLock())
+    {
+        mutex.unlock();
+    }
 }
