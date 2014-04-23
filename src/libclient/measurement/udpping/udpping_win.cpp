@@ -97,6 +97,9 @@ namespace
                 } else if (*ipProto == 1)
                 {
                     // ICMP response
+
+                    getAddress(sourceAddress, &newProbe.source);
+
                     if (*icmpCode == 3 && *icmpType == 3)
                     {
                         // destination and port unreachable: this was a successful ping
@@ -113,7 +116,7 @@ namespace
                          *
                          * Let's missuse source and sourceAddress for the destination of the original IP header.
                          */
-                        source = (ipAddress *) (data + 76);
+                        source = (ipAddress *) (data + 58);
                         sprintf(sourceAddress, "%d.%d.%d.%d", source->byte1, source->byte2, source->byte3, source->byte4);
 
                         if (strncmp(sourceAddress, destinationAddress, 16) == 0)
@@ -411,6 +414,7 @@ void UdpPing::ping(PingProbe *probe)
         {
             probe->sendTime = result.sendTime;
             probe->recvTime = result.recvTime;
+            probe->source = result.source;
 
             switch (result.response)
             {
