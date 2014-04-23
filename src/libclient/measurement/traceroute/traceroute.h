@@ -12,17 +12,20 @@
 #include "../udpping/udpping_definition.h"
 #include "traceroute_definition.h"
 
+namespace traceroute
+{
 enum Response
 {
     TTL_EXCEEDED,
     DESTINATION_UNREACHABLE,
     TIMEOUT
 };
+}
 
 struct Hop
 {
     PingProbe probe;
-    Response response;
+    traceroute::Response response;
 };
 
 class Traceroute : public Measurement
@@ -35,7 +38,7 @@ public:
     // Measurement interface
     Status status() const;
     bool prepare(NetworkManager* networkManager,
-		 const MeasurementDefinitionPtr& measurementDefinition);
+                 const MeasurementDefinitionPtr& measurementDefinition);
     bool start();
     bool stop();
     ResultPtr result() const;

@@ -106,7 +106,7 @@ namespace
                         if (strncmp(sourceAddress, destinationAddress, 16) == 0)
                         {
                             newProbe.recvTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
-                            newProbe.response = DESTINATION_UNREACHABLE;
+                            newProbe.response = udpping::DESTINATION_UNREACHABLE;
                             goto exit;
                         }
                     } else if (*icmpCode == 0 && *icmpType == 11)
@@ -122,7 +122,7 @@ namespace
                         if (strncmp(sourceAddress, destinationAddress, 16) == 0)
                         {
                             newProbe.recvTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
-                            newProbe.response = TTL_EXCEEDED;
+                            newProbe.response = udpping::TTL_EXCEEDED;
                             goto exit;
                         }
                     } else
@@ -133,7 +133,7 @@ namespace
                          */
                         newProbe.icmpType = *icmpType;
                         newProbe.icmpCode = *icmpCode;
-                        newProbe.response = UNHANDLED_ICMP;
+                        newProbe.response = udpping::UNHANDLED_ICMP;
                         goto exit;
                     }
                 } else
@@ -418,13 +418,13 @@ void UdpPing::ping(PingProbe *probe)
 
             switch (result.response)
             {
-            case DESTINATION_UNREACHABLE:
+            case udpping::DESTINATION_UNREACHABLE:
                 emit destinationUnreachable(*probe);
                 break;
-            case TTL_EXCEEDED:
+            case udpping::TTL_EXCEEDED:
                 emit ttlExceeded(*probe);
                 break;
-            case UNHANDLED_ICMP:
+            case udpping::UNHANDLED_ICMP:
                 emit error("Unhandled ICMP packet (type/code): " + QString::number(result.icmpType)
                            + "/" + QString::number(result.icmpCode));
                 break;

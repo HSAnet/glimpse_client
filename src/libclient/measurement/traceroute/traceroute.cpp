@@ -106,7 +106,7 @@ void Traceroute::traceroute()
     {
         ping(i);
         mutex.lock();
-        if (hops.last().response == DESTINATION_UNREACHABLE)
+        if (hops.last().response == traceroute::DESTINATION_UNREACHABLE)
         {
             break;
         }
@@ -133,7 +133,7 @@ void Traceroute::ping(quint32 ttl)
 
 void Traceroute::destinationUnreachable(PingProbe &probe)
 {
-    Hop hop = {probe, DESTINATION_UNREACHABLE};
+    Hop hop = {probe, traceroute::DESTINATION_UNREACHABLE};
     hops << hop;
     if (!mutex.tryLock())
     {
@@ -143,7 +143,7 @@ void Traceroute::destinationUnreachable(PingProbe &probe)
 
 void Traceroute::ttlExceeded(PingProbe &probe)
 {
-    Hop hop = {probe, TTL_EXCEEDED};
+    Hop hop = {probe, traceroute::TTL_EXCEEDED};
     hops << hop;
     if (!mutex.tryLock())
     {
@@ -153,7 +153,7 @@ void Traceroute::ttlExceeded(PingProbe &probe)
 
 void Traceroute::timeout(PingProbe &probe)
 {
-    Hop hop = {probe, TIMEOUT};
+    Hop hop = {probe, traceroute::TIMEOUT};
     hops << hop;
     if (!mutex.tryLock())
     {
