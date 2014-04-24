@@ -45,14 +45,14 @@ public:
 
 private:
     void setStatus(Status status);
-    void traceroute();
-    void ping(quint32 ttl);
+    void ping();
 
     TracerouteDefinitionPtr definition;
     Status currentStatus;
     UdpPing udpPing;
     QVector<Hop> hops;
-    QMutex mutex;
+    bool receivedDestinationUnreachable;
+    int ttl;
 
 signals:
     void statusChanged(Status status);
@@ -62,6 +62,7 @@ public slots:
     void destinationUnreachable(PingProbe &probe);
     void ttlExceeded(PingProbe &probe);
     void timeout(PingProbe &probe);
+    void pingFinished();
 };
 
 #endif // TRACEROUTE_H

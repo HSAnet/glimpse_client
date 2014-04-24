@@ -13,7 +13,8 @@ Traceroute::Traceroute(QObject *parent) :
     Measurement(parent),
     currentStatus(Unknown),
     udpPing(),
-    mutex()
+    receivedDestinationUnreachable(false),
+    ttl(0)
 {
 }
 
@@ -50,18 +51,15 @@ bool Traceroute::prepare(NetworkManager* networkManager,
     connect(&udpPing, SIGNAL(timeout(PingProbe&)),
             this, SLOT(timeout(PingProbe&)));
 
-    if (!mutex.tryLock(0))
-    {
-        mutex.unlock();
-        mutex.lock();
-    }
+    connect(&udpPing, SIGNAL(finished()), this, SLOT(pingFinished()));
 
     return true;
 }
 
 bool Traceroute::start()
 {
-    traceroute();
+    ping();
+
     return true;
 }
 
@@ -83,6 +81,11 @@ ResultPtr Traceroute::result() const
 
         for (quint32 k = 0; k < definition->count; k++)
         {
+            if ((quint32) hops.size() <= i + k)
+            {
+                break;
+            }
+
             probe.insert("reponse", hops[i + k].response);
             probe.insert("rtt", (int) (hops[i + k].probe.recvTime -
                                        hops[i + k].probe.sendTime));
@@ -99,24 +102,14 @@ ResultPtr Traceroute::result() const
     return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
 }
 
-void Traceroute::traceroute()
+void Traceroute::ping()
 {
-    // TODO: remove hard-coded maximum hops
-    for (quint32 i = 1; i < 30; i++)
+    if (++ttl == 30)
     {
-        ping(i);
-        mutex.lock();
-        if (hops.last().response == traceroute::DESTINATION_UNREACHABLE)
-        {
-            break;
-        }
+        emit finished();
+        return;
     }
 
-    emit finished();
-}
-
-void Traceroute::ping(quint32 ttl)
-{
     UdpPingDefinition udpPingDef(definition->url,
                                  definition->count,
                                  definition->interval,
@@ -135,28 +128,29 @@ void Traceroute::destinationUnreachable(PingProbe &probe)
 {
     Hop hop = {probe, traceroute::DESTINATION_UNREACHABLE};
     hops << hop;
-    if (!mutex.tryLock())
-    {
-        mutex.unlock();
-    }
+    receivedDestinationUnreachable = true;
 }
 
 void Traceroute::ttlExceeded(PingProbe &probe)
 {
     Hop hop = {probe, traceroute::TTL_EXCEEDED};
     hops << hop;
-    if (!mutex.tryLock())
-    {
-        mutex.unlock();
-    }
 }
 
 void Traceroute::timeout(PingProbe &probe)
 {
     Hop hop = {probe, traceroute::TIMEOUT};
     hops << hop;
-    if (!mutex.tryLock())
+}
+
+void Traceroute::pingFinished()
+{
+    if (receivedDestinationUnreachable)
     {
-        mutex.unlock();
+        emit finished();
+    }
+    else
+    {
+        ping();
     }
 }
