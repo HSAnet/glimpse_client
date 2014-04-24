@@ -42,14 +42,14 @@ bool Traceroute::prepare(NetworkManager* networkManager,
     Q_UNUSED(networkManager);
     definition = measurementDefinition.dynamicCast<TracerouteDefinition>();
 
-    connect(&udpPing, SIGNAL(destinationUnreachable(PingProbe&)),
-            this, SLOT(destinationUnreachable(PingProbe&)));
+    connect(&udpPing, SIGNAL(destinationUnreachable(const PingProbe&)),
+            this, SLOT(destinationUnreachable(const PingProbe&)));
 
-    connect(&udpPing, SIGNAL(ttlExceeded(PingProbe&)),
-            this, SLOT(ttlExceeded(PingProbe&)));
+    connect(&udpPing, SIGNAL(ttlExceeded(const PingProbe&)),
+            this, SLOT(ttlExceeded(const PingProbe&)));
 
-    connect(&udpPing, SIGNAL(timeout(PingProbe&)),
-            this, SLOT(timeout(PingProbe&)));
+    connect(&udpPing, SIGNAL(timeout(const PingProbe&)),
+            this, SLOT(timeout(const PingProbe&)));
 
     connect(&udpPing, SIGNAL(finished()), this, SLOT(pingFinished()));
 
@@ -124,20 +124,20 @@ void Traceroute::ping()
     udpPing.start();
 }
 
-void Traceroute::destinationUnreachable(PingProbe &probe)
+void Traceroute::destinationUnreachable(const PingProbe &probe)
 {
     Hop hop = {probe, traceroute::DESTINATION_UNREACHABLE};
     hops << hop;
     receivedDestinationUnreachable = true;
 }
 
-void Traceroute::ttlExceeded(PingProbe &probe)
+void Traceroute::ttlExceeded(const PingProbe &probe)
 {
     Hop hop = {probe, traceroute::TTL_EXCEEDED};
     hops << hop;
 }
 
-void Traceroute::timeout(PingProbe &probe)
+void Traceroute::timeout(const PingProbe &probe)
 {
     Hop hop = {probe, traceroute::TIMEOUT};
     hops << hop;

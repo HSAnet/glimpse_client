@@ -95,10 +95,10 @@ private:
 
 signals:
     void statusChanged(Status status);
-    void destinationUnreachable(PingProbe &probe);
-    void ttlExceeded(PingProbe &probe);
+    void destinationUnreachable(const PingProbe &probe);
+    void ttlExceeded(const PingProbe &probe);
     void error(QString message);
-    void timeout(PingProbe &probe);
+    void timeout(const PingProbe &probe);
 };
 
 #endif // UDPPING_H

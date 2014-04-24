@@ -59,9 +59,9 @@ signals:
     void handledResponse();
 
 public slots:
-    void destinationUnreachable(PingProbe &probe);
-    void ttlExceeded(PingProbe &probe);
-    void timeout(PingProbe &probe);
+    void destinationUnreachable(const PingProbe &probe);
+    void ttlExceeded(const PingProbe &probe);
+    void timeout(const PingProbe &probe);
     void pingFinished();
 };
 
