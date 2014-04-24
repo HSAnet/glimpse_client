@@ -3,7 +3,7 @@
 
 #include <QtGlobal>
 #include <QMutex>
-#include <QVector>
+#include <QList>
 
 #include "../measurement.h"
 #include "../../task/task.h"
@@ -50,7 +50,7 @@ private:
     TracerouteDefinitionPtr definition;
     Status currentStatus;
     UdpPing udpPing;
-    QVector<Hop> hops;
+    QList<Hop> hops;
     bool receivedDestinationUnreachable;
     int ttl;
 
