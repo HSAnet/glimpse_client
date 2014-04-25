@@ -160,7 +160,10 @@ SOURCES +=  \
     timing/ondemandtiming.cpp \
     log/filelogger.cpp \
     measurement/udpping/udpping_definition.cpp \
-    measurement/udpping/udpping_plugin.cpp
+    measurement/udpping/udpping_plugin.cpp \
+    measurement/traceroute/traceroute.cpp \
+    measurement/traceroute/traceroute_definition.cpp \
+    measurement/traceroute/traceroute_plugin.cpp
 
 HEADERS += \
     export.h \
@@ -235,7 +238,10 @@ HEADERS += \
     log/filelogger.h \
     measurement/udpping/udpping.h \
     measurement/udpping/udpping_definition.h \
-    measurement/udpping/udpping_plugin.h
+    measurement/udpping/udpping_plugin.h \
+    measurement/traceroute/traceroute.h \
+    measurement/traceroute/traceroute_definition.h \
+    measurement/traceroute/traceroute_plugin.h
 
 OTHER_FILES += \
     libclient.pri

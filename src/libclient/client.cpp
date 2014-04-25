@@ -36,6 +36,7 @@
 #include "measurement/ping/ping_definition.h"
 #include "measurement/packettrains/packettrainsdefinition.h"
 #include "measurement/udpping/udpping_definition.h"
+#include "measurement/traceroute/traceroute_definition.h"
 
 LOGGER(Client);
 
@@ -402,6 +403,15 @@ void Client::udpPing()
     d->scheduler.enqueue(testDefinition);
 }
 
+void Client::traceroute()
+{
+    TracerouteDefinition tracerouteDef("measure-it.de", 3, 1000, 1000, 33434, 33434, 74);
+
+    TimingPtr timing(new ImmediateTiming());
+    TestDefinitionPtr testDefinition(new TestDefinition("0184435f-48ad-41fe-9079-9b3bce9f2b8a", "traceroute", timing, tracerouteDef.toVariant()));
+    d->scheduler.enqueue(testDefinition);
+}
+
 void Client::measureIt()
 {
     // Ping
@@ -418,6 +428,9 @@ void Client::measureIt()
 
     // UdpPing
     d->scheduler.executeOnDemandTest("d55b0091-2a83-4b9f-b9c3-f4690c485a13");
+
+    // Traceroute
+    d->scheduler.executeOnDemandTest("0184435f-48ad-41fe-9079-9b3bce9f2b8a");
 }
 
 void Client::setStatus(Client::Status status)
