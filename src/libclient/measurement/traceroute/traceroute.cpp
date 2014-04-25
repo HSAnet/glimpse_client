@@ -58,6 +58,8 @@ bool Traceroute::prepare(NetworkManager* networkManager,
 
 bool Traceroute::start()
 {
+    setStartDateTime(QDateTime::currentDateTime());
+
     ping();
 
     return true;
@@ -99,7 +101,7 @@ ResultPtr Traceroute::result() const
         res << hop;
     }
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(getStartDateTime(), QDateTime::currentDateTime(), res, QVariant()));
 }
 
 void Traceroute::ping()

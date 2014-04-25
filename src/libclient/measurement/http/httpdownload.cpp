@@ -53,6 +53,7 @@ bool HTTPDownload::start()
 
     // start
     m_reply = m_nam->get(m_request);
+    setStartDateTime(QDateTime::currentDateTime());
     setStatus(HTTPDownload::Running);
 
     QObject::connect(m_reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(downloadProgress(qint64,qint64)));
@@ -74,7 +75,7 @@ ResultPtr HTTPDownload::result() const
         res<<QString::number(val, 'f');
     }
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(getStartDateTime(), QDateTime::currentDateTime(), res, QVariant()));
 }
 
 void HTTPDownload::setStatus(Status status)

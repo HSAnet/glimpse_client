@@ -22,7 +22,7 @@ private:
     QUdpSocket* m_udpSocket;
 
 public slots:
-    void handleError(QAbstractSocket::SocketError socketError);    
+    void handleError(QAbstractSocket::SocketError socketError);
 };
 
 #endif // PACKETTRAINS_MA_H

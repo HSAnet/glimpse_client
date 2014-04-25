@@ -9,6 +9,7 @@ public:
     QPointer<QAbstractSocket> peerSocket;
     QUuid taskId;
     QUuid measurementUuid;
+    QDateTime startDateTime;
 };
 
 Measurement::Measurement(QObject *parent)
@@ -49,4 +50,14 @@ QUuid Measurement::getMeasurementUuid() const
 void Measurement::setMeasurementUuid(const QUuid &measurementUuid)
 {
     d->measurementUuid = measurementUuid;
+}
+
+QDateTime Measurement::getStartDateTime() const
+{
+    return d->startDateTime;
+}
+
+void Measurement::setStartDateTime(const QDateTime &startDateTime)
+{
+    d->startDateTime = startDateTime;
 }

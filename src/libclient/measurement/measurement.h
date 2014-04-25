@@ -47,6 +47,9 @@ public:
     QUuid getMeasurementUuid() const;
     void setMeasurementUuid(const QUuid &measurementUuid);
 
+    QDateTime getStartDateTime() const;
+    void setStartDateTime(const QDateTime &startDateTime);
+
 signals:
     void started();
     void finished();

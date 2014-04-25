@@ -22,6 +22,8 @@ PacketTrainsMP::PacketTrainsMP()
 
 bool PacketTrainsMP::start()
 {
+    setStartDateTime(QDateTime::currentDateTime());
+
     // Timeout for "nothing happens after start"
     connect(&m_timeout, SIGNAL(timeout()), this, SIGNAL(finished()));
     m_timeout.setInterval(5000);
@@ -194,5 +196,5 @@ ResultPtr PacketTrainsMP::result() const
     map.insert("sending_speed", listToVariant(m_sendSpeed));
     map.insert("receiving_speed", listToVariant(m_recvSpeed));
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), map, QVariant(), getMeasurementUuid()));
+    return ResultPtr(new Result(getStartDateTime(), QDateTime::currentDateTime(), map, QVariant(), getMeasurementUuid()));
 }

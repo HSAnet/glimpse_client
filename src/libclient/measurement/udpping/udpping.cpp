@@ -47,6 +47,8 @@ bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitio
 
 bool UdpPing::start()
 {
+    setStartDateTime(QDateTime::currentDateTime());
+
     return false;
 }
 
@@ -67,7 +69,7 @@ ResultPtr UdpPing::result() const
         }
     }
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(getStartDateTime(), QDateTime::currentDateTime(), res, QVariant()));
 }
 
 int UdpPing::initSocket()

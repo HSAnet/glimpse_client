@@ -17,7 +17,7 @@ LOGGER(UPnP);
 
 UPnP::UPnP(QObject *parent)
 : Measurement(parent)
-{   
+{
 }
 
 UPnP::~UPnP()
@@ -59,6 +59,8 @@ bool UPnP::start()
 {
     int error = 0;
     int devNumber = 0;
+
+    setStartDateTime(QDateTime::currentDateTime());
 
     UPNPDev* devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
     UPNPDev* devlistBegin = devlist;
@@ -254,5 +256,5 @@ ResultPtr UPnP::result() const
         deviceResultList.append(deviceResult);
     }
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), deviceResultList, QVariant()));
+    return ResultPtr(new Result(getStartDateTime(), QDateTime::currentDateTime(), deviceResultList, QVariant()));
 }
