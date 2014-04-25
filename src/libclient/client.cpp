@@ -356,7 +356,7 @@ bool Client::autoLogin()
 
 void Client::btc()
 {
-    BulkTransportCapacityDefinition btcDef("141.82.51.241", 5106, 1024*1024);
+    BulkTransportCapacityDefinition btcDef("141.82.57.241", 5106, 1024*1024);
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("7ba297e2-e13c-4478-886d-e9cf60cd33e5", "btc_ma", timing, btcDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
@@ -387,7 +387,7 @@ void Client::ping()
 
 void Client::packetTrains()
 {
-    PacketTrainsDefinition packetTrainsDef("141.82.51.241", 5106, 1000, 48, 1, 10485760, 262144000, 200000000);
+    PacketTrainsDefinition packetTrainsDef("141.82.57.241", 5106, 1000, 48, 1, 10485760, 262144000, 200000000);
 
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832177", "packettrains_ma", timing, packetTrainsDef.toVariant()));
