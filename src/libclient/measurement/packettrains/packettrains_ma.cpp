@@ -135,5 +135,5 @@ bool PacketTrainsMA::stop()
 
 ResultPtr PacketTrainsMA::result() const
 {
-    return ResultPtr(new Result(getStartDateTime(), QDateTime::currentDateTime(), QVariant(), QVariant(), definition->measurementUuid));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), QVariant(), QVariant(), definition->measurementUuid));
 }

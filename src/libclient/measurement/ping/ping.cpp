@@ -97,7 +97,7 @@ ResultPtr Ping::result() const
         res<<QString::number(val, 'f', 3);
     }
 
-    return ResultPtr(new Result(getStartDateTime(), QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
 }
 
 void Ping::started()

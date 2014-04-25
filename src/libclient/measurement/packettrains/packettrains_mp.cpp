@@ -196,5 +196,5 @@ ResultPtr PacketTrainsMP::result() const
     map.insert("sending_speed", listToVariant(m_sendSpeed));
     map.insert("receiving_speed", listToVariant(m_recvSpeed));
 
-    return ResultPtr(new Result(getStartDateTime(), QDateTime::currentDateTime(), map, QVariant(), getMeasurementUuid()));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), map, QVariant(), getMeasurementUuid()));
 }

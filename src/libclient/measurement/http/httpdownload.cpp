@@ -75,7 +75,7 @@ ResultPtr HTTPDownload::result() const
         res<<QString::number(val, 'f');
     }
 
-    return ResultPtr(new Result(getStartDateTime(), QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
 }
 
 void HTTPDownload::setStatus(Status status)

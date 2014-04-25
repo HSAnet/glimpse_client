@@ -336,7 +336,7 @@ ResultPtr UdpPing::result() const
         }
     }
 
-    return ResultPtr(new Result(getStartDateTime(), QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
 }
 
 int UdpPing::initSocket()

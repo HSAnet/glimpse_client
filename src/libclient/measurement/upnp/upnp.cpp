@@ -256,5 +256,5 @@ ResultPtr UPnP::result() const
         deviceResultList.append(deviceResult);
     }
 
-    return ResultPtr(new Result(getStartDateTime(), QDateTime::currentDateTime(), deviceResultList, QVariant()));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), deviceResultList, QVariant()));
 }

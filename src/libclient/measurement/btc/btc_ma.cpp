@@ -229,5 +229,5 @@ ResultPtr BulkTransportCapacityMA::result() const
         res<<QString::number(val, 'f');
     }
 
-    return ResultPtr(new Result(getStartDateTime(), QDateTime::currentDateTime(), res, QVariant(), definition->measurementUuid));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant(), definition->measurementUuid));
 }

@@ -52,7 +52,7 @@ void Measurement::setMeasurementUuid(const QUuid &measurementUuid)
     d->measurementUuid = measurementUuid;
 }
 
-QDateTime Measurement::getStartDateTime() const
+QDateTime Measurement::startDateTime() const
 {
     return d->startDateTime;
 }
