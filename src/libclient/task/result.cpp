@@ -4,16 +4,19 @@
 class Result::Private
 {
 public:
-    QDateTime dateTime;
+    QDateTime startDateTime;
+    QDateTime endDateTime;
     QVariant probeResult;
     QVariant peerResult;
     QUuid measureUuid;
 };
 
-Result::Result(const QDateTime &dateTime, const QVariant &probeResult, const QVariant &peerResult, const QUuid &measureUuid)
+Result::Result(const QDateTime &startDateTime, const QDateTime &endDateTime, const QVariant &probeResult,
+               const QVariant &peerResult, const QUuid &measureUuid)
 : d(new Private)
 {
-    d->dateTime = dateTime;
+    d->startDateTime = startDateTime;
+    d->endDateTime = endDateTime;
     d->probeResult = probeResult;
     d->peerResult = peerResult;
     d->measureUuid = measureUuid;
@@ -28,15 +31,21 @@ ResultPtr Result::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
 
-    return ResultPtr(new Result(map.value("date_time").toDateTime(),
+    return ResultPtr(new Result(map.value("start_date_time").toDateTime(),
+                                map.value("end_date_time").toDateTime(),
                                 map.value("probe_result"),
                                 map.value("peer_result"),
                                 map.value("measure_uuid").toUuid()));
 }
 
-QDateTime Result::dateTime() const
+QDateTime Result::startDateTime() const
 {
-    return d->dateTime;
+    return d->startDateTime;
+}
+
+QDateTime Result::endDateTime() const
+{
+    return d->endDateTime;
 }
 
 QVariant Result::probeResult() const
@@ -57,7 +66,8 @@ QUuid Result::measureUuid() const
 QVariant Result::toVariant() const
 {
     QVariantMap map;
-    map.insert("date_time", d->dateTime);
+    map.insert("start_date_time", d->startDateTime);
+    map.insert("end_date_time", d->endDateTime);
     map.insert("probe_result", d->probeResult);
     map.insert("peer_result", d->peerResult);
     map.insert("measure_uuid", uuidToString(d->measureUuid));

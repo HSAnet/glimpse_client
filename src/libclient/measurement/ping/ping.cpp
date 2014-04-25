@@ -40,6 +40,9 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 bool Ping::start()
 {
     QStringList args;
+
+    setStartDateTime(QDateTime::currentDateTime());
+
 #ifdef Q_OS_LINUX
     args << "-c" << QString::number(definition->count)
          << "-n" // Don't resolve hostnames
@@ -94,7 +97,7 @@ ResultPtr Ping::result() const
         res<<QString::number(val, 'f', 3);
     }
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
 }
 
 void Ping::started()

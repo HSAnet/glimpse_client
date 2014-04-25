@@ -14,7 +14,8 @@ typedef QList<ResultPtr> ResultList;
 class CLIENT_API Result : public Serializable
 {
 public:
-    Result(const QDateTime& dateTime,
+    Result(const QDateTime& startDateTime,
+           const QDateTime& endDateTime,
            const QVariant& probeResult,
            const QVariant& peerResult,
            const QUuid& measureUuid = QUuid());
@@ -24,7 +25,8 @@ public:
     static ResultPtr fromVariant(const QVariant& variant);
 
     // Getters
-    QDateTime dateTime() const;
+    QDateTime startDateTime() const;
+    QDateTime endDateTime() const;
     QVariant probeResult() const;
     QVariant peerResult() const;
     QUuid measureUuid() const;

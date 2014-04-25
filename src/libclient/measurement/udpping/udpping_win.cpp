@@ -290,6 +290,8 @@ bool UdpPing::start()
         return false;
     }
     memset(m_payload, 0, definition->payload + 1);
+    setStartDateTime(QDateTime::currentDateTime());
+
     setStatus(UdpPing::Running);
 
     memset(&probe, 0, sizeof(probe));
@@ -334,7 +336,7 @@ ResultPtr UdpPing::result() const
         }
     }
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
 }
 
 int UdpPing::initSocket()
