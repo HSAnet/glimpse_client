@@ -41,6 +41,16 @@ namespace
 
         return true;
     }
+
+    void randomizePayload(char *payload, const quint32 size)
+    {
+        char chars[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+
+        for (quint32 i = 0; i < size; i++)
+        {
+            payload[i] = chars[qrand() % strlen(chars)];
+        }
+    }
 }
 
 UdpPing::UdpPing(QObject *parent)
@@ -49,6 +59,7 @@ UdpPing::UdpPing(QObject *parent)
 , m_device(NULL)
 , m_capture(NULL)
 , m_destAddress()
+, m_payload(NULL)
 {
 }
 
@@ -92,6 +103,16 @@ bool UdpPing::start()
 {
     PingProbe probe;
 
+    // include null-character
+    m_payload = new char[definition->payload + 1];
+    if (m_payload == NULL)
+    {
+        return false;
+    }
+    memset(m_payload, 0, definition->payload + 1);
+
+    setStartDateTime(QDateTime::currentDateTime());
+
     setStatus(UdpPing::Running);
 
     memset(&probe, 0, sizeof(probe));
@@ -99,6 +120,7 @@ bool UdpPing::start()
     if (probe.sock < 0)
     {
         emit error("socket: " + QString(strerror(errno)));
+        free(m_payload);
         return false;
     }
 
@@ -111,6 +133,7 @@ bool UdpPing::start()
     close(probe.sock);
 
     setStatus(UdpPing::Finished);
+    free(m_payload);
     emit finished();
 
     return true;
@@ -133,7 +156,7 @@ ResultPtr UdpPing::result() const
         }
     }
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
 }
 
 int UdpPing::initSocket()
@@ -203,7 +226,10 @@ bool UdpPing::sendData(PingProbe *probe)
     gettimeofday(&tv, NULL);
     probe->sendTime = tv.tv_sec * 1e6 + tv.tv_usec;
 
-    if (send(probe->sock, definition->payload, sizeof(definition->payload), 0) < 0)
+    // randomize payload to prevent caching
+    randomizePayload(m_payload, definition->payload);
+
+    if (send(probe->sock, m_payload, definition->payload, 0) < 0)
     {
         emit error("send: " + QString(strerror(errno)));
         return false;
@@ -244,6 +270,7 @@ void UdpPing::receiveData(PingProbe *probe)
 
     if (!pfd.revents)
     {
+        emit timeout(*probe);
         goto cleanup;
     }
 

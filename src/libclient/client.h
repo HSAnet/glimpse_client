@@ -92,6 +92,7 @@ public slots:
     void ping();
     void packetTrains();
     void udpPing();
+    void traceroute();
     void measureIt();
 
 signals:

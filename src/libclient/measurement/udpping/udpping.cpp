@@ -16,6 +16,7 @@ UdpPing::UdpPing(QObject *parent)
 , m_device(NULL)
 , m_capture(NULL)
 , m_destAddress()
+, m_payload(NULL)
 {
 }
 
@@ -46,6 +47,8 @@ bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitio
 
 bool UdpPing::start()
 {
+    setStartDateTime(QDateTime::currentDateTime());
+
     return false;
 }
 
@@ -66,7 +69,7 @@ ResultPtr UdpPing::result() const
         }
     }
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
 }
 
 int UdpPing::initSocket()
@@ -76,11 +79,13 @@ int UdpPing::initSocket()
 
 bool UdpPing::sendData(PingProbe *probe)
 {
+    Q_UNUSED(probe);
     return false;
 }
 
 void UdpPing::receiveData(PingProbe *probe)
 {
+    Q_UNUSED(probe);
 }
 
 void UdpPing::ping(PingProbe *probe)

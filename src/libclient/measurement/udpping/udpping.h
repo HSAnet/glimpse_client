@@ -34,12 +34,15 @@ union sockaddr_any
  * It's meant to notify ping() about how things are to be handled.
  */
 #if defined(Q_OS_WIN)
+namespace udpping
+{
 enum Response
 {
     DESTINATION_UNREACHABLE,
     TTL_EXCEEDED,
     UNHANDLED_ICMP
 };
+}
 #else
 typedef void pcap_if_t;
 typedef void pcap_t;
@@ -52,7 +55,7 @@ struct PingProbe
     quint64 recvTime;
     sockaddr_any source;
 #if defined(Q_OS_WIN)
-    Response response;
+    udpping::Response response;
     quint8 icmpType;
     quint8 icmpCode;
 #endif
@@ -88,12 +91,15 @@ private:
     pcap_if_t *m_device;
     pcap_t *m_capture;
     sockaddr_any m_destAddress;
+    char *m_payload;
+
 
 signals:
     void statusChanged(Status status);
-    void destinationUnreachable(PingProbe &probe);
-    void ttlExceeded(PingProbe &probe);
+    void destinationUnreachable(const PingProbe &probe);
+    void ttlExceeded(const PingProbe &probe);
     void error(QString message);
+    void timeout(const PingProbe &probe);
 };
 
 #endif // UDPPING_H
