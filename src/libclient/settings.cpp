@@ -59,7 +59,7 @@ Settings::StorageType Settings::init()
     }
     else
     {
-        setDeviceId(info.deviceId());
+        setDeviceId(generatedDeviceId);
     }
 
     LOG_INFO(QString("Device ID: %1").arg(deviceId()));
