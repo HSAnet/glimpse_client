@@ -430,6 +430,7 @@ bool NetworkManager::onMobileConnection() const
 
 QAbstractSocket *NetworkManager::connection(const QString &hostname, NetworkManager::SocketType socketType) const
 {
+    Q_UNUSED(socketType);
     return d->socketHash.value(hostname);
 }
 
@@ -448,7 +449,11 @@ QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType soc
     return socket;
 }
 
-QAbstractSocket *NetworkManager::establishConnection(const QString &hostname, const QUuid &taskId, const QString &measurement, MeasurementDefinitionPtr measurementDefinition, NetworkManager::SocketType socketType)
+QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
+                                                     const QUuid &taskId,
+                                                     const QString &measurement,
+                                                     MeasurementDefinitionPtr measurementDefinition,
+                                                     NetworkManager::SocketType socketType)
 {
     QAbstractSocket* socket = d->createSocket(socketType);
     if ( !socket )
