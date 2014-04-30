@@ -22,14 +22,14 @@ UdpPingDefinition::~UdpPingDefinition()
 UdpPingDefinitionPtr UdpPingDefinition::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
-    return UdpPingDefinitionPtr(new UdpPingDefinition(map.value("url").toString(),
-                                                      map.value("count").toUInt(),
-                                                      map.value("interval").toUInt(),
-                                                      map.value("receiveTimeout").toUInt(),
-                                                      map.value("ttl").toInt(),
-                                                      map.value("destinationPort").toUInt(),
-                                                      map.value("sourcePort").toUInt(),
-                                                      map.value("payload").toUInt()));
+    return UdpPingDefinitionPtr(new UdpPingDefinition(map.value("url", "").toString(),
+                                                      map.value("count", 3).toUInt(),
+                                                      map.value("interval", 1000).toUInt(),
+                                                      map.value("receiveTimeout", 1000).toUInt(),
+                                                      map.value("ttl", 64).toInt(),
+                                                      map.value("destinationPort", 33434).toUInt(),
+                                                      map.value("sourcePort", 33434).toUInt(),
+                                                      map.value("payload", 74).toUInt()));
 }
 
 QVariant UdpPingDefinition::toVariant() const
