@@ -4,37 +4,71 @@ import "controls"
 Page {
     id: root
 
-    title: qsTr("First time login")
+    title: qsTr("login")
     activity: loginPage.activity
 
-    Login {
-        id: loginPage
-        width: parent.width
-        isWizard: true
-    }
+    Rectangle {
+       color: "#f8c580"
 
-    Column {
-        anchors {
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
-            bottomMargin: units.gu(50) + root.spacingValue
-        }
+       anchors {
+           top: parent.top
+           bottom: parent.bottom
+           left: parent.left
+           right: parent.right
+       }
 
-        width: parent.width
-        spacing: units.gu(10)
+       Image{
+           id: flap
+           anchors.right: parent.right
+           anchors.top: parent.top
+           source: "images/flap.png"
+           height: units.gu(150)
+           fillMode: Image.PreserveAspectFit
 
-        SpacerLine {
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
-        }
+           MouseArea {
+               anchors.fill: parent
+               onClicked: {
+                   if (app.state == "")
+                       app.state = "settings";
+                   else
+                       app.state = "";
+               }
 
-        Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: qsTr("I don't have an account")
-            onClicked: nextPage("WelcomeRegistrationPage.qml")
-        }
+           }
+       }
+
+       Label {
+           id: title
+           text: qsTr("glimpse.")
+
+           font.pixelSize: units.gu(100)
+           color: "white"
+
+           anchors {
+               top: flap.bottom
+               horizontalCenter: parent.horizontalCenter
+               topMargin: 20
+           }
+       }
+
+       Login {
+           id: loginPage
+           width: parent.width
+           isWizard: true
+
+           anchors {
+               top: title.bottom
+               topMargin: 50
+           }
+       }
+
+       Button {
+           anchors.horizontalCenter: parent.horizontalCenter
+           text: qsTr("Sign up")
+           onClicked: nextPage("WelcomeRegistrationPage.qml")
+           anchors {
+               top: loginPage.bottom
+           }
+       }
     }
 }
