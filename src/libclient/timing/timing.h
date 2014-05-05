@@ -19,8 +19,6 @@ public:
     virtual QString type() const = 0;
     virtual bool reset() = 0; // true = reset; false = stop execute
     virtual QDateTime nextRun() const = 0;
-
-    static Ntp ntp;
 };
 
 #endif // TIMING_H

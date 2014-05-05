@@ -1,5 +1,7 @@
 #include "periodictiming.h"
 
+Q_GLOBAL_STATIC(Ntp, ntp)
+
 class PeriodicTiming::Private
 {
 public:
@@ -14,8 +16,8 @@ PeriodicTiming::PeriodicTiming(int period, const QDateTime &start, const QDateTi
 : d(new Private)
 {
     d->period = period;
-    d->start = start.addSecs(ntp.offset());
-    d->end = end.addSecs(ntp.offset());
+    d->start = start.addSecs(ntp->offset());
+    d->end = end.addSecs(ntp->offset());
 }
 
 PeriodicTiming::~PeriodicTiming()

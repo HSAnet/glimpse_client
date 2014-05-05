@@ -42,7 +42,7 @@
 
 LOGGER(Client);
 
-Ntp Timing::ntp;
+Q_GLOBAL_STATIC(Ntp, ntp)
 
 class Client::Private : public QObject
 {
@@ -349,7 +349,7 @@ bool Client::init()
     if (!hostInfo.addresses().isEmpty())
     {
         QHostAddress ntpServer = hostInfo.addresses().first();
-        Timing::ntp.sync(ntpServer);
+        ntp->sync(ntpServer);
     }
     else
     {

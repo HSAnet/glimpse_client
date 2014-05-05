@@ -1,5 +1,7 @@
 #include "onofftiming.h"
 
+Q_GLOBAL_STATIC(Ntp, ntp)
+
 class OnOffTiming::Private
 {
 public:
@@ -9,7 +11,7 @@ public:
 OnOffTiming::OnOffTiming(const QDateTime &dateTime)
 : d(new Private)
 {
-    d->dateTime = dateTime.addSecs(ntp.offset());
+    d->dateTime = dateTime.addSecs(ntp->offset());
 }
 
 OnOffTiming::~OnOffTiming()
