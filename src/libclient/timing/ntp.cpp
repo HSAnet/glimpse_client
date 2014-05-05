@@ -80,5 +80,10 @@ QDateTime Ntp::networkTime() const
 
 quint64 Ntp::offset() const
 {
+    if (!m_localTime.isValid() || !m_networkTime.isValid())
+    {
+        return 0;
+    }
+
     return m_localTime.secsTo(m_networkTime);
 }
