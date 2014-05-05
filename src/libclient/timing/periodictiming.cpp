@@ -14,8 +14,8 @@ PeriodicTiming::PeriodicTiming(int period, const QDateTime &start, const QDateTi
 : d(new Private)
 {
     d->period = period;
-    d->start = start;
-    d->end = end;
+    d->start = start.addSecs(ntp.offset());
+    d->end = end.addSecs(ntp.offset());
 }
 
 PeriodicTiming::~PeriodicTiming()

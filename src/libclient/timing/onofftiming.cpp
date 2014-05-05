@@ -9,7 +9,7 @@ public:
 OnOffTiming::OnOffTiming(const QDateTime &dateTime)
 : d(new Private)
 {
-    d->dateTime = dateTime;
+    d->dateTime = dateTime.addSecs(ntp.offset());
 }
 
 OnOffTiming::~OnOffTiming()
