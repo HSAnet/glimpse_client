@@ -79,7 +79,14 @@ bool CalendarTiming::reset()
 
 QDateTime CalendarTiming::nextRun() const
 {
-    return QDateTime(); // never
+    QDateTime dateTime;
+
+    if (dateTime.isValid())
+    {
+        dateTime = dateTime.addSecs(ntp.offset());
+    }
+
+    return dateTime; // never
 }
 
 QVariant CalendarTiming::toVariant() const
