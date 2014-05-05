@@ -32,12 +32,12 @@ QVariant PacketTrainsDefinition::toVariant() const
 PacketTrainsDefinitionPtr PacketTrainsDefinition::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
-    return PacketTrainsDefinitionPtr(new PacketTrainsDefinition(map.value("host").toString(),
-                                                                map.value("port").toUInt(),
-                                                                map.value("packetSize").toUInt(),
-                                                                map.value("trainLength").toUInt(),
-                                                                map.value("iterations").toUInt(),
-                                                                map.value("rateMin").toUInt(),
-                                                                map.value("rateMax").toUInt(),
-                                                                map.value("delay").toUInt()));
+    return PacketTrainsDefinitionPtr(new PacketTrainsDefinition(map.value("host", "").toString(),
+                                                                map.value("port", 0).toUInt(),
+                                                                map.value("packetSize", 1000).toUInt(),
+                                                                map.value("trainLength", 48).toUInt(),
+                                                                map.value("iterations", 1).toUInt(),
+                                                                map.value("rateMin", 10485760).toUInt(),
+                                                                map.value("rateMax", 262144000).toUInt(),
+                                                                map.value("delay", 200000000).toUInt()));
 }

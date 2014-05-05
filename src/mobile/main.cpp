@@ -98,7 +98,9 @@ public slots:
         settings->sync();
 
         LOG_DEBUG("Application suspended, settings saved.");
-#endif // Q_OS_ANDROID
+#else // Q_OS_ANDROID
+        Q_UNUSED(state);
+#endif
     }
 };
 

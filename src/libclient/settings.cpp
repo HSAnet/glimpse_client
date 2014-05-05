@@ -59,7 +59,7 @@ Settings::StorageType Settings::init()
     }
     else
     {
-        setDeviceId(info.deviceId());
+        setDeviceId(generatedDeviceId);
     }
 
     LOG_INFO(QString("Device ID: %1").arg(deviceId()));
@@ -67,7 +67,7 @@ Settings::StorageType Settings::init()
     // Create new settings
     if ( newSettings )
     {
-        d->config.setControllerAddress("141.82.57.240:5105");
+        d->config.setControllerAddress("supervisor.measure-it.de:5105");
         LOG_INFO("Created new settings for this device");
 
         return NewSettings;
@@ -80,7 +80,7 @@ Settings::StorageType Settings::init()
         if (d->config.controllerAddress().isEmpty())
         {
             LOG_WARNING("Controller address lost, setting back default one");
-            d->config.setControllerAddress("141.82.57.240:5105");
+            d->config.setControllerAddress("supervisor.measure-it.de:5105");
         }
 
         LOG_INFO("Loaded existing settings for this device");

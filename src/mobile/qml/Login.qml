@@ -1,4 +1,5 @@
-import QtQuick 2.0
+import QtQuick 2.2
+import QtQuick.Dialogs 1.1
 import mplane 1.0
 import "controls"
 
@@ -8,6 +9,7 @@ Page {
 
     height: column.height
 
+
     property bool isWizard: false
     property bool loginMode: true
     property string buttonTitle: qsTr("Login")
@@ -16,7 +18,7 @@ Page {
 
     function login() {
         if ( !mailField.acceptableInput ) {
-            errorLabel.text = qsTr("Mail is not valid");
+            errorLabel.text = qsTr("Email is not valid");
             return;
         }
 
@@ -83,15 +85,10 @@ Page {
     Column {
         id: column
         anchors.horizontalCenter: parent.horizontalCenter
-        spacing: units.gu(10)
+//        spacing: units.gu(10)
 
         Column {
             anchors.horizontalCenter: parent.horizontalCenter
-
-            Text {
-                text: qsTr("Mail")
-                font.pixelSize: units.gu(40)
-            }
 
             TextField {
                 id: mailField
@@ -105,11 +102,6 @@ Page {
 
         Column {
             anchors.horizontalCenter: parent.horizontalCenter
-
-            Text {
-                text: qsTr("Password")
-                font.pixelSize: units.gu(40)
-            }
 
             TextField {
                 id: passwordField
@@ -142,7 +134,8 @@ Page {
 
         Label {
             id: errorLabel
-            color: "red"
+            color: "blue"
+            font.pixelSize: units.gu(25)
             x: text.length > 0 ? parent.width/2-errorLabel.width/2 : parent.width
 
             Behavior on x {

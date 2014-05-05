@@ -15,8 +15,8 @@ HTTPDownloadDefinition::~HTTPDownloadDefinition()
 HTTPDownloadDefinitionPtr HTTPDownloadDefinition::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
-    return HTTPDownloadDefinitionPtr(new HTTPDownloadDefinition(map.value("url").toString(),
-                                                                  map.value("cacheTest").toBool()));
+    return HTTPDownloadDefinitionPtr(new HTTPDownloadDefinition(map.value("url", "").toString(),
+                                                                map.value("cacheTest", false).toBool()));
 }
 
 QVariant HTTPDownloadDefinition::toVariant() const
