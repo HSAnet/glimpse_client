@@ -16,8 +16,8 @@ PeriodicTiming::PeriodicTiming(int period, const QDateTime &start, const QDateTi
 : d(new Private)
 {
     d->period = period;
-    d->start = start.addSecs(ntp->offset());
-    d->end = end.addSecs(ntp->offset());
+    d->start = start;
+    d->end = end;
 }
 
 PeriodicTiming::~PeriodicTiming()
@@ -40,7 +40,7 @@ bool PeriodicTiming::reset()
 QDateTime PeriodicTiming::nextRun() const
 {
     QDateTime nextRun;
-    const QDateTime now = QDateTime::currentDateTime();
+    const QDateTime now = QDateTime::currentDateTime().addSecs(ntp->offset());
 
     // Check if the start time is reached
     if (d->start > now)
