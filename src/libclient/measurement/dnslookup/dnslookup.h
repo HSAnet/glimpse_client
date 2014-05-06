@@ -23,20 +23,21 @@ public:
 
 private:
     void setStatus(Status status);
-    void handleServers();
+
     DnslookupDefinitionPtr definition;
     QDnsLookup dns;
-    QList<QString> dnslookupOutput;
+    QList<QDnsServiceRecord> dnslookupOutput;
 //    QTextStream stream;
     Status currentStatus;
 
 private slots:
     void started();
     void finished();
+    void handleServers();
 
 signals:
     void statusChanged(Status status);
-    void dnslookup(int time);
+//    void dnslookup(int time);
 };
 
 #endif // Dnslookup_H

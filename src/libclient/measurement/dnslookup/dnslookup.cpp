@@ -25,7 +25,6 @@ bool Dnslookup::prepare(NetworkManager *networkManager, const MeasurementDefinit
         return false;
     }
 
-    connect(&dns, SIGNAL(started()), this, SLOT(started()));
     connect(&dns, SIGNAL(finished()), this, SLOT(handleServers()));
 
     currentStatus = Dnslookup::Unknown;
@@ -35,29 +34,26 @@ bool Dnslookup::prepare(NetworkManager *networkManager, const MeasurementDefinit
 
 bool Dnslookup::start()
 {
-//    &dns->setType(QDnsLookup::SRV);
-//    &dns->setName(definition->host);
-//    &dns->lookup();
-
+    dns.setType(QDnsLookup::SRV);
+    dns.setName(definition->host);
+//    dns.setName("_xmpp-client._tcp.gmail.com");
+    dns.lookup();
     return true;
 }
 
 void Dnslookup::handleServers()
 {
-//    // Check the lookup succeeded.
-//    if (dns->error() != QDnsLookup::NoError) {
-//        qWarning("DNS lookup failed");
-//        dns->deleteLater();
-//        return;
-//    }
+    // Check the lookup succeeded.
+    if (dns.error() != QDnsLookup::NoError) {
+        LOG_ERROR(dns.errorString());
+        LOG_ERROR("DNS lookup failed");
+        return;
+    }
 
-//    // Handle the results.
-//    QVariantList res;
-//    foreach (const QDnsServiceRecord &record, dns->serviceRecords()) {
-//            dnslookupOutput << &record;
-//    }
+    dnslookupOutput = dns.serviceRecords();
 
-//    dns->deleteLater();
+    setStatus(Dnslookup::Finished);
+    emit finished();
 }
 
 
@@ -83,9 +79,17 @@ bool Dnslookup::stop()
 ResultPtr Dnslookup::result() const
 {
     QVariantList res;
-    foreach(QString val, dnslookupOutput)
+    foreach(const QDnsServiceRecord &val, dnslookupOutput)
     {
-        res << val;
+
+      QVariantMap map;
+      map.insert("name", val.name());
+      map.insert("port", val.port());
+      map.insert("priority", val.priority());
+      map.insert("target", val.target());
+      map.insert("timeToLive", val.timeToLive());
+      map.insert("weight", val.weight());
+      res << map;
     }
 
     return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
