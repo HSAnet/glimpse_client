@@ -37,7 +37,7 @@ public:
         LastConnectionError,
         NumberOfPortMappings,
         FirewallEnabled,
-        InboundPinholeAllwed,
+        InboundPinholeAllowed,
 
         ModelName,
         Manufacturer,

@@ -179,7 +179,7 @@ bool UPnP::start()
                     &inboundPinholeAllowed))
             {
                 resultHash.insert(FirewallEnabled, firewallEnabled);
-                resultHash.insert(InboundPinholeAllwed, inboundPinholeAllowed);
+                resultHash.insert(InboundPinholeAllowed, inboundPinholeAllowed);
             }
 
             int bufferSize = 0;
