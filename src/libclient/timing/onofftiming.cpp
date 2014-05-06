@@ -11,7 +11,7 @@ public:
 OnOffTiming::OnOffTiming(const QDateTime &dateTime)
 : d(new Private)
 {
-    d->dateTime = dateTime.addSecs(ntp->offset());
+    d->dateTime = dateTime;
 }
 
 OnOffTiming::~OnOffTiming()
@@ -31,7 +31,7 @@ bool OnOffTiming::reset()
 
 QDateTime OnOffTiming::nextRun() const
 {
-    return d->dateTime;
+    return d->dateTime.addSecs(ntp->offset());
 }
 
 QVariant OnOffTiming::toVariant() const
