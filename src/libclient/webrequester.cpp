@@ -3,6 +3,7 @@
 #include "settings.h"
 #include "log/logger.h"
 
+#include <QTimer>
 #include <QPointer>
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -21,6 +22,10 @@ public:
     : q(q)
     , status(WebRequester::Unknown)
     {
+        connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
+
+        timer.setSingleShot(true);
+        timer.setInterval(5000);
     }
 
     WebRequester* q;
@@ -34,11 +39,15 @@ public:
 
     QJsonObject jsonData;
 
+    QTimer timer;
+    QPointer<QNetworkReply> currentReply;
+
     // Functions
     void setStatus(WebRequester::Status status);
 
 public slots:
     void requestFinished();
+    void timeout();
 };
 
 void WebRequester::Private::setStatus(WebRequester::Status status)
@@ -123,6 +132,12 @@ void WebRequester::Private::requestFinished()
     reply->deleteLater();
 }
 
+void WebRequester::Private::timeout()
+{
+    // Abort current reply
+    currentReply->abort();
+}
+
 WebRequester::WebRequester(QObject *parent)
 : QObject(parent)
 , d(new Private(this))
@@ -137,6 +152,20 @@ WebRequester::~WebRequester()
 WebRequester::Status WebRequester::status() const
 {
     return d->status;
+}
+
+void WebRequester::setTimeout(int ms)
+{
+    if ( d->timer.interval() != ms )
+    {
+        d->timer.setInterval(ms);
+        emit timeoutChanged(ms);
+    }
+}
+
+int WebRequester::timeout() const
+{
+    return d->timer.interval();
 }
 
 void WebRequester::setUrl(const QUrl &url)
@@ -249,6 +278,10 @@ void WebRequester::start()
     QNetworkReply* reply = Client::instance()->networkAccessManager()->post(request, data);
     reply->ignoreSslErrors();
     connect(reply, SIGNAL(finished()), d, SLOT(requestFinished()));
+
+    // Wait for timeout
+    d->currentReply = reply;
+    d->timer.start();
 }
 
 #include "webrequester.moc"
