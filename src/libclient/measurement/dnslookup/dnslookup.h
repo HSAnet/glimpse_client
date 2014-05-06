@@ -1,5 +1,5 @@
-#ifndef Dnslookup_H
-#define Dnslookup_H
+#ifndef DNSLOOKUP_H
+#define DNSLOOKUP_H
 
 #include "../measurement.h"
 #include "dnslookup_definition.h"
@@ -26,8 +26,7 @@ private:
 
     DnslookupDefinitionPtr definition;
     QDnsLookup dns;
-    QList<QDnsServiceRecord> dnslookupOutput;
-//    QTextStream stream;
+    QList<QDnsHostAddressRecord> dnslookupOutput;
     Status currentStatus;
 
 private slots:
@@ -37,7 +36,7 @@ private slots:
 
 signals:
     void statusChanged(Status status);
-//    void dnslookup(int time);
+
 };
 
-#endif // Dnslookup_H
+#endif // DNSLOOKUP_H

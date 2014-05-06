@@ -2,6 +2,7 @@
 #include "../../log/logger.h"
 
 #include <QDnsLookup>
+#include <QHostAddress>
 
 LOGGER(Dnslookup);
 
@@ -34,9 +35,8 @@ bool Dnslookup::prepare(NetworkManager *networkManager, const MeasurementDefinit
 
 bool Dnslookup::start()
 {
-    dns.setType(QDnsLookup::SRV);
+    dns.setType(QDnsLookup::ANY);
     dns.setName(definition->host);
-//    dns.setName("_xmpp-client._tcp.gmail.com");
     dns.lookup();
     return true;
 }
@@ -44,13 +44,15 @@ bool Dnslookup::start()
 void Dnslookup::handleServers()
 {
     // Check the lookup succeeded.
-    if (dns.error() != QDnsLookup::NoError) {
+    if (dns.error() != QDnsLookup::NoError)
+    {
         LOG_ERROR(dns.errorString());
         LOG_ERROR("DNS lookup failed");
+        emit finished();
         return;
     }
 
-    dnslookupOutput = dns.serviceRecords();
+    dnslookupOutput = dns.hostAddressRecords();
 
     setStatus(Dnslookup::Finished);
     emit finished();
@@ -79,17 +81,28 @@ bool Dnslookup::stop()
 ResultPtr Dnslookup::result() const
 {
     QVariantList res;
-    foreach(const QDnsServiceRecord &val, dnslookupOutput)
+    foreach(const QDnsHostAddressRecord &val, dnslookupOutput)
     {
+        QString type;
+        switch(val.value().protocol())
+        {
+        case QAbstractSocket::IPv4Protocol:
+            type = "A";
+            break;
+        case QAbstractSocket::IPv6Protocol:
+            type = "AAAA";
+            break;
+        default:
+            break;
+        }
 
-      QVariantMap map;
-      map.insert("name", val.name());
-      map.insert("port", val.port());
-      map.insert("priority", val.priority());
-      map.insert("target", val.target());
-      map.insert("timeToLive", val.timeToLive());
-      map.insert("weight", val.weight());
-      res << map;
+        QVariantMap map;
+        map.insert("name", val.name());
+        map.insert("timeToLive", val.timeToLive());
+        map.insert("value", val.value().toString());
+        map.insert("type", type);
+
+        res << map;
     }
 
     return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
@@ -104,9 +117,6 @@ void Dnslookup::started()
 
 void Dnslookup::finished()
 {
-//    Q_UNUSED(exitCode);
-//    Q_UNUSED(exitStatus);
-
     setStatus(Dnslookup::Finished);
     emit Measurement::finished();
 }

@@ -404,7 +404,7 @@ void Client::ping(const QString &host, quint16 count, quint32 timeout, quint32 i
 
 void Client::dnslookup()
 {
-    DnslookupDefinition dnslookupDef("google.de");
+    DnslookupDefinition dnslookupDef("www.google.com");
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832178", "dnslookup", timing, dnslookupDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
