@@ -90,10 +90,10 @@ bool Dnslookup::stop()
 ResultPtr Dnslookup::result() const
 {
     QVariantList res;
-    foreach(QString val, dnslookupOutput)
-    {
-        res << val;
-    }
+//    foreach(QString val, dnslookupOutput)
+//    {
+//        res << val;
+//    }
 
     return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
 }
@@ -101,7 +101,7 @@ ResultPtr Dnslookup::result() const
 void Dnslookup::started()
 {
     dnslookupTime.clear();
-    dnslookupOutput.clear();
+//    dnslookupOutput.clear();
 
     setStatus(Dnslookup::Running);
 }
@@ -143,7 +143,7 @@ void Dnslookup::readyRead()
 
     for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine())
     {
-        dnslookupOutput.append(line);
+//        dnslookupOutput.append(line);
     }
 }
 
