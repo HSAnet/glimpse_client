@@ -4,8 +4,7 @@
 #include "../measurement.h"
 #include "dnslookup_definition.h"
 
-#include <QProcess>
-#include <QTextStream>
+#include <QDnsLookup>
 
 class Dnslookup : public Measurement
 {
@@ -20,23 +19,20 @@ public:
     bool prepare(NetworkManager* networkManager, const MeasurementDefinitionPtr& measurementDefinition);
     bool start();
     bool stop();
-    void waitForFinished();
-    float averageDnslookupTime();
     ResultPtr result() const;
 
 private:
     void setStatus(Status status);
-
+    void handleServers();
     DnslookupDefinitionPtr definition;
-    QList<float> dnslookupTime;
-    QProcess process;
-    QTextStream stream;
+    QDnsLookup dns;
+    QList<QString> dnslookupOutput;
+//    QTextStream stream;
     Status currentStatus;
 
 private slots:
     void started();
-    void finished(int exitCode, QProcess::ExitStatus exitStatus);
-    void readyRead();
+    void finished();
 
 signals:
     void statusChanged(Status status);
