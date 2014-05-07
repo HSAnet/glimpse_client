@@ -15,6 +15,7 @@
 #include <QCoreApplication>
 #include <QNetworkAccessManager>
 #include <QDebug>
+#include <QHostInfo>
 
 #ifdef Q_OS_UNIX
 #include <QSocketNotifier>
@@ -30,6 +31,7 @@
 
 // TEST INCLUDES
 #include "timing/immediatetiming.h"
+#include "timing/timing.h"
 #include "task/task.h"
 #include "measurement/btc/btc_definition.h"
 #include "measurement/http/httpdownload_definition.h"
@@ -39,6 +41,8 @@
 #include "measurement/traceroute/traceroute_definition.h"
 
 LOGGER(Client);
+
+Q_GLOBAL_STATIC(Ntp, ntp)
 
 class Client::Private : public QObject
 {
@@ -338,6 +342,18 @@ bool Client::init()
     if (!d->settings.isPassive())
     {
         d->taskController.init(&d->networkManager, &d->scheduler, &d->settings);
+    }
+
+    // Get network time from ntp server
+    QHostInfo hostInfo = QHostInfo::fromName("ptbtime1.ptb.de");
+    if (!hostInfo.addresses().isEmpty())
+    {
+        QHostAddress ntpServer = hostInfo.addresses().first();
+        ntp->sync(ntpServer);
+    }
+    else
+    {
+        LOG_WARNING("could not resolve ntp server");
     }
 
     return true;

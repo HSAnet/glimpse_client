@@ -1,5 +1,7 @@
 #include "calendartiming.h"
 
+Q_GLOBAL_STATIC(Ntp, ntp)
+
 class TimingRandomness::Private
 {
 public:
@@ -79,7 +81,14 @@ bool CalendarTiming::reset()
 
 QDateTime CalendarTiming::nextRun() const
 {
-    return QDateTime(); // never
+    QDateTime dateTime;
+
+    if (dateTime.isValid())
+    {
+        dateTime = dateTime.addSecs(ntp->offset());
+    }
+
+    return dateTime; // never
 }
 
 QVariant CalendarTiming::toVariant() const
