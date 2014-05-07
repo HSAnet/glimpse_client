@@ -34,6 +34,7 @@ Item {
             right: parent.right
         }
         height: 40
+        z: 1
 
         ListView {
             id: listView

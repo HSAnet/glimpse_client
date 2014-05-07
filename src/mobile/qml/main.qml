@@ -429,6 +429,7 @@ Rectangle {
                 topMargin: 20
             }
             width: parent.width
+            clip: true
 
             model: settingsModel
             delegate: Text {
