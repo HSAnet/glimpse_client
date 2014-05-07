@@ -125,9 +125,20 @@ void WebRequester::Private::requestFinished()
     }
     else
     {
-        errorString = reply->errorString();
+        if (!timer.isActive())
+        {
+            errorString = "Operation timed out";
+        }
+        else
+        {
+            errorString = reply->errorString();
+        }
+
         setStatus(WebRequester::Error);
     }
+
+    // Always stop the timeout timer
+    timer.stop();
 
     reply->deleteLater();
 }
@@ -135,7 +146,8 @@ void WebRequester::Private::requestFinished()
 void WebRequester::Private::timeout()
 {
     // Abort current reply
-    currentReply->abort();
+    if (currentReply)
+        currentReply->abort();
 }
 
 WebRequester::WebRequester(QObject *parent)
