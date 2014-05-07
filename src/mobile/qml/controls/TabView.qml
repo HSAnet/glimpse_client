@@ -11,8 +11,19 @@ Item {
     property alias contentWidth: contentView.width
     property alias contentHeight: contentView.height
 
+    onCurrentIndexChanged: {
+        listView.currentIndex = currentIndex;
+        contentView.currentIndex = currentIndex;
+    }
+
     ObjectModel {
         id: listModel
+
+        onCountChanged: {
+            var child = listModel.children[listModel.count-1];
+            child.width = Qt.binding(function() { return contentView.width; });
+            child.height = Qt.binding(function() { return contentView.height; });
+        }
     }
 
     Rectangle {
