@@ -1,5 +1,7 @@
 #include "periodictiming.h"
 
+Q_GLOBAL_STATIC(Ntp, ntp)
+
 class PeriodicTiming::Private
 {
 public:
@@ -38,7 +40,7 @@ bool PeriodicTiming::reset()
 QDateTime PeriodicTiming::nextRun() const
 {
     QDateTime nextRun;
-    const QDateTime now = QDateTime::currentDateTime();
+    const QDateTime now = QDateTime::currentDateTime().addSecs(ntp->offset());
 
     // Check if the start time is reached
     if (d->start > now)
