@@ -1,13 +1,13 @@
 import QtQuick 2.0
-import mplane 1.0 as Mplane
+import mplane 1.0
 import "controls"
 
 Page{
     Rectangle {
         id: notificationPanel
         color: "#becbcb"
-        width: app.width - 50
-        height: 100
+        width: app.width - units.gu(50)
+        height: units.gu(100)
 
         anchors {
             horizontalCenter: parent.horizontalCenter
@@ -21,11 +21,11 @@ Page{
         id: historyPanel
         color: "white"
         width: app.width
-        height: 180
+        height: units.gu(180)
 
         anchors {
             top: notificationPanel.bottom
-            topMargin: 15
+            topMargin: units.gu(15)
         }
 
         Text {
@@ -42,12 +42,12 @@ Page{
     Rectangle {
         id: buttonPanel
         width: app.width
-        height: 100
+        height: units.gu(100)
         color: "#f8c580"
 
         anchors {
             top: historyPanel.bottom
-            topMargin: 18
+            topMargin: units.gu(18)
         }
 
         Button {
@@ -126,11 +126,11 @@ Page{
         id: campaignsPanel
         color: "white"
         width: app.width
-        height: 100
+        height: units.gu(100)
 
         anchors {
             top: buttonPanel.bottom
-            topMargin: 20
+            topMargin: units.gu(20)
         }
 
         Text {

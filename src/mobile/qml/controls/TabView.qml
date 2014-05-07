@@ -33,7 +33,7 @@ Item {
             left: parent.left
             right: parent.right
         }
-        height: 40
+        height: units.gu(40)
         z: 1
 
         ListView {
@@ -54,9 +54,11 @@ Item {
             model: listModel.children
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 15
+            spacing: units.gu(15)
             boundsBehavior: ListView.StopAtBounds
             focus: true
+
+            highlightMoveDuration: 300
 
             highlight: Item {
                    Rectangle {
@@ -92,7 +94,7 @@ Item {
             bottom: parent.bottom
         }
 
-        highlightMoveVelocity: 1500
+        highlightMoveDuration: 300
 
         currentIndex: root.currentIndex
         onCurrentIndexChanged: root.currentIndex = currentIndex

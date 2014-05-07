@@ -133,7 +133,7 @@ Rectangle {
 
         PropertyChanges {
             target: app
-            x: -app.width + 50
+            x: -app.width + units.gu(50)
         }
     }
 
@@ -289,14 +289,14 @@ Rectangle {
         Image{
             id: avatar
             source: "images/avatar.png"
-            height: 80; width: 80
+            height: units.gu(80); width: units.gu(80)
 
             anchors {
                 left: parent.left
                 top: parent.top
 
-                topMargin: 20
-                leftMargin: 20
+                topMargin: units.gu(20)
+                leftMargin: units.gu(20)
             }
         }
 
@@ -304,7 +304,7 @@ Rectangle {
             anchors.fill: avatar
             color: "transparent"
             border.color: "white"
-            border.width: 4
+            border.width: units.gu(4)
         }
 
         Rectangle {
@@ -313,29 +313,28 @@ Rectangle {
                 left: avatar.right
                 top: avatar.top
 
-                leftMargin: 10
-
+                leftMargin: units.gu(10)
             }
 
-            Text {
+            Label {
                 id: greeting
                 text: qsTr("Hi, User.")
                 font.pixelSize: units.gu(30)
                 color: "white"
             }
 
-            Text {
+            Label {
                 id: testcounter
                 text: qsTr("Testcounter: 54")
                 color: "white"
 
                 anchors {
                     top: greeting.bottom
-                    topMargin: 5
+                    topMargin: units.gu(5)
                 }
             }
 
-            Text {
+            Label {
                 id: last_login
                 text: qsTr("Last login: 12.2.2014")
                 color: "white"
@@ -402,7 +401,7 @@ Rectangle {
                 Text {
                     id: section_element
                     text: section
-                    font.pixelSize: 18
+                    font.pixelSize: units.gu(18)
                     color: "#7c7c7c"
                 }
 
@@ -426,7 +425,7 @@ Rectangle {
                 top: avatar.bottom
                 bottom: parent.bottom
 
-                topMargin: 20
+                topMargin: units.gu(20)
             }
             width: parent.width
             clip: true
@@ -435,8 +434,8 @@ Rectangle {
             delegate: Text {
                 color: "white"
                 text: name
-                font.pixelSize: 20
-                height: 35
+                font.pixelSize: units.gu(20)
+                height: units.gu(35)
             }
             section.property: "size"
             section.criteria: ViewSection.FullString
