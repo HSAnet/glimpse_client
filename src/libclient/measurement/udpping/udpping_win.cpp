@@ -375,12 +375,6 @@ int UdpPing::initSocket()
         goto cleanup;
     }
 
-    if (::connect(sock, (struct sockaddr *) &m_destAddress, sizeof(m_destAddress)) < 0)
-    {
-        emit error("connect: " + QString(strerror(errno)));
-        goto cleanup;
-    }
-
     return sock;
 
 cleanup:
@@ -393,7 +387,8 @@ bool UdpPing::sendData(PingProbe *probe)
     // randomize payload to prevent caching
     randomizePayload(m_payload, definition->payload);
 
-    if (send(probe->sock, m_payload, definition->payload, 0) < 0)
+    if (sendto(probe->sock, m_payload, definition->payload, 0,
+               (sockaddr *)&m_destAddress, sizeof(m_destAddress)) < 0)
     {
         emit error("send: " + QString(strerror(errno)));
         return false;
