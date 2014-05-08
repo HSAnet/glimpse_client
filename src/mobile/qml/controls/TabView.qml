@@ -68,7 +68,6 @@ Item {
                    }
             }
 
-
             delegate: Label {
                 id: nameText
                 height: ListView.view.height

@@ -23,6 +23,14 @@ Page {
         }
 
         Item {
+            property string title: "Toolbox"
+
+            ToolBoxPage {
+                anchors.fill: parent
+            }
+        }
+
+        Item {
             property string title: "History"
         }
 

@@ -378,9 +378,9 @@ void Client::btc()
     d->scheduler.enqueue(testDefinition);
 }
 
-void Client::http()
+void Client::http(const QString &url)
 {
-    HTTPDownloadDefinition httpDef("http://ipv4.download.thinkbroadband.com:81/10MB.zip", false);
+    HTTPDownloadDefinition httpDef(url, false);
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("39faf457-7195-4628-b313-09f034512a40", "httpdownload", timing, httpDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
@@ -393,9 +393,9 @@ void Client::upnp()
     d->scheduler.enqueue(testDefinition);
 }
 
-void Client::ping()
+void Client::ping(const QString &host, quint16 count, quint32 timeout, quint32 interval)
 {
-    PingDefinition pingDef("measure-it.de", 4, 2000, 200);
+    PingDefinition pingDef(host.isNull() ? "measure-it.de" : host, 4, 2000, 200);
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("fe8189e7-afce-4ec8-863d-c4525c13ad73", "ping", timing, pingDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
@@ -410,18 +410,25 @@ void Client::packetTrains()
     d->scheduler.enqueue(testDefinition);
 }
 
-void Client::udpPing()
+void Client::udpPing(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
+                     const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload)
 {
-    UdpPingDefinition udpPingDef("measure-it.de", 3, 1000, 1000, 64, 33434, 33434, 74);
+    UdpPingDefinition udpPingDef(url, count, interval, receiveTimeout, ttl, destinationPort, sourcePort, payload);
 
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("d55b0091-2a83-4b9f-b9c3-f4690c485a13", "udpping", timing, udpPingDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
 }
 
-void Client::traceroute()
+void Client::traceroute(const QString &url,
+                        const quint32 &count,
+                        const quint32 &interval,
+                        const quint32 &receiveTimeout,
+                        const quint16 &destinationPort,
+                        const quint16 &sourcePort,
+                        const quint32 &payload)
 {
-    TracerouteDefinition tracerouteDef("measure-it.de", 3, 1000, 1000, 33434, 33434, 74);
+    TracerouteDefinition tracerouteDef(url, count, interval, receiveTimeout, destinationPort, sourcePort, payload);
 
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("0184435f-48ad-41fe-9079-9b3bce9f2b8a", "traceroute", timing, tracerouteDef.toVariant()));

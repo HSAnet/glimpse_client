@@ -11,7 +11,7 @@ Item {
 //    property bool spacing: true
 //    readonly property int spacingValue: units.gu(25)
 
-    y: spacing ? spacingValue : 0
+//    y: spacing ? spacingValue : 0
     width: parent.width
 //    height: parent.height-spacingValue
     height: parent.height

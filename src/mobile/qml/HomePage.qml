@@ -3,6 +3,24 @@ import mplane 1.0
 import "controls"
 
 Page{
+    Canvas {
+        x: units.gu(50)
+        width: units.gu(40)
+        height: units.gu(20)
+        anchors.bottom: notificationPanel.top
+
+        onPaint: {
+            var ctx = getContext("2d");
+
+            ctx.fillStyle = notificationPanel.color;
+            ctx.moveTo(0, height);
+            ctx.lineTo(width/2, 0);
+            ctx.lineTo(width, height);
+            ctx.closePath();
+            ctx.fill();
+        }
+    }
+
     Rectangle {
         id: notificationPanel
         color: "#becbcb"
@@ -10,7 +28,9 @@ Page{
         height: units.gu(100)
 
         anchors {
+            top: parent.top
             horizontalCenter: parent.horizontalCenter
+            topMargin: units.gu(30)
         }
 //        ListPage {
 

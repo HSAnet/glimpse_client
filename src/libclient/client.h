@@ -87,12 +87,25 @@ public slots:
     bool init();
     bool autoLogin();
     void btc();
-    void http();
+    void http(const QString &url = "http://ipv4.download.thinkbroadband.com:81/10MB.zip");
     void upnp();
-    void ping();
+    void ping(const QString& host = QString(), quint16 count = 4, quint32 timeout = 2000, quint32 interval = 200);
     void packetTrains();
-    void udpPing();
-    void traceroute();
+    void udpPing(const QString &url = "measure-it.de",
+                 const quint32 &count = 3,
+                 const quint32 &interval = 1000,
+                 const quint32 &receiveTimeout = 1000,
+                 const int &ttl = 54,
+                 const quint16 &destinationPort = 33434,
+                 const quint16 &sourcePort = 33434,
+                 const quint32 &payload = 74);
+    void traceroute(const QString &url = "measure-it.de",
+                    const quint32 &count = 3,
+                    const quint32 &interval = 1000,
+                    const quint32 &receiveTimeout = 1000,
+                    const quint16 &destinationPort = 33434,
+                    const quint16 &sourcePort = 33434,
+                    const quint32 &payload = 74);
     void measureIt();
 
 signals:
