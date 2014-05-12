@@ -26,13 +26,13 @@ private:
 
     ReverseDnslookupDefinitionPtr definition;
     QHostInfo lookupHost;
-    QList<QString> reverse_dnslookupOutput;
+    QString reverse_dnslookupOutput;
     Status currentStatus;
 
 private slots:
     void started();
     void finished();
-    void handleServers();
+    void handleServers(QHostInfo info);
 
 signals:
     void statusChanged(Status status);
