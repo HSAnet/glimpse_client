@@ -4,13 +4,14 @@ import QtQuick.Controls.Styles 1.0
 
 TextFieldStyle {
     //textColor: "white"
-    font.pixelSize: units.gu(28)
+    font.pixelSize: units.gu(35)
+    textColor: "#333333"
 
     background: Item {
         implicitHeight: units.gu(92)
         implicitWidth: units.gu(652)
         BorderImage {
-            source: "../images/input.png"
+            source: "../images/input_top.png"
 
             width: parent.width
             height: parent.height
@@ -25,7 +26,7 @@ TextFieldStyle {
         }
 
         BorderImage {
-            source: "../images/input_active.png"
+            source: "../images/input_top.png"
 
             width: parent.width
             height: parent.height

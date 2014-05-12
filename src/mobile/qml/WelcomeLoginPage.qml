@@ -62,13 +62,21 @@ Page {
            }
        }
 
-       Button {
+       Label {
+           id: divider
+           color: "#979696"
+           text: "or"
            anchors.horizontalCenter: parent.horizontalCenter
-           text: qsTr("Sign up")
+           anchors.top: loginPage.bottom
+           anchors.topMargin: 20
+       }
+
+       BigButton {
+           anchors.horizontalCenter: parent.horizontalCenter
+           anchors.top: divider.bottom
+           anchors.topMargin: 20
+           text: qsTr("Register")
            onClicked: nextPage("WelcomeRegistrationPage.qml")
-           anchors {
-               top: loginPage.bottom
-           }
        }
     }
 }

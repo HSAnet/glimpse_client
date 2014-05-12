@@ -1,6 +1,7 @@
 import QtQuick 2.2
 import QtQuick.Dialogs 1.1
 import mplane 1.0
+import "android"
 import "controls"
 
 Page {
@@ -92,7 +93,9 @@ Page {
 
             TextField {
                 id: mailField
-                text: root.loginMode ? client.settings.userId : ""
+                style: TextFieldStyleTop{}
+//                text: root.loginMode ? client.settings.userId : ""
+                placeholderText: "Email"
                 validator: RegExpValidator {
                     regExp: /.+@.+\..+/
                 }
@@ -105,7 +108,9 @@ Page {
 
             TextField {
                 id: passwordField
-                text: root.loginMode ? client.settings.password : ""
+                style: TextFieldStyleBottom{}
+//                text: root.loginMode ? client.settings.password : ""
+                placeholderText: "Password"
                 echoMode: TextInput.Password
                 onAccepted: {
                     if (root.loginMode)
@@ -127,29 +132,42 @@ Page {
 
             TextField {
                 id: passwordField2
+                style: TextFieldStyle{}
                 echoMode: TextInput.Password
                 onAccepted: root.login()
             }
         }
 
-        Label {
-            id: errorLabel
-            color: "blue"
-            font.pixelSize: units.gu(25)
-            x: text.length > 0 ? parent.width/2-errorLabel.width/2 : parent.width
-
-            Behavior on x {
-                NumberAnimation {
-                    easing.type: Easing.InBack
-                    duration: 100
-                }
-            }
+        Item {
+            height: units.gu(30)
+            width: parent.width
         }
 
-        Button {
+        Label {
+            id: errorLabel
+            color: "#979696"
+            font.pixelSize: units.gu(30)
+            x: text.length > 0 ? parent.width/2-errorLabel.width/2 : parent.width
+            opacity: text.length > 0 ? 1.0 : 0
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 350
+                }
+            }
+
+        }
+
+        Item {
+            height: units.gu(35)
+            width: parent.width
+        }
+
+        BigButton {
             text: root.buttonTitle
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: root.login()
         }
+
     }
 }
