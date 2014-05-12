@@ -33,7 +33,7 @@ Item {
             left: parent.left
             right: parent.right
         }
-        height: units.gu(40)
+        height: units.gu(70)
         z: 1
 
         ListView {
@@ -73,6 +73,7 @@ Item {
                 height: ListView.view.height
                 verticalAlignment: Text.AlignVCenter
                 text: model.title
+                color: "#333333"
                 font.pixelSize: units.gu(35)
 
                 MouseArea {

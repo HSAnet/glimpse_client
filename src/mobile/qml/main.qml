@@ -84,6 +84,7 @@ Rectangle {
 
                 var params = {
                     item: Qt.resolvedUrl("WelcomeLoginPage.qml")
+//                    item: Qt.resolvedUrl("MainPage.qml")
                 }
 
                 pageStack.insert(0, params);
@@ -197,6 +198,7 @@ Rectangle {
 
         Button {
             id: actionTitle
+            color: "white"
 
             anchors {
                 left: pageTitle.right
@@ -434,7 +436,7 @@ Rectangle {
             delegate: Text {
                 color: "white"
                 text: name
-                font.pixelSize: units.gu(20)
+                font.pixelSize: units.gu(30)
                 height: units.gu(35)
             }
             section.property: "size"

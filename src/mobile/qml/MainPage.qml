@@ -30,20 +30,20 @@ Page {
             }
         }
 
-        Item {
-            property string title: "History"
-        }
+//        Item {
+//            property string title: "History"
+//        }
 
-        Item {
-            property string title: "Campaigns"
-        }
+//        Item {
+//            property string title: "Campaigns"
+//        }
 
-        Item {
-            property string title: "Hauptmenü"
+//        Item {
+//            property string title: "Hauptmenü"
 
-            MenuPage {
-                anchors.fill: parent
-            }
-        }
+//            MenuPage {
+//                anchors.fill: parent
+//            }
+//        }
     }
 }
