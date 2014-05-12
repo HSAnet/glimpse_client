@@ -91,6 +91,12 @@ ListPage {
         }
 
         ListElement {
+            text: "ReverseDnslookup"
+            func: "reverse_dnslookup"
+            group: "Measurements"
+        }
+
+        ListElement {
             text: "Packet Trains"
             func: "packetTrains"
             group: "Measurements"
