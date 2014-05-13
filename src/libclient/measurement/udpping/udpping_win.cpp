@@ -50,10 +50,10 @@ namespace
         return true;
     }
 
-    static bool handleIpv4Response(const u_char *data,
-                                   const pcap_pkthdr *header,
-                                   const sockaddr_any &destination,
-                                   PingProbe *newProbe)
+    bool handleIpv4Response(const u_char *data,
+                            const pcap_pkthdr *header,
+                            const sockaddr_any &destination,
+                            PingProbe *newProbe)
     {
         char sourceAddress[INET_ADDRSTRLEN] = "";
         char destinationAddress[INET_ADDRSTRLEN] = "";
@@ -147,10 +147,10 @@ namespace
         return true;
     }
 
-    static bool handleIpv6Response(const u_char *data,
-                                   const pcap_pkthdr *header,
-                                   const sockaddr_any &destination,
-                                   PingProbe *newProbe)
+    bool handleIpv6Response(const u_char *data,
+                            const pcap_pkthdr *header,
+                            const sockaddr_any &destination,
+                            PingProbe *newProbe)
     {
         char sourceAddress[INET6_ADDRSTRLEN] = "";
         char destinationAddress[INET6_ADDRSTRLEN] = "";
@@ -239,7 +239,7 @@ namespace
         return true;
     }
 
-    static PingProbe receiveLoop(pcap_t *capture, PingProbe probe, sockaddr_any destination)
+    PingProbe receiveLoop(pcap_t *capture, PingProbe probe, sockaddr_any destination)
     {
         int res;
         const u_char *data;
