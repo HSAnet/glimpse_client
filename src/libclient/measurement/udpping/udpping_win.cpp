@@ -64,7 +64,7 @@ namespace
 
         if (data == NULL || header == NULL || newProbe == NULL)
         {
-            goto exit;
+            return true;
         }
 
         ipProto = (quint8 *)(data + 23);
@@ -77,16 +77,14 @@ namespace
         // destination of request packet
         RtlIpv4AddressToStringA(&destination.sin.sin_addr, destinationAddress);
 
-        if (*ipProto == 17)
+        switch (*ipProto)
         {
+        case 17:
             // UDP request
             newProbe->sendTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
-
             // tell the caller to continue capturing packets
             return false;
-        }
-        else if (*ipProto == 1)
-        {
+        case 1:
             // ICMP response
 
             getAddress(sourceAddress, &newProbe->source);
@@ -110,8 +108,10 @@ namespace
                     newProbe->response = *icmpType == 3
                             ? udpping::DESTINATION_UNREACHABLE
                             : udpping::TTL_EXCEEDED;
-                    goto exit;
+                    return true;
                 }
+
+                return false;
             }
             else
             {
@@ -122,26 +122,18 @@ namespace
                 newProbe->icmpType = *icmpType;
                 newProbe->icmpCode = *icmpCode;
                 newProbe->response = udpping::UNHANDLED_ICMP;
-                goto exit;
+                return true;
             }
-        }
-        else
-        {
+        default:
             /*
              * This else-branch exists because of paranoia only. The WinPCAP
              * filter is set to capture certain ICMP and UDP packets only and
              * therefore should never end up here.
              */
-            goto error;
+            newProbe->sendTime = -1;
+            newProbe->recvTime = -1;
+            return true;
         }
-
-    error:
-        // error indication
-        newProbe->sendTime = -1;
-        newProbe->recvTime = -1;
-
-    exit:
-        return true;
     }
 
     bool handleIpv6Response(const u_char *data,
@@ -158,7 +150,7 @@ namespace
 
         if (data == NULL || header == NULL || newProbe == NULL)
         {
-            goto exit;
+            return true;
         }
 
         ipProto = (quint8 *)(data + 20);
@@ -170,15 +162,13 @@ namespace
         RtlIpv6AddressToStringA(&destination.sin6.sin6_addr,
                                 destinationAddress);
 
-        if (*ipProto == 17)
+        switch (*ipProto)
         {
+        case 17:
             // UDP request
             newProbe->sendTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
-
             return false;
-        }
-        else if (*ipProto == 58)
-        {
+        case 58:
             // ICMPv6 response
 
             getAddress(sourceAddress, &newProbe->source);
@@ -198,8 +188,10 @@ namespace
                     newProbe->response = *icmpType == 1
                             ? udpping::DESTINATION_UNREACHABLE
                             : udpping::TTL_EXCEEDED;
-                    goto exit;
+                    return true;
                 }
+
+                return false;
             }
             else
             {
@@ -210,27 +202,18 @@ namespace
                 newProbe->icmpType = *icmpType;
                 newProbe->icmpCode = *icmpCode;
                 newProbe->response = udpping::UNHANDLED_ICMP;
-                goto exit;
+                return true;
             }
-        }
-        else
-        {
+        default:
             /*
              * This else-branch exists because of paranoia only. The WinPCAP
              * filter is set to capture certain ICMP and UDP packets only and
              * therefore should never end up here.
              */
-            goto error;
+            newProbe->sendTime = -1;
+            newProbe->recvTime = -1;
+            return true;
         }
-
-    error:
-        // error indication
-        newProbe->sendTime = -1;
-        newProbe->recvTime = -1;
-
-    exit:
-        // tell the caller to stop capturing packets
-        return true;
     }
 
     PingProbe receiveLoop(pcap_t *capture, PingProbe probe, sockaddr_any destination)
@@ -251,48 +234,39 @@ namespace
             {
             case 0:
                 // timed out
-                newProbe.sendTime = 0;
-                newProbe.recvTime = 0;
-                goto exit;
+                return newProbe;
             case -1:
                 // error indication
-                goto error;
+                newProbe.sendTime = -1;
+                newProbe.recvTime = -1;
+                return newProbe;
             default:
                 // packets received
                 // TODO: ensure the packets are really ours by checking them
 
                 ipVersion = (quint16 *) (data + 12);
 
-                if (*ipVersion == 0x8)
+                switch (*ipVersion)
                 {
+                case 0x8:
                     if (handleIpv4Response(data, header, destination,
                                            &newProbe))
                     {
-                        goto exit;
+                        return newProbe;
                     }
-                }
-                else if (*ipVersion = 0xdd86)
-                {
+                    break;
+                case 0xdd86:
                     if (handleIpv6Response(data, header, destination, &newProbe))
                     {
-                        goto exit;
+                        return newProbe;
                     }
-                }
-                else
-                {
+                    break;
+                default:
                     // unreachable
-                    goto exit;
+                    return newProbe;
                 }
             }
         }
-
-    error:
-        // error indication
-        newProbe.sendTime = -1;
-        newProbe.recvTime = -1;
-
-    exit:
-        return newProbe;
     }
 
     void randomizePayload(char *payload, const quint32 size)
