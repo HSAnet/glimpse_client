@@ -165,6 +165,12 @@ namespace
         {
             payload[i] = chars[qrand() % strlen(chars)];
         }
+
+        if (size > 15)
+        {
+            // ignore terminating null character
+            strncpy(&payload[size - 15], " measure-it.net", 15);
+        }
     }
 }
 
