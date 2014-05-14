@@ -74,10 +74,8 @@ namespace
 
         // source address of the response packet
         RtlIpv4AddressToStringA(&((inAddress *)source)->v4, sourceAddress);
-        sourceAddress[INET_ADDRSTRLEN - 1] = '\0';
         // destination of request packet
         RtlIpv4AddressToStringA(&destination.sin.sin_addr, destinationAddress);
-        destinationAddress[INET_ADDRSTRLEN - 1] = '\0';
 
         if (*ipProto == 17)
         {
@@ -103,7 +101,6 @@ namespace
                 source = (ipAddress *) (data + 58);
                 RtlIpv4AddressToStringA(&((inAddress *)source)->v4,
                                         sourceAddress);
-                sourceAddress[INET_ADDRSTRLEN - 1] = '\0';
 
                 if (strncmp(sourceAddress, destinationAddress,
                             INET_ADDRSTRLEN) == 0)
@@ -170,10 +167,8 @@ namespace
         icmpCode = (quint8 *)(data + 55);
 
         RtlIpv6AddressToStringA(&((inAddress *)source)->v6, sourceAddress);
-        sourceAddress[INET6_ADDRSTRLEN - 1] = '\0';
         RtlIpv6AddressToStringA(&destination.sin6.sin6_addr,
                                 destinationAddress);
-        destinationAddress[INET6_ADDRSTRLEN - 1] = '\0';
 
         if (*ipProto == 17)
         {
@@ -194,7 +189,6 @@ namespace
                 source = (ipAddress *) (data + 86);
                 RtlIpv6AddressToStringA(&((inAddress *)source)->v6,
                                         sourceAddress);
-                sourceAddress[INET6_ADDRSTRLEN - 1] = '\0';
 
                 if (strncmp(sourceAddress, destinationAddress,
                             INET6_ADDRSTRLEN) == 0)
@@ -370,12 +364,10 @@ bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitio
     if (m_destAddress.sa.sa_family == AF_INET)
     {
         RtlIpv4AddressToStringA(&m_destAddress.sin.sin_addr, address);
-        address[INET_ADDRSTRLEN - 1] = '\0';
     }
     else if (m_destAddress.sa.sa_family == AF_INET6)
     {
         RtlIpv6AddressToStringA(&m_destAddress.sin6.sin6_addr, address);
-        address[INET6_ADDRSTRLEN - 1] = '\0';
     }
 
     if (pcap_createsrcstr(source, PCAP_SRC_IFLOCAL, address, NULL, NULL, errbuf) != 0)
