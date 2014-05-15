@@ -5,6 +5,7 @@
 #include <QVariantMap>
 
 #include "timing/timing.h"
+#include "channel.h"
 
 // TODO: Remove QObject base if we don't use it anymore in DeviceRegistration.qml
 
@@ -30,11 +31,11 @@ public:
     bool fillFromVariant(const QVariantMap &variant);
     void finished();
 
-    QString sessionId() const;
+    QString apiKey() const;
     bool registeredDevice() const;
 
 protected:
-    QString m_sessionId;
+    QString m_apiKey;
     bool m_registeredDevice;
 };
 
@@ -61,26 +62,25 @@ public:
     QVariant toVariant() const;
     void finished();
 
-    void setControllerAddress(const QString& controllerAddress);
-    QString controllerAddress() const;
-    TimingPtr fetchTaskSchedule() const;
-
+    QString supervisorAddress() const;
+    TimingPtr supervisorTiming() const;
     QString keepaliveAddress() const;
-    TimingPtr keepaliveSchedule() const;
-    TimingPtr updateConfigSchedule() const;
+    TimingPtr keepaliveTiming() const;
+    void setConfigAddress(const QString address);
+    QString configAddress() const;
+    TimingPtr configTiming() const;
+    QString reportAddress() const;
+    TimingPtr reportTiming() const;
 
-    TimingPtr reportSchedule() const;
 
 signals:
     void responseChanged();
 
 protected:
-    QString m_controllerAddress;
-    TimingPtr m_fetchTaskSchedule;
-    QString m_keepaliveAddress;
-    TimingPtr m_keepaliveSchedule;
-    TimingPtr m_updateConfigSchedule;
-    TimingPtr m_reportSchedule;
+    ChannelPtr m_supervisor_channel;
+    ChannelPtr m_keepalive_channel;
+    ChannelPtr m_config_channel;
+    ChannelPtr m_report_channel;
 };
 
 #endif // RESPONSE_H

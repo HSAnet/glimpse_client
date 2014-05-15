@@ -181,7 +181,7 @@ void NetworkManager::Private::updateSocket()
 
 void NetworkManager::Private::updateTimer()
 {
-    TimingPtr timing = settings->config()->keepaliveSchedule();
+    TimingPtr timing = settings->config()->keepaliveTiming();
     if (!timing)
     {
         return;
@@ -190,7 +190,7 @@ void NetworkManager::Private::updateTimer()
     QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
     Q_ASSERT(periodicTiming);
 
-    int interval = periodicTiming->period();
+    int interval = periodicTiming->interval();
     if (interval < 1000)
     {
         LOG_INFO("Keepalive interval < 1 sec will not be accepted.");
@@ -325,7 +325,7 @@ void NetworkManager::Private::timeout()
         return;
     }
 
-    QString sessionId = settings->sessionId();
+    QString sessionId = settings->apiKey();
     if (sessionId.isEmpty())
     {
         LOG_INFO("Empty session id");

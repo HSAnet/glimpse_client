@@ -7,6 +7,7 @@ class CLIENT_API LoginRequest : public Request
 {
     Q_OBJECT
     Q_CLASSINFO("path", "/login")
+    Q_CLASSINFO("method", "post")
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
     Q_PROPERTY(QString userId READ userId WRITE setUserId NOTIFY userIdChanged)
 

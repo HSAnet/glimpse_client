@@ -115,10 +115,10 @@ void UserRegisterRequest::setXpLevel(int xpLevel)
 QVariant UserRegisterRequest::toVariant() const
 {
     QVariantMap data;
-    data.insert("name_last", nameLast());
+    data.insert("last_name", nameLast());
     data.insert("home_country", QLocale::system().bcp47Name());
-    data.insert("user_id", userId());
-    data.insert("name_first", nameFirst());
+    data.insert("username", userId());
+    data.insert("first_name", nameFirst());
     data.insert("password", password());
     data.insert("xp_level", xpLevel());
     return data;

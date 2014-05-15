@@ -19,7 +19,7 @@ class CLIENT_API Settings : public QObject
     Q_PROPERTY(QString deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
     Q_PROPERTY(QString userId READ userId WRITE setUserId NOTIFY userIdChanged)
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
-    Q_PROPERTY(QString sessionId READ sessionId WRITE setSessionId NOTIFY sessionIdChanged)
+    Q_PROPERTY(QString apiKey READ apiKey WRITE setApiKey NOTIFY apiKeyChanged)
     Q_PROPERTY(GetConfigResponse* config READ config CONSTANT)
 
 public:
@@ -45,8 +45,8 @@ public:
     void setPassword(const QString& password);
     QString password() const;
 
-    void setSessionId(const QString& sessionId);
-    QString sessionId() const;
+    void setApiKey(const QString& apiKey);
+    QString apiKey() const;
 
     bool isPassive() const;
     void setPassive(bool passive);
@@ -60,7 +60,7 @@ signals:
     void deviceIdChanged(const QString& deviceId);
     void userIdChanged(const QString& userId);
     void passwordChanged(const QString& password);
-    void sessionIdChanged(const QString& sessionId);
+    void apiKeyChanged(const QString& apiKey);
     void passiveChanged(bool passive);
 
 protected:

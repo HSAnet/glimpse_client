@@ -170,7 +170,8 @@ SOURCES +=  \
     measurement/dnslookup/dnslookup.cpp \
     measurement/reverse_dnslookup/reverseDnslookup.cpp \
     measurement/reverse_dnslookup/reverseDnslookup_definition.cpp \
-    measurement/reverse_dnslookup/reverseDnslookup_plugin.cpp
+    measurement/reverse_dnslookup/reverseDnslookup_plugin.cpp \
+    channel.cpp
 
 HEADERS += \
     export.h \
@@ -255,7 +256,8 @@ HEADERS += \
     measurement/dnslookup/dnslookup.h \
     measurement/reverse_dnslookup/reverseDnslookup.h \
     measurement/reverse_dnslookup/reverseDnslookup_definition.h \
-    measurement/reverse_dnslookup/reverseDnslookup_plugin.h
+    measurement/reverse_dnslookup/reverseDnslookup_plugin.h \
+    channel.h
 
 OTHER_FILES += \
     libclient.pri

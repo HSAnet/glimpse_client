@@ -3,6 +3,7 @@
 #include "settings.h"
 
 #include "timing/timingfactory.h"
+#include "channel.h"
 
 Response::Response(QObject *parent)
 : QObject(parent)
@@ -25,10 +26,10 @@ LoginResponse::LoginResponse(QObject *parent)
 
 bool LoginResponse::fillFromVariant(const QVariantMap &variant)
 {
-    m_sessionId = variant.value("session_id").toString();
-    m_registeredDevice = variant.value("registered_device", true).toBool();
+    m_apiKey = variant.value("api_key").toString();
+    m_registeredDevice = variant.value("registered_device").toBool();
 
-    return !m_sessionId.isEmpty();
+    return !m_apiKey.isEmpty();
 }
 
 void LoginResponse::finished()
@@ -37,15 +38,15 @@ void LoginResponse::finished()
 
     // Update the settings
     Settings* settings = client->settings();
-    settings->setSessionId(m_sessionId);
+    settings->setApiKey(m_apiKey);
 
     // Set registered status (after settings!)
     client->setStatus(Client::Registered);
 }
 
-QString LoginResponse::sessionId() const
+QString LoginResponse::apiKey() const
 {
-    return m_sessionId;
+    return m_apiKey;
 }
 
 bool LoginResponse::registeredDevice() const
@@ -69,34 +70,29 @@ bool RegisterDeviceResponse::fillFromVariant(const QVariantMap &variant)
 GetConfigResponse::GetConfigResponse(QObject *parent)
 : Response(parent)
 {
+    m_supervisor_channel = ChannelPtr(new Channel());
+    m_keepalive_channel = ChannelPtr(new Channel());
+    m_config_channel = ChannelPtr(new Channel());
+    m_report_channel = ChannelPtr(new Channel());
 }
 
 bool GetConfigResponse::fillFromVariant(const QVariantMap &variant)
 {
-    m_controllerAddress = variant.value("controller_address").toString();
-    m_fetchTaskSchedule = TimingFactory::timingFromVariant(variant.value("fetch_task_schedule"));
-    m_keepaliveAddress = variant.value("keepalive_address").toString();
-    m_keepaliveSchedule = TimingFactory::timingFromVariant(variant.value("keepalive_schedule"));
-    m_updateConfigSchedule = TimingFactory::timingFromVariant(variant.value("update_config_schedule"));
-    m_reportSchedule = TimingFactory::timingFromVariant(variant.value("report_schedule"));
+    m_supervisor_channel = Channel::fromVariant(variant.value("supervisor_channel"));
+    m_keepalive_channel = Channel::fromVariant(variant.value("keepalive_channel"));
+    m_config_channel = Channel::fromVariant(variant.value("config_channel"));
+    m_report_channel = Channel::fromVariant(variant.value("report_channel"));
 
     return true;
 }
 
 QVariant GetConfigResponse::toVariant() const
 {
-    if (m_fetchTaskSchedule.isNull())
-    {
-        return QVariant();
-    }
-
     QVariantMap map;
-    map.insert("controller_address", m_controllerAddress);
-    map.insert("fetch_task_schedule", m_fetchTaskSchedule->toVariant());
-    map.insert("keepalive_address", m_keepaliveAddress);
-    map.insert("keepalive_schedule", m_keepaliveSchedule->toVariant());
-    map.insert("update_config_schedule", m_updateConfigSchedule->toVariant());
-    map.insert("report_schedule", m_reportSchedule->toVariant());
+    map.insert("supervisor_channel", m_supervisor_channel->toVariant());
+    map.insert("keepalive_channel", m_keepalive_channel->toVariant());
+    map.insert("config_channel", m_config_channel->toVariant());
+    map.insert("report_channel", m_report_channel->toVariant());
     return map;
 }
 
@@ -110,37 +106,47 @@ void GetConfigResponse::finished()
     emit responseChanged();
 }
 
-void GetConfigResponse::setControllerAddress(const QString &controllerAddress)
+QString GetConfigResponse::supervisorAddress() const
 {
-    m_controllerAddress = controllerAddress;
+    return m_supervisor_channel->target();
 }
 
-QString GetConfigResponse::controllerAddress() const
+TimingPtr GetConfigResponse::supervisorTiming() const
 {
-    return m_controllerAddress;
-}
-
-TimingPtr GetConfigResponse::fetchTaskSchedule() const
-{
-    return m_fetchTaskSchedule;
+    return m_supervisor_channel->timing();
 }
 
 QString GetConfigResponse::keepaliveAddress() const
 {
-    return m_keepaliveAddress;
+    return m_keepalive_channel->target();
 }
 
-TimingPtr GetConfigResponse::keepaliveSchedule() const
+TimingPtr GetConfigResponse::keepaliveTiming() const
 {
-    return m_keepaliveSchedule;
+    return m_keepalive_channel->timing();
 }
 
-TimingPtr GetConfigResponse::updateConfigSchedule() const
+void GetConfigResponse::setConfigAddress(const QString address)
 {
-    return m_updateConfigSchedule;
+    m_config_channel->setTarget(address);
 }
 
-TimingPtr GetConfigResponse::reportSchedule() const
+QString GetConfigResponse::configAddress() const
 {
-    return m_reportSchedule;
+    return m_config_channel->target();
+}
+
+TimingPtr GetConfigResponse::configTiming() const
+{
+    return m_config_channel->timing();
+}
+
+QString GetConfigResponse::reportAddress() const
+{
+    return m_report_channel->target();
+}
+
+TimingPtr GetConfigResponse::reportTiming() const
+{
+    return m_report_channel->timing();
 }

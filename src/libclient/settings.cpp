@@ -67,7 +67,7 @@ Settings::StorageType Settings::init()
     // Create new settings
     if ( newSettings )
     {
-        d->config.setControllerAddress("supervisor.measure-it.de:5105");
+        d->config.setConfigAddress("localhost:8001");
         LOG_INFO("Created new settings for this device");
 
         return NewSettings;
@@ -77,10 +77,10 @@ Settings::StorageType Settings::init()
         d->config.fillFromVariant( qvariant_cast<QVariantMap>(d->settings.value("config")) );
 
         // Always set the controller address if we have none
-        if (d->config.controllerAddress().isEmpty())
+        if (d->config.configAddress().isEmpty())
         {
             LOG_WARNING("Controller address lost, setting back default one");
-            d->config.setControllerAddress("supervisor.measure-it.de:5105");
+            d->config.setConfigAddress("localhost:8001");
         }
 
         LOG_INFO("Loaded existing settings for this device");
@@ -135,18 +135,18 @@ QString Settings::password() const
     return d->settings.value("password").toString();
 }
 
-void Settings::setSessionId(const QString &sessionId)
+void Settings::setApiKey(const QString &apiKey)
 {
-    if ( this->sessionId() != sessionId )
+    if ( this->apiKey() != apiKey )
     {
-        d->settings.setValue("session-id", sessionId);
-        emit sessionIdChanged(sessionId);
+        d->settings.setValue("api-key", apiKey);
+        emit apiKeyChanged(apiKey);
     }
 }
 
-QString Settings::sessionId() const
+QString Settings::apiKey() const
 {
-    return d->settings.value("session-id").toString();
+    return d->settings.value("api-key", "0").toString();
 }
 
 bool Settings::isPassive() const
