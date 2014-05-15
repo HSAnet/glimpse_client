@@ -181,7 +181,11 @@ int main(int argc, char* argv[])
     view.addImportPath(QStringLiteral("imports/qml"));
 #endif
 
+#ifdef Q_OS_ANDROID
+    loadFonts(QString("assets:/") + view->adjustPath(QStringLiteral("qml/fonts")));
+#else
     loadFonts(view->adjustPath(QStringLiteral("qml/fonts")));
+#endif
 
     view->setMainQmlFile(QStringLiteral("qml/main.qml"));
     view->showExpanded();
