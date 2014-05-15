@@ -7,6 +7,7 @@
 #include "../network/requests/loginrequest.h"
 #include "../network/requests/userregisterrequest.h"
 #include "../response.h"
+#include "../client.h"
 
 #include <QPointer>
 
@@ -50,6 +51,7 @@ public:
     void setRegisterdDevice(bool registeredDevice);
 
 public slots:
+    void updateController();
     void onFinished();
     void onError();
 };
@@ -72,6 +74,18 @@ void LoginController::Private::setRegisterdDevice(bool registeredDevice)
     }
 }
 
+void LoginController::Private::updateController()
+{
+    // Set the new url, we use the config address here at the moment
+    QString newUrl = QString("http://%1").arg(Client::instance()->settings()->config()->supervisorAddress());
+
+    if(requester.url() != newUrl)
+    {
+        LOG_INFO(QString("Login url set to %1").arg(newUrl));
+        requester.setUrl(newUrl);
+    }
+}
+
 void LoginController::Private::onFinished()
 {
     bool isLogin = true;
@@ -88,7 +102,7 @@ void LoginController::Private::onFinished()
         LOG_DEBUG("Wrote username and password to settings");
     }
 
-    settings->setSessionId(response.sessionId());
+    settings->setApiKey(response.apiKey());
 
     setRegisterdDevice(response.registeredDevice());
     setLoggedIn(true);
@@ -175,6 +189,9 @@ bool LoginController::init(NetworkManager *networkManager, Settings *settings)
 {
     d->networkManager = networkManager;
     d->settings = settings;
+
+    connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(updateController()));
+
     return true;
 }
 

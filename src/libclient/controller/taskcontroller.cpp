@@ -8,6 +8,7 @@
 #include "../task/taskvalidator.h"
 #include "../log/logger.h"
 #include "../timing/periodictiming.h"
+#include "../client.h"
 
 #include <QPointer>
 #include <QTimer>
@@ -100,7 +101,16 @@ public slots:
 
 void TaskController::Private::updateTimer()
 {
-    TimingPtr timing = settings->config()->fetchTaskSchedule();
+    // Set the new url
+    QString newUrl = QString("https://%1").arg(Client::instance()->settings()->config()->supervisorAddress());
+
+    if(requester.url() != newUrl)
+    {
+        LOG_INFO(QString("Task url set to %1").arg(newUrl));
+        requester.setUrl(newUrl);
+    }
+
+    TimingPtr timing = settings->config()->supervisorTiming();
     if (timing.isNull())
     {
         timer.stop();
@@ -110,11 +120,11 @@ void TaskController::Private::updateTimer()
     QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
     Q_ASSERT(periodicTiming);
 
-    int period = periodicTiming->period();
+    int period = periodicTiming->interval();
 
     if (timer.interval() != period)
     {
-        LOG_INFO(QString("Fetch Tasks schedule set to %1 sec.").arg(period/1000));
+        LOG_INFO(QString("Tasks schedule set to %1 sec.").arg(period/1000));
         timer.setInterval(period);
     }
 

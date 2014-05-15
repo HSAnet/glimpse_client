@@ -8,6 +8,7 @@
 #include "../network/requests/request.h"
 #include "../response.h"
 #include "../timing/periodictiming.h"
+#include "../client.h"
 
 #include <QPointer>
 #include <QStringList>
@@ -120,7 +121,16 @@ public slots:
 
 void ReportController::Private::updateTimer()
 {
-    TimingPtr timing = settings->config()->reportSchedule();
+    // Set the new url
+    QString newUrl = QString("http://%1").arg(Client::instance()->settings()->config()->reportAddress());
+
+    if(requester.url() != newUrl)
+    {
+        LOG_INFO(QString("Report url set to %1").arg(newUrl));
+        requester.setUrl(newUrl);
+    }
+
+    TimingPtr timing = settings->config()->reportTiming();
     if (timing.isNull())
     {
         timer.stop();
@@ -130,7 +140,7 @@ void ReportController::Private::updateTimer()
     QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
     Q_ASSERT(periodicTiming);
 
-    int period = periodicTiming->period();
+    int period = periodicTiming->interval();
 
     if (timer.interval() != period)
     {
