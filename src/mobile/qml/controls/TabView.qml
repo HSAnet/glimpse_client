@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQml.Models 2.1
+import QtGraphicalEffects 1.0
 import mplane 1.0
 
 Item {

@@ -6,7 +6,7 @@ import "../"
 Base {
     id: root
 
-    title: qsTr("Ping")
+    title: qsTr("ping")
 
     measurement: "ping"
     properties: [

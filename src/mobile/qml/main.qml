@@ -279,7 +279,7 @@ Rectangle {
     Rectangle {
         id: settingsPanel
         parent: app
-        width: app.width - units.gu(100)
+        width: app.width
         color: "#333333"
 
         anchors {
@@ -291,14 +291,15 @@ Rectangle {
         Image{
             id: avatar
             source: "images/avatar.png"
-            height: units.gu(80); width: units.gu(80)
+            height: units.gu(150);
+            width: units.gu(150)
 
             anchors {
                 left: parent.left
                 top: parent.top
 
-                topMargin: units.gu(20)
-                leftMargin: units.gu(20)
+                topMargin: units.gu(50)
+                leftMargin: units.gu(30)
             }
         }
 
@@ -306,7 +307,7 @@ Rectangle {
             anchors.fill: avatar
             color: "transparent"
             border.color: "white"
-            border.width: units.gu(4)
+            border.width: units.gu(8)
         }
 
         Rectangle {
@@ -315,34 +316,42 @@ Rectangle {
                 left: avatar.right
                 top: avatar.top
 
-                leftMargin: units.gu(10)
+                leftMargin: units.gu(25)
             }
 
             Label {
                 id: greeting
                 text: qsTr("Hi, User.")
-                font.pixelSize: units.gu(30)
+                font.pixelSize: units.gu(35)
                 color: "white"
+
+                anchors {
+                    top: parent.top
+                    topMargin: units.gu(20)
+                }
             }
 
             Label {
                 id: testcounter
-                text: qsTr("Testcounter: 54")
+                text: qsTr("Testcounter:    54")
+                font.pixelSize: units.gu(27)
                 color: "white"
 
                 anchors {
                     top: greeting.bottom
-                    topMargin: units.gu(5)
+                    topMargin: units.gu(15)
                 }
             }
 
             Label {
                 id: last_login
-                text: qsTr("Last login: 12.2.2014")
+                text: qsTr("Last login:       12.2.2014")
+                font.pixelSize: units.gu(27)
                 color: "white"
 
                 anchors {
                     top: testcounter.bottom
+                    topMargin: units.gu(2)
                 }
             }
         }
@@ -400,16 +409,35 @@ Rectangle {
                 width: parent.width
                 height: childrenRect.height
 
-                Text {
-                    id: section_element
-                    text: section
-                    font.pixelSize: units.gu(18)
+                Rectangle {
+                    id: borderTop
+                    anchors {
+                        top: parent.top
+                    }
+
+                    width: parent.width
+                    height: 1
                     color: "#7c7c7c"
                 }
 
+                Text {
+                    id: section_element
+                    text: section
+                    font.pixelSize: units.gu(27)
+                    color: "#7c7c7c"
+                    anchors {
+                        top: borderTop.bottom
+                        topMargin: units.gu(5)
+                        left: parent.left
+                        leftMargin: units.gu(30)
+                    }
+                }
+
                 Rectangle {
+                    id: borderBottom
                     anchors {
                         top: section_element.bottom
+                        topMargin: units.gu(5)
                     }
 
                     width: parent.width
@@ -427,7 +455,7 @@ Rectangle {
                 top: avatar.bottom
                 bottom: parent.bottom
 
-                topMargin: units.gu(20)
+                topMargin: units.gu(50)
             }
             width: parent.width
             clip: true
@@ -436,8 +464,11 @@ Rectangle {
             delegate: Text {
                 color: "white"
                 text: name
-                font.pixelSize: units.gu(30)
-                height: units.gu(35)
+                font.pixelSize: units.gu(35)
+                anchors {
+                    left: parent.left
+                    leftMargin: units.gu(30)
+                }
             }
             section.property: "size"
             section.criteria: ViewSection.FullString

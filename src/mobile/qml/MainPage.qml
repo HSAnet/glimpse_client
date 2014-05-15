@@ -34,16 +34,28 @@ Page {
 //            property string title: "History"
 //        }
 
+        Item {
+            property string title: "Scheduler"
+
+            Scheduler {}
+        }
+
+        Item {
+            property string title: "Reports"
+
+            Reports {}
+        }
+
 //        Item {
 //            property string title: "Campaigns"
 //        }
 
-//        Item {
-//            property string title: "Hauptmenü"
+        Item {
+            property string title: "Hauptmenü"
 
-//            MenuPage {
-//                anchors.fill: parent
-//            }
-//        }
+            MenuPage {
+                anchors.fill: parent
+            }
+        }
     }
 }
