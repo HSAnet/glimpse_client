@@ -108,6 +108,7 @@ bool ConfigController::init(NetworkManager *networkManager, Settings *settings)
     connect(d->response, SIGNAL(responseChanged()), d, SLOT(updateTimer()));
 
     d->updateTimer();
+    update();
 
     return true;
 }
