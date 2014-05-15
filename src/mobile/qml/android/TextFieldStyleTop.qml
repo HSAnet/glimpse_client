@@ -16,8 +16,8 @@ TextFieldStyle {
             width: parent.width
             height: parent.height
 
-            border.left: 8
-            border.right: 8
+            border.left: units.gu(8)
+            border.right: units.gu(8)
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
@@ -31,8 +31,8 @@ TextFieldStyle {
             width: parent.width
             height: parent.height
 
-            border.left: 8
-            border.right: 8
+            border.left: units.gu(8)
+            border.right: units.gu(8)
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right

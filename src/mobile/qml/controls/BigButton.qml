@@ -3,8 +3,8 @@ import QtQuick 2.0
 Rectangle {
     id: bigButton
     color: "#f7b35f"
-    width: 300
-    height: 45
+    width: units.gu(550)
+    height: units.gu(80)
 
     signal clicked
     property alias text: buttonLabel.text

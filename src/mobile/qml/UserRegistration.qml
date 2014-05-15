@@ -53,7 +53,7 @@ Login {
            anchors {
                top: flap.bottom
                horizontalCenter: parent.horizontalCenter
-               topMargin: 20
+               topMargin: units.gu(20)
            }
        }
 
@@ -64,7 +64,7 @@ Login {
 
            anchors {
                top: title.bottom
-               topMargin: 50
+               topMargin: units.gu(50)
            }
        }
 

@@ -47,7 +47,7 @@ Page {
            anchors {
                top: flap.bottom
                horizontalCenter: parent.horizontalCenter
-               topMargin: 20
+               topMargin: units.gu(20)
            }
        }
 
@@ -58,7 +58,7 @@ Page {
 
            anchors {
                top: title.bottom
-               topMargin: 50
+               topMargin: units.gu(50)
            }
        }
 
@@ -68,13 +68,13 @@ Page {
            text: "or"
            anchors.horizontalCenter: parent.horizontalCenter
            anchors.top: loginPage.bottom
-           anchors.topMargin: 20
+           anchors.topMargin: units.gu(20)
        }
 
        BigButton {
            anchors.horizontalCenter: parent.horizontalCenter
            anchors.top: divider.bottom
-           anchors.topMargin: 20
+           anchors.topMargin: units.gu(20)
            text: qsTr("Register")
            onClicked: nextPage("WelcomeRegistrationPage.qml")
        }
