@@ -7,6 +7,7 @@
 #include <QPointer>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QUrlQuery>
 #include <QJsonDocument>
 #include <QMetaClassInfo>
 #include <QDebug>
@@ -82,7 +83,8 @@ void WebRequester::Private::requestFinished()
     if (reply->error() == QNetworkReply::NoError)
     {
         QJsonParseError error;
-        QJsonDocument document = QJsonDocument::fromJson(reply->readAll(), &error);
+        QByteArray tmp = reply->readAll();
+        QJsonDocument document = QJsonDocument::fromJson(tmp, &error);
 
         if ( error.error == QJsonParseError::NoError )
         {
@@ -114,12 +116,15 @@ void WebRequester::Private::requestFinished()
             else
             {
                 errorString = replyError;
+                LOG_WARNING(QString("Error from server: %1").arg(errorString));
                 setStatus(WebRequester::Error);
             }
         }
         else
         {
             errorString = error.errorString();
+            LOG_WARNING(QString("JsonParseError: %1").arg(errorString));
+            LOG_WARNING(QString(tmp));
             setStatus(WebRequester::Error);
         }
     }
@@ -133,7 +138,7 @@ void WebRequester::Private::requestFinished()
         {
             errorString = reply->errorString();
         }
-
+        LOG_WARNING(QString("Network error: %1").arg(errorString));
         setStatus(WebRequester::Error);
     }
 
@@ -246,14 +251,12 @@ QJsonObject WebRequester::jsonData() const
 
 void WebRequester::start()
 {
-    /*
     if ( !d->url.isValid() ) {
         d->errorString = tr("Invalid url: %1").arg(d->url.toString());
         d->setStatus(Error);
         LOG_ERROR(QString("Invalid url: %1").arg(d->url.toString()));
         return;
     }
-    */
 
     if ( !d->request )
     {
@@ -272,24 +275,69 @@ void WebRequester::start()
         return;
     }
 
+    int methodIdx = d->request->metaObject()->indexOfClassInfo("method");
+    if ( methodIdx == -1 )
+    {
+        d->errorString = tr("No method for request specified");
+        d->setStatus(Error);
+        LOG_ERROR("No method for request specified");
+        return;
+    }
+
     d->setStatus(Running);
 
     // Fill remaining request data
     d->request->setDeviceId(Client::instance()->settings()->deviceId());
-    d->request->setSessionId(Client::instance()->settings()->sessionId());
+    d->request->setSessionId(Client::instance()->settings()->apiKey());
 
-    QMetaClassInfo classInfo = d->request->metaObject()->classInfo(pathIdx);
+    QMetaClassInfo pathClassInfo = d->request->metaObject()->classInfo(pathIdx);
 
-    QByteArray data = QJsonDocument::fromVariant(d->request->toVariant()).toJson();
+    QVariantMap data = d->request->toVariant().toMap();
+    //QByteArray data = QJsonDocument::fromVariant(d->request->toVariant()).toJson();
 
-    // TODO: Use internal url here
-    QUrl url = QString("https://%1").arg(Client::instance()->settings()->config()->controllerAddress());
-    url.setPath(classInfo.value());
+    QUrl url = d->url;
+    url.setPath(pathClassInfo.value());
 
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
+    QNetworkReply* reply;
 
-    QNetworkReply* reply = Client::instance()->networkAccessManager()->post(request, data);
+    QMetaClassInfo methodClassInfo = d->request->metaObject()->classInfo(methodIdx);
+
+    QByteArray method = QByteArray(methodClassInfo.value());
+    if(method == "get")
+    {
+        QUrlQuery query(url);
+
+        QMapIterator<QString, QVariant> iter(data);
+        while (iter.hasNext())
+        {
+            iter.next();
+
+            query.addQueryItem(iter.key(), iter.value().toString());
+        }
+
+        url.setQuery(query);
+
+        QNetworkRequest request(url);
+        request.setRawHeader("Authorization", QString("ApiKey %1:%2").arg(Client::instance()->settings()->userId()).arg(Client::instance()->settings()->apiKey()).toUtf8());
+
+        reply = Client::instance()->networkAccessManager()->get(request);
+    }
+    else if(method == "post")
+    {
+        QNetworkRequest request(url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        request.setRawHeader("Authorization", Client::instance()->settings()->apiKey().toUtf8());
+
+        reply = Client::instance()->networkAccessManager()->post(request, QJsonDocument::fromVariant(data).toJson());
+    }
+    else
+    {
+        d->errorString = tr("Method for request unknown");
+        d->setStatus(Error);
+        LOG_ERROR("Method for request unknown");
+        return;
+    }
+
     reply->ignoreSslErrors();
     connect(reply, SIGNAL(finished()), d, SLOT(requestFinished()));
 
