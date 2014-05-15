@@ -161,9 +161,6 @@ int main(int argc, char* argv[])
 
 #endif // Q_OS_UNIX
 
-    QCommandLineOption controllerUrl("controller", "Override the controller host", "hostname:port");
-    parser.addOption(controllerUrl);
-
     QCommandLineOption registerAnonymous("register-anonymous", "Register anonymous on server");
     parser.addOption(registerAnonymous);
 
@@ -293,11 +290,6 @@ int main(int argc, char* argv[])
     {
         LOG_ERROR("Client initialization failed")
         return 1;
-    }
-
-    if (parser.isSet(controllerUrl))
-    {
-        client->settings()->config()->setControllerAddress(parser.value(controllerUrl));
     }
 
     new LoginWatcher(client->loginController());
