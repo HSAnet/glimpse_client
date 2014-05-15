@@ -190,26 +190,47 @@ Page{
 
         ListView {
             model: logModel
-            height: units.gu(400)
-            width: parent.width;
+            clip: true
 
             anchors {
                 top: border.bottom
-                topMargin: units.gu(40)
+                topMargin: units.gu(20)
+                bottom: parent.bottom
+                bottomMargin: units.gu(40)
+                left: parent.left
+                right: parent.right
+                leftMargin: units.gu(10)
+                rightMargin: units.gu(10)
             }
 
-            delegate: Rectangle {
-                width: ListView.view.width
+            Component.onCompleted: positionViewAtEnd()
+            onCountChanged: positionViewAtEnd()
+
+            delegate: Item {
+                width: parent.width
                 height: textItem.height
 
-                color: {
-                    switch (model.level) {
-//                    case 0: return "orange";
-//                    case 1: return "green";
-//                    case 2: return "lightblue";
-//                    case 3: return "white";
-//                    case 4: return "yellow";
-//                    case 5: return "red";
+                Rectangle {
+                    id: dot
+                    width: units.gu(22)
+                    height: width
+                    radius: height/2
+
+                    anchors {
+                        left: parent.left
+                        leftMargin: units.gu(10)
+                        top: parent.top
+                        topMargin: units.gu(3)
+                    }
+                    color: {
+                        switch (model.level) {
+                        case 0: return "#f8c580";
+                        case 1: return "#a8f880";
+                        case 2: return "#d1e0e0";
+                        case 3: return "white";
+                        case 4: return "#f8f180";
+                        case 5: return "#f88380";
+                        }
                     }
                 }
 
@@ -221,10 +242,9 @@ Page{
                     wrapMode: Text.Wrap
                     text: model.message
                     anchors {
-                        left: parent.left
-                        leftMargin: units.gu(20)
-                        bottom: parent.bottom
-                        bottomMargin: units.gu(20)
+                        left: dot.right
+                        right: parent.right
+                        leftMargin: units.gu(15)
                     }
                 }
             }
