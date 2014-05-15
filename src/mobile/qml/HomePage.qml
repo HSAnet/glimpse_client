@@ -4,7 +4,7 @@ import "controls"
 
 Page{
     Canvas {
-        x: units.gu(50)
+        x: notificationPanel.width - units.gu(100)
         width: units.gu(40)
         height: units.gu(20)
         anchors.bottom: notificationPanel.top
@@ -25,12 +25,12 @@ Page{
         id: notificationPanel
         color: "#becbcb"
         width: app.width - units.gu(50)
-        height: units.gu(100)
+        height: units.gu(180)
 
         anchors {
             top: parent.top
             horizontalCenter: parent.horizontalCenter
-            topMargin: units.gu(30)
+            topMargin: units.gu(20)
         }
 //        ListPage {
 
@@ -41,11 +41,11 @@ Page{
         id: historyPanel
         color: "white"
         width: app.width
-        height: units.gu(180)
+        height: units.gu(400)
 
         anchors {
             top: notificationPanel.bottom
-            topMargin: units.gu(15)
+            topMargin: units.gu(20)
         }
 
         Text {
@@ -62,7 +62,7 @@ Page{
     Rectangle {
         id: buttonPanel
         width: app.width
-        height: units.gu(100)
+        height: units.gu(180)
         color: "#f8c580"
 
         anchors {
@@ -76,7 +76,7 @@ Page{
             height: parent.height
 
             Text {
-                text: qsTr("MEASURE IT")
+                text: qsTr("SPEEDTEST")
                 color: "white"
                 width: parent.width
                 height: parent.height
@@ -89,6 +89,8 @@ Page{
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
+
+
         }
 
         Button {
@@ -146,7 +148,7 @@ Page{
         id: campaignsPanel
         color: "white"
         width: app.width
-        height: units.gu(100)
+        height: units.gu(300)
 
         anchors {
             top: buttonPanel.bottom

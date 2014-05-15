@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQml.Models 2.1
+import QtGraphicalEffects 1.0
 import mplane 1.0
 
 Item {
@@ -33,7 +34,7 @@ Item {
             left: parent.left
             right: parent.right
         }
-        height: units.gu(40)
+        height: units.gu(70)
         z: 1
 
         ListView {
@@ -73,6 +74,7 @@ Item {
                 height: ListView.view.height
                 verticalAlignment: Text.AlignVCenter
                 text: model.title
+                color: "#333333"
                 font.pixelSize: units.gu(35)
 
                 MouseArea {

@@ -30,13 +30,25 @@ Page {
             }
         }
 
+//        Item {
+//            property string title: "History"
+//        }
+
         Item {
-            property string title: "History"
+            property string title: "Scheduler"
+
+            Scheduler {}
         }
 
         Item {
-            property string title: "Campaigns"
+            property string title: "Reports"
+
+            Reports {}
         }
+
+//        Item {
+//            property string title: "Campaigns"
+//        }
 
         Item {
             property string title: "Hauptmenü"

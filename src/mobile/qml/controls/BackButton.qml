@@ -7,7 +7,7 @@ Item {
     signal clicked
 
     property string text
-    property color color: "#ff3b30"
+    property color color: "white"
     property real fontSize: units.gu(45)
     property bool arrowVisible: true
 
@@ -54,14 +54,14 @@ Item {
             }
         }
 
-        Button {
-            id: button
-            text: root.implicitWidth > root.width ? qsTr("Back") : root.text
-            visible: root.minimalImplicitWidth < root.width
-            color: root.color
-            font.pixelSize: root.fontSize
-            anchors.verticalCenter: parent.verticalCenter
-        }
+//        Button {
+//            id: button
+//            text: root.implicitWidth > root.width ? qsTr("Back") : root.text
+//            visible: root.minimalImplicitWidth < root.width
+//            color: root.color
+//            font.pixelSize: root.fontSize
+//            anchors.verticalCenter: parent.verticalCenter
+//        }
     }
 
     MouseArea {
