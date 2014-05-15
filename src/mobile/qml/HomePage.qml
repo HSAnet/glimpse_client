@@ -76,7 +76,7 @@ Page{
             height: parent.height
 
             Text {
-                text: qsTr("MEASURE IT")
+                text: qsTr("SPEEDTEST")
                 color: "white"
                 width: parent.width
                 height: parent.height
@@ -89,6 +89,8 @@ Page{
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
+
+
         }
 
         Button {
