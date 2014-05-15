@@ -66,7 +66,6 @@ Page {
                     right: parent.right
                     leftMargin: units.gu(10)
                 }
-                height: headerHeight
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignBottom
                 text: section

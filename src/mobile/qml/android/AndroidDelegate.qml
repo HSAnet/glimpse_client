@@ -4,7 +4,7 @@ Item {
     id: root
     width: ListView.view.width
     height: units.gu(110)
-    anchors.top: placeholder.bottom
+    //anchors.top: placeholder.bottom
 
     property alias headline: headlineitem.text
     property alias text: textitem.text
@@ -50,7 +50,7 @@ Item {
 
         Text {
             id: headlineitem
-            text: modelData
+            //text: modelData
             color: "#333333"
             font.pixelSize: units.gu(30)
             anchors {
@@ -75,7 +75,7 @@ Item {
 
             color: "#333333"
             font.pixelSize: units.gu(20)
-            text: modelData
+            //text: modelData
 //            elide: Text.ElideMiddle
         }
 

@@ -13,7 +13,7 @@ Item {
 
     width: row.width
     implicitWidth: arrow.width + invisibleButton.width
-    readonly property int minimalImplicitWidth: arrow.width + button.width
+    readonly property int minimalImplicitWidth: arrow.width + invisibleButton.width
 
     Button {
         id: invisibleButton
