@@ -1,6 +1,6 @@
 import QtQuick 2.0
 
-Item {
+Rectangle {
     id: root
     width: ListView.view.width
     height: units.gu(110)
@@ -11,7 +11,7 @@ Item {
     property string imageSource
     property bool showArrow: true
     property bool showImage: false
-    property bool showBorder: false
+    property bool showBorder: (model.index+1 != ListView.view.count)
     signal clicked
 
     property int count: ListView.view.count
@@ -19,9 +19,9 @@ Item {
     property variant nextSection: ListView.nextSection
     property variant previousSection: ListView.previousSection
 
-
-
     Rectangle {
+        id: innerRectangle
+
         anchors.fill: parent
         anchors.leftMargin: units.gu(40)
         anchors.rightMargin: units.gu(40)
@@ -124,7 +124,7 @@ Item {
         when: mouse.pressed
 
         PropertyChanges {
-            target: root
+            target: innerRectangle
             scale: 0.95
             opacity: 0.7
         }

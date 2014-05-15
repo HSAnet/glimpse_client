@@ -19,7 +19,9 @@ Page {
         Item {
             property string title: "Home"
 
-            HomePage {}
+            HomePage {
+                anchors.fill: parent
+            }
         }
 
         Item {
@@ -37,13 +39,17 @@ Page {
         Item {
             property string title: "Scheduler"
 
-            Scheduler {}
+            Scheduler {
+                anchors.fill: parent
+            }
         }
 
         Item {
             property string title: "Reports"
 
-            Reports {}
+            Reports {
+                anchors.fill: parent
+            }
         }
 
 //        Item {
