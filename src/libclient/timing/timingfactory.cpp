@@ -7,6 +7,11 @@
 
 TimingPtr TimingFactory::timingFromVariant(const QVariant &variant)
 {
+    if(!variant.isValid())
+    {
+        return TimingPtr();
+    }
+
     typedef TimingPtr (*CreateFunction)(const QVariant&);
     QHash<QString, CreateFunction> factories;
     factories.insert("periodic", PeriodicTiming::fromVariant);
@@ -16,12 +21,12 @@ TimingPtr TimingFactory::timingFromVariant(const QVariant &variant)
     factories.insert("ondemand", OnDemandTiming::fromVariant);
 
     QVariantMap hash = variant.toMap();
-    QString type = hash.value("type").toString();
+    QString type = hash.keys().first();
 
     CreateFunction cf = factories.value(type);
     if (cf)
     {
-        return cf(variant);
+        return cf(hash.value(type));
     }
     else
     {
