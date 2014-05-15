@@ -42,7 +42,7 @@ ListPage {
             anchors {
                 left: parent.left
                 right: parent.right
-                leftMargin: units.gu(10)
+                leftMargin: units.gu(20)
             }
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignBottom
