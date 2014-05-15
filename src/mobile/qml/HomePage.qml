@@ -2,7 +2,9 @@ import QtQuick 2.0
 import mplane 1.0
 import "controls"
 
-Page{
+FlickablePage {
+    contentHeight: campaignsPanel.y + campaignsPanel.height
+
     Canvas {
         x: notificationPanel.width - units.gu(100)
         width: units.gu(40)
