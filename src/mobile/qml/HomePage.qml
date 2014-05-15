@@ -157,11 +157,76 @@ Page{
 
         Text {
             id: campaignsTitle
-            text: qsTr("Campaigns")
+            text: qsTr("EventLog")
+            color: "#dea65a"
+            anchors {
+                left: parent.left
+                leftMargin: units.gu(20)
+                top: parent.top
+                topMargin: units.gu(20)
+            }
+
             font {
                 weight: Font.Normal
                 family: "Helvetica Neue"
                 pixelSize: units.gu(35)
+            }
+        }
+
+        Rectangle {
+            id: border
+            height: 1
+            color: "#e2e2e2"
+            anchors {
+                top: campaignsTitle.bottom
+                left: parent.left
+                leftMargin: units.gu(20)
+                right: parent.right
+                rightMargin: units.gu(20)
+                topMargin: units.gu(10)
+            }
+        }
+
+
+        ListView {
+            model: logModel
+            height: units.gu(400)
+            width: parent.width;
+
+            anchors {
+                top: border.bottom
+                topMargin: units.gu(40)
+            }
+
+            delegate: Rectangle {
+                width: ListView.view.width
+                height: textItem.height
+
+                color: {
+                    switch (model.level) {
+//                    case 0: return "orange";
+//                    case 1: return "green";
+//                    case 2: return "lightblue";
+//                    case 3: return "white";
+//                    case 4: return "yellow";
+//                    case 5: return "red";
+                    }
+                }
+
+                Label {
+                    id: textItem
+                    width: parent.width
+                    font.pixelSize: units.gu(25)
+                    color: "#333333"
+                    wrapMode: Text.Wrap
+                    text: model.message
+                    anchors {
+                        left: parent.left
+                        leftMargin: units.gu(20)
+                        bottom: parent.bottom
+                        bottomMargin: units.gu(20)
+                    }
+                }
             }
         }
     }
