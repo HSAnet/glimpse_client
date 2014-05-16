@@ -83,8 +83,9 @@ void WebRequester::Private::requestFinished()
     if (reply->error() == QNetworkReply::NoError)
     {
         QJsonParseError error;
-        QByteArray tmp = reply->readAll();
-        QJsonDocument document = QJsonDocument::fromJson(tmp, &error);
+        QByteArray data = reply->readAll();
+
+        QJsonDocument document = QJsonDocument::fromJson(data, &error);
 
         if ( error.error == QJsonParseError::NoError )
         {
@@ -122,10 +123,17 @@ void WebRequester::Private::requestFinished()
         }
         else
         {
-            errorString = error.errorString();
-            LOG_WARNING(QString("JsonParseError: %1").arg(errorString));
-            LOG_WARNING(QString(tmp));
-            setStatus(WebRequester::Error);
+            if(data != "")
+            {
+                errorString = error.errorString();
+                LOG_WARNING(QString("JsonParseError: %1 (%2)").arg(errorString).arg(QString(data)));
+                setStatus(WebRequester::Error);
+            }
+            else // empty data is okay if no network error occured (= 2xx response code)
+            {
+                response->finished();
+                setStatus(WebRequester::Finished);
+            }
         }
     }
     else
@@ -266,6 +274,7 @@ void WebRequester::start()
         return;
     }
 
+    // Get classinfos
     int pathIdx = d->request->metaObject()->indexOfClassInfo("path");
     if ( pathIdx == -1 )
     {
@@ -274,14 +283,23 @@ void WebRequester::start()
         LOG_ERROR("No path found for request");
         return;
     }
+    QMetaClassInfo pathClassInfo = d->request->metaObject()->classInfo(pathIdx);
 
-    int methodIdx = d->request->metaObject()->indexOfClassInfo("method");
+    int methodIdx = d->request->metaObject()->indexOfClassInfo("http_request_method");
     if ( methodIdx == -1 )
     {
-        d->errorString = tr("No method for request specified");
+        d->errorString = tr("No http_request_method specified");
         d->setStatus(Error);
-        LOG_ERROR("No method for request specified");
+        LOG_ERROR("No http_request_method specified");
         return;
+    }
+    QString httpMethod = d->request->metaObject()->classInfo(methodIdx).value();
+
+    int authenticationIdx = d->request->metaObject()->indexOfClassInfo("authentication_method");
+    QString authentication = "none";
+    if ( authenticationIdx != -1 )
+    {
+        authentication = d->request->metaObject()->classInfo(authenticationIdx).value();
     }
 
     d->setStatus(Running);
@@ -290,20 +308,32 @@ void WebRequester::start()
     d->request->setDeviceId(Client::instance()->settings()->deviceId());
     d->request->setSessionId(Client::instance()->settings()->apiKey());
 
-    QMetaClassInfo pathClassInfo = d->request->metaObject()->classInfo(pathIdx);
 
     QVariantMap data = d->request->toVariant().toMap();
-    //QByteArray data = QJsonDocument::fromVariant(d->request->toVariant()).toJson();
 
     QUrl url = d->url;
     url.setPath(pathClassInfo.value());
 
+    QNetworkRequest request;
     QNetworkReply* reply;
 
-    QMetaClassInfo methodClassInfo = d->request->metaObject()->classInfo(methodIdx);
+    if(authentication == "basic")
+    {
+        url.setUserName(Client::instance()->settings()->userId());
+        url.setPassword(Client::instance()->settings()->password()); // TODO change this to a temporary variable after login-form
+                                                                     // which is not saved into the settings
+    }
+    else if (authentication == "apikey")
+    {
+        request.setRawHeader("Authorization", QString("ApiKey %1:%2").arg(Client::instance()->settings()->userId().left(30)).arg(Client::instance()->settings()->apiKey()).toUtf8());
+    }
+    else if (authentication == "none")
+    {
 
-    QByteArray method = QByteArray(methodClassInfo.value());
-    if(method == "get")
+    }
+
+
+    if(httpMethod == "get")
     {
         QUrlQuery query(url);
 
@@ -317,24 +347,20 @@ void WebRequester::start()
 
         url.setQuery(query);
 
-        QNetworkRequest request(url);
-        request.setRawHeader("Authorization", QString("ApiKey %1:%2").arg(Client::instance()->settings()->userId()).arg(Client::instance()->settings()->apiKey()).toUtf8());
-
+        request.setUrl(url);
         reply = Client::instance()->networkAccessManager()->get(request);
     }
-    else if(method == "post")
+    else if(httpMethod == "post")
     {
-        QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-        request.setRawHeader("Authorization", Client::instance()->settings()->apiKey().toUtf8());
-
+        request.setUrl(url);
         reply = Client::instance()->networkAccessManager()->post(request, QJsonDocument::fromVariant(data).toJson());
     }
     else
     {
-        d->errorString = tr("Method for request unknown");
+        d->errorString = tr("http_request_method unknown");
         d->setStatus(Error);
-        LOG_ERROR("Method for request unknown");
+        LOG_ERROR("http_request_method unknown");
         return;
     }
 
