@@ -43,7 +43,7 @@ FlickablePage {
         id: historyPanel
         color: "white"
         width: app.width
-        height: units.gu(400)
+        height: diagram.height + units.gu(100)
 
         anchors {
             top: notificationPanel.bottom
@@ -53,10 +53,46 @@ FlickablePage {
         Text {
             id: historyTitle
             text: qsTr("History")
+            color: "#dea65a"
             font {
                 weight: Font.Normal
                 family: "Helvetica Neue"
                 pixelSize: units.gu(35)
+            }
+            anchors {
+                left: parent.left
+                leftMargin: units.gu(20)
+                top: parent.top
+                topMargin: units.gu(20)
+            }
+        }
+
+        Rectangle {
+            id: border2
+            height: 1
+            color: "#e2e2e2"
+            anchors {
+                top: historyTitle.bottom
+                left: parent.left
+                leftMargin: units.gu(20)
+                right: parent.right
+                rightMargin: units.gu(20)
+                topMargin: units.gu(10)
+            }
+        }
+
+        Image{
+            id: diagram
+            source: "images/diagram.png"
+            width: parent.width - units.gu(30)
+            fillMode: Image.PreserveAspectFit
+
+            anchors {
+                left: parent.left
+                top: border2.bottom
+
+                topMargin: units.gu(10)
+                leftMargin: units.gu(30)
             }
         }
     }
