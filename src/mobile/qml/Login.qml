@@ -18,6 +18,9 @@ Page {
     activity: client.loginController.status == Controller.Running
 
     function login() {
+        nextPage("MainPage.qml");
+
+        /*
         if ( !mailField.acceptableInput ) {
             errorLabel.text = qsTr("Email is not valid");
             return;
@@ -40,6 +43,7 @@ Page {
         } else {
             client.loginController.registration(mailField.text, passwordField.text);
         }
+        */
     }
 
     Connections {

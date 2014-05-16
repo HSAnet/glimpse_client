@@ -21,12 +21,16 @@ Rectangle {
         }
 
         // Maybe we can log in automatically from here
+        /*
         if (client.autoLogin()) {
             autoLoginWatcher.enabled = true;
             menuPage();
         } else {
             nextPage("WelcomePage.qml");
         }
+        */
+
+        nextPage("WelcomeLoginPage.qml");
     }
 
     // Implements back key navigation
