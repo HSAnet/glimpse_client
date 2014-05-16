@@ -86,11 +86,22 @@ public:
 public slots:
     bool init();
     bool autoLogin();
-    void btc();
+    void btc(const QString &host = "141.82.57.241");
     void http(const QString &url = "http://ipv4.download.thinkbroadband.com:81/10MB.zip");
     void upnp();
-    void ping(const QString& host = QString(), quint16 count = 4, quint32 timeout = 2000, quint32 interval = 200);
-    void packetTrains();
+    void ping(const QString& host = QString(),
+              quint16 count = 4,
+              quint32 timeout = 2000,
+              quint32 interval = 200);
+
+    void packetTrains(const QString host = "141.82.57.241",
+                      quint16 port = 5106,
+                      quint16 packetSize = 1000,
+                      quint16 trainLength = 48,
+                      quint8 iterations = 1,
+                      quint64 rateMin =  10485760,
+                      quint64 rateMax = 262144000,
+                      quint64 delay = 200000000);
     void udpPing(const QString &url = "measure-it.de",
                  const quint32 &count = 3,
                  const quint32 &interval = 1000,

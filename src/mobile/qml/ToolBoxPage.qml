@@ -31,6 +31,23 @@ ListPage {
             group: "Peer measurements"
             measurement: "HttpDownload"
         }
+        ListElement {
+            title: "Btc"
+            group: "Glimpse peer measurements"
+            measurement: "Btc"
+        }
+
+        ListElement {
+            title: "Upnp"
+            group: "Glimpse peer measurements"
+            measurement: "Upnp"
+        }
+
+        ListElement {
+            title: "Packet Trains"
+            group: "Glimpse peer measurements"
+            measurement: "Packettrains"
+        }
     }
 
     section.delegate: Rectangle {
