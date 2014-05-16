@@ -333,15 +333,15 @@ bool Client::init()
     d->reportStorage.loadData();
 
     // Initialize controllers
-    d->networkManager.init(&d->scheduler, &d->settings);
-    d->configController.init(&d->networkManager, &d->settings);
-    d->reportController.init(&d->reportScheduler, &d->settings);
-    d->loginController.init(&d->networkManager, &d->settings);
-    d->crashController.init(&d->networkManager, &d->settings);
+    //d->networkManager.init(&d->scheduler, &d->settings);
+    //d->configController.init(&d->networkManager, &d->settings);
+    //d->reportController.init(&d->reportScheduler, &d->settings);
+    //d->loginController.init(&d->networkManager, &d->settings);
+    //d->crashController.init(&d->networkManager, &d->settings);
 
     if (!d->settings.isPassive())
     {
-        d->taskController.init(&d->networkManager, &d->scheduler, &d->settings);
+        //d->taskController.init(&d->networkManager, &d->scheduler, &d->settings);
     }
 
     // Get network time from ntp server
