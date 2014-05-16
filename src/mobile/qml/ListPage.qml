@@ -46,7 +46,7 @@ ListView {
         text: root.emptyText
         color: "#727277"
         anchors.horizontalCenter: parent.horizontalCenter
-        y: -parent.contentY + root.height/2
+        y: -parent.contentY + root.height/2 - height - units.gu(60)
         visible: parent.count == 0
     }
 }
