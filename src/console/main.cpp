@@ -51,6 +51,8 @@ private slots:
         }
 
         LOG_INFO("Automatically registering device");
+
+        m_requester.setUrl(QString("http://%1").arg(Client::instance()->settings()->config()->supervisorAddress()));
         m_requester.start();
     }
 

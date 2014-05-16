@@ -6,7 +6,9 @@
 class CLIENT_API RegisterDeviceRequest : public Request
 {
     Q_OBJECT
-    Q_CLASSINFO("path", "/register_device")
+    Q_CLASSINFO("path", "/auth/api/v1/device/")
+    Q_CLASSINFO("http_request_method", "post")
+    Q_CLASSINFO("authentication_method", "apikey")
     Q_ENUMS(DeviceType ProviderTechnology)
     Q_PROPERTY(QString dataPlanName READ dataPlanName WRITE setDataPlanName NOTIFY dataPlanNameChanged)
     Q_PROPERTY(ProviderTechnology providerTechnology READ providerTechnology WRITE setProviderTechnology NOTIFY providerTechnologyChanged)
