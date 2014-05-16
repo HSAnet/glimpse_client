@@ -361,6 +361,8 @@ bool Client::init()
 
 bool Client::autoLogin()
 {
+    return true;
+
     if (d->settings.hasLoginData())
     {
         d->loginController.login();
