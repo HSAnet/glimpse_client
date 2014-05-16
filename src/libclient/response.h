@@ -54,6 +54,7 @@ public:
 class CLIENT_API GetConfigResponse : public Response
 {
     Q_OBJECT
+    Q_PROPERTY(QString supervisorAddress READ supervisorAddress CONSTANT)
 
 public:
     GetConfigResponse(QObject* parent = 0);

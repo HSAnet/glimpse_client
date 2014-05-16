@@ -191,6 +191,7 @@ bool LoginController::init(NetworkManager *networkManager, Settings *settings)
     d->settings = settings;
 
     connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(updateController()));
+    d->updateController();
 
     return true;
 }
