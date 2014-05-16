@@ -200,6 +200,56 @@ Rectangle {
             }
         }
 
+        Image {
+            id: actionTitle
+
+            anchors {
+                right: indicator.left
+                //rightMargin: units.gu(15)
+                verticalCenter: parent.verticalCenter
+            }
+
+            fillMode: Image.PreserveAspectFit
+            source: "images/settings.png"
+            height: parent.height * 0.5
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 100
+                }
+            }
+
+            property string text: {
+                var item = pageStack.currentItem;
+                if (item && item.actionTitle)
+                    return item.actionTitle;
+                else
+                    return "";
+            }
+
+            Behavior on scale {
+                NumberAnimation {
+                    duration: 100
+                }
+            }
+
+            scale: settingsMouse.pressed ? 0.8 : 1.0
+
+            opacity: {
+                if (settingsMouse.pressed)
+                    return 0.5;
+                else
+                    return text.length ? 1 : 0
+            }
+
+            MouseArea {
+                id: settingsMouse
+                anchors.fill: parent
+                onClicked: pageStack.currentItem.actionClicked()
+            }
+        }
+
+        /*
         Button {
             id: actionTitle
             color: "white"
@@ -239,6 +289,7 @@ Rectangle {
             opacity: text.length ? 1 : 0
             onClicked: pageStack.currentItem.actionClicked()
         }
+        */
 
         ActivityIndicator {
             id: indicator
