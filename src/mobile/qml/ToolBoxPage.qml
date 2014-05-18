@@ -82,17 +82,23 @@ ListPage {
         onClicked: nextPage("measurements/%1.qml".arg(model.measurement))
     }
 
-    Label {
-        anchors {
-            left: parent.left
-            right: parent.right
-            margins: units.gu(20)
+    footer: Rectangle {
+        width: parent.width
+        height: note.height
+
+        Label {
+            id: note
+            anchors {
+                left: parent.left
+                right: parent.right
+                margins: units.gu(20)
+            }
+
+            //y: (parent.height - parent.anchors.margins*2 - height - units.gu(20)) -contentY
+
+            font.pixelSize: units.gu(25)
+            text: qsTr("<b>Please note:</b> In this demo version all tasks add a delay of 10 seconds before the actual execution.")
+            wrapMode: Text.WordWrap
         }
-
-        y: (parent.height - parent.anchors.margins*2 - height - units.gu(20)) -contentY
-
-        font.pixelSize: units.gu(25)
-        text: qsTr("<b>Please note:</b> In this demo version all tasks add a delay of 10 seconds before the actual execution.")
-        wrapMode: Text.WordWrap
     }
 }
