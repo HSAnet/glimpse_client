@@ -397,7 +397,7 @@ void Client::upnp()
 
 void Client::ping(const QString &host, quint16 count, quint32 timeout, quint32 interval)
 {
-    PingDefinition pingDef(host.isNull() ? "measure-it.de" : host, 4, 2000, 200);
+    PingDefinition pingDef(host.isNull() ? "measure-it.de" : host, count, timeout, interval);
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("fe8189e7-afce-4ec8-863d-c4525c13ad73", "ping", timing, pingDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
