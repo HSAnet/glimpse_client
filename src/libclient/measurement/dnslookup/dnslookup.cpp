@@ -37,6 +37,7 @@ bool Dnslookup::start()
 {
     dns.setType(QDnsLookup::ANY);
     dns.setName(definition->host);
+    dns.setNameserver(QHostAddress::QHostAddress(definition->dnsServer));
     dns.lookup();
     return true;
 }
