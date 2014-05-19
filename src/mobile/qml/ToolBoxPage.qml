@@ -24,6 +24,12 @@ ListPage {
             title: "Traceroute"
             group: "Simple measurements"
             measurement: "Traceroute"
+        }       
+
+        ListElement {
+            title: "Upnp"
+            group: "Simple measurements"
+            measurement: "Upnp"
         }
 
         ListElement {
@@ -31,16 +37,11 @@ ListPage {
             group: "Peer measurements"
             measurement: "HttpDownload"
         }
+
         ListElement {
             title: "Btc"
             group: "Glimpse peer measurements"
             measurement: "Btc"
-        }
-
-        ListElement {
-            title: "Upnp"
-            group: "Glimpse peer measurements"
-            measurement: "Upnp"
         }
 
         ListElement {
