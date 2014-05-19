@@ -8,7 +8,7 @@ BUILDNUMBER=$1
 
 cd `dirname $0`
 cd ..
-cd debian
+cd linux/debian
 
 if [ "$BUILDNUMBER" = "" ]; then
 	echo "You have no BUILDNUMBER variable set, exiting"

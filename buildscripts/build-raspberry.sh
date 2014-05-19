@@ -6,7 +6,7 @@ case "$1" in
 	remote)
 	export LC_ALL=C
 	export PATH=/opt/qt52/bin:$PATH
-	cd /root/work/glimpse_client
+	cd /root/work/glimpse_client/linux
 	dpkg-buildpackage -b
 	;;
 
