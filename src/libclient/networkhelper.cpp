@@ -97,7 +97,10 @@ QHostAddress NetworkHelper::localIpAddress()
         }
     }
 
-    hostIp = interfaceAddressList.first();
+    if (!interfaceAddressList.empty())
+    {
+        hostIp = interfaceAddressList.first();
+    }
     //qDebug() << "Hope" << hostIp << "is a local ip";
 
 #endif
