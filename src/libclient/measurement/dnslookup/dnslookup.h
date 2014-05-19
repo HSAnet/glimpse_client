@@ -24,10 +24,10 @@ public:
 private:
     void setStatus(Status status);
 
-    DnslookupDefinitionPtr definition;
-    QDnsLookup dns;
-    QList<QDnsHostAddressRecord> dnslookupOutput;
-    Status currentStatus;
+    DnslookupDefinitionPtr m_definition;
+    QDnsLookup m_dns;
+    QList<QDnsHostAddressRecord> m_dnslookupOutput;
+    Status m_currentStatus;
 
 private slots:
     void started();

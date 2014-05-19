@@ -406,7 +406,7 @@ void Client::dnslookup()
 {
     DnslookupDefinition dnslookupDef("www.google.com", "8.8.8.8");
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832178", "dnslookup", timing, dnslookupDef.toVariant()));
+    TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832180", "dnslookup", timing, dnslookupDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
 }
 

@@ -8,7 +8,7 @@ LOGGER(Dnslookup);
 
 Dnslookup::Dnslookup(QObject *parent)
 : Measurement(parent)
-, currentStatus(Dnslookup::Unknown)
+, m_currentStatus(Dnslookup::Unknown)
 {
 }
 
@@ -19,41 +19,41 @@ Dnslookup::~Dnslookup()
 bool Dnslookup::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
-    definition = measurementDefinition.dynamicCast<DnslookupDefinition>();
-    if ( definition.isNull() )
+    m_definition = measurementDefinition.dynamicCast<DnslookupDefinition>();
+    if ( m_definition.isNull() )
     {
         LOG_WARNING("Definition is empty");
         return false;
     }
 
-    connect(&dns, SIGNAL(finished()), this, SLOT(handleServers()));
+    connect(&m_dns, SIGNAL(finished()), this, SLOT(handleServers()));
 
-    currentStatus = Dnslookup::Unknown;
+    m_currentStatus = Dnslookup::Unknown;
 
     return true;
 }
 
 bool Dnslookup::start()
 {
-    dns.setType(QDnsLookup::ANY);
-    dns.setName(definition->host);
-    dns.setNameserver(QHostAddress::QHostAddress(definition->dnsServer));
-    dns.lookup();
+    m_dns.setType(QDnsLookup::ANY);
+    m_dns.setName(m_definition->host);
+    m_dns.setNameserver(QHostAddress::QHostAddress(m_definition->dnsServer));
+    m_dns.lookup();
     return true;
 }
 
 void Dnslookup::handleServers()
 {
     // Check the lookup succeeded.
-    if (dns.error() != QDnsLookup::NoError)
+    if (m_dns.error() != QDnsLookup::NoError)
     {
-        LOG_ERROR(dns.errorString());
+        LOG_ERROR(m_dns.errorString());
         LOG_ERROR("DNS lookup failed");
         emit finished();
         return;
     }
 
-    dnslookupOutput = dns.hostAddressRecords();
+    m_dnslookupOutput = m_dns.hostAddressRecords();
 
     setStatus(Dnslookup::Finished);
     emit finished();
@@ -62,14 +62,14 @@ void Dnslookup::handleServers()
 
 Measurement::Status Dnslookup::status() const
 {
-    return currentStatus;
+    return m_currentStatus;
 }
 
 void Dnslookup::setStatus(Status status)
 {
-    if (currentStatus != status)
+    if (m_currentStatus != status)
     {
-        currentStatus = status;
+        m_currentStatus = status;
         emit statusChanged(status);
     }
 }
@@ -82,7 +82,7 @@ bool Dnslookup::stop()
 ResultPtr Dnslookup::result() const
 {
     QVariantList res;
-    foreach(const QDnsHostAddressRecord &val, dnslookupOutput)
+    foreach(const QDnsHostAddressRecord &val, m_dnslookupOutput)
     {
         QString type;
         switch(val.value().protocol())
@@ -99,7 +99,7 @@ ResultPtr Dnslookup::result() const
 
         QVariantMap map;
         map.insert("name", val.name());
-        map.insert("timeToLive", val.timeToLive());
+        map.insert("time_to_live", val.timeToLive());
         map.insert("value", val.value().toString());
         map.insert("type", type);
 
@@ -111,7 +111,7 @@ ResultPtr Dnslookup::result() const
 
 void Dnslookup::started()
 {
-    dnslookupOutput.clear();
+    m_dnslookupOutput.clear();
 
     setStatus(Dnslookup::Running);
 }
