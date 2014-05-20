@@ -102,7 +102,7 @@ public slots:
 void TaskController::Private::updateTimer()
 {
     // Set the new url
-    QString newUrl = QString("https://%1").arg(Client::instance()->settings()->config()->supervisorAddress());
+    QString newUrl = QString("http://%1").arg(Client::instance()->settings()->config()->supervisorAddress());
 
     if(requester.url() != newUrl)
     {
