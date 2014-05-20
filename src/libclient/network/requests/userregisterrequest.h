@@ -10,6 +10,7 @@ class CLIENT_API UserRegisterRequest : public Request
     Q_OBJECT
     Q_CLASSINFO("path", "/auth/api/v1/user/")
     Q_CLASSINFO("http_request_method", "post")
+    Q_CLASSINFO("authentication_method", "apikey")
     Q_PROPERTY(QString nameLast READ nameLast WRITE setNameLast NOTIFY nameLastChanged)
     Q_PROPERTY(QLocale::Country homeCountry READ homeCountry WRITE setHomeCountry NOTIFY homeCountryChanged)
     Q_PROPERTY(QString userId READ userId WRITE setUserId NOTIFY mailChanged)
