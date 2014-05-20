@@ -1,9 +1,9 @@
-#include "reverse_dnslookup_plugin.h"
-#include "reverse_dnslookup.h"
+#include "reverseDnslookup_plugin.h"
+#include "reverseDnslookup.h"
 
 QStringList ReverseDnslookupPlugin::measurements() const
 {
-    return QStringList() << "reverse_dnslookup";
+    return QStringList() << "reverseDnslookup";
 }
 
 MeasurementPtr ReverseDnslookupPlugin::createMeasurement(const QString &name)

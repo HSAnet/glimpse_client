@@ -1,4 +1,4 @@
-#include "reverse_dnslookup.h"
+#include "reverseDnslookup.h"
 #include "../../log/logger.h"
 
 #include <QHostInfo>
@@ -7,7 +7,7 @@ LOGGER(ReverseDnslookup);
 
 ReverseDnslookup::ReverseDnslookup(QObject *parent)
 : Measurement(parent)
-, currentStatus(ReverseDnslookup::Unknown)
+, m_currentStatus(ReverseDnslookup::Unknown)
 {
 }
 
@@ -18,21 +18,21 @@ ReverseDnslookup::~ReverseDnslookup()
 bool ReverseDnslookup::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
-    definition = measurementDefinition.dynamicCast<ReverseDnslookupDefinition>();
-    if ( definition.isNull() )
+    m_definition = measurementDefinition.dynamicCast<ReverseDnslookupDefinition>();
+    if ( m_definition.isNull() )
     {
         LOG_WARNING("Definition is empty");
         return false;
     }
 
-    currentStatus = ReverseDnslookup::Unknown;
+    m_currentStatus = ReverseDnslookup::Unknown;
 
     return true;
 }
 
 bool ReverseDnslookup::start()
 {
-    QHostInfo::lookupHost(definition->ip, this, SLOT(handleServers(QHostInfo)));
+    QHostInfo::lookupHost(m_definition->ip, this, SLOT(handleServers(QHostInfo)));
     return true;
 }
 
@@ -47,9 +47,9 @@ void ReverseDnslookup::handleServers(QHostInfo info)
         return;
     }
 
-    reverse_dnslookupOutput = info.hostName();
+    m_reverseDnslookupOutput = info.hostName();
 
-    if (reverse_dnslookupOutput == definition->ip) {
+    if (m_reverseDnslookupOutput == m_definition->ip) {
             LOG_ERROR("HOST not found");
             emit finished();
             return;
@@ -62,14 +62,14 @@ void ReverseDnslookup::handleServers(QHostInfo info)
 
 Measurement::Status ReverseDnslookup::status() const
 {
-    return currentStatus;
+    return m_currentStatus;
 }
 
 void ReverseDnslookup::setStatus(Status status)
 {
-    if (currentStatus != status)
+    if (m_currentStatus != status)
     {
-        currentStatus = status;
+        m_currentStatus = status;
         emit statusChanged(status);
     }
 }
@@ -83,7 +83,7 @@ ResultPtr ReverseDnslookup::result() const
 {
     QVariantList res;
     QVariantMap map;
-    map.insert("hostname", reverse_dnslookupOutput);
+    map.insert("hostname", m_reverseDnslookupOutput);
 
     res << map;
 
@@ -92,7 +92,7 @@ ResultPtr ReverseDnslookup::result() const
 
 void ReverseDnslookup::started()
 {
-    reverse_dnslookupOutput.clear();
+    m_reverseDnslookupOutput.clear();
 
     setStatus(ReverseDnslookup::Running);
 }

@@ -103,7 +103,7 @@ public slots:
                       quint64 rateMax = 262144000,
                       quint64 delay = 200000000);
     void dnslookup();
-    void reverse_dnslookup();
+    void reverseDnslookup();
     void udpPing(const QString &url = "measure-it.de",
                  const quint32 &count = 3,
                  const quint32 &interval = 1000,

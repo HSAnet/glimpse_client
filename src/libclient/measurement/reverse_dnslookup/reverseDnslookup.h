@@ -2,7 +2,7 @@
 #define REVERSEDNSLOOKUP_H
 
 #include "../measurement.h"
-#include "reverse_dnslookup_definition.h"
+#include "reverseDnslookup_definition.h"
 
 #include <QHostInfo>
 
@@ -24,10 +24,10 @@ public:
 private:
     void setStatus(Status status);
 
-    ReverseDnslookupDefinitionPtr definition;
-    QHostInfo lookupHost;
-    QString reverse_dnslookupOutput;
-    Status currentStatus;
+    ReverseDnslookupDefinitionPtr m_definition;
+
+    QString m_reverseDnslookupOutput;
+    Status m_currentStatus;
 
 private slots:
     void started();

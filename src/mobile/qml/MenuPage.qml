@@ -92,7 +92,7 @@ ListPage {
 
         ListElement {
             text: "ReverseDnslookup"
-            func: "reverse_dnslookup"
+            func: "reverseDnslookup"
             group: "Measurements"
         }
 

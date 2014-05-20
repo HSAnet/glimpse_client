@@ -168,9 +168,9 @@ SOURCES +=  \
     measurement/dnslookup/dnslookup_definition.cpp \
     measurement/dnslookup/dnslookup_plugin.cpp \
     measurement/dnslookup/dnslookup.cpp \
-    measurement/reverse_dnslookup/reverse_dnslookup_definition.cpp \
-    measurement/reverse_dnslookup/reverse_dnslookup_plugin.cpp \
-    measurement/reverse_dnslookup/reverse_dnslookup.cpp
+    measurement/reverse_dnslookup/reverseDnslookup.cpp \
+    measurement/reverse_dnslookup/reverseDnslookup_definition.cpp \
+    measurement/reverse_dnslookup/reverseDnslookup_plugin.cpp
 
 HEADERS += \
     export.h \
@@ -253,9 +253,9 @@ HEADERS += \
     measurement/dnslookup/dnslookup_definition.h \
     measurement/dnslookup/dnslookup_plugin.h \
     measurement/dnslookup/dnslookup.h \
-    measurement/reverse_dnslookup/reverse_dnslookup_definition.h \
-    measurement/reverse_dnslookup/reverse_dnslookup_plugin.h \
-    measurement/reverse_dnslookup/reverse_dnslookup.h
+    measurement/reverse_dnslookup/reverseDnslookup.h \
+    measurement/reverse_dnslookup/reverseDnslookup_definition.h \
+    measurement/reverse_dnslookup/reverseDnslookup_plugin.h
 
 OTHER_FILES += \
     libclient.pri

@@ -37,7 +37,7 @@
 #include "measurement/http/httpdownload_definition.h"
 #include "measurement/ping/ping_definition.h"
 #include "measurement/dnslookup/dnslookup_definition.h"
-#include "measurement/reverse_dnslookup/reverse_dnslookup_definition.h"
+#include "measurement/reverse_dnslookup/reverseDnslookup_definition.h"
 #include "measurement/packettrains/packettrainsdefinition.h"
 #include "measurement/udpping/udpping_definition.h"
 #include "measurement/traceroute/traceroute_definition.h"
@@ -409,12 +409,13 @@ void Client::dnslookup()
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832180", "dnslookup", timing, dnslookupDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
+}
 
-void Client::reverse_dnslookup()
+void Client::reverseDnslookup()
 {
-    ReverseDnslookupDefinition reverse_dnslookupDef("141.82.57.241");
+    ReverseDnslookupDefinition reverseDnslookupDef("141.82.57.241");
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832179", "reverse_dnslookup", timing, reverse_dnslookupDef.toVariant()));
+    TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832179", "reverseDnslookup", timing, reverseDnslookupDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
 }
 

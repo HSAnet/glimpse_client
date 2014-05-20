@@ -1,4 +1,4 @@
-#include "reverse_dnslookup_definition.h"
+#include "reverseDnslookup_definition.h"
 
 ReverseDnslookupDefinition::ReverseDnslookupDefinition(const QString& ip)
 : ip(ip)
