@@ -76,6 +76,7 @@ void Dnslookup::setStatus(Status status)
 
 bool Dnslookup::stop()
 {
+    m_dns.abort();
     return true;
 }
 
