@@ -8,6 +8,7 @@
 #include "../network/requests/userregisterrequest.h"
 #include "../response.h"
 #include "../client.h"
+#include "../types.h"
 
 #include <QPointer>
 
@@ -158,9 +159,8 @@ QString LoginController::errorString() const
 
 void LoginController::anonymousRegistration()
 {
-    QUuid uuid = QUuid::createUuid();
-    QString username = QString("%1@%2.anon").arg(uuid.toString()).arg(uuid.toString());
-    QString password = QUuid::createUuid().createUuid().toString();
+    QString username = QString("%1@anon.com").arg(uuidToString(QUuid::createUuid()).left(15)); // TODO increase username length in database
+    QString password = uuidToString(QUuid::createUuid()).left(15);
 
     LOG_INFO("Anonymous registration requested. Scrambled some data.");
 
