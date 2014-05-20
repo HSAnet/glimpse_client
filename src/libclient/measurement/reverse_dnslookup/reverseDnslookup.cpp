@@ -32,7 +32,7 @@ bool ReverseDnslookup::prepare(NetworkManager *networkManager, const Measurement
 
 bool ReverseDnslookup::start()
 {
-    QHostInfo::lookupHost(m_definition->ip, this, SLOT(handleServers(QHostInfo)));
+    m_lookupId = QHostInfo::lookupHost(m_definition->ip, this, SLOT(handleServers(QHostInfo)));
     return true;
 }
 
@@ -48,6 +48,7 @@ void ReverseDnslookup::handleServers(QHostInfo info)
     }
 
     m_reverseDnslookupOutput = info.hostName();
+    m_reverseDnslookupAddresses = info.addresses();
 
     if (m_reverseDnslookupOutput == m_definition->ip) {
             LOG_ERROR("HOST not found");
@@ -76,6 +77,7 @@ void ReverseDnslookup::setStatus(Status status)
 
 bool ReverseDnslookup::stop()
 {
+    QHostInfo::abortHostLookup(m_lookupId);
     return true;
 }
 
@@ -84,6 +86,12 @@ ResultPtr ReverseDnslookup::result() const
     QVariantList res;
     QVariantMap map;
     map.insert("hostname", m_reverseDnslookupOutput);
+
+    if (!m_reverseDnslookupAddresses.isEmpty()) {
+        foreach (QHostAddress address, m_reverseDnslookupAddresses) {
+            map.insert("address", address.toString());
+        }
+    }
 
     res << map;
 

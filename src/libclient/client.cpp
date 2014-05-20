@@ -415,7 +415,7 @@ void Client::reverseDnslookup()
 {
     ReverseDnslookupDefinition reverseDnslookupDef("141.82.57.241");
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832179", "reverseDnslookup", timing, reverseDnslookupDef.toVariant()));
+    TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832181", "reverseDnslookup", timing, reverseDnslookupDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
 }
 

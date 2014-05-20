@@ -25,8 +25,9 @@ private:
     void setStatus(Status status);
 
     ReverseDnslookupDefinitionPtr m_definition;
-
+    int m_lookupId;
     QString m_reverseDnslookupOutput;
+    QList<QHostAddress> m_reverseDnslookupAddresses;
     Status m_currentStatus;
 
 private slots:
