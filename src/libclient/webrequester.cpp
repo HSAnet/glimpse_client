@@ -79,15 +79,16 @@ void WebRequester::Private::setStatus(WebRequester::Status status)
 void WebRequester::Private::requestFinished()
 {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+    QNetworkReply::NetworkError networkError = reply->error();
 
-    if (reply->error() == QNetworkReply::NoError)
+    if (networkError == QNetworkReply::NoError)
     {
-        QJsonParseError error;
+        QJsonParseError jsonError;
         QByteArray data = reply->readAll();
 
-        QJsonDocument document = QJsonDocument::fromJson(data, &error);
+        QJsonDocument document = QJsonDocument::fromJson(data, &jsonError);
 
-        if ( error.error == QJsonParseError::NoError )
+        if ( jsonError.error == QJsonParseError::NoError )
         {
             QJsonObject root = document.object();
 
@@ -125,7 +126,7 @@ void WebRequester::Private::requestFinished()
         {
             if(data != "")
             {
-                errorString = error.errorString();
+                errorString = jsonError.errorString();
                 LOG_WARNING(QString("JsonParseError: %1 (%2)").arg(errorString).arg(QString(data)));
                 setStatus(WebRequester::Error);
             }
@@ -147,6 +148,29 @@ void WebRequester::Private::requestFinished()
             errorString = reply->errorString();
         }
         LOG_WARNING(QString("Network error: %1").arg(errorString));
+
+        QJsonParseError jsonError;
+        QByteArray data = reply->readAll();
+
+        QJsonDocument document = QJsonDocument::fromJson(data, &jsonError);
+
+        if(jsonError.error == QJsonParseError::NoError)
+        {
+            QJsonObject root = document.object();
+
+            QString replyError = root.value("error_message").toString(); // in some django replys its error, in some its error_message
+            if (!replyError.isEmpty())
+            {
+                LOG_WARNING(QString("Error message: %1").arg(replyError));
+            }
+
+            replyError = root.value("error").toString();
+            if (!replyError.isEmpty())
+            {
+                LOG_WARNING(QString("Error message: %1").arg(replyError));
+            }
+        }
+
         setStatus(WebRequester::Error);
     }
 
