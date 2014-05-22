@@ -28,6 +28,7 @@ private:
     int m_lookupId;
     QString m_reverseDnslookupOutput;
     QList<QHostAddress> m_reverseDnslookupAddresses;
+    QString m_reverseDnslookupError;
     Status m_currentStatus;
 
 private slots:
