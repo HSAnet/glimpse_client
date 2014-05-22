@@ -370,9 +370,9 @@ bool Client::autoLogin()
     return false;
 }
 
-void Client::btc()
+void Client::btc(const QString &host)
 {
-    BulkTransportCapacityDefinition btcDef("141.82.57.241", 5106, 1024*1024);
+    BulkTransportCapacityDefinition btcDef(host, 5106, 1024*1024);
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("7ba297e2-e13c-4478-886d-e9cf60cd33e5", "btc_ma", timing, btcDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
@@ -395,15 +395,15 @@ void Client::upnp()
 
 void Client::ping(const QString &host, quint16 count, quint32 timeout, quint32 interval)
 {
-    PingDefinition pingDef(host.isNull() ? "measure-it.de" : host, 4, 2000, 200);
+    PingDefinition pingDef(host.isNull() ? "measure-it.de" : host, count, timeout, interval);
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("fe8189e7-afce-4ec8-863d-c4525c13ad73", "ping", timing, pingDef.toVariant()));
     d->scheduler.enqueue(testDefinition);
 }
 
-void Client::packetTrains()
+void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint16 trainLength, quint8 iterations, quint64 rateMin, quint64 rateMax, quint64 delay)
 {
-    PacketTrainsDefinition packetTrainsDef("141.82.57.241", 5106, 1000, 48, 1, 10485760, 262144000, 200000000);
+    PacketTrainsDefinition packetTrainsDef(host, port, packetSize, trainLength, iterations, rateMin, rateMax, delay);
 
     TimingPtr timing(new ImmediateTiming());
     TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832177", "packettrains_ma", timing, packetTrainsDef.toVariant()));

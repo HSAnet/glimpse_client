@@ -9,27 +9,52 @@ ListPage {
 
     model: ListModel {
         ListElement {
-            title: "Ping"
+            title: "UPnP"
             group: "Simple measurements"
+            measurement: "Upnp"
+            description: "Get information from local UPnP devices"
+        }
+
+        ListElement {
+            title: "Ping"
+            group: "Public peer measurements"
             measurement: "Ping"
+            description: "Latency measurement with the systems ping tool"
         }
 
         ListElement {
             title: "UDP Ping"
-            group: "Simple measurements"
+            group: "Public peer measurements"
             measurement: "UdpPing"
+            description: "Latency measurement with an UDP implementation"
         }
 
         ListElement {
             title: "Traceroute"
-            group: "Simple measurements"
+            group: "Public peer measurements"
             measurement: "Traceroute"
+            description: "Measures the path to a certain host with UDP"
         }
 
         ListElement {
-            title: "HTTP Download"
-            group: "Peer measurements"
+            title: "HTTP download"
+            group: "Public peer measurements"
             measurement: "HttpDownload"
+            description: "Download something from a public website"
+        }
+
+        ListElement {
+            title: "Btc"
+            group: "Glimpse peer measurements"
+            measurement: "Btc"
+            description: "Bulk transfer capacity measurement (TCP)"
+        }
+
+        ListElement {
+            title: "Packet Trains"
+            group: "Glimpse peer measurements"
+            measurement: "Packettrains"
+            description: "Trains of packet pairs measurement"
         }
     }
 
@@ -61,7 +86,21 @@ ListPage {
         showImage: false
 
         headline: model.title
-        text: model.measurement
+        text: model.description
         onClicked: nextPage("measurements/%1.qml".arg(model.measurement))
+    }
+
+    footer: Rectangle {
+        width: parent.width
+        height: note.height
+
+        Label {
+            id: note
+            anchors {
+                left: parent.left
+                right: parent.right
+                margins: units.gu(20)
+            }
+        }
     }
 }
