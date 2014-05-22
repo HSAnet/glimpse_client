@@ -325,6 +325,18 @@ bool Client::init()
     qRegisterMetaType<TestDefinitionPtr>();
     qRegisterMetaType<ResultPtr>();
 
+    // Get network time from ntp server
+    QHostInfo hostInfo = QHostInfo::fromName("ptbtime1.ptb.de");
+    if (!hostInfo.addresses().isEmpty())
+    {
+        QHostAddress ntpServer = hostInfo.addresses().first();
+        ntp->sync(ntpServer);
+    }
+    else
+    {
+        LOG_WARNING("could not resolve ntp server");
+    }
+
     d->setupUnixSignalHandlers();
     d->settings.init();
 
@@ -342,18 +354,6 @@ bool Client::init()
     if (!d->settings.isPassive())
     {
         d->taskController.init(&d->networkManager, &d->scheduler, &d->settings);
-    }
-
-    // Get network time from ntp server
-    QHostInfo hostInfo = QHostInfo::fromName("ptbtime1.ptb.de");
-    if (!hostInfo.addresses().isEmpty())
-    {
-        QHostAddress ntpServer = hostInfo.addresses().first();
-        ntp->sync(ntpServer);
-    }
-    else
-    {
-        LOG_WARNING("could not resolve ntp server");
     }
 
     return true;

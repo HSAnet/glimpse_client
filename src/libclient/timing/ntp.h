@@ -69,7 +69,6 @@ public:
     QDateTime localTime() const;
     QDateTime networkTime() const;
     quint64 offset() const;
-    void readResponse();
 
 signals:
     void error(QString message);
@@ -78,6 +77,9 @@ private:
     QUdpSocket *m_socket;
     QDateTime m_localTime;
     QDateTime m_networkTime;
+
+private slots:
+    void readResponse();
 };
 
 #endif // NTP_H

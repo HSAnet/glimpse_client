@@ -9,6 +9,7 @@ Ntp::Ntp(QObject *parent)
     : QObject(parent)
 {
     m_socket = new QUdpSocket(this);
+    connect(m_socket, SIGNAL(readyRead()), this, SLOT(readResponse()));
 }
 
 Ntp::~Ntp()
@@ -29,17 +30,6 @@ bool Ntp::sync(QHostAddress &host)
     if (m_socket->writeDatagram((char *)&packet, sizeof(packet), host, 123) < 0)
     {
         emit error("writeDatagram");
-        return false;
-    }
-
-    if (m_socket->waitForReadyRead())
-    {
-        readResponse();
-    }
-    else
-    {
-        LOG_WARNING("no response from ntp server");
-        emit error("no response from ntp server");
         return false;
     }
 
