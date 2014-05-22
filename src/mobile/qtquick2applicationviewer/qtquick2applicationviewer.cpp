@@ -45,8 +45,9 @@ QString QtQuick2ApplicationViewerPrivate::adjustPath(const QString &path)
         return pathInInstallDir;
 #elif defined(Q_OS_ANDROID_NO_SDK)
     return QLatin1String("/data/user/qt/") + path;
-#endif
+#else
     return path;
+#endif
 }
 
 QtQuick2ApplicationViewer::QtQuick2ApplicationViewer(QWindow *parent)
