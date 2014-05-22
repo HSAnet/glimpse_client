@@ -24,12 +24,12 @@ public:
 private:
     void setStatus(Status status);
 
-    ReverseDnslookupDefinitionPtr m_definition;
+    Status m_currentStatus;
     int m_lookupId;
+    ReverseDnslookupDefinitionPtr m_definition;
     QString m_reverseDnslookupOutput;
     QList<QHostAddress> m_reverseDnslookupAddresses;
     QString m_reverseDnslookupError;
-    Status m_currentStatus;
 
 private slots:
     void started();

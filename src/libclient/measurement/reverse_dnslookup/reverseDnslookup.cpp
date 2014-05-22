@@ -8,6 +8,7 @@ LOGGER(ReverseDnslookup);
 ReverseDnslookup::ReverseDnslookup(QObject *parent)
 : Measurement(parent)
 , m_currentStatus(ReverseDnslookup::Unknown)
+, m_lookupId(0)
 {
 }
 
