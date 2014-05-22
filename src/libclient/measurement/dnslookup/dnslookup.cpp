@@ -50,8 +50,7 @@ void Dnslookup::handleServers()
     // Check the lookup succeeded.
     if (m_dns.error() != QDnsLookup::NoError)
     {
-        LOG_DEBUG(m_dns.errorString());
-        LOG_DEBUG("DNS lookup failed");
+        LOG_DEBUG(QString("DNS lookup failed: %1").arg(m_dns.errorString()));
     }
 
     m_dnslookupOutput = m_dns.hostAddressRecords();
