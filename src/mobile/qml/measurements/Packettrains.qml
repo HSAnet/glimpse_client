@@ -17,38 +17,63 @@ Base {
         },
         {
             "label": "Port",
-            "type": "TextField",
-            "text": "5106"
+            "type": "Slider",
+            "stepSize": 1,
+            "minimumValue": 1025,
+            "maximumValue": 65535,
+            "value": 5106
         },
         {
-            "label": "PacketSize",
-            "type": "TextField",
-            "text": "1000"
+            "label": "Packet size",
+            "type": "Slider",
+            "stepSize": 1,
+            "minimumValue": 1,
+            "maximumValue": 1450,
+            "value": 1000,
+            "format": qsTr("%1 bytes")
         },
         {
-            "label": "TrainLength",
-            "type": "TextField",
-            "text": "48"
+            "label": "Train length",
+            "type": "Slider",
+            "stepSize": 1,
+            "minimumValue": 10,
+            "maximumValue": 128,
+            "value": 48
         },
         {
             "label": "Iterations",
-            "type": "TextField",
-            "text": "1"
+            "type": "Slider",
+            "stepSize": 1,
+            "minimumValue": 1,
+            "maximumValue": 16,
+            "value": 1
         },
         {
-            "label": "RateMin",
-            "type": "TextField",
-            "text": "10485760"
+            "label": "Minimum rate",
+            "type": "Slider",
+            "stepSize": 1024,
+            "minimumValue": 1024,
+            "maximumValue": 262144000,
+            "value": 10485760,
+            "format": qsTr("%1 byte/s")
         },
         {
-            "label": "RateMax",
-            "type": "TextField",
-            "text": "262144000"
+            "label": "Maximum rate",
+            "type": "Slider",
+            "stepSize": 1024,
+            "minimumValue": 1024,
+            "maximumValue": 262144000,
+            "value": 262144000,
+            "format": qsTr("%1 byte/s")
         },
         {
             "label": "Delay",
-            "type": "TextField",
-            "text": "200000000"
+            "type": "Slider",
+            "stepSize": 1000,
+            "minimumValue": 1000000,
+            "maximumValue": 1000000000,
+            "value": 200000000,
+            "format": qsTr("%1 nanoseconds")
         },
     ]
 }

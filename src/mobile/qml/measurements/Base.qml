@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
 import "../controls"
 import "../"
 
@@ -27,7 +28,7 @@ Page {
     Component {
         id: buttonComponent
 
-        Button {}
+        BigButton {}
     }
 
     function startMeasurement() {
@@ -63,6 +64,7 @@ Page {
             labelComponent.createObject(grid, {"text": prop.label});
 
             var column = columnComponent.createObject(grid);
+            column.Layout.fillWidth = true;
             var valueLabel;
 
             switch(prop.type) {
@@ -73,6 +75,9 @@ Page {
 
             var component = Qt.createComponent(Qt.resolvedUrl("../controls/%1.qml".arg(prop.type)))
             var control = component.createObject(column, prop);
+            control.width = Qt.binding(function() {
+                return this.parent.width;
+            });
 
             if (valueLabel) {
                 valueLabel.valueFormat = prop.format ? prop.format : "%1";
@@ -83,7 +88,9 @@ Page {
             }
         }
 
-        var button = buttonComponent.createObject(grid, {"text":qsTr("Start %1").arg(root.measurement)});
+        var button = buttonComponent.createObject(grid, {"text":qsTr("Start")});
+        button.Layout.columnSpan = 2;
+        button.Layout.alignment = Qt.AlignHCenter;
         button.clicked.connect(root.startMeasurement);
     }
 
@@ -109,70 +116,19 @@ Page {
             fillMode: Image.PreserveAspectFit
         }
 
-        Grid {
+        GridLayout {
             id: grid
-            anchors.fill: listBackground
-            anchors.margins: units.gu(10)
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+                topMargin: units.gu(40)
+                leftMargin: units.gu(20)
+                rightMargin: units.gu(20)
+                //margins: units.gu(10)
+            }
 
             columns: 2
-            //spacing: units.gu(2)
-
-            /*
-            Label { text: qsTr("Host") }
-            TextField {
-                id: hostField
-            }
-
-            Label { text: qsTr("Count") }
-            Column {
-                Label {
-                    text: countSlider.value
-                }
-
-                Slider {
-                    id: countSlider
-                    stepSize: 1.0
-                    minimumValue: 1
-                    maximumValue: 255
-                    value: 4
-                }
-            }
-
-            Label { text: qsTr("Timeout") }
-            Column {
-                Label {
-                    text: qsTr("%1 milliseconds").arg(timeoutSlider.value)
-                }
-
-                Slider {
-                    id: timeoutSlider
-                    stepSize: 1.0
-                    minimumValue: 50
-                    maximumValue: 20000
-                    value: 2000
-                }
-            }
-
-            Label { text: qsTr("Interval") }
-            Column {
-                Label {
-                    text: qsTr("%1 milliseconds").arg(intervalSlider.value)
-                }
-
-                Slider {
-                    id: intervalSlider
-                    stepSize: 1.0
-                    minimumValue: 1
-                    maximumValue: 20000
-                    value: 200
-                }
-            }
-
-            Item {}
-            Button {
-                text: qsTr("Start ping")
-                onClicked: root.startMeasurement(hostField.text, countSlider.value, timeoutSlider.value, intervalSlider.value)
-            }*/
         }
     }
 }

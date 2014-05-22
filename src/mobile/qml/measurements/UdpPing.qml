@@ -77,7 +77,7 @@ Base {
             "type": "Slider",
             "stepSize": 1,
             "minimumValue": 1,
-            "maximumValue": 4096,
+            "maximumValue": 1450,
             "value": 74,
             "format": qsTr("%1 bytes")
         },
