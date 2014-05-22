@@ -33,6 +33,8 @@ bool ReverseDnslookup::prepare(NetworkManager *networkManager, const Measurement
 
 bool ReverseDnslookup::start()
 {
+    setStartDateTime(QDateTime::currentDateTime());
+
     m_lookupId = QHostInfo::lookupHost(m_definition->ip, this, SLOT(handleServers(QHostInfo)));
     return true;
 }
@@ -89,7 +91,7 @@ ResultPtr ReverseDnslookup::result() const
 
     res << map;
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
 }
 
 void ReverseDnslookup::started()
