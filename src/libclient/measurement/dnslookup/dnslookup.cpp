@@ -41,6 +41,9 @@ bool Dnslookup::start()
         QHostAddress hostAddress(m_definition->dnsServer);
         m_dns.setNameserver(hostAddress);
     }
+
+    setStartDateTime(QDateTime::currentDateTime());
+
     m_dns.lookup();
     return true;
 }
@@ -112,7 +115,7 @@ ResultPtr Dnslookup::result() const
         res << map;
     }
 
-    return ResultPtr(new Result(QDateTime::currentDateTime(), res, QVariant()));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
 }
 
 void Dnslookup::started()
