@@ -465,12 +465,14 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
     RemoteHost remote = NetworkHelper::remoteHost(hostname);
     RemoteHost aliveRemote = NetworkHelper::remoteHost(d->settings->config()->keepaliveAddress());
 
+    /*
     if (!aliveRemote.isValid())
     {
         LOG_ERROR(QString("Invalid alive remote: '%1' can't talk to alive server").arg(d->settings->config()->keepaliveAddress()));
         delete socket;
         return NULL;
     }
+    */
 
     measurementDefinition->measurementUuid = QUuid::createUuid();
 
@@ -508,7 +510,7 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
     testSocket->writeDatagram(data, QHostAddress(remote.host), d->localPort);
 
     // Step two: Send test offer to peer via alive-server
-    testSocket->writeDatagram(data, QHostAddress(aliveRemote.host), aliveRemote.port);
+    //testSocket->writeDatagram(data, QHostAddress(aliveRemote.host), aliveRemote.port);
 
     LOG_TRACE("Sent test offer to peer and alive-server");
 

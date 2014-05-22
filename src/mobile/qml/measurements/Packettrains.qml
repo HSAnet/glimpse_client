@@ -8,7 +8,7 @@ Base {
 
     title: qsTr("Packet Trains")
 
-    measurement: "packettrains"
+    measurement: "packetTrains"
     properties: [
         {
             "label": "Host",
