@@ -41,19 +41,12 @@ void ReverseDnslookup::handleServers(QHostInfo info)
     // Check the lookup succeeded.
     if (info.error() != QHostInfo::NoError)
     {
-        LOG_DEBUG(info.errorString());
-        LOG_DEBUG("IP lookup failed");
+        LOG_DEBUG(QString("IP lookup failed: %1").arg(info.errorString()));
     }
 
     m_reverseDnslookupOutput = info.hostName();
     m_reverseDnslookupAddresses = info.addresses();
     m_reverseDnslookupError = info.errorString();
-
-    if (m_reverseDnslookupOutput == m_definition->ip) {
-            LOG_ERROR("HOST not found");
-            emit finished();
-            return;
-    }
 
     setStatus(ReverseDnslookup::Finished);
     emit finished();
