@@ -27,6 +27,7 @@ private:
     DnslookupDefinitionPtr m_definition;
     QDnsLookup m_dns;
     QList<QDnsHostAddressRecord> m_dnslookupOutput;
+    QString m_dnsError;
     Status m_currentStatus;
 
 private slots:

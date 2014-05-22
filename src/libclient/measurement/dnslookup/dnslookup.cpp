@@ -50,13 +50,12 @@ void Dnslookup::handleServers()
     // Check the lookup succeeded.
     if (m_dns.error() != QDnsLookup::NoError)
     {
-        LOG_ERROR(m_dns.errorString());
-        LOG_ERROR("DNS lookup failed");
-        emit finished();
-        return;
+        LOG_DEBUG(m_dns.errorString());
+        LOG_DEBUG("DNS lookup failed");
     }
 
     m_dnslookupOutput = m_dns.hostAddressRecords();
+    m_dnsError = m_dns.errorString();
 
     setStatus(Dnslookup::Finished);
     emit finished();
@@ -86,6 +85,10 @@ bool Dnslookup::stop()
 ResultPtr Dnslookup::result() const
 {
     QVariantList res;
+    QVariantMap error;
+    error.insert("error", m_dnsError);
+    res << error;
+
     foreach(const QDnsHostAddressRecord &val, m_dnslookupOutput)
     {
         QString type;
