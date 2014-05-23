@@ -216,10 +216,10 @@ public:
     QProcess process;
     process.start("uname", QStringList() << "-sm");
     process.waitForFinished(-1); // wait forever until finished
-    QString stdout = process.readAllStandardOutput();
-    machine += stdout.simplified() + "; ";
+    QString stdoutOutput = process.readAllStandardOutput();
+    machine += stdoutOutput.simplified() + "; ";
 #endif
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     QString machine = "Windows; ";
 #endif
     _userAgent = "Mozilla/5.0 (" + machine + locale + ") GAnalytics/1.0 (Qt/" QT_VERSION_STR " )";
