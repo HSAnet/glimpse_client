@@ -40,6 +40,9 @@ Q_IMPORT_PLUGIN(QtQuick2WindowPlugin)
 Q_IMPORT_PLUGIN(QtQuickControlsPlugin)
 #endif
 
+#include <QUrl>
+#include <ganalytics.hpp>
+
 LOGGER(main)
 
 void loadFonts(const QString& path)
@@ -190,6 +193,12 @@ int main(int argc, char* argv[])
     view->setMainQmlFile(QStringLiteral("qml/main.qml"));
     view->showExpanded();
 
+    // Google analytics
+    GAnalytics analytics(&app, "UA-51299738-1");
+    analytics.generateUserAgentEtc();
+    analytics.setAppName("glimpse-tarball-version");
+    analytics.sendAppview("glimpse-tarball-version", "v1", "application start");
+
     int returnCode = app.exec();
 
     LOG_INFO("Syncing settings before shutdown");
@@ -205,6 +214,8 @@ int main(int argc, char* argv[])
     app.exec();
 
     LOG_INFO("Shutdown complete");
+
+    analytics.endSession();
 
     return returnCode;
 }

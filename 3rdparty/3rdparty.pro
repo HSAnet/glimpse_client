@@ -4,4 +4,5 @@ SUBDIRS += miniupnp.pro
 
 OTHER_FILES += miniupnpc.pri \
                breakpad.pri \
-               winpcap.pri
+               winpcap.pri \
+               google-analytics-collector.pri

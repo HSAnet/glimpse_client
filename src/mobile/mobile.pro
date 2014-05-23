@@ -19,6 +19,9 @@ QT += gui quick qml concurrent
 
 include(../../dist.pri)
 include(../libclient/libclient.pri)
+include(../../3rdparty/google-analytics-collector.pri)
+
+HEADERS += ../../3rdparty/google-analytics-collector/ganalytics.hpp
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 ANDROID_PACKAGE = "de.hsaugsburg.informatik.mplane.client"
