@@ -507,10 +507,13 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
     QByteArray data = QJsonDocument::fromVariant(request.toVariant()).toJson();
 
     // Step one: Send test offer to peer directly
-    testSocket->writeDatagram(data, QHostAddress(remote.host), d->localPort);
+    if (testSocket)
+    {
+        testSocket->writeDatagram(data, QHostAddress(remote.host), d->localPort);
 
-    // Step two: Send test offer to peer via alive-server
-    //testSocket->writeDatagram(data, QHostAddress(aliveRemote.host), aliveRemote.port);
+        // Step two: Send test offer to peer via alive-server
+        //testSocket->writeDatagram(data, QHostAddress(aliveRemote.host), aliveRemote.port);
+    }
 
     LOG_TRACE("Sent test offer to peer and alive-server");
 
