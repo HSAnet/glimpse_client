@@ -300,6 +300,7 @@ int main(int argc, char* argv[])
         client->settings()->config()->setControllerAddress(parser.value(controllerUrl));
     }
 
+    /*
     new LoginWatcher(client->loginController());
     new DeviceRegistrationWatcher(client->loginController());
 
@@ -330,6 +331,7 @@ int main(int argc, char* argv[])
             return 1;
         }
     }
+    */
 
     int value = app.exec();
     out << "Application shutting down.\n";
