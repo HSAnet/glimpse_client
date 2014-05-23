@@ -33,8 +33,6 @@
   to enable debugging messages, '#define GANALYTICS_DEBUG 1' before including this file
   to get super verbose debugging, '#define GANALYTICS_DEBUG 2'
 */
-#include <unistd.h>
-#include <map>
 #include <QSettings>
 #include <QUuid>
 #include <QScreen>
