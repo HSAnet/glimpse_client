@@ -35,13 +35,9 @@
 */
 #include <unistd.h>
 #include <map>
-#include <QCoreApplication>
 #include <QSettings>
-#ifdef QT_GUI_LIB
-#include <QApplication>
-#include <QDesktopWidget>
-#endif
 #include <QUuid>
+#include <QScreen>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -49,6 +45,7 @@
 #include <QUrlQuery>
 #include <QDebug>
 #include <QProcess>
+#include <QGuiApplication>
 
 /*!
  * send google tracking data according to
@@ -72,9 +69,6 @@ public:
     if (parent) {
       setAppName(parent->applicationName());
       setAppVersion(parent->applicationVersion());
-#ifdef QT_GUI_LIB
-      parent->dumpObjectTree();
-#endif
     }
     if (!_clientID.size()) {
       // load client id from settings
@@ -233,9 +227,14 @@ public:
     _userAgent = "Mozilla/5.0 (" + machine + locale + ") GAnalytics/1.0 (Qt/" QT_VERSION_STR " )";
     _userLanguage = locale;
 #ifdef QT_GUI_LIB
-    QString geom = QString::number(QApplication::desktop()->screenGeometry().width()) 
-      + "x" + QString::number(QApplication::desktop()->screenGeometry().height());
-    _screenResolution = geom;
+    QList<QScreen*> screens = QGuiApplication::screens();
+    if (!screens.isEmpty())
+    {
+        QScreen* screen = screens.at(0);
+        QRect rect = screen->geometry();
+
+        _screenResolution = QString("%1x%2").arg(rect.width()).arg(rect.height());
+    }
 #endif
 #if GANALYTICS_DEBUG > 1
     qDebug() << "User-Agent:" << _userAgent;
