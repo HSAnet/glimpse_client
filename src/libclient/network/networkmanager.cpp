@@ -170,14 +170,14 @@ void NetworkManager::Private::updateSocket()
     }
     */
 
-    localPort = remote.port;
+    localPort = 5106; //remote.port;
 
     socket = qobject_cast<QUdpSocket*>( q->createConnection(NetworkManager::UdpSocket) );
     socket->setParent(this);
     connect(socket.data(), SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
-    if (!socket->bind(remote.port))
+    if (!socket->bind(5106))
     {
-        LOG_ERROR(QString("Unable to bind port %1: %2").arg(remote.port).arg(socket->errorString()));
+        LOG_ERROR(QString("Unable to bind port %1: %2").arg(5106).arg(socket->errorString()));
     }
 }
 
