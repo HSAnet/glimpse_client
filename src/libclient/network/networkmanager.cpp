@@ -161,12 +161,14 @@ void NetworkManager::Private::updateSocket()
         socket.clear();
     }
 
+    /*
     QString keepaliveAddress = settings->config()->keepaliveAddress();
     RemoteHost remote = NetworkHelper::remoteHost(keepaliveAddress);
     if (!remote.isValid())
     {
         return;
     }
+    */
 
     localPort = remote.port;
 
