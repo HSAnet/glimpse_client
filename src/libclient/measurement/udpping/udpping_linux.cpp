@@ -308,6 +308,7 @@ void UdpPing::receiveData(PingProbe *probe)
                 if (ee->ee_origin != SO_EE_ORIGIN_ICMP)
                 {
                     ee = NULL;
+                    continue;
                 }
 
                 if (ee->ee_type == ICMP_SOURCE_QUENCH || ee->ee_type == ICMP_REDIRECT)
