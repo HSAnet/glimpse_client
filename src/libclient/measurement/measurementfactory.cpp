@@ -4,6 +4,7 @@
 #include "upnp/upnp_plugin.h"
 #include "ping/ping_plugin.h"
 #include "dnslookup/dnslookup_plugin.h"
+#include "reverse_dnslookup/reverseDnslookup_plugin.h"
 #include "packettrains/packettrainsplugin.h"
 #include "udpping/udpping_plugin.h"
 #include "traceroute/traceroute_plugin.h"
@@ -24,6 +25,7 @@ public:
         addPlugin(new UPnPPlugin);
         addPlugin(new PingPlugin);
         addPlugin(new DnslookupPlugin);
+        addPlugin(new ReverseDnslookupPlugin);
         addPlugin(new PacketTrainsPlugin);
         addPlugin(new UdpPingPlugin);
         addPlugin(new TraceroutePlugin);

@@ -20,7 +20,7 @@ Description: The glimpse measurement platform console client
 
 Package: glimpse-gui
 Architecture: amd64 i386
-Depends: ${shlibs:Depends}, ${misc:Depends}, libglimpse (>= ${source:Version}), qt52quickcontrols
+Depends: ${shlibs:Depends}, ${misc:Depends}, libglimpse (>= ${source:Version}), qt53quickcontrols
 Description: The glimpse measurement platform gui client
 
 Package: glimpse
