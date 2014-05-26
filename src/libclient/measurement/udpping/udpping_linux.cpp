@@ -19,14 +19,16 @@ namespace
         struct addrinfo *rp = NULL, *result = NULL;
 
         memset(&hints, 0, sizeof (hints));
-        hints.ai_family = AF_INET;
+        hints.ai_family = PF_UNSPEC;
 
         if (getaddrinfo(address.toStdString().c_str(), NULL, &hints, &result))
         {
             return false;
         }
 
-        for (rp = result; rp && rp->ai_family != AF_INET; rp = rp->ai_next)
+        for (rp = result; rp && rp->ai_family != AF_INET &&
+             rp->ai_family != AF_INET6;
+             rp = rp->ai_next)
         {
         }
 
@@ -100,7 +102,19 @@ bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitio
         return false;
     }
 
-    m_destAddress.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
+    if (m_destAddress.sa.sa_family == AF_INET)
+    {
+        m_destAddress.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
+    }
+    else if (m_destAddress.sa.sa_family == AF_INET6)
+    {
+        m_destAddress.sin6.sin6_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
+    }
+    else
+    {
+        // unreachable
+        return false;
+    }
 
     return true;
 }
@@ -174,15 +188,28 @@ int UdpPing::initSocket()
 
     memset(&src_addr, 0, sizeof(src_addr));
 
-    sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    sock = socket(m_destAddress.sa.sa_family, SOCK_DGRAM, IPPROTO_UDP);
     if (sock < 0)
     {
         emit error("socket: " + QString(strerror(errno)));
         return -1;
     }
 
-    src_addr.sa.sa_family = AF_INET;
-    src_addr.sin.sin_port = htons(definition->sourcePort);
+    src_addr.sa.sa_family = m_destAddress.sa.sa_family;
+    if (m_destAddress.sa.sa_family == AF_INET)
+    {
+        src_addr.sin.sin_port = htons(definition->sourcePort);
+    }
+    else if (m_destAddress.sa.sa_family == AF_INET6)
+    {
+        src_addr.sin6.sin6_port = htons(definition->sourcePort);
+    }
+    else
+    {
+        // unreachable
+        goto cleanup;
+    }
+
     if (bind(sock, (struct sockaddr *) &src_addr, sizeof(src_addr)) < 0)
     {
         emit error("bind: " + QString(strerror(errno)));
@@ -203,17 +230,27 @@ int UdpPing::initSocket()
         goto cleanup;
     }
 
-    if (::connect(sock, (struct sockaddr *) &m_destAddress, sizeof(m_destAddress)) < 0)
-    {
-        emit error("connect: " + QString(strerror(errno)));
-        goto cleanup;
-    }
-
     // use RECVRR
     n = 1;
-    if (setsockopt(sock, SOL_IP, IP_RECVERR, &n, sizeof(n)) < 0)
+    if (m_destAddress.sa.sa_family == AF_INET)
     {
-        emit error("setsockopt IP_RECVERR: " + QString(strerror(errno)));
+        if (setsockopt(sock, SOL_IP, IP_RECVERR, &n, sizeof(n)) < 0)
+        {
+            emit error("setsockopt IP_RECVERR: " + QString(strerror(errno)));
+            goto cleanup;
+        }
+    }
+    else if (m_destAddress.sa.sa_family == AF_INET6)
+    {
+        if (setsockopt(sock, IPPROTO_IPV6, IPV6_RECVERR, &n, sizeof(n)) < 0)
+        {
+            emit error("setsockopt IPV6_RECVERR: " + QString(strerror(errno)));
+            goto cleanup;
+        }
+    }
+    else
+    {
+        // unreachable
         goto cleanup;
     }
 
@@ -235,7 +272,8 @@ bool UdpPing::sendData(PingProbe *probe)
     // randomize payload to prevent caching
     randomizePayload(m_payload, definition->payload);
 
-    if (send(probe->sock, m_payload, definition->payload, 0) < 0)
+    if (sendto(probe->sock, m_payload, definition->payload, 0,
+               (sockaddr *)&m_destAddress, sizeof(m_destAddress)) < 0)
     {
         emit error("send: " + QString(strerror(errno)));
         return false;

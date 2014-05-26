@@ -12,7 +12,7 @@ staticlib {
 } else {
     DEFINES += LIBCLIENT_BUILD
 
-    win32:LIBS += -lws2_32 -lCrypt32 -lPdh
+    win32:LIBS += -lws2_32 -lCrypt32 -lPdh -lntdll
 }
 
 # Add the ld.so.conf.d/glimpse.conf file

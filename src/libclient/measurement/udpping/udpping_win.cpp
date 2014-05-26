@@ -8,6 +8,17 @@
 
 namespace
 {
+    union ipAddress
+    {
+        quint32 v4;
+        quint8 v6[16];
+    };
+
+    union inAddress
+    {
+        struct in_addr v4;
+        struct in6_addr v6;
+    };
 
     bool getAddress(const QString &address, sockaddr_any *addr)
     {
@@ -15,15 +26,15 @@ namespace
         struct addrinfo *rp = NULL, *result = NULL;
 
         memset(&hints, 0, sizeof(hints));
-        hints.ai_family = AF_INET;
-        hints.ai_flags = AI_FQDN;
+        hints.ai_family = AF_UNSPEC;
 
         if (getaddrinfo(address.toStdString().c_str(), NULL, &hints, &result))
         {
             return false;
         }
 
-        for (rp = result; rp && rp->ai_family != AF_INET; rp = rp->ai_next)
+        for (rp = result; rp && rp->ai_family != AF_INET &&
+             rp->ai_family != AF_INET6; rp = rp->ai_next)
         {
         }
 
@@ -39,25 +50,178 @@ namespace
         return true;
     }
 
-    static PingProbe receiveLoop(pcap_t *capture, PingProbe probe, sockaddr_any destination)
+    bool handleIpv4Response(const u_char *data,
+                            const pcap_pkthdr *header,
+                            const sockaddr_any &destination,
+                            PingProbe *newProbe)
     {
-        struct ipAddress
-        {
-            u_char byte1;
-            u_char byte2;
-            u_char byte3;
-            u_char byte4;
-        };
-
-        int res;
-        char sourceAddress[16] = "";
-        char destinationAddress[16] = "";
-        const u_char *data;
-        pcap_pkthdr *header;
+        char sourceAddress[INET_ADDRSTRLEN] = "";
+        char destinationAddress[INET_ADDRSTRLEN] = "";
         ipAddress *source;
         quint8 *icmpType;
         quint8 *icmpCode;
         quint8 *ipProto;
+
+        if (data == NULL || header == NULL || newProbe == NULL)
+        {
+            return true;
+        }
+
+        ipProto = (quint8 *)(data + 23);
+        source = (ipAddress *)(data + 26);
+        icmpType = (quint8 *)(data + 34);
+        icmpCode = (quint8 *)(data + 35);
+
+        // source address of the response packet
+        RtlIpv4AddressToStringA(&((inAddress *)source)->v4, sourceAddress);
+        // destination of request packet
+        RtlIpv4AddressToStringA(&destination.sin.sin_addr, destinationAddress);
+
+        switch (*ipProto)
+        {
+        case 17:
+            // UDP request
+            newProbe->sendTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
+            // tell the caller to continue capturing packets
+            return false;
+        case 1:
+            // ICMP response
+
+            getAddress(sourceAddress, &newProbe->source);
+
+            if ((*icmpType == 3 && *icmpCode == 3) ||
+                    (*icmpType == 11 && *icmpCode == 0))
+            {
+                /*
+                 * 'source' points to the destination field of the original
+                 * packet, which is sent as the ICMP payload.
+                 */
+                source = (ipAddress *) (data + 58);
+                RtlIpv4AddressToStringA(&((inAddress *)source)->v4,
+                                        sourceAddress);
+
+                if (strncmp(sourceAddress, destinationAddress,
+                            INET_ADDRSTRLEN) == 0)
+                {
+                    newProbe->recvTime = header->ts.tv_sec * 1e6 +
+                            header->ts.tv_usec;
+                    newProbe->response = *icmpType == 3
+                            ? udpping::DESTINATION_UNREACHABLE
+                            : udpping::TTL_EXCEEDED;
+                    return true;
+                }
+
+                return false;
+            }
+            else
+            {
+                /*
+                 * An unhandled ICMP packet has been captured. We need to check
+                 * this and handle it if needed.
+                 */
+                newProbe->icmpType = *icmpType;
+                newProbe->icmpCode = *icmpCode;
+                newProbe->response = udpping::UNHANDLED_ICMP;
+                return true;
+            }
+        default:
+            /*
+             * This else-branch exists because of paranoia only. The WinPCAP
+             * filter is set to capture certain ICMP and UDP packets only and
+             * therefore should never end up here.
+             */
+            newProbe->sendTime = -1;
+            newProbe->recvTime = -1;
+            return true;
+        }
+    }
+
+    bool handleIpv6Response(const u_char *data,
+                            const pcap_pkthdr *header,
+                            const sockaddr_any &destination,
+                            PingProbe *newProbe)
+    {
+        char sourceAddress[INET6_ADDRSTRLEN] = "";
+        char destinationAddress[INET6_ADDRSTRLEN] = "";
+        ipAddress *source;
+        quint8 *icmpType;
+        quint8 *icmpCode;
+        quint8 *ipProto;
+
+        if (data == NULL || header == NULL || newProbe == NULL)
+        {
+            return true;
+        }
+
+        ipProto = (quint8 *)(data + 20);
+        source = (ipAddress *)(data + 22);
+        icmpType = (quint8 *)(data + 54);
+        icmpCode = (quint8 *)(data + 55);
+
+        RtlIpv6AddressToStringA(&((inAddress *)source)->v6, sourceAddress);
+        RtlIpv6AddressToStringA(&destination.sin6.sin6_addr,
+                                destinationAddress);
+
+        switch (*ipProto)
+        {
+        case 17:
+            // UDP request
+            newProbe->sendTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
+            return false;
+        case 58:
+            // ICMPv6 response
+
+            getAddress(sourceAddress, &newProbe->source);
+
+            if ((*icmpType == 1 && *icmpCode == 4) ||
+                    (*icmpType == 3 && *icmpCode == 0))
+            {
+                source = (ipAddress *) (data + 86);
+                RtlIpv6AddressToStringA(&((inAddress *)source)->v6,
+                                        sourceAddress);
+
+                if (strncmp(sourceAddress, destinationAddress,
+                            INET6_ADDRSTRLEN) == 0)
+                {
+                    newProbe->recvTime = header->ts.tv_sec * 1e6 +
+                            header->ts.tv_usec;
+                    newProbe->response = *icmpType == 1
+                            ? udpping::DESTINATION_UNREACHABLE
+                            : udpping::TTL_EXCEEDED;
+                    return true;
+                }
+
+                return false;
+            }
+            else
+            {
+                /*
+                 * An unhandled ICMP packet has been captured. We need to check
+                 * this and handle it if needed.
+                 */
+                newProbe->icmpType = *icmpType;
+                newProbe->icmpCode = *icmpCode;
+                newProbe->response = udpping::UNHANDLED_ICMP;
+                return true;
+            }
+        default:
+            /*
+             * This else-branch exists because of paranoia only. The WinPCAP
+             * filter is set to capture certain ICMP and UDP packets only and
+             * therefore should never end up here.
+             */
+            newProbe->sendTime = -1;
+            newProbe->recvTime = -1;
+            return true;
+        }
+    }
+
+    PingProbe receiveLoop(pcap_t *capture, PingProbe probe, sockaddr_any destination)
+    {
+        int res;
+        const u_char *data;
+        pcap_pkthdr *header;
+        quint16 *ipVersion;
         PingProbe newProbe;
 
         memcpy(&newProbe, &probe, sizeof(newProbe));
@@ -66,95 +230,43 @@ namespace
         {
             res = pcap_next_ex(capture, &header, &data);
 
-            ipProto = (quint8 *) (data + 23);
-            source = (ipAddress *) (data + 26);
-            icmpType = (quint8 *) (data + 34);
-            icmpCode = (quint8 *) (data + 35);
-
             switch (res)
             {
             case 0:
                 // timed out
-                newProbe.sendTime = 0;
-                newProbe.recvTime = 0;
-                goto exit;
+                return newProbe;
             case -1:
                 // error indication
-                goto error;
+                newProbe.sendTime = -1;
+                newProbe.recvTime = -1;
+                return newProbe;
             default:
                 // packets received
                 // TODO: ensure the packets are really ours by checking them
 
-                // source address of the response packet
-                sprintf(sourceAddress, "%d.%d.%d.%d", source->byte1, source->byte2, source->byte3, source->byte4);
-                // destination of request packet
-                strncpy(destinationAddress, inet_ntoa(destination.sin.sin_addr), sizeof(destinationAddress) - 1);
+                ipVersion = (quint16 *) (data + 12);
 
-                if (*ipProto == 17)
+                switch (*ipVersion)
                 {
-                    // UDP request
-                    newProbe.sendTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
-                } else if (*ipProto == 1)
-                {
-                    // ICMP response
-
-                    getAddress(sourceAddress, &newProbe.source);
-
-                    if (*icmpCode == 3 && *icmpType == 3)
+                case 0x8:
+                    if (handleIpv4Response(data, header, destination,
+                                           &newProbe))
                     {
-                        // destination and port unreachable: this was a successful ping
-                        if (strncmp(sourceAddress, destinationAddress, 16) == 0)
-                        {
-                            newProbe.recvTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
-                            newProbe.response = udpping::DESTINATION_UNREACHABLE;
-                            goto exit;
-                        }
-                    } else if (*icmpCode == 0 && *icmpType == 11)
-                    {
-                        /*
-                         * TTL exceeded
-                         *
-                         * Let's missuse source and sourceAddress for the destination of the original IP header.
-                         */
-                        source = (ipAddress *) (data + 58);
-                        sprintf(sourceAddress, "%d.%d.%d.%d", source->byte1, source->byte2, source->byte3, source->byte4);
-
-                        if (strncmp(sourceAddress, destinationAddress, 16) == 0)
-                        {
-                            newProbe.recvTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
-                            newProbe.response = udpping::TTL_EXCEEDED;
-                            goto exit;
-                        }
-                    } else
-                    {
-                        /*
-                         * An unhandled ICMP packet has been captured. We need to check this and
-                         * handle it if needed.
-                         */
-                        newProbe.icmpType = *icmpType;
-                        newProbe.icmpCode = *icmpCode;
-                        newProbe.response = udpping::UNHANDLED_ICMP;
-                        goto exit;
+                        return newProbe;
                     }
-                } else
-                {
-                    /*
-                     * This else-branch exists because of paranoia only.
-                     * The WinPCAP filter is set to capture certain ICMP and UDP packets only
-                     * and therefore should never end up here.
-                     */
-                    goto error;
+                    break;
+                case 0xdd86:
+                    if (handleIpv6Response(data, header, destination, &newProbe))
+                    {
+                        return newProbe;
+                    }
+                    break;
+                default:
+                    // unreachable
+                    return newProbe;
                 }
             }
         }
-
-    error:
-        // error indication
-        newProbe.sendTime = -1;
-        newProbe.recvTime = -1;
-
-    exit:
-        return newProbe;
     }
 
     void randomizePayload(char *payload, const quint32 size)
@@ -209,8 +321,7 @@ bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitio
     pcap_if_t *alldevs;
     char errbuf[PCAP_ERRBUF_SIZE] = "";
     char source[PCAP_BUF_SIZE] = "";
-    char address[16] = "";
-    unsigned long netmask;
+    char address[INET6_ADDRSTRLEN] = "";
     struct bpf_program fcode;
 
     definition = measurementDefinition.dynamicCast<UdpPingDefinition>();
@@ -224,7 +335,14 @@ bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitio
     }
 
     m_destAddress.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
-    strncpy(address, inet_ntoa(m_destAddress.sin.sin_addr), sizeof(address) - 1);
+    if (m_destAddress.sa.sa_family == AF_INET)
+    {
+        RtlIpv4AddressToStringA(&m_destAddress.sin.sin_addr, address);
+    }
+    else if (m_destAddress.sa.sa_family == AF_INET6)
+    {
+        RtlIpv6AddressToStringA(&m_destAddress.sin6.sin6_addr, address);
+    }
 
     if (pcap_createsrcstr(source, PCAP_SRC_IFLOCAL, address, NULL, NULL, errbuf) != 0)
     {
@@ -247,27 +365,19 @@ bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitio
     }
 
     // Open the device
-    m_capture = pcap_open(m_device->name, 100, PCAP_OPENFLAG_NOCAPTURE_LOCAL, 2000, NULL, errbuf);
+    m_capture = pcap_open(m_device->name, 110 + definition->payload,
+                          PCAP_OPENFLAG_NOCAPTURE_LOCAL, 2000, NULL,
+                          errbuf);
+
     if (m_capture == NULL)
     {
         emit error("pcap_open: " + QString(errbuf));
         return false;
     }
 
-    // set filter
-    if (m_device->addresses != NULL)
-    {
-        // Retrieve the mask of the first address of the interface
-        netmask = ((struct sockaddr_in *) (m_device->addresses->netmask))->sin_addr.S_un.S_addr;
-    } else
-    {
-        // If the interface is without an address we suppose to be in a C class network
-        netmask = 0xffffff;
-    }
-
     // capture only our UDP request and some ICMP responses
-    QString filter = "(icmp and icmptype != icmp-echo) or (udp and dst host " + QString::fromLocal8Bit(address) + ")";
-    if (pcap_compile(m_capture, &fcode, filter.toStdString().c_str(), 1, netmask) < 0)
+    QString filter = "((icmp or icmp6) and icmptype != icmp-echo) or (udp and dst host " + QString::fromLocal8Bit(address) + ")";
+    if (pcap_compile(m_capture, &fcode, filter.toStdString().c_str(), 1, 0) < 0)
     {
         pcap_freealldevs(alldevs);
         return false;
@@ -353,15 +463,23 @@ int UdpPing::initSocket()
 
     memset(&src_addr, 0, sizeof(src_addr));
 
-    sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    sock = socket(m_destAddress.sa.sa_family, SOCK_DGRAM, IPPROTO_UDP);
     if (sock == INVALID_SOCKET)
     {
         // TODO: emit error
         return -1;
     }
 
-    src_addr.sa.sa_family = AF_INET;
-    src_addr.sin.sin_port = htons(definition->sourcePort);
+    src_addr.sa.sa_family = m_destAddress.sa.sa_family;
+    if (m_destAddress.sa.sa_family == AF_INET)
+    {
+        src_addr.sin.sin_port = htons(definition->sourcePort);
+    }
+    else if (m_destAddress.sa.sa_family == AF_INET6)
+    {
+        src_addr.sin6.sin6_port = htons(definition->sourcePort);
+    }
+
     if (bind(sock, (struct sockaddr *) &src_addr, sizeof(src_addr)) != 0)
     {
         emit error("bind: " + QString(strerror(errno)));
@@ -369,16 +487,24 @@ int UdpPing::initSocket()
     }
 
     // set TTL
-    if (setsockopt(sock, IPPROTO_IP, IP_TTL, (char *) &ttl, sizeof(ttl)) != 0)
+    if (m_destAddress.sa.sa_family == AF_INET)
     {
-        emit error("setsockopt IP_TTL: " + QString(strerror(errno)));
-        goto cleanup;
+        if (setsockopt(sock, IPPROTO_IP, IP_TTL, (char *) &ttl,
+                       sizeof(ttl)) != 0)
+        {
+            emit error("setsockopt IP_TTL: " + QString(strerror(errno)));
+            goto cleanup;
+        }
     }
-
-    if (::connect(sock, (struct sockaddr *) &m_destAddress, sizeof(m_destAddress)) < 0)
+    else if (m_destAddress.sa.sa_family == AF_INET6)
     {
-        emit error("connect: " + QString(strerror(errno)));
-        goto cleanup;
+        if (setsockopt(sock, IPPROTO_IPV6, IPV6_UNICAST_HOPS, (char *) &ttl,
+                       sizeof(ttl)) != 0)
+        {
+            emit error("setsockopt IPV6_UNICAST_HOPS: " +
+                       QString(strerror(errno)));
+            goto cleanup;
+        }
     }
 
     return sock;
@@ -393,7 +519,8 @@ bool UdpPing::sendData(PingProbe *probe)
     // randomize payload to prevent caching
     randomizePayload(m_payload, definition->payload);
 
-    if (send(probe->sock, m_payload, definition->payload, 0) < 0)
+    if (sendto(probe->sock, m_payload, definition->payload, 0,
+               (sockaddr *)&m_destAddress, sizeof(m_destAddress)) < 0)
     {
         emit error("send: " + QString(strerror(errno)));
         return false;
