@@ -6,7 +6,7 @@
 #import <AppKit/NSImage.h>
 
 namespace QtMac {
-    NSString* toNSString(const QString& string);
+    NSString* toNSString();
 }
 
 MacImageProvider::MacImageProvider()
@@ -20,7 +20,7 @@ MacImageProvider::~MacImageProvider()
 
 QImage MacImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
-    NSString* bundleIdentifier = QtMac::toNSString(id);
+    NSString* bundleIdentifier = id.toNSString();
     NSArray* apps = [NSRunningApplication runningApplicationsWithBundleIdentifier:bundleIdentifier];
 
     if ([apps count] == 0)

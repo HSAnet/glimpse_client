@@ -75,8 +75,8 @@ void MacProcessModel::reload()
 
     for (NSRunningApplication* application in runningApplications) {
         ProcessInfo info;
-        info.localizedName = QtMac::fromNSString([application localizedName]);
-        info.bundleName = QtMac::fromNSString([application bundleIdentifier]);
+        info.localizedName = QString::fromNSString([application localizedName]);
+        info.bundleName = QString::fromNSString([application bundleIdentifier]);
 
         d->apps.append(info);
     }
