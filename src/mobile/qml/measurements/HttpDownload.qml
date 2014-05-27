@@ -13,7 +13,7 @@ Base {
         {
             "label": "Url",
             "type": "TextField",
-            "text": "http://ipv4.download.thinkbroadband.com:81/10MB.zip"
+            "text": "http://ipv4.download.thinkbroadband.com:80/10MB.zip"
         },
     ]
 }
