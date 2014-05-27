@@ -62,9 +62,9 @@ Source: "{#QtDir}\plugins\*"; DestDir: "{app}\plugins"; Excludes: "*d.dll,*.pdb"
 Source: "{#QtDir}\qml\*"; DestDir: "{app}\qml"; Excludes: "*d.dll,*.pdb,*.qmltypes"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 Source: "{#QtDir}\bin\d3dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#QtDir}\bin\icudt51.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#QtDir}\bin\icuin51.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#QtDir}\bin\icuuc51.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\icudt52.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\icuin52.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\icuuc52.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#QtDir}\bin\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#QtDir}\bin\libGLESv2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#QtDir}\bin\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
