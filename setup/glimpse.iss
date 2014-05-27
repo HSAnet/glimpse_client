@@ -61,7 +61,7 @@ Source: "urls\*.url"; DestDir: "{app}\urls"; Flags: ignoreversion createallsubdi
 Source: "{#QtDir}\plugins\*"; DestDir: "{app}\plugins"; Excludes: "*d.dll,*.pdb"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "{#QtDir}\qml\*"; DestDir: "{app}\qml"; Excludes: "*d.dll,*.pdb,*.qmltypes"; Flags: ignoreversion createallsubdirs recursesubdirs
 
-Source: "{#QtDir}\bin\d3dcompiler_46.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtDir}\bin\d3dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#QtDir}\bin\icudt51.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#QtDir}\bin\icuin51.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#QtDir}\bin\icuuc51.dll"; DestDir: "{app}"; Flags: ignoreversion
