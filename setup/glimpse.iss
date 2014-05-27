@@ -7,7 +7,7 @@
 #define MyAppURL "http://www.measure-it.de"
 #define MyAppExeName "mobile.exe"
 
-#define QtDir "C:\Qt\Qt5.2.1\5.2.1\msvc2012_64"
+#define QtDir "C:\Qt\Qt5.3.0\5.3\msvc2013_64"
 #define BuildDir "../"
 
 [Setup]
