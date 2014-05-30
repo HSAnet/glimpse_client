@@ -147,7 +147,9 @@ void WebRequester::Private::timeout()
 {
     // Abort current reply
     if (currentReply)
+    {
         currentReply->abort();
+    }
 }
 
 WebRequester::WebRequester(QObject *parent)

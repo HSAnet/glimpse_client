@@ -20,7 +20,7 @@ bool ReverseDnslookup::prepare(NetworkManager *networkManager, const Measurement
 {
     Q_UNUSED(networkManager);
     m_definition = measurementDefinition.dynamicCast<ReverseDnslookupDefinition>();
-    if ( m_definition.isNull() )
+    if (m_definition.isNull())
     {
         LOG_WARNING("Definition is empty");
         return false;
@@ -83,8 +83,10 @@ ResultPtr ReverseDnslookup::result() const
     map.insert("error", m_reverseDnslookupError);
     map.insert("hostname", m_reverseDnslookupOutput);
 
-    if (!m_reverseDnslookupAddresses.isEmpty()) {
-        foreach (QHostAddress address, m_reverseDnslookupAddresses) {
+    if (!m_reverseDnslookupAddresses.isEmpty())
+    {
+        foreach (const QHostAddress& address, m_reverseDnslookupAddresses)
+        {
             map.insert("address", address.toString());
         }
     }
