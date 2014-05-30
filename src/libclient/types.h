@@ -52,13 +52,18 @@ QList<QSharedPointer<T> > ptrListFromVariant(const QVariant& variant)
     return lst;
 }
 
+inline QVariant qVariantFromValue(const QHostAddress &address)
+{
+    return address.toString();
+}
+
 template <typename T>
 QVariantList listToVariant(const QList<T>& list)
 {
     QVariantList lst;
     foreach(T entry, list)
     {
-        lst.append(entry);
+        lst.append(QVariant::fromValue(entry));
     }
     return lst;
 }

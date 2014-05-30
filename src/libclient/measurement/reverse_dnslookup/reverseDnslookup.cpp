@@ -1,5 +1,6 @@
 #include "reverseDnslookup.h"
 #include "../../log/logger.h"
+#include "../../types.h"
 
 #include <QHostInfo>
 
@@ -82,14 +83,7 @@ ResultPtr ReverseDnslookup::result() const
     QVariantMap map;
     map.insert("error", m_reverseDnslookupError);
     map.insert("hostname", m_reverseDnslookupOutput);
-
-    if (!m_reverseDnslookupAddresses.isEmpty())
-    {
-        foreach (const QHostAddress& address, m_reverseDnslookupAddresses)
-        {
-            map.insert("address", address.toString());
-        }
-    }
+    map.insert("address", listToVariant(m_reverseDnslookupAddresses));
 
     res << map;
 
