@@ -210,7 +210,15 @@ int UdpPing::initSocket()
         goto cleanup;
     }
 
-    if (bind(sock, (struct sockaddr *) &src_addr, sizeof(src_addr)) < 0)
+    if (src_addr.sa.sa_family == AF_INET)
+    {
+        n = bind(sock, (struct sockaddr *) &src_addr, sizeof(src_addr.sin));
+    }
+    else if (src_addr.sa.sa_family == AF_INET6)
+    {
+        n = bind(sock, (struct sockaddr *) &src_addr, sizeof(src_addr.sin6));
+    }
+    if (n < 0)
     {
         emit error("bind: " + QString(strerror(errno)));
         goto cleanup;
@@ -263,6 +271,7 @@ cleanup:
 
 bool UdpPing::sendData(PingProbe *probe)
 {
+    int n;
     struct timeval tv;
 
     memset(&tv, 0, sizeof(tv));
@@ -272,8 +281,17 @@ bool UdpPing::sendData(PingProbe *probe)
     // randomize payload to prevent caching
     randomizePayload(m_payload, definition->payload);
 
-    if (sendto(probe->sock, m_payload, definition->payload, 0,
-               (sockaddr *)&m_destAddress, sizeof(m_destAddress)) < 0)
+    if (m_destAddress.sa.sa_family == AF_INET)
+    {
+        n = sendto(probe->sock, m_payload, definition->payload, 0,
+                   (sockaddr *)&m_destAddress, sizeof(m_destAddress.sin));
+    }
+    else if (m_destAddress.sa.sa_family == AF_INET6)
+    {
+        n = sendto(probe->sock, m_payload, definition->payload, 0,
+                   (sockaddr *)&m_destAddress, sizeof(m_destAddress.sin6));
+    }
+    if (n < 0)
     {
         emit error("send: " + QString(strerror(errno)));
         return false;
