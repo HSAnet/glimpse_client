@@ -14,4 +14,4 @@ rpmbuild -ba glimpse.spec
 
 exit
 
-cp $LXC .
+#don't forget to copy artifacts
