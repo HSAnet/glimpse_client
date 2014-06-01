@@ -1,12 +1,12 @@
 #/bin/sh
 
-LXC="/var/lib/lxc/fedora/rootfs/home/buildpkg/rpmbuild/SOURCES/"
-
 zip glimpse_client-develop *
 
-cp glimpse_client-develop.zip $LXC
+cp glimpse_client-develop.zip /home/buildpkg/ 
 
 sudo lxc-attach -n fedora
+
+cp glimpse_client-develop.zip rpmbuild/SOURCES/
 
 cd rpmbuild/SPECS
 
