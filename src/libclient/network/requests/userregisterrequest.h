@@ -11,10 +11,10 @@ class CLIENT_API UserRegisterRequest : public Request
     Q_CLASSINFO("path", "/auth/api/v1/user/")
     Q_CLASSINFO("http_request_method", "post")
     Q_CLASSINFO("authentication_method", "apikey")
-    Q_PROPERTY(QString nameLast READ nameLast WRITE setNameLast NOTIFY nameLastChanged)
+    Q_PROPERTY(QString lastName READ lastName WRITE setLastName NOTIFY lastNameChanged)
     Q_PROPERTY(QLocale::Country homeCountry READ homeCountry WRITE setHomeCountry NOTIFY homeCountryChanged)
     Q_PROPERTY(QString userId READ userId WRITE setUserId NOTIFY mailChanged)
-    Q_PROPERTY(QString nameFirst READ nameFirst WRITE setNameFirst NOTIFY nameFirstChanged)
+    Q_PROPERTY(QString firstName READ firstName WRITE setFirstName NOTIFY firstNameChanged)
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
     Q_PROPERTY(int xpLevel READ xpLevel WRITE setXpLevel NOTIFY xpLevelChanged)
 
@@ -24,25 +24,25 @@ public:
 
     QVariant toVariant() const;
 
-    QString nameLast() const;
+    QString lastName() const;
     QLocale::Country homeCountry() const;
     QString userId() const;
-    QString nameFirst() const;
+    QString firstName() const;
     QString password() const;
     int xpLevel() const;
 
-    void setNameLast(const QString& nameLast);
+    void setLastName(const QString& lastName);
     void setHomeCountry(QLocale::Country homeCountry);
     void setUserId(const QString& userId);
-    void setNameFirst(const QString& nameFirst);
+    void setFirstName(const QString& firstName);
     void setPassword(const QString& password);
     void setXpLevel(int xpLevel);
 
 signals:
-    void nameLastChanged(const QString& nameLast);
+    void lastNameChanged(const QString& lastName);
     void homeCountryChanged(QLocale::Country homeCountry);
     void mailChanged(const QString& userId);
-    void nameFirstChanged(const QString& nameFirst);
+    void firstNameChanged(const QString& firstName);
     void passwordChanged(const QString& password);
     void xpLevelChanged(int xpLevel);
 

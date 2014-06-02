@@ -9,10 +9,10 @@ public:
     {
     }
 
-    QString nameLast;
+    QString lastName;
     QLocale::Country homeCountry;
     QString mail;
-    QString nameFirst;
+    QString firstName;
     QString password;
     int xpLevel;
 };
@@ -28,17 +28,17 @@ UserRegisterRequest::~UserRegisterRequest()
     delete d;
 }
 
-QString UserRegisterRequest::nameLast() const
+QString UserRegisterRequest::lastName() const
 {
-    return d->nameLast;
+    return d->lastName;
 }
 
-void UserRegisterRequest::setNameLast(const QString& nameLast)
+void UserRegisterRequest::setLastName(const QString& lastName)
 {
-    if (d->nameLast != nameLast)
+    if (d->lastName != lastName)
     {
-        d->nameLast = nameLast;
-        emit nameLastChanged(nameLast);
+        d->lastName = lastName;
+        emit lastNameChanged(lastName);
     }
 }
 
@@ -70,17 +70,17 @@ void UserRegisterRequest::setUserId(const QString& mail)
     }
 }
 
-QString UserRegisterRequest::nameFirst() const
+QString UserRegisterRequest::firstName() const
 {
-    return d->nameFirst;
+    return d->firstName;
 }
 
-void UserRegisterRequest::setNameFirst(const QString& nameFirst)
+void UserRegisterRequest::setFirstName(const QString& nameFirst)
 {
-    if (d->nameFirst != nameFirst)
+    if (d->firstName != nameFirst)
     {
-        d->nameFirst = nameFirst;
-        emit nameFirstChanged(nameFirst);
+        d->firstName = nameFirst;
+        emit firstNameChanged(nameFirst);
     }
 }
 
@@ -115,10 +115,10 @@ void UserRegisterRequest::setXpLevel(int xpLevel)
 QVariant UserRegisterRequest::toVariant() const
 {
     QVariantMap data;
-    data.insert("last_name", nameLast());
+    data.insert("last_name", lastName());
     data.insert("home_country", QLocale::system().bcp47Name());
     data.insert("username", userId());
-    data.insert("first_name", nameFirst());
+    data.insert("first_name", firstName());
     data.insert("password", password());
     data.insert("xp_level", xpLevel());
     return data;

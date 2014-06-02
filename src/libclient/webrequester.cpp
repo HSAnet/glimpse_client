@@ -356,7 +356,6 @@ void WebRequester::start()
 
     }
 
-
     if(httpMethod == "get")
     {
         QUrlQuery query(url);
