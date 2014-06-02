@@ -22,7 +22,7 @@ public:
     // Serializable interface
     QVariant toVariant() const;
 
-    void setTarget(const QString target);
+    void setTarget(const QString &target);
 
     QString target() const;
     TimingPtr timing() const;

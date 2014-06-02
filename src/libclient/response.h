@@ -67,7 +67,7 @@ public:
     TimingPtr supervisorTiming() const;
     QString keepaliveAddress() const;
     TimingPtr keepaliveTiming() const;
-    void setConfigAddress(const QString address);
+    void setConfigAddress(const QString &address);
     QString configAddress() const;
     TimingPtr configTiming() const;
     QString reportAddress() const;
@@ -78,10 +78,10 @@ signals:
     void responseChanged();
 
 protected:
-    ChannelPtr m_supervisor_channel;
-    ChannelPtr m_keepalive_channel;
-    ChannelPtr m_config_channel;
-    ChannelPtr m_report_channel;
+    ChannelPtr m_supervisorChannel;
+    ChannelPtr m_keepaliveChannel;
+    ChannelPtr m_configChannel;
+    ChannelPtr m_reportChannel;
 };
 
 #endif // RESPONSE_H

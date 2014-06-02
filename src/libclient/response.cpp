@@ -69,19 +69,19 @@ bool RegisterDeviceResponse::fillFromVariant(const QVariantMap &variant)
 
 GetConfigResponse::GetConfigResponse(QObject *parent)
 : Response(parent)
+, m_supervisorChannel(new Channel)
+, m_keepaliveChannel(new Channel)
+, m_configChannel(new Channel)
+, m_reportChannel(new Channel)
 {
-    m_supervisor_channel = ChannelPtr(new Channel());
-    m_keepalive_channel = ChannelPtr(new Channel());
-    m_config_channel = ChannelPtr(new Channel());
-    m_report_channel = ChannelPtr(new Channel());
 }
 
 bool GetConfigResponse::fillFromVariant(const QVariantMap &variant)
 {
-    m_supervisor_channel = Channel::fromVariant(variant.value("supervisor_channel"));
-    m_keepalive_channel = Channel::fromVariant(variant.value("keepalive_channel"));
-    m_config_channel = Channel::fromVariant(variant.value("config_channel"));
-    m_report_channel = Channel::fromVariant(variant.value("report_channel"));
+    m_supervisorChannel = Channel::fromVariant(variant.value("supervisor_channel"));
+    m_keepaliveChannel = Channel::fromVariant(variant.value("keepalive_channel"));
+    m_configChannel = Channel::fromVariant(variant.value("config_channel"));
+    m_reportChannel = Channel::fromVariant(variant.value("report_channel"));
 
     return true;
 }
@@ -89,10 +89,10 @@ bool GetConfigResponse::fillFromVariant(const QVariantMap &variant)
 QVariant GetConfigResponse::toVariant() const
 {
     QVariantMap map;
-    map.insert("supervisor_channel", m_supervisor_channel->toVariant());
-    map.insert("keepalive_channel", m_keepalive_channel->toVariant());
-    map.insert("config_channel", m_config_channel->toVariant());
-    map.insert("report_channel", m_report_channel->toVariant());
+    map.insert("supervisor_channel", m_supervisorChannel->toVariant());
+    map.insert("keepalive_channel", m_keepaliveChannel->toVariant());
+    map.insert("config_channel", m_configChannel->toVariant());
+    map.insert("report_channel", m_reportChannel->toVariant());
     return map;
 }
 
@@ -108,45 +108,45 @@ void GetConfigResponse::finished()
 
 QString GetConfigResponse::supervisorAddress() const
 {
-    return m_supervisor_channel->target();
+    return m_supervisorChannel->target();
 }
 
 TimingPtr GetConfigResponse::supervisorTiming() const
 {
-    return m_supervisor_channel->timing();
+    return m_supervisorChannel->timing();
 }
 
 QString GetConfigResponse::keepaliveAddress() const
 {
-    return m_keepalive_channel->target();
+    return m_keepaliveChannel->target();
 }
 
 TimingPtr GetConfigResponse::keepaliveTiming() const
 {
-    return m_keepalive_channel->timing();
+    return m_keepaliveChannel->timing();
 }
 
-void GetConfigResponse::setConfigAddress(const QString address)
+void GetConfigResponse::setConfigAddress(const QString &address)
 {
-    m_config_channel->setTarget(address);
+    m_configChannel->setTarget(address);
 }
 
 QString GetConfigResponse::configAddress() const
 {
-    return m_config_channel->target();
+    return m_configChannel->target();
 }
 
 TimingPtr GetConfigResponse::configTiming() const
 {
-    return m_config_channel->timing();
+    return m_configChannel->timing();
 }
 
 QString GetConfigResponse::reportAddress() const
 {
-    return m_report_channel->target();
+    return m_reportChannel->target();
 }
 
 TimingPtr GetConfigResponse::reportTiming() const
 {
-    return m_report_channel->timing();
+    return m_reportChannel->timing();
 }

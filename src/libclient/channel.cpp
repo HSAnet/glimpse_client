@@ -4,6 +4,11 @@
 class Channel::Private
 {
 public:
+    Private()
+    : id(0)
+    {
+    }
+
     int id;
     QString target;
     QString certificate;
@@ -13,10 +18,6 @@ public:
 Channel::Channel()
 : d(new Private)
 {
-    d->id = 0;
-    d->target = QString();
-    d->certificate = QString();
-    d->timing = TimingPtr();
 }
 
 Channel::Channel(const int &id, const QString &target, const QString &certificate, const TimingPtr &timing)
@@ -53,7 +54,7 @@ QVariant Channel::toVariant() const
     return hash;
 }
 
-void Channel::setTarget(const QString target)
+void Channel::setTarget(const QString &target)
 {
     d->target = target;
 }

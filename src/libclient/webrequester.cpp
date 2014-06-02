@@ -124,7 +124,7 @@ void WebRequester::Private::requestFinished()
         }
         else
         {
-            if(data != "")
+            if(!data.isEmpty())
             {
                 errorString = jsonError.errorString();
                 LOG_WARNING(QString("JsonParseError: %1 (%2)").arg(errorString).arg(QString(data)));

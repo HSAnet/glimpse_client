@@ -21,6 +21,11 @@ TimingPtr TimingFactory::timingFromVariant(const QVariant &variant)
     factories.insert("ondemand", OnDemandTiming::fromVariant);
 
     QVariantMap hash = variant.toMap();
+    if (hash.isEmpty())
+    {
+        return TimingPtr();
+    }
+
     QString type = hash.keys().first();
 
     CreateFunction cf = factories.value(type);
