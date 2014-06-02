@@ -7,7 +7,7 @@
 
 TimingPtr TimingFactory::timingFromVariant(const QVariant &variant)
 {
-    if(!variant.isValid())
+    if (!variant.isValid())
     {
         return TimingPtr();
     }

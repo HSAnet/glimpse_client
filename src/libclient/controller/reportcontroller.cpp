@@ -124,7 +124,7 @@ void ReportController::Private::updateTimer()
     // Set the new url
     QString newUrl = QString("http://%1").arg(Client::instance()->settings()->config()->reportAddress());
 
-    if(requester.url() != newUrl)
+    if (requester.url() != newUrl)
     {
         LOG_INFO(QString("Report url set to %1").arg(newUrl));
         requester.setUrl(newUrl);

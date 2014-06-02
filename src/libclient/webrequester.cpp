@@ -88,18 +88,18 @@ void WebRequester::Private::requestFinished()
 
         QJsonDocument document = QJsonDocument::fromJson(data, &jsonError);
 
-        if ( jsonError.error == QJsonParseError::NoError )
+        if (jsonError.error == QJsonParseError::NoError)
         {
             QJsonObject root = document.object();
 
             QString replyError = root.value("error").toString();
-            if ( replyError.isEmpty() )
+            if (replyError.isEmpty())
             {
                 jsonData = root;
 
-                if ( !response.isNull() )
+                if (!response.isNull())
                 {
-                    if ( response->fillFromVariant( root.toVariantMap() ) )
+                    if (response->fillFromVariant(root.toVariantMap()))
                     {
                         response->finished();
                         setStatus(WebRequester::Finished);
@@ -124,7 +124,7 @@ void WebRequester::Private::requestFinished()
         }
         else
         {
-            if(!data.isEmpty())
+            if (!data.isEmpty())
             {
                 errorString = jsonError.errorString();
                 LOG_WARNING(QString("JsonParseError: %1 (%2)").arg(errorString).arg(QString(data)));
@@ -154,7 +154,7 @@ void WebRequester::Private::requestFinished()
 
         QJsonDocument document = QJsonDocument::fromJson(data, &jsonError);
 
-        if(jsonError.error == QJsonParseError::NoError)
+        if (jsonError.error == QJsonParseError::NoError)
         {
             QJsonObject root = document.object();
 
@@ -221,7 +221,7 @@ int WebRequester::timeout() const
 
 void WebRequester::setUrl(const QUrl &url)
 {
-    if ( d->url != url )
+    if (d->url != url)
     {
         d->url = url;
         emit urlChanged(url);
@@ -235,7 +235,7 @@ QUrl WebRequester::url() const
 
 void WebRequester::setRequest(Request *request)
 {
-    if ( d->request != request )
+    if (d->request != request)
     {
         d->request = request;
         emit requestChanged(request);
@@ -249,7 +249,7 @@ Request *WebRequester::request() const
 
 void WebRequester::setResponse(Response *response)
 {
-    if ( d->response != response )
+    if (d->response != response)
     {
         d->response = response;
         emit responseChanged(response);
@@ -283,14 +283,14 @@ QJsonObject WebRequester::jsonData() const
 
 void WebRequester::start()
 {
-    if ( !d->url.isValid() ) {
+    if (!d->url.isValid()) {
         d->errorString = tr("Invalid url: %1").arg(d->url.toString());
         d->setStatus(Error);
         LOG_ERROR(QString("Invalid url: %1").arg(d->url.toString()));
         return;
     }
 
-    if ( !d->request )
+    if (!d->request)
     {
         d->errorString = tr("No request to start");
         d->setStatus(Error);
@@ -310,7 +310,7 @@ void WebRequester::start()
     QMetaClassInfo pathClassInfo = d->request->metaObject()->classInfo(pathIdx);
 
     int methodIdx = d->request->metaObject()->indexOfClassInfo("http_request_method");
-    if ( methodIdx == -1 )
+    if (methodIdx == -1)
     {
         d->errorString = tr("No http_request_method specified");
         d->setStatus(Error);
@@ -341,7 +341,7 @@ void WebRequester::start()
     QNetworkRequest request;
     QNetworkReply* reply;
 
-    if(authentication == "basic")
+    if (authentication == "basic")
     {
         url.setUserName(Client::instance()->settings()->userId());
         url.setPassword(Client::instance()->settings()->password()); // TODO change this to a temporary variable after login-form
@@ -356,7 +356,7 @@ void WebRequester::start()
 
     }
 
-    if(httpMethod == "get")
+    if (httpMethod == "get")
     {
         QUrlQuery query(url);
 
@@ -373,7 +373,7 @@ void WebRequester::start()
         request.setUrl(url);
         reply = Client::instance()->networkAccessManager()->get(request);
     }
-    else if(httpMethod == "post")
+    else if (httpMethod == "post")
     {
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
         request.setUrl(url);
