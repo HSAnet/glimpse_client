@@ -19,7 +19,7 @@ Channel::Channel()
     d->timing = TimingPtr();
 }
 
-Channel::Channel(int id, QString target, QString certificate, TimingPtr timing)
+Channel::Channel(const int &id, const QString &target, const QString &certificate, const TimingPtr &timing)
 : d(new Private)
 {
     d->id = id;

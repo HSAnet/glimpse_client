@@ -13,7 +13,7 @@ class CLIENT_API Channel : public Serializable
 {
 public:
     Channel();
-    Channel(int id, QString target, QString certificate, TimingPtr timing);
+    Channel(const int &id, const QString &target, const QString &certificate, const TimingPtr &timing);
     ~Channel();
 
     // Storage
