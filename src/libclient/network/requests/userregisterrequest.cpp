@@ -75,12 +75,12 @@ QString UserRegisterRequest::firstName() const
     return d->firstName;
 }
 
-void UserRegisterRequest::setFirstName(const QString& nameFirst)
+void UserRegisterRequest::setFirstName(const QString& firstName)
 {
-    if (d->firstName != nameFirst)
+    if (d->firstName != firstName)
     {
-        d->firstName = nameFirst;
-        emit firstNameChanged(nameFirst);
+        d->firstName = firstName;
+        emit firstNameChanged(firstName);
     }
 }
 
