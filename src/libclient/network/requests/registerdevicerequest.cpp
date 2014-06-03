@@ -189,17 +189,16 @@ void RegisterDeviceRequest::setDataPlanUplink(int dataPlanUplink)
 QVariant RegisterDeviceRequest::toVariant() const
 {
     QVariantMap data;
-    data.insert("data_plan_name", dataPlanName());
-    data.insert("provider_technology", enumToString(RegisterDeviceRequest, "ProviderTechnology", providerTechnology()));
-    data.insert("session_id", sessionId());
-    data.insert("device_name", deviceName());
-    data.insert("platform", platform());
-    data.insert("device_type", enumToString(RegisterDeviceRequest, "DeviceType", deviceType()));
+    data.insert("device_id", deviceId());
+    data.insert("os", platform());
+    data.insert("type", enumToString(RegisterDeviceRequest, "DeviceType", deviceType()));
     data.insert("provider", provider());
+
+    /*data.insert("data_plan_name", dataPlanName());
+    data.insert("device_name", deviceName());
+    data.insert("provider_technology", enumToString(RegisterDeviceRequest, "ProviderTechnology", providerTechnology()));
     data.insert("max_allowed_traffic", maxAllowedTraffic());
     data.insert("data_plan_downlink", dataPlanDownlink());
-    data.insert("data_plan_uplink", dataPlanUplink());
-    data.insert("device_id", deviceId());
-    data.insert("session_id", sessionId());
+    data.insert("data_plan_uplink", dataPlanUplink());*/
     return data;
 }

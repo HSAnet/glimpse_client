@@ -289,8 +289,6 @@ void Client::Private::taskFinished(const TestDefinitionPtr &test, const ResultPt
 
 void Client::Private::loginStatusChanged()
 {
-    configController.update();
-
     if (!settings.isPassive() && loginController.registeredDevice())
     {
         taskController.fetchTasks();

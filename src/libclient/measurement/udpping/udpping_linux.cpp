@@ -271,7 +271,7 @@ cleanup:
 
 bool UdpPing::sendData(PingProbe *probe)
 {
-    int n;
+    int n = 0;
     struct timeval tv;
 
     memset(&tv, 0, sizeof(tv));

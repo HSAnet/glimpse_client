@@ -68,7 +68,7 @@ QVariant PeriodicTiming::toVariant() const
     hash.insert("type", type());
     hash.insert("start", d->start);
     hash.insert("end", d->end);
-    hash.insert("period", d->period);
+    hash.insert("interval", d->period);
     return hash;
 }
 
@@ -76,7 +76,7 @@ TimingPtr PeriodicTiming::fromVariant(const QVariant &variant)
 {
     QVariantMap hash = variant.toMap();
 
-    return TimingPtr(new PeriodicTiming(hash.value("period").toInt(),
+    return TimingPtr(new PeriodicTiming(hash.value("interval").toInt(),
                                         hash.value("start").toDateTime(),
                                         hash.value("end").toDateTime()));
 }
@@ -91,7 +91,7 @@ QDateTime PeriodicTiming::end() const
     return d->end;
 }
 
-int PeriodicTiming::period() const
+int PeriodicTiming::interval() const
 {
     return d->period;
 }

@@ -49,8 +49,6 @@ void LoginRequest::setUserId(const QString& userId)
 QVariant LoginRequest::toVariant() const
 {
     QVariantMap data;
-    data.insert("password", password());
-    data.insert("user_id", userId());
     data.insert("device_id", deviceId());
     return data;
 }

@@ -11,7 +11,5 @@ GetConfigRequest::~GetConfigRequest()
 
 QVariant GetConfigRequest::toVariant() const
 {
-    QVariantMap map;
-    map.insert("session_id", sessionId());
-    return map;
+    return QVariant();
 }

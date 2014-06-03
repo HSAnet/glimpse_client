@@ -51,6 +51,8 @@ private slots:
         }
 
         LOG_INFO("Automatically registering device");
+
+        m_requester.setUrl(QString("http://%1").arg(Client::instance()->settings()->config()->supervisorAddress()));
         m_requester.start();
     }
 
@@ -160,9 +162,6 @@ int main(int argc, char* argv[])
     //parser.addOption(pidFileOption);
 
 #endif // Q_OS_UNIX
-
-    QCommandLineOption controllerUrl("controller", "Override the controller host", "hostname:port");
-    parser.addOption(controllerUrl);
 
     QCommandLineOption registerAnonymous("register-anonymous", "Register anonymous on server");
     parser.addOption(registerAnonymous);
@@ -293,11 +292,6 @@ int main(int argc, char* argv[])
     {
         LOG_ERROR("Client initialization failed")
         return 1;
-    }
-
-    if (parser.isSet(controllerUrl))
-    {
-        client->settings()->config()->setControllerAddress(parser.value(controllerUrl));
     }
 
     new LoginWatcher(client->loginController());
