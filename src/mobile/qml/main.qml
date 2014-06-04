@@ -5,7 +5,6 @@ import "."
 
 import QtQuick.Controls 1.0 as Controls
 import QtQuick.Window 2.0
-import QtGraphicalEffects 1.0
 
 Rectangle {
     id: app
