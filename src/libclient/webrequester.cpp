@@ -283,7 +283,8 @@ QJsonObject WebRequester::jsonData() const
 
 void WebRequester::start()
 {
-    if (!d->url.isValid()) {
+    if (!d->url.isValid())
+    {
         d->errorString = tr("Invalid url: %1").arg(d->url.toString());
         d->setStatus(Error);
         LOG_ERROR(QString("Invalid url: %1").arg(d->url.toString()));
