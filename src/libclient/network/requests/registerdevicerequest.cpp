@@ -21,6 +21,7 @@ class RegisterDeviceRequest::Private
 public:
     Private()
     : deviceType(TYPE)
+    , maxAllowedTraffic(0)
     , dataPlanDownlink(0)
     , dataPlanUplink(0)
     {
