@@ -3,5 +3,5 @@
 cd `dirname $0`
 cd ..
 
-cppcheck src/ -q --enable=all --error-exitcode=1
+cppcheck src/ -q --enable=warning,style --error-exitcode=1
 
