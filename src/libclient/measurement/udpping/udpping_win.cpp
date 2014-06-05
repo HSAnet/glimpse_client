@@ -68,7 +68,7 @@ namespace
         quint8 *icmpCode;
         quint8 *ipProto;
         PingProbe probe = {0};
-        QByteArray payload(0);
+        QByteArray payload;
 
         if (data == NULL || header == NULL)
         {
@@ -165,7 +165,7 @@ namespace
         quint8 *icmpCode;
         quint8 *ipProto;
         PingProbe probe = {0};
-        QByteArray payload(0);
+        QByteArray payload;
 
         if (data == NULL || header == NULL)
         {
