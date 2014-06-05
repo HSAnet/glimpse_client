@@ -41,7 +41,7 @@ class Time : public QObject
     Q_OBJECT
 
 public:
-    Time(QObject* parent = 0) : QObject(parent)
+    Time(QObject *parent = 0) : QObject(parent)
     {
     }
 
@@ -112,7 +112,7 @@ void QmlModule::registerTypes()
 
 void QmlModule::initializeEngine(QQmlEngine *engine)
 {
-    QQmlContext* context = engine->rootContext();
+    QQmlContext *context = engine->rootContext();
     context->setContextProperty("units", new Units(engine));
 
 #if defined(Q_OS_ANDROID)

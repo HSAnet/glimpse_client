@@ -38,9 +38,9 @@ struct NtpPacket
 {
     struct NtpFlags
     {
-        quint8 mode:3;
-        quint8 versionNumber:3;
-        quint8 leapIndicator:2;
+        quint8 mode: 3;
+        quint8 versionNumber: 3;
+        quint8 leapIndicator: 2;
     } flags;
 
     quint8 peerClockStratum;

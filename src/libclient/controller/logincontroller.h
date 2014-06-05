@@ -13,21 +13,21 @@ class CLIENT_API LoginController : public Controller
     Q_PROPERTY(bool registeredDevice READ registeredDevice NOTIFY registeredDeviceChanged)
 
 public:
-    explicit LoginController(QObject* parent = 0);
+    explicit LoginController(QObject *parent = 0);
     ~LoginController();
 
     bool isLoggedIn() const;
     bool registeredDevice() const;
 
     Q_INVOKABLE void anonymousRegistration();
-    Q_INVOKABLE void registration(const QString& username, const QString& password);
+    Q_INVOKABLE void registration(const QString &username, const QString &password);
     Q_INVOKABLE void login();
 
     // Controller interface
     Status status() const;
     QString errorString() const;
 
-    bool init(NetworkManager* networkManager, Settings* settings);
+    bool init(NetworkManager *networkManager, Settings *settings);
 
 signals:
     void registrationFinished();
@@ -39,7 +39,7 @@ signals:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // LOGINCONTROLLER_H

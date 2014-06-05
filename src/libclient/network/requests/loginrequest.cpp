@@ -23,7 +23,7 @@ QString LoginRequest::password() const
     return d->password;
 }
 
-void LoginRequest::setPassword(const QString& password)
+void LoginRequest::setPassword(const QString &password)
 {
     if (d->password != password)
     {
@@ -37,7 +37,7 @@ QString LoginRequest::userId() const
     return d->userId;
 }
 
-void LoginRequest::setUserId(const QString& userId)
+void LoginRequest::setUserId(const QString &userId)
 {
     if (d->userId != userId)
     {

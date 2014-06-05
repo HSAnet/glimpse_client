@@ -29,7 +29,8 @@ bool HTTPDownload::prepare(NetworkManager *networkManager, const MeasurementDefi
 {
     Q_UNUSED(networkManager)
     definition = measurementDefinition.dynamicCast<HTTPDownloadDefinition>();
-    if ( definition.isNull() )
+
+    if (definition.isNull())
     {
         LOG_WARNING("Definition is empty");
         return false;
@@ -56,7 +57,7 @@ bool HTTPDownload::start()
     setStartDateTime(QDateTime::currentDateTime());
     setStatus(HTTPDownload::Running);
 
-    QObject::connect(m_reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(downloadProgress(qint64,qint64)));
+    QObject::connect(m_reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
     QObject::connect(m_reply, SIGNAL(finished()), this, SLOT(requestFinished()));
 
     return true;
@@ -70,9 +71,10 @@ bool HTTPDownload::stop()
 ResultPtr HTTPDownload::result() const
 {
     QVariantList res;
-    foreach(qreal val, m_downloadSpeeds)
+
+    foreach (qreal val, m_downloadSpeeds)
     {
-        res<<QString::number(val, 'f');
+        res << QString::number(val, 'f');
     }
 
     return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
@@ -102,16 +104,16 @@ void HTTPDownload::requestFinished()
         qint64 time = 0;
 
         // calculate slices
-        for (int i=0; i<m_times.size(); i++)
+        for (int i = 0; i < m_times.size(); i++)
         {
             bytes += m_bytesReceived.at(i);
             time += m_times.at(i);
 
             // calculate a slice if enough samples are added up or if this is the last iteration
-            if (((i+1) % slice_size) == 0 || i == m_times.size() - 1)
+            if (((i + 1) % slice_size) == 0 || i == m_times.size() - 1)
             {
                 qreal speed = (bytes / 1024.0) / (((time / 1000.0) / 1000) / 1000);
-                m_downloadSpeeds<<speed;
+                m_downloadSpeeds << speed;
 
                 // reset counters
                 bytes = 0;
@@ -140,8 +142,8 @@ void HTTPDownload::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 
     qint64 time = m_timer.nsecsElapsed();
 
-    m_bytesReceived<<m_reply->readAll().size();
-    m_times<<time - m_lasttime;
+    m_bytesReceived << m_reply->readAll().size();
+    m_times << time - m_lasttime;
 
     m_lasttime = time;
 

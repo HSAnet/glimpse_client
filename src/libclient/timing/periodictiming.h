@@ -7,8 +7,8 @@ class CLIENT_API PeriodicTiming : public Timing
 {
 public:
     PeriodicTiming(int interval,
-                   const QDateTime& start = QDateTime(),
-                   const QDateTime& end = QDateTime());
+                   const QDateTime &start = QDateTime(),
+                   const QDateTime &end = QDateTime());
     ~PeriodicTiming();
 
     // Storage
@@ -29,7 +29,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // PERIODICTIMING_H

@@ -15,11 +15,11 @@ public:
         Valid // TODO: Find more texts
     };
 
-    ValidationResult validate(const TestDefinitionPtr& testDefinition);
+    ValidationResult validate(const TestDefinitionPtr &testDefinition);
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // TASKVALIDATOR_H

@@ -20,7 +20,7 @@ class CLIENT_API Settings : public QObject
     Q_PROPERTY(QString userId READ userId WRITE setUserId NOTIFY userIdChanged)
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
     Q_PROPERTY(QString apiKey READ apiKey WRITE setApiKey NOTIFY apiKeyChanged)
-    Q_PROPERTY(GetConfigResponse* config READ config CONSTANT)
+    Q_PROPERTY(GetConfigResponse *config READ config CONSTANT)
 
 public:
     explicit Settings(QObject *parent = 0);
@@ -36,36 +36,36 @@ public:
 
     bool hasLoginData() const;
 
-    void setDeviceId(const QString& deviceId);
+    void setDeviceId(const QString &deviceId);
     QString deviceId() const;
 
-    void setUserId(const QString& userId);
+    void setUserId(const QString &userId);
     QString userId() const;
 
-    void setPassword(const QString& password);
+    void setPassword(const QString &password);
     QString password() const;
 
-    void setApiKey(const QString& apiKey);
+    void setApiKey(const QString &apiKey);
     QString apiKey() const;
 
     bool isPassive() const;
     void setPassive(bool passive);
 
-    GetConfigResponse* config() const;
+    GetConfigResponse *config() const;
 
 public slots:
     void sync();
 
 signals:
-    void deviceIdChanged(const QString& deviceId);
-    void userIdChanged(const QString& userId);
-    void passwordChanged(const QString& password);
-    void apiKeyChanged(const QString& apiKey);
+    void deviceIdChanged(const QString &deviceId);
+    void userIdChanged(const QString &userId);
+    void passwordChanged(const QString &password);
+    void apiKeyChanged(const QString &apiKey);
     void passiveChanged(bool passive);
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // SETTINGS_H

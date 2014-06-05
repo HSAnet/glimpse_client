@@ -11,7 +11,7 @@ class CLIENT_API GetConfigRequest : public Request
     Q_CLASSINFO("authentication_method", "none")
 
 public:
-    GetConfigRequest(QObject* parent = 0);
+    GetConfigRequest(QObject *parent = 0);
     ~GetConfigRequest();
 
     QVariant toVariant() const;

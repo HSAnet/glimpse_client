@@ -5,7 +5,7 @@ class TcpSocket::Private : public QObject
     Q_OBJECT
 
 public:
-    Private(TcpSocket* q)
+    Private(TcpSocket *q)
     : q(q)
     , bytesRead(0)
     , bytesWrite(0)
@@ -14,7 +14,7 @@ public:
         connect(q, SIGNAL(readyRead()), this, SLOT(readyRead()));
     }
 
-    TcpSocket* q;
+    TcpSocket *q;
 
     qint64 bytesRead;
     qint64 bytesWrite;

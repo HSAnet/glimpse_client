@@ -11,10 +11,10 @@ class CLIENT_API ReportModel : public QAbstractTableModel
 {
     Q_OBJECT
     Q_ENUMS(Roles)
-    Q_PROPERTY(ReportScheduler* scheduler READ scheduler WRITE setScheduler NOTIFY schedulerChanged)
+    Q_PROPERTY(ReportScheduler *scheduler READ scheduler WRITE setScheduler NOTIFY schedulerChanged)
 
 public:
-    ReportModel(QObject* parent = 0);
+    ReportModel(QObject *parent = 0);
     ~ReportModel();
 
     enum Roles
@@ -24,10 +24,10 @@ public:
         ResultsRole
     };
 
-    void setScheduler(ReportScheduler* scheduler);
-    ReportScheduler* scheduler() const;
+    void setScheduler(ReportScheduler *scheduler);
+    ReportScheduler *scheduler() const;
 
-    QModelIndex indexFromTaskId(const QUuid& taskId) const;
+    QModelIndex indexFromTaskId(const QUuid &taskId) const;
 
     Q_INVOKABLE void reset();
     Q_INVOKABLE QVariant get(int index) const;
@@ -45,7 +45,7 @@ signals:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // REPORTMODEL_H

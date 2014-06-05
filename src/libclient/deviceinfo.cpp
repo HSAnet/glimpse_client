@@ -8,7 +8,7 @@
 
 LOGGER(DeviceInfo);
 
-static QStringList execWmicCommand(const QStringList& parameters, bool* ok = NULL)
+static QStringList execWmicCommand(const QStringList &parameters, bool *ok = NULL)
 {
     QStringList values;
 
@@ -59,12 +59,12 @@ static QByteArray cryptSome()
 {
     DATA_BLOB outData;
     DATA_BLOB inData;
-    inData.pbData = (BYTE*)"Glimpse crypted some random values on windows";
-    inData.cbData = (DWORD)strlen((const char*)inData.pbData) + 1;
+    inData.pbData = (BYTE *)"Glimpse crypted some random values on windows";
+    inData.cbData = (DWORD)strlen((const char *)inData.pbData) + 1;
 
     if (::CryptProtectData(&inData, NULL, NULL, NULL, NULL, CRYPTPROTECT_LOCAL_MACHINE, &outData))
     {
-        QByteArray data((const char*)outData.pbData, outData.cbData);
+        QByteArray data((const char *)outData.pbData, outData.cbData);
         ::LocalFree(outData.pbData);
         return data;
     }

@@ -6,7 +6,7 @@
 #include <jni.h>
 #include <QByteArray>
 
-JavaVM* CLIENT_API javaVM();
+JavaVM *CLIENT_API javaVM();
 
 class CLIENT_API Java
 {
@@ -23,21 +23,21 @@ public:
         detach();
     }
 
-    JNIEnv* operator ->() const;
+    JNIEnv *operator ->() const;
 
     bool attach();
     void detach();
 
     bool isValid() const;
 
-    static void registerClass(const char* className);
-    jclass findClass(const QByteArray& className) const;
+    static void registerClass(const char *className);
+    jclass findClass(const QByteArray &className) const;
     jobject createInstance(jclass clazz) const;
-    jobject createInstance(const QByteArray& className) const;
+    jobject createInstance(const QByteArray &className) const;
 
 protected:
     bool valid;
-    JNIEnv* env;
+    JNIEnv *env;
 };
 
 QString CLIENT_API getQString(const Java &env, jstring str);

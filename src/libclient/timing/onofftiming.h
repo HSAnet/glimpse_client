@@ -6,7 +6,7 @@
 class CLIENT_API OnOffTiming : public Timing
 {
 public:
-    OnOffTiming(const QDateTime& dateTime);
+    OnOffTiming(const QDateTime &dateTime);
     ~OnOffTiming();
 
     // Storage
@@ -25,7 +25,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // ONOFFTIMING_H

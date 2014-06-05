@@ -10,7 +10,7 @@ public:
     QStringList measurements() const;
 
     MeasurementPtr createMeasurement(const QString &name);
-    MeasurementDefinitionPtr createMeasurementDefinition(const QString& name, const QVariant &data);
+    MeasurementDefinitionPtr createMeasurementDefinition(const QString &name, const QVariant &data);
 };
 
 #endif // Dnslookup_PLUGIN_H

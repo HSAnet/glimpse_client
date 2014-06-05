@@ -1,8 +1,8 @@
 #include "httpdownload_definition.h"
 
 HTTPDownloadDefinition::HTTPDownloadDefinition(const QString &url, bool cacheTest)
-    : url(url)
-    , cacheTest(cacheTest)
+: url(url)
+, cacheTest(cacheTest)
 {
 
 }

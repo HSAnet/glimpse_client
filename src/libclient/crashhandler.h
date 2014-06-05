@@ -11,14 +11,14 @@ public:
     CrashHandler();
     ~CrashHandler();
 
-    void init(const QString& reportPath);
+    void init(const QString &reportPath);
 
     void setReportCrashesToSystem(bool report);
     bool reportCrashesToSystem() const;
 
 private:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // CRASHHANDLER_H

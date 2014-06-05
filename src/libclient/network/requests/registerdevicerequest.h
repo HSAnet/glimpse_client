@@ -11,7 +11,8 @@ class CLIENT_API RegisterDeviceRequest : public Request
     Q_CLASSINFO("authentication_method", "apikey")
     Q_ENUMS(DeviceType ProviderTechnology)
     Q_PROPERTY(QString dataPlanName READ dataPlanName WRITE setDataPlanName NOTIFY dataPlanNameChanged)
-    Q_PROPERTY(ProviderTechnology providerTechnology READ providerTechnology WRITE setProviderTechnology NOTIFY providerTechnologyChanged)
+    Q_PROPERTY(ProviderTechnology providerTechnology READ providerTechnology WRITE setProviderTechnology NOTIFY
+               providerTechnologyChanged)
     //Q_PROPERTY(QString sessionId READ sessionId WRITE setSessionId NOTIFY sessionIdChanged)
     Q_PROPERTY(QString deviceName READ deviceName WRITE setDeviceName NOTIFY deviceNameChanged)
     Q_PROPERTY(QString platform READ platform WRITE setPlatform NOTIFY platformChanged)
@@ -23,7 +24,7 @@ class CLIENT_API RegisterDeviceRequest : public Request
     //Q_PROPERTY(QUuid deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
 
 public:
-    RegisterDeviceRequest(QObject* parent = 0);
+    RegisterDeviceRequest(QObject *parent = 0);
     ~RegisterDeviceRequest();
 
     enum DeviceType
@@ -59,28 +60,28 @@ public:
     int maxAllowedTraffic() const;
     int dataPlanDownlink() const;
     int dataPlanUplink() const;
-   // QUuid deviceId() const;
+    // QUuid deviceId() const;
 
-    void setDataPlanName(const QString& dataPlanName);
+    void setDataPlanName(const QString &dataPlanName);
     void setProviderTechnology(ProviderTechnology providerTechnology);
     //void setSessionId(const QString& sessionId);
-    void setDeviceName(const QString& deviceName);
-    void setPlatform(const QString& platform);
+    void setDeviceName(const QString &deviceName);
+    void setPlatform(const QString &platform);
     void setDeviceType(DeviceType deviceType);
-    void setProvider(const QString& provider);
+    void setProvider(const QString &provider);
     void setMaxAllowedTraffic(int maxAllowedTraffic);
     void setDataPlanDownlink(int dataPlanDownlink);
     void setDataPlanUplink(int dataPlanUplink);
     //void setDeviceId(const QUuid& deviceId);
 
 signals:
-    void dataPlanNameChanged(const QString& dataPlanName);
+    void dataPlanNameChanged(const QString &dataPlanName);
     void providerTechnologyChanged(ProviderTechnology providerTechnology);
     //void sessionIdChanged(const QString& sessionId);
-    void deviceNameChanged(const QString& deviceName);
-    void platformChanged(const QString& platform);
+    void deviceNameChanged(const QString &deviceName);
+    void platformChanged(const QString &platform);
     void deviceTypeChanged(DeviceType deviceType);
-    void providerChanged(const QString& provider);
+    void providerChanged(const QString &provider);
     void maxAllowedTrafficChanged(int maxAllowedTraffic);
     void dataPlanDownlinkChanged(int dataPlanDownlink);
     void dataPlanUplinkChanged(int dataPlanUplink);
@@ -88,7 +89,7 @@ signals:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // REGISTERDEVICEREQUEST_H

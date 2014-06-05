@@ -17,7 +17,7 @@ public:
     explicit Response(QObject *parent = 0);
     ~Response();
 
-    virtual bool fillFromVariant(const QVariantMap& variant) = 0;
+    virtual bool fillFromVariant(const QVariantMap &variant) = 0;
     virtual void finished();
 };
 
@@ -26,7 +26,7 @@ class CLIENT_API LoginResponse : public Response
     Q_OBJECT
 
 public:
-    LoginResponse(QObject* parent = 0);
+    LoginResponse(QObject *parent = 0);
 
     bool fillFromVariant(const QVariantMap &variant);
     void finished();
@@ -46,7 +46,7 @@ class CLIENT_API RegisterDeviceResponse : public Response
     Q_OBJECT
 
 public:
-    RegisterDeviceResponse(QObject* parent = 0);
+    RegisterDeviceResponse(QObject *parent = 0);
 
     bool fillFromVariant(const QVariantMap &variant);
 };
@@ -57,7 +57,7 @@ class CLIENT_API GetConfigResponse : public Response
     Q_PROPERTY(QString supervisorAddress READ supervisorAddress CONSTANT)
 
 public:
-    GetConfigResponse(QObject* parent = 0);
+    GetConfigResponse(QObject *parent = 0);
 
     bool fillFromVariant(const QVariantMap &variant);
     QVariant toVariant() const;

@@ -11,7 +11,7 @@ class CLIENT_API GetTasksRequest : public Request
     Q_CLASSINFO("authentication_method", "apikey")
 
 public:
-    GetTasksRequest(QObject* parent = 0);
+    GetTasksRequest(QObject *parent = 0);
     ~GetTasksRequest();
 
     QVariant toVariant() const;

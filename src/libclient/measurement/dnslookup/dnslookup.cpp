@@ -20,6 +20,7 @@ bool Dnslookup::prepare(NetworkManager *networkManager, const MeasurementDefinit
 {
     Q_UNUSED(networkManager);
     m_definition = measurementDefinition.dynamicCast<DnslookupDefinition>();
+
     if (m_definition.isNull())
     {
         LOG_WARNING("Definition is empty");
@@ -39,11 +40,13 @@ bool Dnslookup::start()
     m_dns.setName(m_definition->host);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
+
     if (!m_definition->dnsServer.isEmpty())
     {
         QHostAddress hostAddress(m_definition->dnsServer);
         m_dns.setNameserver(hostAddress);
     }
+
 #endif
 
     setStartDateTime(QDateTime::currentDateTime());
@@ -98,14 +101,17 @@ ResultPtr Dnslookup::result() const
     foreach (const QDnsHostAddressRecord &val, m_dnslookupOutput)
     {
         QString type;
+
         switch (val.value().protocol())
         {
         case QAbstractSocket::IPv4Protocol:
             type = "A";
             break;
+
         case QAbstractSocket::IPv6Protocol:
             type = "AAAA";
             break;
+
         default:
             break;
         }

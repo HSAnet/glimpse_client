@@ -9,7 +9,7 @@ class CLIENT_API QmlModule
 {
 public:
     static void registerTypes();
-    static void initializeEngine(QQmlEngine* engine);
+    static void initializeEngine(QQmlEngine *engine);
 };
 
 #endif // QMLMODULE_H

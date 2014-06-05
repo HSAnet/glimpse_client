@@ -11,10 +11,10 @@ class CLIENT_API SchedulerModel : public QAbstractTableModel
 {
     Q_OBJECT
     Q_ENUMS(Roles Mode)
-    Q_PROPERTY(Scheduler* scheduler READ scheduler WRITE setScheduler NOTIFY schedulerChanged)
+    Q_PROPERTY(Scheduler *scheduler READ scheduler WRITE setScheduler NOTIFY schedulerChanged)
 
 public:
-    SchedulerModel(QObject* parent = 0);
+    SchedulerModel(QObject *parent = 0);
     ~SchedulerModel();
 
     enum Roles
@@ -30,8 +30,8 @@ public:
     {
     };
 
-    void setScheduler(Scheduler* scheduler);
-    Scheduler* scheduler() const;
+    void setScheduler(Scheduler *scheduler);
+    Scheduler *scheduler() const;
 
     Q_INVOKABLE void reset();
     Q_INVOKABLE QVariant get(int index) const;
@@ -49,7 +49,7 @@ signals:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // SCHEDULERMODEL_H

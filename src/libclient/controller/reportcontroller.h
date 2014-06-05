@@ -11,21 +11,21 @@ class CLIENT_API ReportController : public Controller
     Q_OBJECT
 
 public:
-    explicit ReportController(QObject* parent = 0);
+    explicit ReportController(QObject *parent = 0);
     ~ReportController();
 
     // Controller interface
     Status status() const;
     QString errorString() const;
 
-    bool init(ReportScheduler* scheduler, Settings* settings);
+    bool init(ReportScheduler *scheduler, Settings *settings);
 
 public slots:
     void sendReports();
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // REPORTCONTROLLER_H

@@ -9,14 +9,14 @@ class CLIENT_API ManualRequest : public Request
     Q_CLASSINFO("path", "/manualrequest")
 
 public:
-    ManualRequest(QObject* parent = 0);
+    ManualRequest(QObject *parent = 0);
     ~ManualRequest();
 
     QVariant toVariant() const;
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // MANUALREQUEST_H

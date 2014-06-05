@@ -5,8 +5,8 @@
 LOGGER(FileLogger);
 
 FileLogger::FileLogger()
-    : dir(StoragePaths().logDirectory())
-    , out(&outFile)
+: dir(StoragePaths().logDirectory())
+, out(&outFile)
 {
     if (!dir.exists())
     {
@@ -40,20 +40,25 @@ void FileLogger::log(Logger::Level level, const QString &name, const QString &fu
     Q_UNUSED(name);
 
     QString levelName;
+
     switch (level)
     {
     case Logger::Trace:
         levelName = "TRACE";
         break;
+
     case Logger::Debug:
         levelName = "DEBUG";
         break;
+
     case Logger::Info:
         levelName = "INFO";
         break;
+
     case Logger::Warning:
         levelName = "WARNING";
         break;
+
     case Logger::Error:
         levelName = "ERROR";
         break;

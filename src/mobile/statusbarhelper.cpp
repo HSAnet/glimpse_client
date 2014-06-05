@@ -35,7 +35,7 @@ void StatusBarHelper::hideIcon()
 void StatusBarHelper::setMessage(const QString &message)
 {
     Java env;
-    jstring str = env->NewString((const jchar*)message.constData(), message.size());
+    jstring str = env->NewString((const jchar *)message.constData(), message.size());
     env->SetObjectField(m_instance, m_message, str);
     env->DeleteLocalRef(str);
 
@@ -46,7 +46,7 @@ QString StatusBarHelper::message() const
 {
     Java env;
     jstring str = (jstring)env->GetObjectField(m_instance, m_message);
-    const jchar* chars = env->GetStringChars(str, NULL);
+    const jchar *chars = env->GetStringChars(str, NULL);
     QString msg = QString::fromUtf16(chars, env->GetStringLength(str));
     env->ReleaseStringChars(str, chars);
     return msg;
@@ -58,7 +58,7 @@ void StatusBarHelper::setVisible(bool visible)
     {
         m_isVisible = visible;
 
-        if ( visible )
+        if (visible)
         {
             showIcon();
         }
@@ -78,11 +78,11 @@ bool StatusBarHelper::isVisible() const
 
 namespace
 {
-static int init_StatusBarHelper()
-{
-    Java::registerClass("de/hsaugsburg/informatik/mplane/StatusBarHelper");
-    return 1;
-}
+    static int init_StatusBarHelper()
+    {
+        Java::registerClass("de/hsaugsburg/informatik/mplane/StatusBarHelper");
+        return 1;
+    }
 
-static int __StatusBarHelper = init_StatusBarHelper();
+    static int __StatusBarHelper = init_StatusBarHelper();
 }

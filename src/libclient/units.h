@@ -11,7 +11,7 @@ class CLIENT_API Units : public QObject
     Q_PROPERTY(float gridUnit READ gridUnit WRITE setGridUnit NOTIFY gridUnitChanged)
 
 public:
-    explicit Units(QObject* parent = 0);
+    explicit Units(QObject *parent = 0);
     ~Units();
 
     Q_INVOKABLE float gu(float value) const;
@@ -25,7 +25,7 @@ signals:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // UNITS_H

@@ -21,8 +21,8 @@
 
 #ifdef Q_OS_OSX
 static bool AmIBeingDebugged(void)
-    // Returns true if the current process is being debugged (either
-    // running under the debugger or has a debugger attached post facto).
+// Returns true if the current process is being debugged (either
+// running under the debugger or has a debugger attached post facto).
 {
     int                 junk;
     int                 mib[4];
@@ -50,7 +50,7 @@ static bool AmIBeingDebugged(void)
 
     // We're being debugged if the P_TRACED flag is set.
 
-    return ( (info.kp_proc.p_flag & P_TRACED) != 0 );
+    return ((info.kp_proc.p_flag & P_TRACED) != 0);
 }
 #endif // Q_OS_OSX
 
@@ -74,29 +74,31 @@ public:
         delete exceptionHandler;
     }
 
-    void init(const QString& dumpPath);
+    void init(const QString &dumpPath);
 
-    static google_breakpad::ExceptionHandler* exceptionHandler;
+    static google_breakpad::ExceptionHandler *exceptionHandler;
     static bool reportCrashesToSystem;
 
 #if defined(Q_OS_WIN32)
-    static bool DumpCallback(const wchar_t* _dump_dir,const wchar_t* _minidump_id,void* context,EXCEPTION_POINTERS* exinfo,MDRawAssertionInfo* assertion,bool success);
+    static bool DumpCallback(const wchar_t *_dump_dir, const wchar_t *_minidump_id, void *context,
+                             EXCEPTION_POINTERS *exinfo, MDRawAssertionInfo *assertion, bool success);
 #elif defined(Q_OS_LINUX)
-    static bool DumpCallback(const google_breakpad::MinidumpDescriptor &md,void *context, bool success);
+    static bool DumpCallback(const google_breakpad::MinidumpDescriptor &md, void *context, bool success);
 #elif defined(Q_OS_OSX)
-    static bool DumpCallback(const char* _dump_dir,const char* _minidump_id,void *context, bool success);
+    static bool DumpCallback(const char *_dump_dir, const char *_minidump_id, void *context, bool success);
 #endif
 };
 
-google_breakpad::ExceptionHandler* CrashHandler::Private::exceptionHandler = NULL;
+google_breakpad::ExceptionHandler *CrashHandler::Private::exceptionHandler = NULL;
 bool CrashHandler::Private::reportCrashesToSystem = false;
 
 #if defined(Q_OS_WIN32)
-bool CrashHandler::Private::DumpCallback(const wchar_t* _dump_dir,const wchar_t* _minidump_id,void* context,EXCEPTION_POINTERS* exinfo,MDRawAssertionInfo* assertion,bool success)
+bool CrashHandler::Private::DumpCallback(const wchar_t *_dump_dir, const wchar_t *_minidump_id, void *context,
+                                         EXCEPTION_POINTERS *exinfo, MDRawAssertionInfo *assertion, bool success)
 #elif defined(Q_OS_LINUX)
-bool CrashHandler::Private::DumpCallback(const google_breakpad::MinidumpDescriptor &md,void *context, bool success)
+bool CrashHandler::Private::DumpCallback(const google_breakpad::MinidumpDescriptor &md, void *context, bool success)
 #elif defined(Q_OS_OSX)
-bool CrashHandler::Private::DumpCallback(const char* _dump_dir,const char* _minidump_id,void *context, bool success)
+bool CrashHandler::Private::DumpCallback(const char *_dump_dir, const char *_minidump_id, void *context, bool success)
 #endif
 {
     Q_UNUSED(context);
@@ -118,15 +120,15 @@ bool CrashHandler::Private::DumpCallback(const char* _dump_dir,const char* _mini
     return CrashHandler::Private::reportCrashesToSystem ? success : true;
 }
 
-void CrashHandler::Private::init(const QString& dumpPath)
+void CrashHandler::Private::init(const QString &dumpPath)
 {
-    if ( exceptionHandler != NULL )
+    if (exceptionHandler != NULL)
     {
         return;
     }
 
 #if defined(Q_OS_WIN32)
-    std::wstring pathAsStr = (const wchar_t*)dumpPath.utf16();
+    std::wstring pathAsStr = (const wchar_t *)dumpPath.utf16();
     exceptionHandler = new google_breakpad::ExceptionHandler(
         pathAsStr,
         /*FilterCallback*/ 0,
@@ -147,6 +149,7 @@ void CrashHandler::Private::init(const QString& dumpPath)
         -1
     );
 #elif defined(Q_OS_OSX)
+
     if (AmIBeingDebugged())
     {
         LOG_INFO("Crash handler skipped, debugger is running.");
@@ -188,7 +191,7 @@ bool CrashHandler::reportCrashesToSystem() const
     return d->reportCrashesToSystem;
 }
 
-void CrashHandler::init(const QString& reportPath)
+void CrashHandler::init(const QString &reportPath)
 {
     d->init(reportPath);
 }

@@ -1,15 +1,16 @@
 #include "udpping_definition.h"
 
-UdpPingDefinition::UdpPingDefinition(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
-                  const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload)
-    : url(url),
-    count(count),
-    interval(interval),
-    receiveTimeout(receiveTimeout),
-    ttl(ttl),
-    destinationPort(destinationPort),
-    sourcePort(sourcePort),
-    payload(payload)
+UdpPingDefinition::UdpPingDefinition(const QString &url, const quint32 &count, const quint32 &interval,
+                                     const quint32 &receiveTimeout,
+                                     const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload)
+: url(url)
+, count(count)
+, interval(interval)
+, receiveTimeout(receiveTimeout)
+, ttl(ttl)
+, destinationPort(destinationPort)
+, sourcePort(sourcePort)
+, payload(payload)
 {
 
 }

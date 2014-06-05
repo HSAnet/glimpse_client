@@ -15,12 +15,12 @@ struct CLIENT_API RemoteHost
 class CLIENT_API NetworkHelper
 {
 public:
-    static bool isLinkLocalAddress(const QHostAddress& host);
-    static bool isLocalIpAddress(const QHostAddress& host);
+    static bool isLinkLocalAddress(const QHostAddress &host);
+    static bool isLocalIpAddress(const QHostAddress &host);
 
     static QHostAddress localIpAddress();
 
-    static RemoteHost remoteHost(const QString& hostname);
+    static RemoteHost remoteHost(const QString &hostname);
 };
 
 #endif // NETWORKHELPER_H

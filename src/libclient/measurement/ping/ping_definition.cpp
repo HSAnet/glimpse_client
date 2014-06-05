@@ -1,6 +1,6 @@
 #include "ping_definition.h"
 
-PingDefinition::PingDefinition(const QString& host, quint16 count, quint32 timeout, quint32 interval)
+PingDefinition::PingDefinition(const QString &host, quint16 count, quint32 timeout, quint32 interval)
 : host(host)
 , count(count)
 , timeout(timeout)

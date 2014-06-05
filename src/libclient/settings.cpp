@@ -41,12 +41,13 @@ Settings::StorageType Settings::init()
     DeviceInfo info;
 
     QString generatedDeviceId = info.deviceId();
+
     if (generatedDeviceId.isEmpty())
     {
         if (deviceId().isEmpty())
         {
             QCryptographicHash hash(QCryptographicHash::Sha224);
-            hash.addData( QUuid::createUuid().toByteArray() );
+            hash.addData(QUuid::createUuid().toByteArray());
 
             setDeviceId(QString::fromLatin1(hash.result().toHex()));
 
@@ -65,7 +66,7 @@ Settings::StorageType Settings::init()
     LOG_INFO(QString("Device ID: %1").arg(deviceId()));
 
     // Create new settings
-    if ( newSettings )
+    if (newSettings)
     {
         d->config.setConfigAddress("supervisor.measure-it.de:5105");
         LOG_INFO("Created new settings for this device");
@@ -74,7 +75,7 @@ Settings::StorageType Settings::init()
     }
     else
     {
-        d->config.fillFromVariant( qvariant_cast<QVariantMap>(d->settings.value("config")) );
+        d->config.fillFromVariant(qvariant_cast<QVariantMap>(d->settings.value("config")));
 
         // Always set the controller address if we have none
         if (d->config.configAddress().isEmpty())
@@ -95,7 +96,7 @@ bool Settings::hasLoginData() const
 
 void Settings::setDeviceId(const QString &deviceId)
 {
-    if ( this->deviceId() != deviceId )
+    if (this->deviceId() != deviceId)
     {
         d->settings.setValue("device-id", deviceId);
         emit deviceIdChanged(deviceId);
@@ -109,7 +110,7 @@ QString Settings::deviceId() const
 
 void Settings::setUserId(const QString &userId)
 {
-    if ( this->userId() != userId )
+    if (this->userId() != userId)
     {
         d->settings.setValue("user-id", userId);
         emit userIdChanged(userId);
@@ -123,7 +124,7 @@ QString Settings::userId() const
 
 void Settings::setPassword(const QString &password)
 {
-    if ( this->password() != password )
+    if (this->password() != password)
     {
         d->settings.setValue("password", password);
         emit passwordChanged(password);
@@ -137,7 +138,7 @@ QString Settings::password() const
 
 void Settings::setApiKey(const QString &apiKey)
 {
-    if ( this->apiKey() != apiKey )
+    if (this->apiKey() != apiKey)
     {
         d->settings.setValue("api-key", apiKey);
         emit apiKeyChanged(apiKey);
@@ -156,7 +157,7 @@ bool Settings::isPassive() const
 
 void Settings::setPassive(bool passive)
 {
-    if ( this->isPassive() != passive )
+    if (this->isPassive() != passive)
     {
         d->settings.setValue("passive", passive);
         emit passiveChanged(passive);

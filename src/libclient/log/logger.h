@@ -20,7 +20,7 @@ class LogAppender;
 class CLIENT_API Logger
 {
 public:
-    Logger(const QString& name);
+    Logger(const QString &name);
     ~Logger();
 
     enum Level
@@ -32,19 +32,19 @@ public:
         Error
     };
 
-    static void addAppender(LogAppender* appender);
-    static void removeAppender(LogAppender* appender);
+    static void addAppender(LogAppender *appender);
+    static void removeAppender(LogAppender *appender);
 
-    void logTrace(const QString& funcName, const QString& message);
-    void logDebug(const QString& funcName, const QString& message);
-    void logInfo(const QString& funcName, const QString& message);
-    void logWarning(const QString& funcName, const QString& message);
-    void logError(const QString& funcName, const QString& message);
+    void logTrace(const QString &funcName, const QString &message);
+    void logDebug(const QString &funcName, const QString &message);
+    void logInfo(const QString &funcName, const QString &message);
+    void logWarning(const QString &funcName, const QString &message);
+    void logError(const QString &funcName, const QString &message);
 
-    void log(Level level, const QString& funcName, const QString& message);
+    void log(Level level, const QString &funcName, const QString &message);
 
 private:
-    void real_log(Level level, const QString& name, const QString& funcName, const QString& message);
+    void real_log(Level level, const QString &name, const QString &funcName, const QString &message);
 
 private:
     QString m_name;
@@ -54,7 +54,7 @@ class LogAppender
 {
 public:
     virtual ~LogAppender() {}
-    virtual void log(Logger::Level level, const QString& name, const QString& funcName, const QString& message) = 0;
+    virtual void log(Logger::Level level, const QString &name, const QString &funcName, const QString &message) = 0;
 };
 
 #if LOG_LEVEL == LEVEL_NONE

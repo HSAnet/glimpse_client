@@ -37,19 +37,19 @@ union sockaddr_any
 #if defined(Q_OS_WIN)
 namespace udpping
 {
-enum Response
-{
-    DESTINATION_UNREACHABLE = 1,
-    TTL_EXCEEDED,
-    UNHANDLED_ICMP
-};
+    enum Response
+    {
+        DESTINATION_UNREACHABLE = 1,
+        TTL_EXCEEDED,
+        UNHANDLED_ICMP
+    };
 
-enum PacketType
-{
-    UNKNOWN,
-    UDP,
-    ICMP
-};
+    enum PacketType
+    {
+        UNKNOWN,
+        UDP,
+        ICMP
+    };
 }
 #else
 typedef void pcap_if_t;
@@ -72,11 +72,11 @@ struct PingProbe
     bool operator==(const PingProbe &p) const
     {
         return !memcmp(&source, &p.source, sizeof(source)) &&
-                type == p.type &&
-                response == p.response &&
-                icmpType == p.icmpType &&
-                icmpCode == p.icmpCode &&
-                hash == p.hash;
+               type == p.type &&
+               response == p.response &&
+               icmpType == p.icmpType &&
+               icmpCode == p.icmpCode &&
+               hash == p.hash;
     }
 
 #endif
@@ -93,7 +93,7 @@ public:
 
     // Measurement interface
     Status status() const;
-    bool prepare(NetworkManager* networkManager, const MeasurementDefinitionPtr& measurementDefinition);
+    bool prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition);
     bool start();
     bool stop();
     ResultPtr result() const;

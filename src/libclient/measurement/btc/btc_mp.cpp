@@ -51,7 +51,7 @@ void BulkTransportCapacityMP::newClientConnection()
     else
     {
         LOG_ERROR("There is already a client connected, abort");
-        QTcpSocket* next = m_tcpServer->nextPendingConnection();
+        QTcpSocket *next = m_tcpServer->nextPendingConnection();
         next->abort();
         delete next;
     }
@@ -72,7 +72,7 @@ void BulkTransportCapacityMP::receiveRequest()
     QDataStream in(m_tcpSocket);
 
     quint64 bytes;
-    in>>bytes;
+    in >> bytes;
     sendResponse(bytes);
 }
 
@@ -83,7 +83,7 @@ void BulkTransportCapacityMP::handleError(QAbstractSocket::SocketError socketErr
         return;
     }
 
-    QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());
+    QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
     LOG_ERROR(QString("Socket Error: %1").arg(socket->errorString()));
 }
 
@@ -92,10 +92,12 @@ Measurement::Status BulkTransportCapacityMP::status() const
     return Unknown;
 }
 
-bool BulkTransportCapacityMP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
+bool BulkTransportCapacityMP::prepare(NetworkManager *networkManager,
+                                      const MeasurementDefinitionPtr &measurementDefinition)
 {
     definition = measurementDefinition.dynamicCast<BulkTransportCapacityDefinition>();
-    if ( definition.isNull() )
+
+    if (definition.isNull())
     {
         LOG_WARNING("Definition is empty");
     }
@@ -105,7 +107,8 @@ bool BulkTransportCapacityMP::prepare(NetworkManager *networkManager, const Meas
     m_tcpServer->setParent(this);
 
     // Signal for errors
-    connect(m_tcpServer, SIGNAL(acceptError(QAbstractSocket::SocketError)), this, SLOT(handleError(QAbstractSocket::SocketError)));
+    connect(m_tcpServer, SIGNAL(acceptError(QAbstractSocket::SocketError)), this,
+            SLOT(handleError(QAbstractSocket::SocketError)));
 
     // Signal for new clients
     connect(m_tcpServer, SIGNAL(newConnection()), this, SLOT(newClientConnection()));

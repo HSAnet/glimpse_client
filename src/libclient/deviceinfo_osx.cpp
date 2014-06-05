@@ -23,6 +23,7 @@ QString DeviceInfo::deviceId() const
     DADiskRef disk;
     CFDictionaryRef descDict;
     DASessionRef session = DASessionCreate(NULL);
+
     if (session)
     {
         char *mountPoint = "/";
@@ -33,6 +34,7 @@ QString DeviceInfo::deviceId() const
         if (disk)
         {
             descDict = DADiskCopyDescription(disk);
+
             if (descDict)
             {
                 CFTypeRef value = (CFTypeRef)CFDictionaryGetValue(descDict,
@@ -45,6 +47,7 @@ QString DeviceInfo::deviceId() const
                 CFRelease(strValue);
                 CFRelease(descDict);
             }
+
             CFRelease(disk);
         }
 

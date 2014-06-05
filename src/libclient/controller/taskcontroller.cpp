@@ -20,7 +20,7 @@ class GetTasksResponse : public Response
     Q_OBJECT
 
 public:
-    GetTasksResponse(QObject* parent = 0)
+    GetTasksResponse(QObject *parent = 0)
     : Response(parent)
     {
     }
@@ -35,7 +35,8 @@ public:
         m_tasks.clear();
 
         QVariantList tasks = variant.value("tasks").toList();
-        foreach(const QVariant& taskVariant, tasks)
+
+        foreach (const QVariant &taskVariant, tasks)
         {
             TestDefinitionPtr test = TestDefinition::fromVariant(taskVariant);
 
@@ -65,7 +66,7 @@ class TaskController::Private : public QObject
     Q_OBJECT
 
 public:
-    Private(TaskController* q)
+    Private(TaskController *q)
     : q(q)
     {
         connect(&timer, SIGNAL(timeout()), q, SLOT(fetchTasks()));
@@ -80,7 +81,7 @@ public:
         requester.setResponse(&response);
     }
 
-    TaskController* q;
+    TaskController *q;
 
     // Properties
     QPointer<NetworkManager> networkManager;
@@ -111,6 +112,7 @@ void TaskController::Private::updateTimer()
     }
 
     TimingPtr timing = settings->config()->supervisorTiming();
+
     if (timing.isNull())
     {
         timer.stop();
@@ -124,7 +126,7 @@ void TaskController::Private::updateTimer()
 
     if (timer.interval() != period)
     {
-        LOG_INFO(QString("Tasks schedule set to %1 sec.").arg(period/1000));
+        LOG_INFO(QString("Tasks schedule set to %1 sec.").arg(period / 1000));
         timer.setInterval(period);
     }
 
@@ -133,7 +135,7 @@ void TaskController::Private::updateTimer()
 
 void TaskController::Private::finished()
 {
-    foreach(const TestDefinitionPtr& testDefinition, response.tasks())
+    foreach (const TestDefinitionPtr &testDefinition, response.tasks())
     {
         scheduler->enqueue(testDefinition);
     }

@@ -13,8 +13,8 @@ public:
 };
 
 Measurement::Measurement(QObject *parent)
-    : QObject(parent)
-    , d(new Private)
+: QObject(parent)
+, d(new Private)
 {
 }
 
