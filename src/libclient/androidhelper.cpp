@@ -47,7 +47,7 @@ static void logInfo(JNIEnv *env, const QString &tag, const QString &message)
 
         if (env->ExceptionCheck())
         {
-            printf("Exception!!\n");
+            //printf("Exception!!\n");
             env->ExceptionClear();
         }
     }

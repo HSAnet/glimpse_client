@@ -69,18 +69,18 @@ QHostAddress NetworkHelper::localIpAddress()
         {
             if (isLocalIpAddress(addr))
             {
-                qDebug() << __FUNCTION__ << addr << " is local ip";
+                //qDebug() << __FUNCTION__ << addr << " is local ip";
                 hostIp = addr;
                 break;
             }
             else if (isLinkLocalAddress(addr))
             {
-                qDebug() << __FUNCTION__ << addr << " is Link Local Address";
+                //qDebug() << __FUNCTION__ << addr << " is Link Local Address";
                 hostIp = addr;
             }
             else
             {
-                qDebug() << __FUNCTION__ << addr << "is some different address";
+                //qDebug() << __FUNCTION__ << addr << "is some different address";
             }
         }
     }

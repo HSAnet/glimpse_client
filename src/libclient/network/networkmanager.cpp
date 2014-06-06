@@ -455,7 +455,7 @@ QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType soc
 
     if (!socket)
     {
-        qDebug() << "Unknown socket type requested";
+        LOG_ERROR("Unknown socket type requested");
         return NULL;
     }
 
@@ -475,7 +475,7 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
 
     if (!socket)
     {
-        qDebug() << "Unknown socket type requested";
+        LOG_ERROR("Unknown socket type requested");
         return NULL;
     }
 

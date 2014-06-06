@@ -81,7 +81,7 @@ void PacketTrainsMP::readPendingDatagrams()
         }
         else
         {
-            qDebug() << "error, something went wrong"; // TODO
+            LOG_ERROR("Something went wrong"); // TODO
         }
 
         m_timer.start();
@@ -99,7 +99,7 @@ void PacketTrainsMP::eval()
         {
             if (l[i].id != l[i].r_id)
             {
-                qDebug() << "packages out of order";
+                LOG_DEBUG("Packages out of order");
             }
         }
 
@@ -143,7 +143,7 @@ void PacketTrainsMP::handleError(QAbstractSocket::SocketError socketError)
     }
 
     QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
-    cout << "Socket Error: " << socket->errorString().toStdString() << endl;
+    LOG_ERROR(QString("Socket error: %1").arg(socket->errorString()));
 }
 
 Measurement::Status PacketTrainsMP::status() const

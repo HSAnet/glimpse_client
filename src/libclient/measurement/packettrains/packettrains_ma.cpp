@@ -1,11 +1,8 @@
 #include "packettrains_ma.h"
-#include <QUdpSocket>
-#include <QElapsedTimer>
-#include <iostream>
-using namespace std;
-#include <iomanip>
 #include "../../log/logger.h"
 #include "../../network/networkmanager.h"
+#include <QUdpSocket>
+#include <QElapsedTimer>
 
 #ifdef Q_OS_WIN
 #include <WinSock2.h>
@@ -96,7 +93,7 @@ void PacketTrainsMA::handleError(QAbstractSocket::SocketError socketError)
     }
 
     QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
-    cout << "Socket Error: " << socket->errorString().toStdString() << endl;
+    LOG_ERROR(QString("Socket error: %1").arg(socket->errorString()));
 }
 
 
