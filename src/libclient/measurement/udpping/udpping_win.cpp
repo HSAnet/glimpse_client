@@ -386,6 +386,12 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
 
     definition = measurementDefinition.dynamicCast<UdpPingDefinition>();
 
+    if (definition->payload > 65536)
+    {
+        emit error("payload is too large (> 65536 bytes)");
+        return false;
+    }
+
     memset(&m_destAddress, 0, sizeof(m_destAddress));
 
     // resolve
@@ -480,13 +486,13 @@ bool UdpPing::start()
     if (probe.sock < 0)
     {
         emit error("initSocket");
-        free(m_payload);
+        delete[] m_payload;
         return false;
     }
 
     ping(&probe);
     closesocket(probe.sock);
-    free(m_payload);
+    delete[] m_payload;
 
     setStatus(UdpPing::Finished);
     emit finished();
