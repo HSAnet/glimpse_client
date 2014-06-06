@@ -19,6 +19,9 @@ public:
 private:
     class Private;
     Private *d;
+
+private:
+    Q_DISABLE_COPY(CrashHandler)
 };
 
 #endif // CRASHHANDLER_H

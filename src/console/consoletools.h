@@ -18,6 +18,9 @@ public:
 protected:
     class Private;
     Private *d;
+
+private:
+    Q_DISABLE_COPY(ConsoleTools)
 };
 
 #endif // CONSOLETOOLS_H
