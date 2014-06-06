@@ -25,7 +25,8 @@ MeasurementPtr BulkTransportCapacityPlugin::createMeasurement(const QString &nam
     return MeasurementPtr();
 }
 
-MeasurementDefinitionPtr BulkTransportCapacityPlugin::createMeasurementDefinition(const QString &name, const QVariant &data)
+MeasurementDefinitionPtr BulkTransportCapacityPlugin::createMeasurementDefinition(const QString &name,
+                                                                                  const QVariant &data)
 {
     Q_UNUSED(name);
     return BulkTransportCapacityDefinition::fromVariant(data);

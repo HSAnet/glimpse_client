@@ -12,12 +12,12 @@ public:
     MeasurementPluginList plugins() const;
     QStringList availableMeasurements() const;
 
-    MeasurementPtr createMeasurement(const QString& name, const QUuid &id);
-    MeasurementDefinitionPtr createMeasurementDefinition(const QString& name, const QVariant& data);
+    MeasurementPtr createMeasurement(const QString &name, const QUuid &id);
+    MeasurementDefinitionPtr createMeasurementDefinition(const QString &name, const QVariant &data);
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // MEASUREMENTFACTORY_H

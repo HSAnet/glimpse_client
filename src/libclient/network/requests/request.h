@@ -14,7 +14,7 @@ class CLIENT_API Request : public QObject
     Q_PROPERTY(QString sessionId READ sessionId WRITE setSessionId NOTIFY sessionIdChanged)
 
 public:
-    explicit Request(QObject* parent = 0);
+    explicit Request(QObject *parent = 0);
     ~Request();
 
     virtual QVariant toVariant() const = 0;
@@ -22,17 +22,17 @@ public:
     void setDeviceId(const QString &deviceId);
     QString deviceId() const;
 
-    void setSessionId(const QString& sessionId);
+    void setSessionId(const QString &sessionId);
     QString sessionId() const;
 
 signals:
-    void deviceIdChanged(const QUuid& deviceId);
-    void sessionIdChanged(const QString& sessionId);
+    void deviceIdChanged(const QUuid &deviceId);
+    void sessionIdChanged(const QString &sessionId);
 
 protected:
     class Private;
     friend class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // REQUEST_H

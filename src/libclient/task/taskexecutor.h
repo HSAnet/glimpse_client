@@ -13,7 +13,7 @@ class MeasurementObserver
 {
 public:
     virtual ~MeasurementObserver() {}
-    virtual void created(const MeasurementPtr& measurement) = 0;
+    virtual void created(const MeasurementPtr &measurement) = 0;
 };
 
 class TaskExecutor : public QObject
@@ -25,22 +25,22 @@ public:
     TaskExecutor();
     ~TaskExecutor();
 
-    void setNetworkManager(NetworkManager* networkManager);
-    NetworkManager* networkManager() const;
+    void setNetworkManager(NetworkManager *networkManager);
+    NetworkManager *networkManager() const;
 
     bool isRunning() const;
 
-    void execute(const TestDefinitionPtr &test, MeasurementObserver* observer = NULL);
+    void execute(const TestDefinitionPtr &test, MeasurementObserver *observer = NULL);
 
 signals:
     void runningChanged(bool running);
 
-    void started(const TestDefinitionPtr& test);
-    void finished(const TestDefinitionPtr& test, const ResultPtr& result);
+    void started(const TestDefinitionPtr &test);
+    void finished(const TestDefinitionPtr &test, const ResultPtr &result);
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 

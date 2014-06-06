@@ -18,14 +18,14 @@ public:
     Status status() const;
     QString errorString() const;
 
-    bool init(NetworkManager* networkManager, Settings* settings);
+    bool init(NetworkManager *networkManager, Settings *settings);
 
 public slots:
     void update();
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // CONFIGCONTROLLER_H

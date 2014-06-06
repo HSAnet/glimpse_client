@@ -49,6 +49,7 @@ QString DeviceInfo::deviceId() const
 qreal DeviceInfo::cpuUsage() const
 {
     QFile file("/proc/stat");
+
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return -1.0;
@@ -60,7 +61,7 @@ qreal DeviceInfo::cpuUsage() const
 
     long idle1 = toks[5].toLong();
     long cpu1 = toks[2].toLong() + toks[3].toLong() + toks[4].toLong()
-          + toks[6].toLong() + toks[7].toLong() + toks[8].toLong();
+                + toks[6].toLong() + toks[7].toLong() + toks[8].toLong();
 
     // sleep, this is not good (180ms at the moment)
     QThread::usleep(180000);
@@ -73,7 +74,7 @@ qreal DeviceInfo::cpuUsage() const
 
     long idle2 = toks[5].toLong();
     long cpu2 = toks[2].toLong() + toks[3].toLong() + toks[4].toLong()
-        + toks[6].toLong() + toks[7].toLong() + toks[8].toLong();
+                + toks[6].toLong() + toks[7].toLong() + toks[8].toLong();
 
     return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 }

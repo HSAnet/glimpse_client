@@ -8,12 +8,12 @@ class LinuxProcessModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    explicit LinuxProcessModel(QObject* parent = 0);
+    explicit LinuxProcessModel(QObject *parent = 0);
     ~LinuxProcessModel();
 
     enum Roles
     {
-        DisplayNameRole = Qt::UserRole +1,
+        DisplayNameRole = Qt::UserRole + 1,
         BundleName
     };
 
@@ -27,7 +27,7 @@ public slots:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // LINUXPROCESSMODEL_H

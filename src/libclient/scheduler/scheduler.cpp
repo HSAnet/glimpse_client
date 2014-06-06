@@ -17,7 +17,7 @@ class Scheduler::Private : public QObject
     Q_OBJECT
 
 public:
-    Private(Scheduler* q)
+    Private(Scheduler *q)
     : q(q)
     , path(qApp->applicationDirPath())
     {
@@ -26,7 +26,7 @@ public:
         connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
     }
 
-    Scheduler* q;
+    Scheduler *q;
 
     // Properties
     QDir path;
@@ -57,10 +57,11 @@ void Scheduler::Private::updateTimer()
     {
         const TestDefinitionPtr td = tests.at(0);
         int ms = td->timing()->timeLeft();
-        if ( ms > 0 )
+
+        if (ms > 0)
         {
             LOG_DEBUG(QString("Scheduling timer executes %1 in %2 ms").arg(td->name()).arg(ms));
-            timer.start( ms );
+            timer.start(ms);
         }
         else
         {
@@ -72,19 +73,20 @@ void Scheduler::Private::updateTimer()
     }
 }
 
-int Scheduler::Private::enqueue(const TestDefinitionPtr& testDefinition)
+int Scheduler::Private::enqueue(const TestDefinitionPtr &testDefinition)
 {
     // abort if test-id is already in scheduler or if the test has no next run time
-    if ( testIds.contains(testDefinition->id()) || !testDefinition->timing()->nextRun().isValid())
+    if (testIds.contains(testDefinition->id()) || !testDefinition->timing()->nextRun().isValid())
     {
         return -1;
     }
 
     int timeLeft = testDefinition->timing()->timeLeft();
 
-    for (int i=0; i < tests.size(); i++)
+    for (int i = 0; i < tests.size(); i++)
     {
-        const TestDefinitionPtr& td = tests.at(i);
+        const TestDefinitionPtr &td = tests.at(i);
+
         if (timeLeft < td->timing()->timeLeft())
         {
             tests.insert(i, testDefinition);
@@ -108,7 +110,7 @@ int Scheduler::Private::enqueue(const TestDefinitionPtr& testDefinition)
         updateTimer();
     }
 
-    return tests.size()-1;
+    return tests.size() - 1;
 }
 
 void Scheduler::Private::timeout()
@@ -187,7 +189,7 @@ void Scheduler::execute(const TestDefinitionPtr &testDefinition)
 
 int Scheduler::executeOnDemandTest(const QUuid &id)
 {
-    foreach(TestDefinitionPtr td, d->onDemandTests)
+    foreach (TestDefinitionPtr td, d->onDemandTests)
     {
         if (td->id() == id)
         {

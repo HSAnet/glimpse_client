@@ -48,7 +48,7 @@ void PacketTrainsMP::readPendingDatagrams()
     m_timeout.start();
 
     qint64 timestamp;
-    struct msg* message;
+    struct msg *message;
     quint16 iter;
 
     if (!m_receiveTimer.isValid())
@@ -68,7 +68,7 @@ void PacketTrainsMP::readPendingDatagrams()
         quint16 senderPort;
 
         m_udpSocket->readDatagram(buffer.data(), buffer.size(), &sender, &senderPort);
-        message = reinterpret_cast<msg*>(buffer.data());
+        message = reinterpret_cast<msg *>(buffer.data());
 
         message->rtime = timestamp;
         message->r_id = m_packetsReceived++;
@@ -90,7 +90,7 @@ void PacketTrainsMP::readPendingDatagrams()
 
 void PacketTrainsMP::eval()
 {
-    foreach(const QList<msg> &l, m_rec)
+    foreach (const QList<msg> &l, m_rec)
     {
         quint64 ts_otime[2] = {0}, ts_rtime[2] = {2};
         double srate = 0, rrate = 0;
@@ -99,7 +99,7 @@ void PacketTrainsMP::eval()
         {
             if (l[i].id != l[i].r_id)
             {
-                qDebug() <<"packages out of order";
+                qDebug() << "packages out of order";
             }
         }
 
@@ -117,6 +117,7 @@ void PacketTrainsMP::eval()
 
         srate = (double) definition->packetSize * l.size() / (ts_otime[1] - ts_otime[0]) * 1000000000;
         rrate = (double) definition->packetSize * l.size() / (ts_rtime[1] - ts_rtime[0]) * 1000000000;
+
         // ignore infinite rates
         if (ts_otime[0] != ts_rtime[1] && ts_rtime[0] != ts_rtime[1])
         {
@@ -141,8 +142,8 @@ void PacketTrainsMP::handleError(QAbstractSocket::SocketError socketError)
         return;
     }
 
-    QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());
-    cout<<"Socket Error: "<<socket->errorString().toStdString()<<endl;
+    QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
+    cout << "Socket Error: " << socket->errorString().toStdString() << endl;
 }
 
 Measurement::Status PacketTrainsMP::status() const
@@ -155,12 +156,13 @@ bool PacketTrainsMP::prepare(NetworkManager *networkManager, const MeasurementDe
     Q_UNUSED(networkManager);
 
     definition = measurementDefinition.dynamicCast<PacketTrainsDefinition>();
-    if ( definition.isNull() )
+
+    if (definition.isNull())
     {
         LOG_WARNING("Definition is empty");
     }
 
-    m_udpSocket = qobject_cast<QUdpSocket*>(peerSocket());
+    m_udpSocket = qobject_cast<QUdpSocket *>(peerSocket());
 
     if (!m_udpSocket)
     {
@@ -171,12 +173,13 @@ bool PacketTrainsMP::prepare(NetworkManager *networkManager, const MeasurementDe
     m_udpSocket->setParent(this);
 
     // Signal for errors
-    connect(m_udpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(handleError(QAbstractSocket::SocketError)));
+    connect(m_udpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this,
+            SLOT(handleError(QAbstractSocket::SocketError)));
 
     m_packetsReceived = 0;
     m_rec.clear();
 
-    for (int i=0; i<definition->iterations; i++)
+    for (int i = 0; i < definition->iterations; i++)
     {
         m_rec.append(QList<msg>());
     }

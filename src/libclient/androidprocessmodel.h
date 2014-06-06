@@ -26,7 +26,7 @@ public slots:
     void reload();
 
 protected:
-    class AndroidProcessModelPrivate* d;
+    class AndroidProcessModelPrivate *d;
     friend class AndroidProcessModelPrivate;
 };
 

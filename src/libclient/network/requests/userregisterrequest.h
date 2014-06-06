@@ -19,7 +19,7 @@ class CLIENT_API UserRegisterRequest : public Request
     Q_PROPERTY(int xpLevel READ xpLevel WRITE setXpLevel NOTIFY xpLevelChanged)
 
 public:
-    UserRegisterRequest(QObject* parent = 0);
+    UserRegisterRequest(QObject *parent = 0);
     ~UserRegisterRequest();
 
     QVariant toVariant() const;
@@ -31,24 +31,24 @@ public:
     QString password() const;
     int xpLevel() const;
 
-    void setLastName(const QString& lastName);
+    void setLastName(const QString &lastName);
     void setHomeCountry(QLocale::Country homeCountry);
-    void setUserId(const QString& userId);
-    void setFirstName(const QString& firstName);
-    void setPassword(const QString& password);
+    void setUserId(const QString &userId);
+    void setFirstName(const QString &firstName);
+    void setPassword(const QString &password);
     void setXpLevel(int xpLevel);
 
 signals:
-    void lastNameChanged(const QString& lastName);
+    void lastNameChanged(const QString &lastName);
     void homeCountryChanged(QLocale::Country homeCountry);
-    void mailChanged(const QString& userId);
-    void firstNameChanged(const QString& firstName);
-    void passwordChanged(const QString& password);
+    void mailChanged(const QString &userId);
+    void firstNameChanged(const QString &firstName);
+    void passwordChanged(const QString &password);
     void xpLevelChanged(int xpLevel);
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // USERREGISTERREQUEST_H

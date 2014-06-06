@@ -31,7 +31,7 @@ class DeviceRegistrationWatcher : public QObject
     Q_OBJECT
 
 public:
-    DeviceRegistrationWatcher(LoginController* controller)
+    DeviceRegistrationWatcher(LoginController *controller)
     : m_controller(controller)
     {
         connect(controller, SIGNAL(finished()), this, SLOT(onLoginOrRegistrationFinished()));
@@ -76,7 +76,7 @@ private slots:
     }
 
 protected:
-    LoginController* m_controller;
+    LoginController *m_controller;
 
     WebRequester m_requester;
     RegisterDeviceRequest m_request;
@@ -87,8 +87,8 @@ class LoginWatcher : public QObject
 {
     Q_OBJECT
 public:
-    LoginWatcher(LoginController* controller)
-        : m_controller(controller)
+    LoginWatcher(LoginController *controller)
+    : m_controller(controller)
     {
         connect(controller, SIGNAL(statusChanged()), this, SLOT(onStatusChanged()));
     }
@@ -114,7 +114,7 @@ private slots:
     }
 
 protected:
-    LoginController* m_controller;
+    LoginController *m_controller;
 };
 
 struct LoginData
@@ -130,7 +130,7 @@ struct LoginData
     QString password;
 };
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
     QCoreApplication::setOrganizationName("HS-Augsburg");
@@ -183,13 +183,13 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    if ((parser.isSet(registerAnonymous)||parser.isSet(registerOption)) && parser.isSet(loginOption))
+    if ((parser.isSet(registerAnonymous) || parser.isSet(registerOption)) && parser.isSet(loginOption))
     {
         out << "'--register(-anonymous)' and '--login' cannot be set on the same time.\n";
         return 1;
     }
 
-    QCommandLineOption* passwordOption = NULL;
+    QCommandLineOption *passwordOption = NULL;
     LoginData loginData;
 
     if (parser.isSet(registerOption))
@@ -197,6 +197,7 @@ int main(int argc, char* argv[])
         loginData.type = LoginData::Register;
         passwordOption = &registerOption;
     }
+
     if (parser.isSet(loginOption))
     {
         loginData.type = LoginData::Login;
@@ -208,19 +209,23 @@ int main(int argc, char* argv[])
         loginData.userId = parser.value(*passwordOption);
 
         ConsoleTools tools;
+
         do
         {
             out << '[' << argv[0] << ']' << " Password: ";
             out.flush();
             loginData.password = tools.readPassword();
-        } while (loginData.password.isEmpty());
+        }
+        while (loginData.password.isEmpty());
     }
 
 #ifdef Q_OS_UNIX
+
     if (parser.isSet(userOption))
     {
         QByteArray user = parser.value(userOption).toLatin1();
-        passwd* pwd = getpwnam(user.constData());
+        passwd *pwd = getpwnam(user.constData());
+
         if (pwd)
         {
             if (-1 == setuid(pwd->pw_uid))
@@ -244,6 +249,7 @@ int main(int argc, char* argv[])
     if (parser.isSet(daemonOption))
     {
         pid_t pid = fork();
+
         if (pid == -1)
         {
             out << "fork() failed: " << strerror(errno) << "\n";
@@ -260,6 +266,7 @@ int main(int argc, char* argv[])
             umask(0);
 
             pid_t sid = setsid();
+
             if (sid < 0)
             {
                 return 1;
@@ -272,13 +279,14 @@ int main(int argc, char* argv[])
             close(STDERR_FILENO);
         }
     }
+
 #endif // Q_OS_UNIX
 
     // If there may be anything left, we flush it before the client starts
     out.flush();
 
     // Initialize the client instance
-    Client* client = Client::instance();
+    Client *client = Client::instance();
 
     LOG_INFO(QString("Glimpse version %1").arg(Client::version()));
 

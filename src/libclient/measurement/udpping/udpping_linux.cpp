@@ -18,7 +18,7 @@ namespace
         struct addrinfo hints;
         struct addrinfo *rp = NULL, *result = NULL;
 
-        memset(&hints, 0, sizeof (hints));
+        memset(&hints, 0, sizeof(hints));
         hints.ai_family = PF_UNSPEC;
 
         if (getaddrinfo(address.toStdString().c_str(), NULL, &hints, &result))
@@ -89,7 +89,7 @@ void UdpPing::setStatus(Status status)
     }
 }
 
-bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitionPtr& measurementDefinition)
+bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
 
@@ -125,10 +125,12 @@ bool UdpPing::start()
 
     // include null-character
     m_payload = new char[definition->payload + 1];
+
     if (m_payload == NULL)
     {
         return false;
     }
+
     memset(m_payload, 0, definition->payload + 1);
 
     setStartDateTime(QDateTime::currentDateTime());
@@ -137,6 +139,7 @@ bool UdpPing::start()
 
     memset(&probe, 0, sizeof(probe));
     probe.sock = initSocket();
+
     if (probe.sock < 0)
     {
         emit error("socket: " + QString(strerror(errno)));
@@ -189,6 +192,7 @@ int UdpPing::initSocket()
     memset(&src_addr, 0, sizeof(src_addr));
 
     sock = socket(m_destAddress.sa.sa_family, SOCK_DGRAM, IPPROTO_UDP);
+
     if (sock < 0)
     {
         emit error("socket: " + QString(strerror(errno)));
@@ -196,6 +200,7 @@ int UdpPing::initSocket()
     }
 
     src_addr.sa.sa_family = m_destAddress.sa.sa_family;
+
     if (m_destAddress.sa.sa_family == AF_INET)
     {
         src_addr.sin.sin_port = htons(definition->sourcePort);
@@ -218,6 +223,7 @@ int UdpPing::initSocket()
     {
         n = bind(sock, (struct sockaddr *) &src_addr, sizeof(src_addr.sin6));
     }
+
     if (n < 0)
     {
         emit error("bind: " + QString(strerror(errno)));
@@ -225,6 +231,7 @@ int UdpPing::initSocket()
     }
 
     n = 1;
+
     if (setsockopt(sock, SOL_SOCKET, SO_TIMESTAMP, &n, sizeof(n)) < 0)
     {
         emit error("setsockopt SOL_TIMESTAMP: " + QString(strerror(errno)));
@@ -240,6 +247,7 @@ int UdpPing::initSocket()
 
     // use RECVRR
     n = 1;
+
     if (m_destAddress.sa.sa_family == AF_INET)
     {
         if (setsockopt(sock, SOL_IP, IP_RECVERR, &n, sizeof(n)) < 0)
@@ -291,11 +299,13 @@ bool UdpPing::sendData(PingProbe *probe)
         n = sendto(probe->sock, m_payload, definition->payload, 0,
                    (sockaddr *)&m_destAddress, sizeof(m_destAddress.sin6));
     }
+
     if (n < 0)
     {
         emit error("send: " + QString(strerror(errno)));
         return false;
     }
+
     return true;
 }
 
@@ -324,6 +334,7 @@ void UdpPing::receiveData(PingProbe *probe)
     memset(&pfd, 0, sizeof(pfd));
     pfd.fd = probe->sock;
     pfd.events = POLLIN | POLLERR;
+
     if (poll(&pfd, 1, definition->receiveTimeout) < 0)
     {
         emit error("poll: " + QString(strerror(errno)));
@@ -374,17 +385,21 @@ void UdpPing::receiveData(PingProbe *probe)
             }
         }
     }
+
     if (ee)
     {
         memcpy(&probe->source, SO_EE_OFFENDER(ee), sizeof(probe->source));
+
         if (ee->ee_type == ICMP_TIME_EXCEEDED && ee->ee_code == ICMP_EXC_TTL)
         {
             emit ttlExceeded(*probe);
-        } else if (ee->ee_type == ICMP_DEST_UNREACH)
+        }
+        else if (ee->ee_type == ICMP_DEST_UNREACH)
         {
             emit destinationUnreachable(*probe);
         }
     }
+
 cleanup:
     return;
 }

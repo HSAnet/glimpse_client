@@ -15,7 +15,7 @@ public:
     ~FileLogger();
 
     // LogAppender interface
-    void log(Logger::Level level, const QString& name, const QString& funcName, const QString& message);
+    void log(Logger::Level level, const QString &name, const QString &funcName, const QString &message);
 
 private:
     // Properties

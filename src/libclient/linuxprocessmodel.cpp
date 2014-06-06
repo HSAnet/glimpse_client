@@ -20,7 +20,7 @@ class LinuxProcessModel::Private : public QObject
 public:
     QList<ProcessInfo> apps;
 
-    Private(LinuxProcessModel* q)
+    Private(LinuxProcessModel *q)
     : q(q)
     , processPattern("[ ]*(\\d+) (.*)$") // " 3862 thunderbird"
     , stream(&process)
@@ -30,7 +30,7 @@ public:
         interpreters << "python" << "perl" << "bash" << "ruby";
     }
 
-    LinuxProcessModel* q;
+    LinuxProcessModel *q;
 
     // Properties
     QStringList interpreters;
@@ -71,12 +71,13 @@ int LinuxProcessModel::rowCount(const QModelIndex &parent) const
 
 QVariant LinuxProcessModel::data(const QModelIndex &index, int role) const
 {
-    const ProcessInfo& app = d->apps.at(index.row());
+    const ProcessInfo &app = d->apps.at(index.row());
 
     switch (role)
     {
     case DisplayNameRole:
         return app.localizedName;
+
     case BundleName:
         return app.bundleName;
 
@@ -109,19 +110,21 @@ void LinuxProcessModel::reload()
     endResetModel();
 }
 
-QString LinuxProcessModel::Private::getFullCommand(const QString& pid) const
+QString LinuxProcessModel::Private::getFullCommand(const QString &pid) const
 {
     QString fileName = QString("/proc/%1/cmdline").arg(pid);
 
     QFile file(fileName);
+
     if (file.open(QIODevice::ReadOnly))
     {
         QByteArray link = file.readAll();
 
-        foreach(const QString& interpreter, interpreters)
+        foreach (const QString &interpreter, interpreters)
         {
             QString pattern = QString("/bin/%1").arg(interpreter);
-            if ( link.contains(pattern.toLatin1()) )
+
+            if (link.contains(pattern.toLatin1()))
             {
                 link = link.split('\0').at(1);
                 break;
@@ -137,21 +140,25 @@ QString LinuxProcessModel::Private::getFullCommand(const QString& pid) const
 void LinuxProcessModel::Private::onReadyRead()
 {
     QString line = stream.readLine();
+
     while (!line.isEmpty())
     {
         int pos = processPattern.indexIn(line);
-        if ( pos != -1 )
+
+        if (pos != -1)
         {
             // Zombie processes might return nothing
             QString commandline = getFullCommand(processPattern.cap(1));
-            if ( !commandline.isEmpty() )
+
+            if (!commandline.isEmpty())
             {
                 ProcessInfo psInfo;
                 psInfo.bundleName = processPattern.cap(1);
                 psInfo.localizedName = processPattern.cap(2);
-                apps.append( psInfo );
+                apps.append(psInfo);
             }
         }
+
         line = stream.readLine();
     }
 }

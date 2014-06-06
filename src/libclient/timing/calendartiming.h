@@ -28,7 +28,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 
@@ -54,7 +54,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // CALENDARTIMING_H

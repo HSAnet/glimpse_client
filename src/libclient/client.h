@@ -25,23 +25,23 @@ class CLIENT_API Client : public QObject
     Q_OBJECT
     Q_ENUMS(Status ProbeType)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-    Q_PROPERTY(Scheduler* scheduler READ scheduler CONSTANT)
-    Q_PROPERTY(Settings* settings READ settings CONSTANT)
-    Q_PROPERTY(ReportScheduler* reportScheduler READ reportScheduler CONSTANT)
-    Q_PROPERTY(NetworkManager* networkManager READ networkManager CONSTANT)
-    Q_PROPERTY(TaskExecutor* taskExecutor READ taskExecutor CONSTANT)
-    Q_PROPERTY(ReportController* reportController READ reportController CONSTANT)
-    Q_PROPERTY(ConfigController* configController READ configController CONSTANT)
-    Q_PROPERTY(LoginController* loginController READ loginController CONSTANT)
-    Q_PROPERTY(TaskController* taskController READ taskController CONSTANT)
-    Q_PROPERTY(CrashController* crashController READ crashController CONSTANT)
+    Q_PROPERTY(Scheduler *scheduler READ scheduler CONSTANT)
+    Q_PROPERTY(Settings *settings READ settings CONSTANT)
+    Q_PROPERTY(ReportScheduler *reportScheduler READ reportScheduler CONSTANT)
+    Q_PROPERTY(NetworkManager *networkManager READ networkManager CONSTANT)
+    Q_PROPERTY(TaskExecutor *taskExecutor READ taskExecutor CONSTANT)
+    Q_PROPERTY(ReportController *reportController READ reportController CONSTANT)
+    Q_PROPERTY(ConfigController *configController READ configController CONSTANT)
+    Q_PROPERTY(LoginController *loginController READ loginController CONSTANT)
+    Q_PROPERTY(TaskController *taskController READ taskController CONSTANT)
+    Q_PROPERTY(CrashController *crashController READ crashController CONSTANT)
 
     explicit Client(QObject *parent = 0);
     ~Client();
 
 public:
     /// Receives the main client instance
-    static Client* instance();
+    static Client *instance();
 
     enum Status
     {
@@ -56,20 +56,20 @@ public:
     // Get the version
     static QString version();
 
-    QNetworkAccessManager* networkAccessManager() const;
+    QNetworkAccessManager *networkAccessManager() const;
 
-    Scheduler* scheduler() const;
-    ReportScheduler* reportScheduler() const;
-    NetworkManager* networkManager() const;
-    TaskExecutor* taskExecutor() const;
+    Scheduler *scheduler() const;
+    ReportScheduler *reportScheduler() const;
+    NetworkManager *networkManager() const;
+    TaskExecutor *taskExecutor() const;
 
-    ConfigController* configController() const;
-    LoginController* loginController() const;
-    ReportController* reportController() const;
-    TaskController* taskController() const;
-    CrashController* crashController() const;
+    ConfigController *configController() const;
+    LoginController *loginController() const;
+    ReportController *reportController() const;
+    TaskController *taskController() const;
+    CrashController *crashController() const;
 
-    Settings* settings() const;
+    Settings *settings() const;
 
     /* Versioning
      *
@@ -89,7 +89,7 @@ public slots:
     void btc(const QString &host = "141.82.57.241");
     void http(const QString &url = "http://ipv4.download.thinkbroadband.com:81/10MB.zip");
     void upnp();
-    void ping(const QString& host = QString(),
+    void ping(const QString &host = QString(),
               quint16 count = 4,
               quint32 timeout = 2000,
               quint32 interval = 200);
@@ -126,7 +126,7 @@ signals:
 
 private:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // CLIENT_H

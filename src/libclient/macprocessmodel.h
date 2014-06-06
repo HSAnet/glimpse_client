@@ -8,12 +8,12 @@ class MacProcessModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    explicit MacProcessModel(QObject* parent = 0);
+    explicit MacProcessModel(QObject *parent = 0);
     ~MacProcessModel();
 
     enum Roles
     {
-        DisplayNameRole = Qt::UserRole +1,
+        DisplayNameRole = Qt::UserRole + 1,
         BundleName
     };
 
@@ -27,7 +27,7 @@ public slots:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // MACPROCESSMODEL_H

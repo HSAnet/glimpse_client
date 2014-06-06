@@ -12,7 +12,7 @@ typedef QSharedPointer<Timing> TimingPtr;
 class CLIENT_API Timing : public Serializable
 {
 public:
-    int timeLeft(const QDateTime& when = QDateTime::currentDateTime()) const;
+    int timeLeft(const QDateTime &when = QDateTime::currentDateTime()) const;
 
     virtual ~Timing() {}
 

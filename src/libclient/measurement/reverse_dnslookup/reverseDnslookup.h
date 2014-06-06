@@ -16,7 +16,7 @@ public:
 
     // Measurement interface
     Status status() const;
-    bool prepare(NetworkManager* networkManager, const MeasurementDefinitionPtr& measurementDefinition);
+    bool prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition);
     bool start();
     bool stop();
     ResultPtr result() const;

@@ -13,7 +13,7 @@ class DesktopStatusBarHelper : public QObject
     Q_PROPERTY(bool visible READ isVisible WRITE setVisible NOTIFY visibleChanged)
 
 public:
-    DesktopStatusBarHelper(QObject* parent = 0)
+    DesktopStatusBarHelper(QObject *parent = 0)
     : QObject(parent)
     , m_visible(false)
     {
@@ -36,7 +36,7 @@ public:
 
     void setVisible(bool visible)
     {
-        if ( m_visible != visible )
+        if (m_visible != visible)
         {
             m_visible = visible;
             emit visibleChanged(visible);

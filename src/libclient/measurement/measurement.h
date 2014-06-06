@@ -17,11 +17,11 @@ class CLIENT_API Measurement : public QObject
     Q_OBJECT
 
 public:
-    Measurement(QObject* parent = 0);
+    Measurement(QObject *parent = 0);
     ~Measurement();
 
-    void setPeerSocket(QAbstractSocket* peerSocket);
-    QAbstractSocket* peerSocket() const;
+    void setPeerSocket(QAbstractSocket *peerSocket);
+    QAbstractSocket *peerSocket() const;
 
     enum Status
     {
@@ -33,8 +33,8 @@ public:
 
     virtual Status status() const = 0;
 
-    virtual bool prepare(NetworkManager* networkManager,
-                         const MeasurementDefinitionPtr& measurementDefinition) = 0;
+    virtual bool prepare(NetworkManager *networkManager,
+                         const MeasurementDefinitionPtr &measurementDefinition) = 0;
 
     virtual bool start() = 0;
     virtual bool stop() = 0;
@@ -56,7 +56,7 @@ signals:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // MEASUREMENT_H

@@ -18,10 +18,10 @@ protected:
     struct CleanupInfo
     {
         jintArray pixels;
-        jint* realPixels;
+        jint *realPixels;
     };
 
-    static void cleanupHandler(void* info);
+    static void cleanupHandler(void *info);
 
 protected:
     jobject m_instance;

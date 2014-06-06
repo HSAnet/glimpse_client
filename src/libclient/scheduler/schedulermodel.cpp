@@ -9,12 +9,12 @@ class SchedulerModel::Private : public QObject
     Q_OBJECT
 
 public:
-    Private(SchedulerModel* q)
+    Private(SchedulerModel *q)
     : q(q)
     {
     }
 
-    SchedulerModel* q;
+    SchedulerModel *q;
 
     QPointer<Scheduler> scheduler;
     TestDefinitionList tests;
@@ -25,14 +25,14 @@ public slots:
     void testMoved(const TestDefinitionPtr &test, int from, int to);
 };
 
-void SchedulerModel::Private::testAdded(const TestDefinitionPtr& test, int position)
+void SchedulerModel::Private::testAdded(const TestDefinitionPtr &test, int position)
 {
     q->beginInsertRows(QModelIndex(), position, position);
     tests.insert(position, test);
     q->endInsertRows();
 }
 
-void SchedulerModel::Private::testRemoved(const TestDefinitionPtr& test, int position)
+void SchedulerModel::Private::testRemoved(const TestDefinitionPtr &test, int position)
 {
     Q_UNUSED(test);
 
@@ -41,12 +41,12 @@ void SchedulerModel::Private::testRemoved(const TestDefinitionPtr& test, int pos
     q->endRemoveRows();
 }
 
-void SchedulerModel::Private::testMoved(const TestDefinitionPtr& test, int from, int to)
+void SchedulerModel::Private::testMoved(const TestDefinitionPtr &test, int from, int to)
 {
     Q_UNUSED(test);
 
     q->beginMoveRows(QModelIndex(), from, from,
-                     QModelIndex(), to+1);
+                     QModelIndex(), to + 1);
     tests.move(from, to);
     q->endMoveRows();
 }
@@ -71,18 +71,21 @@ void SchedulerModel::setScheduler(Scheduler *scheduler)
 
     if (d->scheduler)
     {
-        disconnect(d->scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr,int)), d, SLOT(testAdded(TestDefinitionPtr,int)));
-        disconnect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr,int)), d, SLOT(testRemoved(TestDefinitionPtr,int)));
-        disconnect(d->scheduler.data(), SIGNAL(testMoved(TestDefinitionPtr,int,int)), d, SLOT(testMoved(TestDefinitionPtr,int,int)));
+        disconnect(d->scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr, int)), d, SLOT(testAdded(TestDefinitionPtr, int)));
+        disconnect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr, int)), d, SLOT(testRemoved(TestDefinitionPtr,
+                                                                                                         int)));
+        disconnect(d->scheduler.data(), SIGNAL(testMoved(TestDefinitionPtr, int, int)), d, SLOT(testMoved(TestDefinitionPtr,
+                                                                                                          int, int)));
     }
 
     d->scheduler = scheduler;
 
     if (d->scheduler)
     {
-        connect(d->scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr,int)), d, SLOT(testAdded(TestDefinitionPtr,int)));
-        connect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr,int)), d, SLOT(testRemoved(TestDefinitionPtr,int)));
-        connect(d->scheduler.data(), SIGNAL(testMoved(TestDefinitionPtr,int,int)), d, SLOT(testMoved(TestDefinitionPtr,int,int)));
+        connect(d->scheduler.data(), SIGNAL(testAdded(TestDefinitionPtr, int)), d, SLOT(testAdded(TestDefinitionPtr, int)));
+        connect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinitionPtr, int)), d, SLOT(testRemoved(TestDefinitionPtr, int)));
+        connect(d->scheduler.data(), SIGNAL(testMoved(TestDefinitionPtr, int, int)), d, SLOT(testMoved(TestDefinitionPtr, int,
+                                                                                                       int)));
     }
 
     emit schedulerChanged();
@@ -109,6 +112,7 @@ void SchedulerModel::reset()
 QVariant SchedulerModel::get(int index) const
 {
     QModelIndex idx = this->index(index, 0);
+
     if (!idx.isValid())
     {
         return QVariant();
@@ -116,6 +120,7 @@ QVariant SchedulerModel::get(int index) const
 
     QVariantMap hash;
     QHashIterator<int, QByteArray> iter(roleNames());
+
     while (iter.hasNext())
     {
         iter.next();
@@ -154,7 +159,7 @@ int SchedulerModel::columnCount(const QModelIndex &parent) const
 
 QVariant SchedulerModel::data(const QModelIndex &index, int role) const
 {
-    const TestDefinitionPtr& testDefinition = d->tests.at(index.row());
+    const TestDefinitionPtr &testDefinition = d->tests.at(index.row());
 
     if (role == Qt::DisplayRole)
     {
@@ -165,12 +170,16 @@ QVariant SchedulerModel::data(const QModelIndex &index, int role) const
     {
     case NameRole:
         return testDefinition->name();
+
     case NextRunRole:
         return testDefinition->timing()->nextRun();
+
     case TimeLeftRole:
         return testDefinition->timing()->timeLeft();
+
     case TypeRole:
         return testDefinition->timing()->type();
+
     case IdRole:
         return testDefinition->id();
     }
@@ -191,12 +200,16 @@ QVariant SchedulerModel::headerData(int section, Qt::Orientation orientation, in
     {
     case NameRole:
         return tr("Name");
+
     case NextRunRole:
         return tr("Next Run");
+
     case TimeLeftRole:
         return tr("Time left");
+
     case TypeRole:
         return tr("Type");
+
     case IdRole:
         return tr("Id");
 

@@ -36,7 +36,7 @@ void BulkTransportCapacityMA::sendRequest(quint64 bytes)
 
     m_bytesExpected = bytes;
     QDataStream out(m_tcpSocket);
-    out<<bytes;
+    out << bytes;
 }
 
 void BulkTransportCapacityMA::calculateResult()
@@ -68,16 +68,16 @@ void BulkTransportCapacityMA::calculateResult()
         qint64 time = 0;
 
         // calculate slices
-        for (int i=0; i<m_times.size(); i++)
+        for (int i = 0; i < m_times.size(); i++)
         {
             bytes += m_bytesReceivedList.at(i);
             time += m_times.at(i);
 
             // calculate a slice if enough samples are added up or if this is the last iteration
-            if (((i+1) % slice_size) == 0 || i == m_times.size() - 1) // calculate a slice
+            if (((i + 1) % slice_size) == 0 || i == m_times.size() - 1) // calculate a slice
             {
                 qreal speed = (bytes / 1024.0) / (((time / 1000.0) / 1000) / 1000);
-                m_downloadSpeeds<<speed;
+                m_downloadSpeeds << speed;
 
                 // reset counters
                 bytes = 0;
@@ -134,8 +134,8 @@ void BulkTransportCapacityMA::receiveResponse()
     else // this is a response within an active measurement
     {
         qint64 bytes = m_tcpSocket->bytesAvailable();
-        m_bytesReceivedList<<bytes;
-        m_times<<time - m_lasttime;
+        m_bytesReceivedList << bytes;
+        m_times << time - m_lasttime;
         m_bytesReceived += bytes;
         m_totalBytesReceived += bytes;
         m_tcpSocket->readAll(); // we don't care for the data-content
@@ -164,7 +164,7 @@ void BulkTransportCapacityMA::handleError(QAbstractSocket::SocketError socketErr
         return;
     }
 
-    QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(sender());
+    QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
     LOG_ERROR(QString("Socket Error: %1").arg(socket->errorString()));
 }
 
@@ -173,17 +173,21 @@ Measurement::Status BulkTransportCapacityMA::status() const
     return m_status;
 }
 
-bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
+bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager,
+                                      const MeasurementDefinitionPtr &measurementDefinition)
 {
     definition = measurementDefinition.dynamicCast<BulkTransportCapacityDefinition>();
-    if ( definition.isNull() )
+
+    if (definition.isNull())
     {
         LOG_WARNING("Definition is empty");
     }
 
     QString hostname = QString("%1:%2").arg(definition->host).arg(definition->port);
 
-    m_tcpSocket = qobject_cast<QTcpSocket*>(networkManager->establishConnection(hostname, taskId(), "btc_mp", definition, NetworkManager::TcpSocket));
+    m_tcpSocket = qobject_cast<QTcpSocket *>(networkManager->establishConnection(hostname, taskId(), "btc_mp", definition,
+                                                                                 NetworkManager::TcpSocket));
+
     if (!m_tcpSocket)
     {
         LOG_ERROR("Preparation failed");
@@ -198,7 +202,8 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager, const Meas
     connect(m_tcpSocket, SIGNAL(readyRead()), this, SLOT(receiveResponse()));
 
     // Signal for errors
-    connect(m_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(handleError(QAbstractSocket::SocketError)));
+    connect(m_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this,
+            SLOT(handleError(QAbstractSocket::SocketError)));
 
     // Signal for end of data transmission
     connect(m_tcpSocket, SIGNAL(disconnected()), this, SLOT(serverDisconnected()));
@@ -211,8 +216,9 @@ bool BulkTransportCapacityMA::stop()
     if (m_tcpSocket)
     {
         m_tcpSocket->disconnectFromHost();
+
         if (m_tcpSocket->state() != QTcpSocket::UnconnectedState &&
-                !m_tcpSocket->waitForDisconnected(1000))
+            !m_tcpSocket->waitForDisconnected(1000))
         {
             return false;
         }
@@ -224,10 +230,12 @@ bool BulkTransportCapacityMA::stop()
 ResultPtr BulkTransportCapacityMA::result() const
 {
     QVariantList res;
-    foreach(qreal val, m_downloadSpeeds)
+
+    foreach (qreal val, m_downloadSpeeds)
     {
-        res<<QString::number(val, 'f');
+        res << QString::number(val, 'f');
     }
 
-    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant(), definition->measurementUuid));
+    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant(),
+                                definition->measurementUuid));
 }

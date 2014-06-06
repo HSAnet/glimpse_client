@@ -20,7 +20,7 @@ ReportScheduler::~ReportScheduler()
 
 ReportPtr ReportScheduler::reportByTaskId(const QUuid &taskId) const
 {
-    foreach(const ReportPtr& r, d->reports)
+    foreach (const ReportPtr &r, d->reports)
     {
         if (r->taskId() == taskId)
         {
@@ -44,9 +44,9 @@ void ReportScheduler::addReport(const ReportPtr &report)
 
 void ReportScheduler::modifyReport(const ReportPtr &report)
 {
-    for (int i=0; i < d->reports.size(); ++i)
+    for (int i = 0; i < d->reports.size(); ++i)
     {
-        const ReportPtr& r = d->reports.at(i);
+        const ReportPtr &r = d->reports.at(i);
 
         if (r->taskId() == report->taskId())
         {

@@ -15,14 +15,14 @@ public:
     explicit StatusBarHelper(QObject *parent = 0);
     ~StatusBarHelper();
 
-    void setMessage(const QString& message);
+    void setMessage(const QString &message);
     QString message() const;
 
     void setVisible(bool visible);
     bool isVisible() const;
 
 signals:
-    void messageChanged(const QString& message);
+    void messageChanged(const QString &message);
     void visibleChanged(bool visible);
 
 protected:

@@ -14,15 +14,15 @@ typedef QList<ResultPtr> ResultList;
 class CLIENT_API Result : public Serializable
 {
 public:
-    Result(const QDateTime& startDateTime,
-           const QDateTime& endDateTime,
-           const QVariant& probeResult,
-           const QVariant& peerResult,
-           const QUuid& measureUuid = QUuid());
+    Result(const QDateTime &startDateTime,
+           const QDateTime &endDateTime,
+           const QVariant &probeResult,
+           const QVariant &peerResult,
+           const QUuid &measureUuid = QUuid());
     ~Result();
 
     // Storage
-    static ResultPtr fromVariant(const QVariant& variant);
+    static ResultPtr fromVariant(const QVariant &variant);
 
     // Getters
     QDateTime startDateTime() const;
@@ -36,7 +36,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 Q_DECLARE_METATYPE(ResultPtr)

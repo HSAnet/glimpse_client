@@ -11,7 +11,7 @@ typedef QList<HTTPDownloadDefinitionPtr> HTTPDownloadDefinitionList;
 class HTTPDownloadDefinition : public MeasurementDefinition
 {
 public:
-    HTTPDownloadDefinition(const QString& url, bool cacheTest);
+    HTTPDownloadDefinition(const QString &url, bool cacheTest);
     ~HTTPDownloadDefinition();
 
     // Storage

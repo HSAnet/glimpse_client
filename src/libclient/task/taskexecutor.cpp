@@ -20,7 +20,7 @@ public:
     MeasurementPtr measurement;
 
 public slots:
-    void execute(const TestDefinitionPtr& test, MeasurementObserver* observer)
+    void execute(const TestDefinitionPtr &test, MeasurementObserver *observer)
     {
         LOG_INFO(QString("Starting execution of %1").arg(test->name()));
 
@@ -29,7 +29,8 @@ public slots:
         // TODO: Check the timing (too long ago?)
         currentTest = test;
         measurement = factory.createMeasurement(test->name(), test->id());
-        if ( !measurement.isNull() )
+
+        if (!measurement.isNull())
         {
             connect(measurement.data(), SIGNAL(finished()), this, SLOT(measurementFinished()));
 
@@ -69,8 +70,8 @@ public slots:
     }
 
 signals:
-    void started(const TestDefinitionPtr& test);
-    void finished(const TestDefinitionPtr& test, const ResultPtr& result);
+    void started(const TestDefinitionPtr &test);
+    void finished(const TestDefinitionPtr &test, const ResultPtr &result);
 };
 
 class TaskExecutor::Private : public QObject
@@ -78,7 +79,7 @@ class TaskExecutor::Private : public QObject
     Q_OBJECT
 
 public:
-    Private(TaskExecutor* q)
+    Private(TaskExecutor *q)
     : q(q)
     , running(false)
     {
@@ -89,10 +90,10 @@ public:
         taskThread.start();
 
         connect(&executor, SIGNAL(started(TestDefinitionPtr)), this, SLOT(onStarted()));
-        connect(&executor, SIGNAL(finished(TestDefinitionPtr,ResultPtr)), this, SLOT(onFinished()));
+        connect(&executor, SIGNAL(finished(TestDefinitionPtr, ResultPtr)), this, SLOT(onFinished()));
 
         connect(&executor, SIGNAL(started(TestDefinitionPtr)), q, SIGNAL(started(TestDefinitionPtr)));
-        connect(&executor, SIGNAL(finished(TestDefinitionPtr,ResultPtr)), q, SIGNAL(finished(TestDefinitionPtr,ResultPtr)));
+        connect(&executor, SIGNAL(finished(TestDefinitionPtr, ResultPtr)), q, SIGNAL(finished(TestDefinitionPtr, ResultPtr)));
     }
 
     ~Private()
@@ -104,10 +105,10 @@ public:
     struct QueueEntry
     {
         TestDefinitionPtr definition;
-        MeasurementObserver* observer;
+        MeasurementObserver *observer;
     };
 
-    TaskExecutor* q;
+    TaskExecutor *q;
 
     // Properties
     bool running;
@@ -132,7 +133,7 @@ void TaskExecutor::Private::onStarted()
     }
 }
 
-Q_DECLARE_METATYPE(MeasurementObserver*);
+Q_DECLARE_METATYPE(MeasurementObserver *);
 
 void TaskExecutor::Private::onFinished()
 {
@@ -144,14 +145,15 @@ void TaskExecutor::Private::onFinished()
     else
     {
         QueueEntry entry = queue.takeFirst();
-        QMetaObject::invokeMethod(&executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinitionPtr, entry.definition), Q_ARG(MeasurementObserver*, entry.observer));
+        QMetaObject::invokeMethod(&executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinitionPtr, entry.definition),
+                                  Q_ARG(MeasurementObserver *, entry.observer));
     }
 }
 
 TaskExecutor::TaskExecutor()
-    : d(new Private(this))
+: d(new Private(this))
 {
-    qRegisterMetaType<MeasurementObserver*>();
+    qRegisterMetaType<MeasurementObserver *>();
 }
 
 TaskExecutor::~TaskExecutor()
@@ -188,7 +190,8 @@ void TaskExecutor::execute(const TestDefinitionPtr &test, MeasurementObserver *o
         d->running = true;
         emit runningChanged(d->running);
 
-        QMetaObject::invokeMethod(&d->executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinitionPtr, test), Q_ARG(MeasurementObserver*, observer));
+        QMetaObject::invokeMethod(&d->executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinitionPtr, test),
+                                  Q_ARG(MeasurementObserver *, observer));
     }
     else
     {

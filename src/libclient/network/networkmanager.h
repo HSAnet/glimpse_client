@@ -18,10 +18,10 @@ class CLIENT_API NetworkManager : public QObject
     Q_PROPERTY(bool running READ isRunning WRITE setRunning NOTIFY runningChanged)
 
 public:
-    explicit NetworkManager(QObject* parent = 0);
+    explicit NetworkManager(QObject *parent = 0);
     ~NetworkManager();
 
-    bool init(Scheduler* scheduler, Settings* settings);
+    bool init(Scheduler *scheduler, Settings *settings);
 
     void setRunning(bool running);
     bool isRunning() const;
@@ -36,24 +36,24 @@ public:
     };
 
     // Finds an existing connection
-    QAbstractSocket* connection(const QString& hostname, SocketType socketType) const;
+    QAbstractSocket *connection(const QString &hostname, SocketType socketType) const;
 
     // Creates a new connection
-    QAbstractSocket* createConnection(SocketType socketType);
-    QAbstractSocket* establishConnection(const QString &hostname,
+    QAbstractSocket *createConnection(SocketType socketType);
+    QAbstractSocket *establishConnection(const QString &hostname,
                                          const QUuid &taskId,
                                          const QString &measurement,
                                          MeasurementDefinitionPtr measurementDefinition,
                                          NetworkManager::SocketType socketType);
 
-    QTcpServer* createServerSocket();
+    QTcpServer *createServerSocket();
 
 signals:
     void runningChanged();
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // NETWORKMANAGER_H

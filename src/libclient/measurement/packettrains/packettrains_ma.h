@@ -19,7 +19,7 @@ public:
 
 private:
     PacketTrainsDefinitionPtr definition;
-    QUdpSocket* m_udpSocket;
+    QUdpSocket *m_udpSocket;
 
 public slots:
     void handleError(QAbstractSocket::SocketError socketError);

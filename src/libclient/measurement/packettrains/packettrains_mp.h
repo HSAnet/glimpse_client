@@ -21,7 +21,7 @@ public:
 
 private:
     PacketTrainsDefinitionPtr definition;
-    QUdpSocket* m_udpSocket;
+    QUdpSocket *m_udpSocket;
     QTimer m_timer;
     QList<QList<struct msg> > m_rec;
     quint16 m_packetsReceived;

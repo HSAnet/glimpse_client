@@ -1,6 +1,6 @@
 #include "dnslookup_definition.h"
 
-DnslookupDefinition::DnslookupDefinition(const QString& host, const QString& dnsServer)
+DnslookupDefinition::DnslookupDefinition(const QString &host, const QString &dnsServer)
 : host(host)
 , dnsServer(dnsServer)
 {

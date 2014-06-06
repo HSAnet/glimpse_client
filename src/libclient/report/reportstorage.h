@@ -8,7 +8,7 @@ class CLIENT_API ReportStorage : public QObject
     Q_OBJECT
 
 public:
-    ReportStorage(ReportScheduler* scheduler, QObject* parent = 0);
+    ReportStorage(ReportScheduler *scheduler, QObject *parent = 0);
     ~ReportStorage();
 
     void setRealTime(bool realTime);
@@ -19,7 +19,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 

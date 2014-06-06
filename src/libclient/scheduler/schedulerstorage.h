@@ -12,7 +12,7 @@ class CLIENT_API SchedulerStorage : public QObject
     Q_OBJECT
 
 public:
-    SchedulerStorage(Scheduler* scheduler, QObject* parent = 0);
+    SchedulerStorage(Scheduler *scheduler, QObject *parent = 0);
     ~SchedulerStorage();
 
     void setRealTime(bool realTime);
@@ -23,7 +23,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // SCHEDULERSTORAGE_H

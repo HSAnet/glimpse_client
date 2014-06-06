@@ -17,7 +17,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // CONSOLETOOLS_H

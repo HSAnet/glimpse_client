@@ -22,14 +22,15 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 {
     Q_UNUSED(networkManager);
     definition = measurementDefinition.dynamicCast<PingDefinition>();
-    if ( definition.isNull() )
+
+    if (definition.isNull())
     {
         LOG_WARNING("Definition is empty");
         return false;
     }
 
     connect(&process, SIGNAL(started()), this, SLOT(started()));
-    connect(&process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(finished(int,QProcess::ExitStatus)));
+    connect(&process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finished(int, QProcess::ExitStatus)));
     connect(&process, SIGNAL(readyRead()), this, SLOT(readyRead()));
 
     currentStatus = Ping::Unknown;
@@ -92,9 +93,10 @@ bool Ping::stop()
 ResultPtr Ping::result() const
 {
     QVariantList res;
-    foreach(float val, pingTime)
+
+    foreach (float val, pingTime)
     {
-        res<<QString::number(val, 'f', 3);
+        res << QString::number(val, 'f', 3);
     }
 
     return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
@@ -131,7 +133,7 @@ void Ping::readyRead()
 
     for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine())
     {
-        if ( re.indexIn(line) == -1 )
+        if (re.indexIn(line) == -1)
         {
             continue;
         }
@@ -151,7 +153,8 @@ void Ping::waitForFinished()
 float Ping::averagePingTime()
 {
     float time = 0;
-    foreach(float t, pingTime)
+
+    foreach (float t, pingTime)
     {
         time += t;
     }

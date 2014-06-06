@@ -10,7 +10,7 @@ class CLIENT_API TcpSocket : public QTcpSocket
     Q_OBJECT
 
 public:
-    TcpSocket(QObject* parent = 0);
+    TcpSocket(QObject *parent = 0);
     ~TcpSocket();
 
     qint64 bytesWrite() const;
@@ -18,7 +18,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // TCPSOCKET_H

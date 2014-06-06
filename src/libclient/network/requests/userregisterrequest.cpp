@@ -33,7 +33,7 @@ QString UserRegisterRequest::lastName() const
     return d->lastName;
 }
 
-void UserRegisterRequest::setLastName(const QString& lastName)
+void UserRegisterRequest::setLastName(const QString &lastName)
 {
     if (d->lastName != lastName)
     {
@@ -61,7 +61,7 @@ QString UserRegisterRequest::userId() const
     return d->mail;
 }
 
-void UserRegisterRequest::setUserId(const QString& mail)
+void UserRegisterRequest::setUserId(const QString &mail)
 {
     if (d->mail != mail)
     {
@@ -75,7 +75,7 @@ QString UserRegisterRequest::firstName() const
     return d->firstName;
 }
 
-void UserRegisterRequest::setFirstName(const QString& firstName)
+void UserRegisterRequest::setFirstName(const QString &firstName)
 {
     if (d->firstName != firstName)
     {
@@ -89,7 +89,7 @@ QString UserRegisterRequest::password() const
     return d->password;
 }
 
-void UserRegisterRequest::setPassword(const QString& password)
+void UserRegisterRequest::setPassword(const QString &password)
 {
     if (d->password != password)
     {

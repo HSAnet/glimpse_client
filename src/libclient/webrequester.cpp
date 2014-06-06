@@ -19,7 +19,7 @@ class WebRequester::Private : public QObject
     Q_OBJECT
 
 public:
-    Private(WebRequester* q)
+    Private(WebRequester *q)
     : q(q)
     , status(WebRequester::Unknown)
     {
@@ -29,7 +29,7 @@ public:
         timer.setInterval(5000);
     }
 
-    WebRequester* q;
+    WebRequester *q;
 
     // Properties
     WebRequester::Status status;
@@ -53,7 +53,7 @@ public slots:
 
 void WebRequester::Private::setStatus(WebRequester::Status status)
 {
-    if ( this->status != status )
+    if (this->status != status)
     {
         this->status = status;
         emit q->statusChanged(status);
@@ -63,9 +63,11 @@ void WebRequester::Private::setStatus(WebRequester::Status status)
         case Running:
             emit q->started();
             break;
+
         case Finished:
             emit q->finished();
             break;
+
         case Error:
             emit q->error();
             break;
@@ -78,7 +80,7 @@ void WebRequester::Private::setStatus(WebRequester::Status status)
 
 void WebRequester::Private::requestFinished()
 {
-    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
     QNetworkReply::NetworkError networkError = reply->error();
 
     if (networkError == QNetworkReply::NoError)
@@ -93,6 +95,7 @@ void WebRequester::Private::requestFinished()
             QJsonObject root = document.object();
 
             QString replyError = root.value("error").toString();
+
             if (replyError.isEmpty())
             {
                 jsonData = root;
@@ -147,6 +150,7 @@ void WebRequester::Private::requestFinished()
         {
             errorString = reply->errorString();
         }
+
         LOG_WARNING(QString("Network error: %1").arg(errorString));
 
         QJsonParseError jsonError;
@@ -158,13 +162,16 @@ void WebRequester::Private::requestFinished()
         {
             QJsonObject root = document.object();
 
-            QString replyError = root.value("error_message").toString(); // in some django replys its error, in some its error_message
+            QString replyError =
+                root.value("error_message").toString(); // in some django replys its error, in some its error_message
+
             if (!replyError.isEmpty())
             {
                 LOG_WARNING(QString("Error message: %1").arg(replyError));
             }
 
             replyError = root.value("error").toString();
+
             if (!replyError.isEmpty())
             {
                 LOG_WARNING(QString("Error message: %1").arg(replyError));
@@ -207,7 +214,7 @@ WebRequester::Status WebRequester::status() const
 
 void WebRequester::setTimeout(int ms)
 {
-    if ( d->timer.interval() != ms )
+    if (d->timer.interval() != ms)
     {
         d->timer.setInterval(ms);
         emit timeoutChanged(ms);
@@ -301,16 +308,19 @@ void WebRequester::start()
 
     // Get classinfos
     int pathIdx = d->request->metaObject()->indexOfClassInfo("path");
-    if ( pathIdx == -1 )
+
+    if (pathIdx == -1)
     {
         d->errorString = tr("No path found for request");
         d->setStatus(Error);
         LOG_ERROR("No path found for request");
         return;
     }
+
     QMetaClassInfo pathClassInfo = d->request->metaObject()->classInfo(pathIdx);
 
     int methodIdx = d->request->metaObject()->indexOfClassInfo("http_request_method");
+
     if (methodIdx == -1)
     {
         d->errorString = tr("No http_request_method specified");
@@ -318,11 +328,13 @@ void WebRequester::start()
         LOG_ERROR("No http_request_method specified");
         return;
     }
+
     QString httpMethod = d->request->metaObject()->classInfo(methodIdx).value();
 
     int authenticationIdx = d->request->metaObject()->indexOfClassInfo("authentication_method");
     QString authentication = "none";
-    if ( authenticationIdx != -1 )
+
+    if (authenticationIdx != -1)
     {
         authentication = d->request->metaObject()->classInfo(authenticationIdx).value();
     }
@@ -340,17 +352,20 @@ void WebRequester::start()
     url.setPath(pathClassInfo.value());
 
     QNetworkRequest request;
-    QNetworkReply* reply;
+    QNetworkReply *reply;
 
     if (authentication == "basic")
     {
         url.setUserName(Client::instance()->settings()->userId());
-        url.setPassword(Client::instance()->settings()->password()); // TODO change this to a temporary variable after login-form
-                                                                     // which is not saved into the settings
+        url.setPassword(
+            Client::instance()->settings()->password()); // TODO change this to a temporary variable after login-form
+        // which is not saved into the settings
     }
     else if (authentication == "apikey")
     {
-        request.setRawHeader("Authorization", QString("ApiKey %1:%2").arg(Client::instance()->settings()->userId().left(30)).arg(Client::instance()->settings()->apiKey()).toUtf8());
+        request.setRawHeader("Authorization",
+                             QString("ApiKey %1:%2").arg(Client::instance()->settings()->userId().left(30)).arg(
+                                 Client::instance()->settings()->apiKey()).toUtf8());
     }
     else if (authentication == "none")
     {
@@ -362,6 +377,7 @@ void WebRequester::start()
         QUrlQuery query(url);
 
         QMapIterator<QString, QVariant> iter(data);
+
         while (iter.hasNext())
         {
             iter.next();

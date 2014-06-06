@@ -20,7 +20,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // DEVICEINFO_H

@@ -21,6 +21,7 @@ class RegisterDeviceRequest::Private
 public:
     Private()
     : deviceType(TYPE)
+    , maxAllowedTraffic(0)
     , dataPlanDownlink(0)
     , dataPlanUplink(0)
     {
@@ -54,7 +55,7 @@ QString RegisterDeviceRequest::dataPlanName() const
     return d->dataPlanName;
 }
 
-void RegisterDeviceRequest::setDataPlanName(const QString& dataPlanName)
+void RegisterDeviceRequest::setDataPlanName(const QString &dataPlanName)
 {
     if (d->dataPlanName != dataPlanName)
     {
@@ -82,7 +83,7 @@ QString RegisterDeviceRequest::deviceName() const
     return d->deviceName;
 }
 
-void RegisterDeviceRequest::setDeviceName(const QString& deviceName)
+void RegisterDeviceRequest::setDeviceName(const QString &deviceName)
 {
     if (d->deviceName != deviceName)
     {
@@ -96,7 +97,7 @@ QString RegisterDeviceRequest::platform() const
     return d->platform;
 }
 
-void RegisterDeviceRequest::setPlatform(const QString& platform)
+void RegisterDeviceRequest::setPlatform(const QString &platform)
 {
     if (d->platform != platform)
     {
@@ -124,7 +125,7 @@ QString RegisterDeviceRequest::provider() const
     return d->provider;
 }
 
-void RegisterDeviceRequest::setProvider(const QString& provider)
+void RegisterDeviceRequest::setProvider(const QString &provider)
 {
     if (d->provider != provider)
     {

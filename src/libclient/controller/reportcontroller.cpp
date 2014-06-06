@@ -23,12 +23,12 @@ class ReportPost : public Request
     Q_CLASSINFO("path", "/send_results")
 
 public:
-    ReportPost(QObject* parent = 0)
+    ReportPost(QObject *parent = 0)
     : Request(parent)
     {
     }
 
-    void setReports(const ReportList& reports)
+    void setReports(const ReportList &reports)
     {
         m_reports = reports;
     }
@@ -57,7 +57,7 @@ class ReportResponse : public Response
     Q_OBJECT
 
 public:
-    ReportResponse(QObject* parent = 0)
+    ReportResponse(QObject *parent = 0)
     : Response(parent)
     {
     }
@@ -70,7 +70,8 @@ public:
         this->taskIds.clear();
 
         QVariantList taskIds = variant.value("successful_task_ids").toList();
-        foreach(const QVariant& id, taskIds)
+
+        foreach (const QVariant &id, taskIds)
         {
             this->taskIds.append(id.toString());
         }
@@ -89,7 +90,7 @@ class ReportController::Private : public QObject
     Q_OBJECT
 
 public:
-    Private(ReportController* q)
+    Private(ReportController *q)
     : q(q)
     {
         connect(&timer, SIGNAL(timeout()), q, SLOT(sendReports()));
@@ -101,7 +102,7 @@ public:
         requester.setResponse(&response);
     }
 
-    ReportController* q;
+    ReportController *q;
 
     // Properties
     QPointer<ReportScheduler> scheduler;
@@ -131,6 +132,7 @@ void ReportController::Private::updateTimer()
     }
 
     TimingPtr timing = settings->config()->reportTiming();
+
     if (timing.isNull())
     {
         timer.stop();
@@ -144,7 +146,7 @@ void ReportController::Private::updateTimer()
 
     if (timer.interval() != period)
     {
-        LOG_INFO(QString("Report schedule set to %1 sec.").arg(period/1000));
+        LOG_INFO(QString("Report schedule set to %1 sec.").arg(period / 1000));
         timer.setInterval(period);
     }
 
@@ -156,10 +158,11 @@ void ReportController::Private::onFinished()
     QStringList taskIds = response.taskIds;
     LOG_INFO(QString("%1 Reports successfully sent").arg(taskIds.size()));
 
-    foreach(const QString& taskId, taskIds)
+    foreach (const QString &taskId, taskIds)
     {
         ReportPtr report = scheduler->reportByTaskId(taskId);
-        if ( report.isNull() )
+
+        if (report.isNull())
         {
             LOG_ERROR(QString("No task with id %1 found.").arg(taskId));
         }
@@ -211,7 +214,7 @@ void ReportController::sendReports()
 {
     ReportList reports = d->scheduler->reports();
 
-    if ( reports.isEmpty() )
+    if (reports.isEmpty())
     {
         LOG_INFO("No reports to send");
         return;

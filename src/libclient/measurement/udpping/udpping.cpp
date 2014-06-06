@@ -38,7 +38,7 @@ void UdpPing::setStatus(Status status)
     }
 }
 
-bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitionPtr& measurementDefinition)
+bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
     definition = measurementDefinition.dynamicCast<UdpPingDefinition>();

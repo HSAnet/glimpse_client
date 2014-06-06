@@ -37,18 +37,18 @@ public:
     }
 
     // Properties
-    QList<MeasurementPlugin*> plugins;
-    QHash<QString, MeasurementPlugin*> pluginNameHash;
+    QList<MeasurementPlugin *> plugins;
+    QHash<QString, MeasurementPlugin *> pluginNameHash;
 
     // Functions
-    void addPlugin(MeasurementPlugin* plugin);
+    void addPlugin(MeasurementPlugin *plugin);
 };
 
 void MeasurementFactory::Private::addPlugin(MeasurementPlugin *plugin)
 {
     plugins.append(plugin);
 
-    foreach(const QString& name, plugin->measurements())
+    foreach (const QString &name, plugin->measurements())
     {
         pluginNameHash.insert(name, plugin);
     }
@@ -76,7 +76,7 @@ QStringList MeasurementFactory::availableMeasurements() const
 
 MeasurementPtr MeasurementFactory::createMeasurement(const QString &name, const QUuid &id)
 {
-    if (MeasurementPlugin* plugin = d->pluginNameHash.value(name))
+    if (MeasurementPlugin *plugin = d->pluginNameHash.value(name))
     {
         MeasurementPtr ptr = plugin->createMeasurement(name);
         ptr->setTaskId(id);
@@ -88,7 +88,7 @@ MeasurementPtr MeasurementFactory::createMeasurement(const QString &name, const 
 
 MeasurementDefinitionPtr MeasurementFactory::createMeasurementDefinition(const QString &name, const QVariant &data)
 {
-    if (MeasurementPlugin* plugin = d->pluginNameHash.value(name))
+    if (MeasurementPlugin *plugin = d->pluginNameHash.value(name))
     {
         return plugin->createMeasurementDefinition(name, data);
     }

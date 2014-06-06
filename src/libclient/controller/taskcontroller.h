@@ -12,12 +12,12 @@ class CLIENT_API TaskController : public Controller
     Q_OBJECT
 
 public:
-    TaskController(QObject* parent = 0);
+    TaskController(QObject *parent = 0);
     ~TaskController();
 
-    bool init(NetworkManager* networkManager,
-              Scheduler* scheduler,
-              Settings* settings);
+    bool init(NetworkManager *networkManager,
+              Scheduler *scheduler,
+              Settings *settings);
 
     // Controller interface
     Status status() const;
@@ -30,7 +30,7 @@ signals:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // CONTROLCONTROLLER_H

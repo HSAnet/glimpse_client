@@ -14,12 +14,12 @@
 
 namespace traceroute
 {
-enum Response
-{
-    TTL_EXCEEDED,
-    DESTINATION_UNREACHABLE,
-    TIMEOUT
-};
+    enum Response
+    {
+        TTL_EXCEEDED,
+        DESTINATION_UNREACHABLE,
+        TIMEOUT
+    };
 }
 
 struct Hop
@@ -37,8 +37,8 @@ public:
 
     // Measurement interface
     Status status() const;
-    bool prepare(NetworkManager* networkManager,
-                 const MeasurementDefinitionPtr& measurementDefinition);
+    bool prepare(NetworkManager *networkManager,
+                 const MeasurementDefinitionPtr &measurementDefinition);
     bool start();
     bool stop();
     ResultPtr result() const;

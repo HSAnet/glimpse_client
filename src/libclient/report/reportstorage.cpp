@@ -44,13 +44,13 @@ public:
     QPointer<ReportScheduler> scheduler;
 
     // Functions
-    void store(const ReportPtr& report);
-    QString fileNameForReport(const ReportPtr& report) const;
+    void store(const ReportPtr &report);
+    QString fileNameForReport(const ReportPtr &report) const;
 
 public slots:
-    void reportAdded(const ReportPtr& report);
-    void reportModified(const ReportPtr& report);
-    void reportRemoved(const ReportPtr& report);
+    void reportAdded(const ReportPtr &report);
+    void reportModified(const ReportPtr &report);
+    void reportRemoved(const ReportPtr &report);
 };
 
 void ReportStorage::Private::store(const ReportPtr &report)
@@ -58,6 +58,7 @@ void ReportStorage::Private::store(const ReportPtr &report)
     QJsonDocument document = QJsonDocument::fromVariant(report->toVariant());
 
     QFile file(dir.absoluteFilePath(fileNameForReport(report)));
+
     if (file.open(QIODevice::WriteOnly))
     {
         file.write(document.toJson());
@@ -76,7 +77,7 @@ QString ReportStorage::Private::fileNameForReport(const ReportPtr &report) const
 
 void ReportStorage::Private::reportAdded(const ReportPtr &report)
 {
-    if ( !realTime || loading )
+    if (!realTime || loading)
     {
         return;
     }
@@ -92,7 +93,7 @@ void ReportStorage::Private::reportModified(const ReportPtr &report)
 
 void ReportStorage::Private::reportRemoved(const ReportPtr &report)
 {
-    if ( !realTime )
+    if (!realTime)
     {
         return;
     }
@@ -135,7 +136,7 @@ void ReportStorage::storeData()
         return;
     }
 
-    foreach(const ReportPtr& report, d->scheduler->reports())
+    foreach (const ReportPtr &report, d->scheduler->reports())
     {
         d->store(report);
     }
@@ -145,7 +146,7 @@ void ReportStorage::loadData()
 {
     d->loading = true;
 
-    foreach(const QString& fileName, d->dir.entryList(QDir::Files))
+    foreach (const QString &fileName, d->dir.entryList(QDir::Files))
     {
         QFile file(d->dir.absoluteFilePath(fileName));
         file.open(QIODevice::ReadOnly);
