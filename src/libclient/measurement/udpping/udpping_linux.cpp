@@ -94,6 +94,13 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     Q_UNUSED(networkManager);
 
     definition = measurementDefinition.dynamicCast<UdpPingDefinition>();
+
+    if (definition->payload > 65536)
+    {
+        emit error("payload is too large (> 65536)");
+        return false;
+    }
+
     memset(&m_destAddress, 0, sizeof(m_destAddress));
 
     // resolve
@@ -143,7 +150,7 @@ bool UdpPing::start()
     if (probe.sock < 0)
     {
         emit error("socket: " + QString(strerror(errno)));
-        free(m_payload);
+        delete[] m_payload;
         return false;
     }
 
@@ -156,7 +163,7 @@ bool UdpPing::start()
     close(probe.sock);
 
     setStatus(UdpPing::Finished);
-    free(m_payload);
+    delete[] m_payload;
     emit finished();
 
     return true;
