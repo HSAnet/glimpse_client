@@ -327,7 +327,7 @@ void UdpPing::receiveData(PingProbe *probe)
     sockaddr_any from;
     struct iovec iov;
     char buf[1280];
-    char control[1024];
+    char control[256];
     struct cmsghdr *cm;
     int ret = 0;
 
@@ -383,8 +383,8 @@ void UdpPing::receiveData(PingProbe *probe)
         //we received an ICMP error... emit the right signal
         //so parse the header
         //get the Internet header length (in 32 bit quantaties)
-        unsigned short ihl = buf[0] & 0x0F;
-        LOG_INFO(QString("IHL: %1").arg(ihl));
+        unsigned char ihl = buf[0] & 0x0F;
+
         if(ihl < 5 || ihl > 15)
         {
             emit error(QString("parsing icmp message failed (IHL value out of bounds)"));
@@ -392,11 +392,11 @@ void UdpPing::receiveData(PingProbe *probe)
         }
         ihl *= 4;
 
-        unsigned short icmp_type = 0;
-        unsigned short icmp_code = 0;
+        unsigned char icmp_type = 0;
+        unsigned char icmp_code = 0;
 
-        icmp_type = (short) buf[ihl];
-        icmp_code = (short) buf[ihl + 1];
+        icmp_type = buf[ihl];
+        icmp_code = buf[ihl + 1];
 
         if(icmp_type == 3 && icmp_code == 3)
         {
@@ -422,7 +422,7 @@ void UdpPing::receiveData(PingProbe *probe)
     else
     {
         //somthing else happened... not expected
-        emit error(QString("recvmsg failed: No socket to read data from...\n"));
+        emit error(QString("recvmsg failed: No socket to read data from."));
         goto cleanup;
     }
 
@@ -437,7 +437,7 @@ void UdpPing::receiveData(PingProbe *probe)
         if (cm->cmsg_level == SOL_SOCKET)
         {
             //the good folks at Apple decided to not use the standard names here
-            //good bless their souls
+            //god bless their souls
             if (cm->cmsg_type == SCM_TIMESTAMP && cm->cmsg_len == CMSG_LEN(sizeof (struct timeval)))
             {
                 struct timeval *tv_tmp = (struct timeval *) ptr;
