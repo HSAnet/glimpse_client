@@ -51,7 +51,7 @@ android {
                log/logger_all.cpp
 
     osx: SOURCES += deviceinfo_osx.cpp \
-                    measurement/udpping/udpping.cpp
+                    measurement/udpping/udpping_osx.cpp
     else:unix: SOURCES += deviceinfo_unix.cpp
     else: SOURCES += deviceinfo.cpp \
                      measurement/udpping/udpping_win.cpp
@@ -171,7 +171,8 @@ SOURCES +=  \
     measurement/reverse_dnslookup/reverseDnslookup.cpp \
     measurement/reverse_dnslookup/reverseDnslookup_definition.cpp \
     measurement/reverse_dnslookup/reverseDnslookup_plugin.cpp \
-    channel.cpp
+    channel.cpp \
+    measurement/udpping/udpping_osx.cpp
 
 HEADERS += \
     export.h \

@@ -80,6 +80,9 @@ struct PingProbe
     }
 
 #endif
+#if defined(Q_OS_OSX)
+    int icmpSock;
+#endif
 };
 
 class UdpPing : public Measurement

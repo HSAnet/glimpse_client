@@ -8,7 +8,7 @@
 #include "udpping.h"
 #include "../../log/logger.h"
 
-#include <arpa/inet.h>
+//#include <arpa/inet.h>
 
 LOGGER(UdpPing);
 
@@ -132,8 +132,7 @@ bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitio
 
     if (m_destAddress.sa.sa_family == AF_INET)
     {
-        //m_destAddress.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
-        m_destAddress.sin.sin_port = htons(53);
+        m_destAddress.sin.sin_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
     }
     else if (m_destAddress.sa.sa_family == AF_INET6)
     {
@@ -412,10 +411,16 @@ void UdpPing::receiveData(PingProbe *probe)
 
         if (cm->cmsg_level == SOL_SOCKET)
         {
-
+            //the good folks at Apple decided to not use the standard names here
+            //good bless their souls
             if (cm->cmsg_type == SCM_TIMESTAMP && cm->cmsg_len == CMSG_LEN(sizeof (struct timeval)))
             {
                 struct timeval *tv_tmp = (struct timeval *) ptr;
+                if (tv_tmp == NULL)
+                {
+                    break;
+                }
+
                 probe->recvTime = tv_tmp->tv_sec * 1e6 + tv_tmp->tv_usec;
                 //we break after the first found timestamp, since on Mac OS there are
                 //multiple (I assume for now these are for Ethernet, IP and UDP).
