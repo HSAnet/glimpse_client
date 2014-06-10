@@ -5,8 +5,8 @@ QT -= gui network
 
 TARGET = mplane
 
-include(../../dist.pri)
-include(../libclient/libclient.pri)
+include($$SOURCE_DIRECTORY/dist.pri)
+include($$SOURCE_DIRECTORY/src/libclient/libclient.pri)
 
 # Add the service config
 linux {
