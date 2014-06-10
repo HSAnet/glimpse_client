@@ -171,8 +171,7 @@ SOURCES +=  \
     measurement/reverse_dnslookup/reverseDnslookup.cpp \
     measurement/reverse_dnslookup/reverseDnslookup_definition.cpp \
     measurement/reverse_dnslookup/reverseDnslookup_plugin.cpp \
-    channel.cpp \
-    measurement/udpping/udpping_osx.cpp
+    channel.cpp
 
 HEADERS += \
     export.h \
