@@ -19,6 +19,7 @@ QT += gui quick qml concurrent
 
 include(../../dist.pri)
 include(../libclient/libclient.pri)
+android|osx:include(../../3rdparty/miniupnpc.pri)
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 ANDROID_PACKAGE = "de.hsaugsburg.informatik.mplane.client"
