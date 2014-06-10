@@ -24,25 +24,41 @@ class QtQuick2ApplicationViewerPrivate
 QString QtQuick2ApplicationViewerPrivate::adjustPath(const QString &path)
 {
 #if defined(Q_OS_IOS)
+
     if (!QDir::isAbsolutePath(path))
         return QString::fromLatin1("%1/%2")
-                .arg(QCoreApplication::applicationDirPath(), path);
+               .arg(QCoreApplication::applicationDirPath(), path);
+
 #elif defined(Q_OS_MAC)
+
     if (!QDir::isAbsolutePath(path))
         return QString::fromLatin1("%1/../Resources/%2")
-                .arg(QCoreApplication::applicationDirPath(), path);
+               .arg(QCoreApplication::applicationDirPath(), path);
+
 #elif defined(Q_OS_BLACKBERRY)
+
     if (!QDir::isAbsolutePath(path))
+    {
         return QString::fromLatin1("app/native/%1").arg(path);
+    }
+
 #elif defined(Q_OS_ANDROID)
     QString pathInInstallDir =
-            QString::fromLatin1("%1/../%2").arg(QCoreApplication::applicationDirPath(), path);
+        QString::fromLatin1("%1/../%2").arg(QCoreApplication::applicationDirPath(), path);
+
     if (QFileInfo(pathInInstallDir).exists())
+    {
         return pathInInstallDir;
+    }
+
     pathInInstallDir =
-            QString::fromLatin1("%1/%2").arg(QCoreApplication::applicationDirPath(), path);
+        QString::fromLatin1("%1/%2").arg(QCoreApplication::applicationDirPath(), path);
+
     if (QFileInfo(pathInInstallDir).exists())
+    {
         return pathInInstallDir;
+    }
+
 #elif defined(Q_OS_ANDROID_NO_SDK)
     return QLatin1String("/data/user/qt/") + path;
 #else
@@ -51,8 +67,8 @@ QString QtQuick2ApplicationViewerPrivate::adjustPath(const QString &path)
 }
 
 QtQuick2ApplicationViewer::QtQuick2ApplicationViewer(QWindow *parent)
-    : QQuickView(parent)
-    , d(new QtQuick2ApplicationViewerPrivate())
+: QQuickView(parent)
+, d(new QtQuick2ApplicationViewerPrivate())
 {
     connect(engine(), SIGNAL(quit()), SLOT(close()));
     setResizeMode(QQuickView::SizeRootObjectToView);
@@ -73,9 +89,9 @@ void QtQuick2ApplicationViewer::setMainQmlFile(const QString &file)
     d->mainQmlFile = QtQuick2ApplicationViewerPrivate::adjustPath(file);
 #ifdef Q_OS_ANDROID
 #if 0 // defined(QT_DEBUG)
-    setSource(QUrl(QLatin1String("assets:/")+d->mainQmlFile));
+    setSource(QUrl(QLatin1String("assets:/") + d->mainQmlFile));
 #else
-    setSource(QUrl(QLatin1String("qrc:/")+d->mainQmlFile));
+    setSource(QUrl(QLatin1String("qrc:/") + d->mainQmlFile));
 #endif
 #else
     setSource(QUrl::fromLocalFile(d->mainQmlFile));

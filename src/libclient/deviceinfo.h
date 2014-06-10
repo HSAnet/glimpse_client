@@ -20,7 +20,10 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
+
+private:
+    Q_DISABLE_COPY(DeviceInfo)
 };
 
 #endif // DEVICEINFO_H

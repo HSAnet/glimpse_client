@@ -22,7 +22,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // IMMEDIATETIMING_H

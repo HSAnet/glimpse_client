@@ -11,7 +11,7 @@ typedef QList<ReverseDnslookupDefinitionPtr> ReverseDnslookupDefinitionList;
 class ReverseDnslookupDefinition : public MeasurementDefinition
 {
 public:
-    ReverseDnslookupDefinition(const QString& ip);
+    ReverseDnslookupDefinition(const QString &ip);
     ~ReverseDnslookupDefinition();
 
     // Storage

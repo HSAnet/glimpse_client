@@ -13,7 +13,7 @@ class UploadRequest : public Request
     Q_CLASSINFO("path", "/crashreports")
 
 public:
-    explicit UploadRequest(QObject* parent = 0)
+    explicit UploadRequest(QObject *parent = 0)
     : Request(parent)
     {
     }

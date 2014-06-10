@@ -21,7 +21,7 @@ public:
     explicit QtQuick2ApplicationViewer(QWindow *parent = 0);
     virtual ~QtQuick2ApplicationViewer();
 
-    QString adjustPath(const QString& path) const;
+    QString adjustPath(const QString &path) const;
 
     void setMainQmlFile(const QString &file);
     void addImportPath(const QString &path);

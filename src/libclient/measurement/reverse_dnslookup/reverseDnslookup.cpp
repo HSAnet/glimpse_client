@@ -21,6 +21,7 @@ bool ReverseDnslookup::prepare(NetworkManager *networkManager, const Measurement
 {
     Q_UNUSED(networkManager);
     m_definition = measurementDefinition.dynamicCast<ReverseDnslookupDefinition>();
+
     if (m_definition.isNull())
     {
         LOG_WARNING("Definition is empty");

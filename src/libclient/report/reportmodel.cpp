@@ -11,12 +11,12 @@ class ReportModel::Private : public QObject
     Q_OBJECT
 
 public:
-    Private(ReportModel* q)
+    Private(ReportModel *q)
     : q(q)
     {
     }
 
-    ReportModel* q;
+    ReportModel *q;
 
     QPointer<ReportScheduler> scheduler;
 
@@ -29,7 +29,7 @@ public slots:
     void reportRemoved(const ReportPtr &report);
 };
 
-void ReportModel::Private::reportAdded(const ReportPtr& report)
+void ReportModel::Private::reportAdded(const ReportPtr &report)
 {
     int position = reports.size();
 
@@ -39,7 +39,7 @@ void ReportModel::Private::reportAdded(const ReportPtr& report)
     q->endInsertRows();
 }
 
-void ReportModel::Private::reportModified(const ReportPtr& report)
+void ReportModel::Private::reportModified(const ReportPtr &report)
 {
     int pos = identToReport.value(report->taskId());
     Q_ASSERT(pos != -1);
@@ -52,7 +52,7 @@ void ReportModel::Private::reportModified(const ReportPtr& report)
     emit q->dataChanged(index, index);
 }
 
-void ReportModel::Private::reportRemoved(const ReportPtr& report)
+void ReportModel::Private::reportRemoved(const ReportPtr &report)
 {
     int position = identToReport.value(report->taskId());
     Q_ASSERT(position != -1);
@@ -109,7 +109,8 @@ ReportScheduler *ReportModel::scheduler() const
 QModelIndex ReportModel::indexFromTaskId(const QUuid &taskId) const
 {
     int pos = d->identToReport.value(taskId);
-    if ( pos == -1 )
+
+    if (pos == -1)
     {
         return QModelIndex();
     }
@@ -138,7 +139,7 @@ QVariant ReportModel::get(int index) const
         return QVariant();
     }
 
-    const ReportPtr& report = d->reports.at(index);
+    const ReportPtr &report = d->reports.at(index);
     return report->toVariant();
 }
 
@@ -169,7 +170,7 @@ int ReportModel::columnCount(const QModelIndex &parent) const
 
 QVariant ReportModel::data(const QModelIndex &index, int role) const
 {
-    const ReportPtr& report = d->reports.at(index.row());
+    const ReportPtr &report = d->reports.at(index.row());
 
     if (role == Qt::DisplayRole)
     {
@@ -180,6 +181,7 @@ QVariant ReportModel::data(const QModelIndex &index, int role) const
     {
     case TaskIdRole:
         return uuidToString(report->taskId());
+
     case DateTimeRole:
         return report->dateTime();
         //case ResultsRole: return report->results(); // FIXME: Scripting can't do anything with that
@@ -201,8 +203,10 @@ QVariant ReportModel::headerData(int section, Qt::Orientation orientation, int r
     {
     case TaskIdRole:
         return tr("Task Id");
+
     case DateTimeRole:
         return tr("Date-Time");
+
     case ResultsRole:
         return tr("Results");
 

@@ -50,25 +50,26 @@ signals:
 
     void started();
     void checkStarted(ConnectionTester::TestType testType);
-    void checkFinished(ConnectionTester::TestType testType, bool success, const QVariant& result);
+    void checkFinished(ConnectionTester::TestType testType, bool success, const QVariant &result);
     void finished();
 
 protected:
-    bool canPing(TestType testType, const QString& host);
+    bool canPing(TestType testType, const QString &host);
 
 private:
     class Private;
-    Private* d;
+    Private *d;
     friend class Private;
 };
 
 class ConnectionTesterModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(ConnectionTester* connectionTester READ connectionTester WRITE setConnectionTester NOTIFY connectionTesterChanged)
+    Q_PROPERTY(ConnectionTester *connectionTester READ connectionTester WRITE setConnectionTester NOTIFY
+               connectionTesterChanged)
 
 public:
-    ConnectionTesterModel(QObject* parent = 0);
+    ConnectionTesterModel(QObject *parent = 0);
     ~ConnectionTesterModel();
 
     enum Roles
@@ -80,8 +81,8 @@ public:
         TestSuccessRole
     };
 
-    void setConnectionTester(ConnectionTester* connectionTester);
-    ConnectionTester* connectionTester() const;
+    void setConnectionTester(ConnectionTester *connectionTester);
+    ConnectionTester *connectionTester() const;
 
     Q_INVOKABLE QVariant result() const;
 
@@ -91,12 +92,12 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
 
 signals:
-    void connectionTesterChanged(ConnectionTester* connectionTester);
+    void connectionTesterChanged(ConnectionTester *connectionTester);
 
 private slots:
     void onStarted();
     void onCheckStarted(ConnectionTester::TestType testType);
-    void onCheckFinished(ConnectionTester::TestType testType, bool success, const QVariant& result);
+    void onCheckFinished(ConnectionTester::TestType testType, bool success, const QVariant &result);
     void onFinished();
 
 protected:
@@ -109,7 +110,7 @@ protected:
     };
 
 protected:
-    ConnectionTester* m_connectionTester;
+    ConnectionTester *m_connectionTester;
     QList<RowData> m_rows;
 };
 

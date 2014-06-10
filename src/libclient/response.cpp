@@ -34,10 +34,10 @@ bool LoginResponse::fillFromVariant(const QVariantMap &variant)
 
 void LoginResponse::finished()
 {
-    Client* client = Client::instance();
+    Client *client = Client::instance();
 
     // Update the settings
-    Settings* settings = client->settings();
+    Settings *settings = client->settings();
     settings->setApiKey(m_apiKey);
 
     // Set registered status (after settings!)
@@ -99,8 +99,8 @@ QVariant GetConfigResponse::toVariant() const
 void GetConfigResponse::finished()
 {
     // Sync the settings
-    Client* client = Client::instance();
-    Settings* settings = client->settings();
+    Client *client = Client::instance();
+    Settings *settings = client->settings();
     settings->sync();
 
     emit responseChanged();

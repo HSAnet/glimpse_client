@@ -19,7 +19,7 @@ class LoginController::Private : public QObject
     Q_OBJECT
 
 public:
-    Private(LoginController* q)
+    Private(LoginController *q)
     : q(q)
     , loggedIn(false)
     , registeredDevice(false)
@@ -32,7 +32,7 @@ public:
         requester.setResponse(&response);
     }
 
-    LoginController* q;
+    LoginController *q;
 
     // Properties
     QPointer<NetworkManager> networkManager;
@@ -159,7 +159,8 @@ QString LoginController::errorString() const
 
 void LoginController::anonymousRegistration()
 {
-    QString username = QString("%1@anon.com").arg(uuidToString(QUuid::createUuid()).left(15)); // TODO increase username length in database
+    QString username = QString("%1@anon.com").arg(uuidToString(QUuid::createUuid()).left(
+                                                      15)); // TODO increase username length in database
     QString password = uuidToString(QUuid::createUuid()).left(15);
 
     LOG_INFO("Anonymous registration requested. Scrambled some data.");

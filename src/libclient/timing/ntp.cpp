@@ -6,7 +6,7 @@
 LOGGER("Ntp");
 
 Ntp::Ntp(QObject *parent)
-    : QObject(parent)
+: QObject(parent)
 {
     m_socket = new QUdpSocket(this);
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(readResponse()));
@@ -25,7 +25,7 @@ bool Ntp::sync(QHostAddress &host)
     packet.flags.mode = 3;
     packet.flags.versionNumber = 4;
     packet.transmitTimestamp = NtpTimestamp::fromDateTime(
-            QDateTime::currentDateTimeUtc());
+                                   QDateTime::currentDateTimeUtc());
 
     if (m_socket->writeDatagram((char *)&packet, sizeof(packet), host, 123) < 0)
     {
@@ -49,7 +49,7 @@ void Ntp::readResponse()
     if (m_socket->hasPendingDatagrams())
     {
         m_socket->readDatagram((char *)&packet, sizeof(packet), &address,
-                              &port);
+                               &port);
 
         m_localTime = QDateTime::currentDateTime();
         m_networkTime = NtpTimestamp::toDateTime(packet.receiveTimestamp);

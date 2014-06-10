@@ -13,7 +13,7 @@ class CLIENT_API LoginRequest : public Request
     Q_PROPERTY(QString userId READ userId WRITE setUserId NOTIFY userIdChanged)
 
 public:
-    LoginRequest(QObject* parent = 0);
+    LoginRequest(QObject *parent = 0);
     ~LoginRequest();
 
     QVariant toVariant() const;
@@ -21,16 +21,16 @@ public:
     QString password() const;
     QString userId() const;
 
-    void setPassword(const QString& password);
-    void setUserId(const QString& userId);
+    void setPassword(const QString &password);
+    void setUserId(const QString &userId);
 
 signals:
-    void passwordChanged(const QString& password);
-    void userIdChanged(const QString& userId);
+    void passwordChanged(const QString &password);
+    void userIdChanged(const QString &userId);
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // LOGINREQUEST_H

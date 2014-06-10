@@ -36,20 +36,20 @@ void Traceroute::setStatus(Status status)
     }
 }
 
-bool Traceroute::prepare(NetworkManager* networkManager,
-                         const MeasurementDefinitionPtr& measurementDefinition)
+bool Traceroute::prepare(NetworkManager *networkManager,
+                         const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
     definition = measurementDefinition.dynamicCast<TracerouteDefinition>();
 
-    connect(&udpPing, SIGNAL(destinationUnreachable(const PingProbe&)),
-            this, SLOT(destinationUnreachable(const PingProbe&)));
+    connect(&udpPing, SIGNAL(destinationUnreachable(const PingProbe &)),
+            this, SLOT(destinationUnreachable(const PingProbe &)));
 
-    connect(&udpPing, SIGNAL(ttlExceeded(const PingProbe&)),
-            this, SLOT(ttlExceeded(const PingProbe&)));
+    connect(&udpPing, SIGNAL(ttlExceeded(const PingProbe &)),
+            this, SLOT(ttlExceeded(const PingProbe &)));
 
-    connect(&udpPing, SIGNAL(timeout(const PingProbe&)),
-            this, SLOT(timeout(const PingProbe&)));
+    connect(&udpPing, SIGNAL(timeout(const PingProbe &)),
+            this, SLOT(timeout(const PingProbe &)));
 
     connect(&udpPing, SIGNAL(finished()), this, SLOT(pingFinished()));
 
@@ -89,8 +89,8 @@ ResultPtr Traceroute::result() const
             }
 
             probe.insert("reponse", hops[i + k].response);
-            probe.insert("rtt", (int) (hops[i + k].probe.recvTime -
-                                       hops[i + k].probe.sendTime));
+            probe.insert("rtt", (int)(hops[i + k].probe.recvTime -
+                                      hops[i + k].probe.sendTime));
             pings.append(probe);
         }
 
@@ -121,8 +121,8 @@ void Traceroute::ping()
                                  definition->sourcePort,
                                  definition->payload);
     udpPing.prepare(NULL, UdpPingPlugin().createMeasurementDefinition(
-                "udpping",
-                udpPingDef.toVariant()));
+                        "udpping",
+                        udpPingDef.toVariant()));
     udpPing.start();
 }
 

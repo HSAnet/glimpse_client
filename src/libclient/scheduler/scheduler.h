@@ -13,26 +13,26 @@ public:
     Scheduler();
     ~Scheduler();
 
-    void setExecutor(TaskExecutor* executor);
-    TaskExecutor* executor() const;
+    void setExecutor(TaskExecutor *executor);
+    TaskExecutor *executor() const;
 
     TestDefinitionList tests() const;
 
-    void enqueue(const TestDefinitionPtr& testDefinition);
+    void enqueue(const TestDefinitionPtr &testDefinition);
     void dequeue();
 
-    void execute(const TestDefinitionPtr& testDefinition);
+    void execute(const TestDefinitionPtr &testDefinition);
 
     int executeOnDemandTest(const QUuid &id);
 
 signals:
-    void testAdded(const TestDefinitionPtr& test, int position);
-    void testRemoved(const TestDefinitionPtr& test, int position);
-    void testMoved(const TestDefinitionPtr& test, int from, int to);
+    void testAdded(const TestDefinitionPtr &test, int position);
+    void testRemoved(const TestDefinitionPtr &test, int position);
+    void testMoved(const TestDefinitionPtr &test, int from, int to);
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 #endif // SCHEDULER_H

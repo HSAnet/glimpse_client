@@ -19,7 +19,7 @@ class ConfigController::Private : public QObject
     Q_OBJECT
 
 public:
-    Private(ConfigController* q)
+    Private(ConfigController *q)
     : q(q)
     {
         connect(&timer, SIGNAL(timeout()), q, SLOT(update()));
@@ -31,7 +31,7 @@ public:
         //requester.setResponse(&response);
     }
 
-    ConfigController* q;
+    ConfigController *q;
 
     // Properties
     QPointer<NetworkManager> networkManager;
@@ -40,7 +40,7 @@ public:
     WebRequester requester;
     GetConfigRequest request;
     //GetConfigResponse response;
-    GetConfigResponse* response;
+    GetConfigResponse *response;
 
     QTimer timer;
 
@@ -63,6 +63,7 @@ void ConfigController::Private::updateTimer()
     }
 
     TimingPtr timing = settings->config()->supervisorTiming();
+
     if (timing.isNull())
     {
         timer.stop();
@@ -76,7 +77,7 @@ void ConfigController::Private::updateTimer()
 
     if (timer.interval() != period)
     {
-        LOG_INFO(QString("Config schedule set to %1 sec.").arg(period/1000));
+        LOG_INFO(QString("Config schedule set to %1 sec.").arg(period / 1000));
         timer.setInterval(period);
     }
 

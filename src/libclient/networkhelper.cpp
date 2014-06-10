@@ -62,36 +62,39 @@ QHostAddress NetworkHelper::localIpAddress()
 
     QHostAddress hostIp;
 #if defined(Q_OS_WIN) || defined(Q_OS_MAC)
-    foreach(QHostAddress addr, hostNameLookupAddressList)
+
+    foreach (QHostAddress addr, hostNameLookupAddressList)
     {
         if (addr.protocol() == QAbstractSocket::IPv4Protocol && interfaceAddressList.contains(addr))
         {
             if (isLocalIpAddress(addr))
             {
-                qDebug()<<__FUNCTION__<<addr<<" is local ip";
+                //qDebug() << __FUNCTION__ << addr << " is local ip";
                 hostIp = addr;
                 break;
             }
             else if (isLinkLocalAddress(addr))
             {
-                qDebug()<<__FUNCTION__<<addr<<" is Link Local Address";
+                //qDebug() << __FUNCTION__ << addr << " is Link Local Address";
                 hostIp = addr;
             }
             else
             {
-                qDebug() << __FUNCTION__ << addr << "is some different address";
+                //qDebug() << __FUNCTION__ << addr << "is some different address";
             }
         }
     }
+
 #else
-    foreach(const QHostAddress& addr, interfaceAddressList)
+
+    foreach (const QHostAddress &addr, interfaceAddressList)
     {
-        if ( addr.protocol() != QAbstractSocket::IPv4Protocol )
+        if (addr.protocol() != QAbstractSocket::IPv4Protocol)
         {
             interfaceAddressList.removeAll(addr);
         }
 
-        if ( addr.toString().startsWith("127.") )
+        if (addr.toString().startsWith("127."))
         {
             interfaceAddressList.removeAll(addr);
         }
@@ -101,6 +104,7 @@ QHostAddress NetworkHelper::localIpAddress()
     {
         hostIp = interfaceAddressList.first();
     }
+
     //qDebug() << "Hope" << hostIp << "is a local ip";
 
 #endif

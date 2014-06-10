@@ -33,11 +33,11 @@ public:
 
 struct msg
 {
-        quint16 iter;  // train number
-        quint8 id;  // packet number (sender)
-        quint8 r_id;  // packet number (receiver)
-        qint64 otime;  // originate timestamp
-        qint64 rtime;  // received timestamp
+    quint16 iter;  // train number
+    quint8 id;  // packet number (sender)
+    quint8 r_id;  // packet number (receiver)
+    qint64 otime;  // originate timestamp
+    qint64 rtime;  // received timestamp
 };
 
 #endif // PACKETTRAINSDEFINITION_H

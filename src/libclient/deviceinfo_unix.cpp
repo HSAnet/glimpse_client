@@ -12,19 +12,20 @@ LOGGER(DeviceInfo);
 
 namespace
 {
-    static const char* FSEntries[] =
+    static const char *FSEntries[] =
     {
         "/",
         "/boot",
         NULL
     };
 
-    QByteArray uuidForDevice(const QString& device)
+    QByteArray uuidForDevice(const QString &device)
     {
         QByteArray uuid;
 
         QDir byUuidDir("/dev/disk/by-uuid");
-        foreach(const QFileInfo& uuidFileInfo, byUuidDir.entryInfoList(QDir::Files))
+
+        foreach (const QFileInfo &uuidFileInfo, byUuidDir.entryInfoList(QDir::Files))
         {
             if (device == uuidFileInfo.symLinkTarget())
             {
@@ -56,9 +57,10 @@ QString DeviceInfo::deviceId() const
 
     QByteArray uuid;
 
-    for (const char** fsentry=FSEntries; *fsentry != NULL; ++fsentry)
+    for (const char **fsentry = FSEntries; *fsentry != NULL; ++fsentry)
     {
-        fstab* tab = getfsfile(*fsentry);
+        fstab *tab = getfsfile(*fsentry);
+
         if (!tab)
         {
             continue;
@@ -89,7 +91,7 @@ QString DeviceInfo::deviceId() const
 
             uuid.clear();
 
-            if ( info.isSymLink() )
+            if (info.isSymLink())
             {
                 target = info.symLinkTarget();
             }
@@ -126,9 +128,10 @@ QString DeviceInfo::deviceId() const
 qreal DeviceInfo::cpuUsage() const
 {
     QFile file("/proc/stat");
+
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-            return -1.0;
+        return -1.0;
     }
 
     QString load = file.readLine();
@@ -137,7 +140,7 @@ qreal DeviceInfo::cpuUsage() const
 
     long idle1 = toks[5].toLong();
     long cpu1 = toks[2].toLong() + toks[3].toLong() + toks[4].toLong()
-          + toks[6].toLong() + toks[7].toLong() + toks[8].toLong();
+                + toks[6].toLong() + toks[7].toLong() + toks[8].toLong();
 
     // sleep, this is not good (180ms at the moment)
     QThread::usleep(180000);
@@ -150,7 +153,7 @@ qreal DeviceInfo::cpuUsage() const
 
     long idle2 = toks[5].toLong();
     long cpu2 = toks[2].toLong() + toks[3].toLong() + toks[4].toLong()
-        + toks[6].toLong() + toks[7].toLong() + toks[8].toLong();
+                + toks[6].toLong() + toks[7].toLong() + toks[8].toLong();
 
     return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 }

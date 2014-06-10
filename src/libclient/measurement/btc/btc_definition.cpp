@@ -1,6 +1,7 @@
 #include "btc_definition.h"
 
-BulkTransportCapacityDefinition::BulkTransportCapacityDefinition(const QString &host, quint16 port, quint64 initialDataSize)
+BulkTransportCapacityDefinition::BulkTransportCapacityDefinition(const QString &host, quint16 port,
+                                                                 quint64 initialDataSize)
 : host(host)
 , port(port)
 , initialDataSize(initialDataSize)
@@ -26,5 +27,5 @@ BulkTransportCapacityDefinitionPtr BulkTransportCapacityDefinition::fromVariant(
 
     return BulkTransportCapacityDefinitionPtr(new BulkTransportCapacityDefinition(map.value("host", "").toString(),
                                                                                   map.value("port", 0).toUInt(),
-                                                                                  map.value("initialDataSize", 1024*1024).toUInt()));
+                                                                                  map.value("initialDataSize", 1024 * 1024).toUInt()));
 }

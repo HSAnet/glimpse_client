@@ -13,7 +13,7 @@ typedef QList<TestDefinitionPtr> TestDefinitionList;
 class CLIENT_API TestDefinition : public Serializable
 {
 public:
-    TestDefinition(const QUuid& id, const QString& name, const TimingPtr& timing, const QVariant& measurementDefinition);
+    TestDefinition(const QUuid &id, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition);
     ~TestDefinition();
 
     // Storage
@@ -31,7 +31,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 Q_DECLARE_METATYPE(TestDefinitionPtr)

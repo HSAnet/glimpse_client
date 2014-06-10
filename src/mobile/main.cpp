@@ -42,7 +42,7 @@ Q_IMPORT_PLUGIN(QtQuickControlsPlugin)
 
 LOGGER(main)
 
-void loadFonts(const QString& path)
+void loadFonts(const QString &path)
 {
     QDir dir(path);
 
@@ -53,9 +53,10 @@ void loadFonts(const QString& path)
 
         int ok = 0;
 
-        foreach(const QString& name, dir.entryList(nameFilters, QDir::NoDotAndDotDot|QDir::Files))
+        foreach (const QString &name, dir.entryList(nameFilters, QDir::NoDotAndDotDot | QDir::Files))
         {
             int id = QFontDatabase::addApplicationFont(dir.absoluteFilePath(name));
+
             if (id == -1)
             {
                 LOG_ERROR(QString("Failed to load font: %1").arg(dir.absoluteFilePath(name)));
@@ -89,12 +90,13 @@ public slots:
     void applicationStateChanged(Qt::ApplicationState state)
     {
 #ifdef Q_OS_ANDROID
+
         if (state != Qt::ApplicationSuspended)
         {
             return;
         }
 
-        Settings* settings = Client::instance()->settings();
+        Settings *settings = Client::instance()->settings();
         settings->sync();
 
         LOG_DEBUG("Application suspended, settings saved.");
@@ -104,10 +106,10 @@ public slots:
     }
 };
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 #ifdef HAVE_WNCK
-    gdk_init (&argc, &argv);
+    gdk_init(&argc, &argv);
 #endif // HAVE_WNCK
 
     QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
@@ -118,7 +120,8 @@ int main(int argc, char* argv[])
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     QGuiApplication app(argc, argv);
     SuspendHelper suspend;
-    QObject::connect(&app, SIGNAL(applicationStateChanged(Qt::ApplicationState)), &suspend, SLOT(applicationStateChanged(Qt::ApplicationState)));
+    QObject::connect(&app, SIGNAL(applicationStateChanged(Qt::ApplicationState)), &suspend,
+                     SLOT(applicationStateChanged(Qt::ApplicationState)));
 #else
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(true);
@@ -131,6 +134,7 @@ int main(int argc, char* argv[])
 
 #ifdef HAVE_BREAKPAD
     QDir crashdumpDir = StoragePaths().crashDumpDirectory();
+
     if (!crashdumpDir.exists())
     {
         if (!QDir::root().mkpath(crashdumpDir.absolutePath()))
@@ -149,24 +153,24 @@ int main(int argc, char* argv[])
 
     QmlModule::registerTypes();
 
-    QtQuick2ApplicationViewer* view = new QtQuick2ApplicationViewer;
-    QObject::connect(view, SIGNAL(closing(QQuickCloseEvent*)), &app, SLOT(quit()));
+    QtQuick2ApplicationViewer *view = new QtQuick2ApplicationViewer;
+    QObject::connect(view, SIGNAL(closing(QQuickCloseEvent *)), &app, SLOT(quit()));
 
-    QQmlEngine* engine = view->engine();
+    QQmlEngine *engine = view->engine();
     QmlModule::initializeEngine(engine);
 
     // Allow QFileSelector to be automatically applied on qml scripting
-    QQmlFileSelector* selector = new QQmlFileSelector(engine);
+    QQmlFileSelector *selector = new QQmlFileSelector(engine);
 
 #if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS)
     QFileSelector desktopSelector;
-    desktopSelector.setExtraSelectors( QStringList() << "desktop" );
+    desktopSelector.setExtraSelectors(QStringList() << "desktop");
     selector->setSelector(&desktopSelector);
 #endif
 
-    Client* client = Client::instance();
+    Client *client = Client::instance();
 
-    QQmlContext* rootContext = view->rootContext();
+    QQmlContext *rootContext = view->rootContext();
     rootContext->setContextProperty("client", client);
     rootContext->setContextProperty("logModel", &loggerModel);
 #ifdef Q_OS_ANDROID

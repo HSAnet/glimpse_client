@@ -13,6 +13,7 @@
 #include <WS2tcpip.h>
 #undef min
 #include<pcap.h>
+#include <cstring>
 #elif defined(Q_OS_LINUX) || defined(Q_OS_OSX)
 #include <netinet/in.h>
 #else
@@ -36,12 +37,19 @@ union sockaddr_any
 #if defined(Q_OS_WIN)
 namespace udpping
 {
-enum Response
-{
-    DESTINATION_UNREACHABLE,
-    TTL_EXCEEDED,
-    UNHANDLED_ICMP
-};
+    enum Response
+    {
+        DESTINATION_UNREACHABLE = 1,
+        TTL_EXCEEDED,
+        UNHANDLED_ICMP
+    };
+
+    enum PacketType
+    {
+        UNKNOWN,
+        UDP,
+        ICMP
+    };
 }
 #else
 typedef void pcap_if_t;
@@ -55,9 +63,22 @@ struct PingProbe
     quint64 recvTime;
     sockaddr_any source;
 #if defined(Q_OS_WIN)
+    udpping::PacketType type;
     udpping::Response response;
     quint8 icmpType;
     quint8 icmpCode;
+    QByteArray hash;
+
+    bool operator==(const PingProbe &p) const
+    {
+        return !memcmp(&source, &p.source, sizeof(source)) &&
+               type == p.type &&
+               response == p.response &&
+               icmpType == p.icmpType &&
+               icmpCode == p.icmpCode &&
+               hash == p.hash;
+    }
+
 #endif
 };
 
@@ -72,7 +93,7 @@ public:
 
     // Measurement interface
     Status status() const;
-    bool prepare(NetworkManager* networkManager, const MeasurementDefinitionPtr& measurementDefinition);
+    bool prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition);
     bool start();
     bool stop();
     ResultPtr result() const;

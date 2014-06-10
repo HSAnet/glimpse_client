@@ -12,7 +12,7 @@ class CLIENT_API Controller : public QObject
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
-    explicit Controller(QObject* parent = 0);
+    explicit Controller(QObject *parent = 0);
     ~Controller();
 
     enum Status

@@ -12,7 +12,7 @@ struct ProcessInfo
 class AndroidProcessModelPrivate
 {
 public:
-    AndroidProcessModelPrivate(AndroidProcessModel* q)
+    AndroidProcessModelPrivate(AndroidProcessModel *q)
     : q(q)
     {
         Java env;
@@ -28,7 +28,7 @@ public:
         listGet = env->GetMethodID(listClass, "get", "(I)Ljava/lang/Object;");
     }
 
-    AndroidProcessModel* q;
+    AndroidProcessModel *q;
 
     // Properties
     QList<ProcessInfo> processes;
@@ -55,7 +55,7 @@ AndroidProcessModel::~AndroidProcessModel()
 
 int AndroidProcessModel::rowCount(const QModelIndex &parent) const
 {
-    if ( parent.isValid() )
+    if (parent.isValid())
     {
         return 0;
     }
@@ -66,12 +66,13 @@ int AndroidProcessModel::rowCount(const QModelIndex &parent) const
 QVariant AndroidProcessModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
+
     if (row < 0 || row >= d->processes.size())
     {
         return QVariant();
     }
 
-    const ProcessInfo& info = d->processes.at(row);
+    const ProcessInfo &info = d->processes.at(row);
 
     switch (role)
     {
@@ -106,7 +107,8 @@ void AndroidProcessModel::reload()
     jobject processList = env->CallObjectMethod(processHelper, d->runningProcesses);
 
     jint size = env->CallIntMethod(processList, d->listSize);
-    for (int i=0; i < size; ++i)
+
+    for (int i = 0; i < size; ++i)
     {
         jobject jprocess = env->CallObjectMethod(processList, d->listGet, i);
         jstring jpackageName = (jstring)env->GetObjectField(jprocess, d->packageName);
@@ -126,13 +128,13 @@ void AndroidProcessModel::reload()
 
 namespace
 {
-static int init_AndroidProcessModel()
-{
-    Java::registerClass("de/hsaugsburg/informatik/mplane/ProcessHelper");
-    Java::registerClass("de/hsaugsburg/informatik/mplane/ProcessHelper$ProcessInfo");
-    Java::registerClass("java/util/List");
-    return 1;
-}
+    static int init_AndroidProcessModel()
+    {
+        Java::registerClass("de/hsaugsburg/informatik/mplane/ProcessHelper");
+        Java::registerClass("de/hsaugsburg/informatik/mplane/ProcessHelper$ProcessInfo");
+        Java::registerClass("java/util/List");
+        return 1;
+    }
 
-static int __AndroidProcessModel = init_AndroidProcessModel();
+    static int __AndroidProcessModel = init_AndroidProcessModel();
 }

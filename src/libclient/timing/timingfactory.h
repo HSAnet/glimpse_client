@@ -6,7 +6,7 @@
 class CLIENT_API TimingFactory
 {
 public:
-    static TimingPtr timingFromVariant(const QVariant& variant);
+    static TimingPtr timingFromVariant(const QVariant &variant);
 };
 
 #endif // TIMINGFACTORY_H

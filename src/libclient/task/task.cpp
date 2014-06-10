@@ -11,7 +11,8 @@ public:
     QVariant measurementDefinition;
 };
 
-TestDefinition::TestDefinition(const QUuid &id, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition)
+TestDefinition::TestDefinition(const QUuid &id, const QString &name, const TimingPtr &timing,
+                               const QVariant &measurementDefinition)
 : d(new Private)
 {
     d->id = id;

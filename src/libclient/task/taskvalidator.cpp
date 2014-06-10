@@ -30,8 +30,8 @@ TaskValidator::ValidationResult TaskValidator::validate(const TestDefinitionPtr 
 {
     // Simple checks
     if (testDefinition.isNull()
-            || testDefinition->id().isNull()
-            || testDefinition->timing().isNull())
+        || testDefinition->id().isNull()
+        || testDefinition->timing().isNull())
     {
         return Invalid;
     }

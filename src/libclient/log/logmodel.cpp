@@ -14,7 +14,7 @@ struct LogMessage
 class LogModel::Private : public LogAppender
 {
 public:
-    Private(LogModel* q)
+    Private(LogModel *q)
     : q(q)
     {
         Logger::addAppender(this);
@@ -25,13 +25,13 @@ public:
         Logger::removeAppender(this);
     }
 
-    LogModel* q;
+    LogModel *q;
 
     // Properties
     QList<LogMessage> lines;
 
     // LogAppender interface
-    void log(Logger::Level level, const QString& name, const QString& funcName, const QString& message);
+    void log(Logger::Level level, const QString &name, const QString &funcName, const QString &message);
 };
 
 void LogModel::Private::log(Logger::Level level, const QString &name, const QString &funcName, const QString &message)
@@ -60,7 +60,7 @@ LogModel::~LogModel()
 
 int LogModel::rowCount(const QModelIndex &parent) const
 {
-    if ( parent.isValid() )
+    if (parent.isValid())
     {
         return 0;
     }
@@ -71,19 +71,22 @@ int LogModel::rowCount(const QModelIndex &parent) const
 QVariant LogModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
+
     if (row < 0 || row >= d->lines.size())
     {
         return QVariant();
     }
 
-    const LogMessage& msg = d->lines.at(row);
+    const LogMessage &msg = d->lines.at(row);
 
     switch (role)
     {
     case LevelRole:
         return msg.level;
+
     case NameRole:
         return msg.name;
+
     case MessageRole:
         return msg.message;
 

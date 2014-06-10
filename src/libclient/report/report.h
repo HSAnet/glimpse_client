@@ -11,11 +11,11 @@ typedef QList<ReportPtr> ReportList;
 class CLIENT_API Report : public Serializable
 {
 public:
-    Report(const QUuid& taskId, const QDateTime& dateTime, const QString& appVersion, const ResultList& results);
+    Report(const QUuid &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results);
     ~Report();
 
     // Storage
-    static ReportPtr fromVariant(const QVariant& variant);
+    static ReportPtr fromVariant(const QVariant &variant);
 
     // Getters
     QUuid taskId() const;
@@ -28,7 +28,7 @@ public:
 
 protected:
     class Private;
-    Private* d;
+    Private *d;
 };
 
 Q_DECLARE_METATYPE(ReportPtr)

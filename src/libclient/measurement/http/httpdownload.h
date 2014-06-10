@@ -18,7 +18,7 @@ public:
 
     // Measurement interface
     Status status() const;
-    bool prepare(NetworkManager* networkManager, const MeasurementDefinitionPtr& measurementDefinition);
+    bool prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition);
     bool start();
     bool stop();
     ResultPtr result() const;
@@ -33,9 +33,9 @@ private:
     QVector<qreal> m_downloadSpeeds;
     Status currentStatus;
 
-    QNetworkAccessManager* m_nam;
+    QNetworkAccessManager *m_nam;
     QNetworkRequest m_request;
-    QNetworkReply* m_reply;
+    QNetworkReply *m_reply;
 
 private slots:
     void requestFinished();
