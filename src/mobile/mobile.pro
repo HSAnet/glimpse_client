@@ -17,8 +17,8 @@ ios {
 
 QT += gui quick qml concurrent
 
-include(../../dist.pri)
-include(../libclient/libclient.pri)
+include($$SOURCE_DIRECTORY/dist.pri)
+include($$SOURCE_DIRECTORY/src/libclient/libclient.pri)
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 ANDROID_PACKAGE = "de.hsaugsburg.informatik.mplane.client"
@@ -75,7 +75,5 @@ RESOURCES += \
 include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
 qtcAddDeployment()
 
-OTHER_FILES += $$files(qml/*) \
-               $$files(qml/controls/*) \
-               $$files(qml/android/*)
+OTHER_FILES += $$files(qml/*, true)
 
