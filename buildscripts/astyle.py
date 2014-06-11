@@ -7,7 +7,7 @@ import sys
 def format_initializer_list(content):
     new_content = []
     is_func_header = False
-    re_func_header = re.compile(r'[^:,].+\(.*\)$')
+    re_func_header = re.compile(r'[^:,].+\(.*[),]$')
     re_func_block = re.compile(r'{$')
     re_init_list = re.compile(r'[:,] .+')
 
