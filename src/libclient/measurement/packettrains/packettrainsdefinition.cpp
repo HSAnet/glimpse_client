@@ -3,14 +3,14 @@
 
 PacketTrainsDefinition::PacketTrainsDefinition(QString host, quint16 port, quint16 packetSize, quint16 trainLength,
                                                quint8 iterations, quint64 rateMin, quint64 rateMax, quint64 delay)
-    : host(host)
-    , port(port)
-    , packetSize(packetSize)
-    , trainLength(trainLength)
-    , iterations(iterations)
-    , rateMin(rateMin)
-    , rateMax(rateMax)
-    , delay(delay)
+: host(host)
+, port(port)
+, packetSize(packetSize)
+, trainLength(trainLength)
+, iterations(iterations)
+, rateMin(rateMin)
+, rateMax(rateMax)
+, delay(delay)
 {
 
 }
