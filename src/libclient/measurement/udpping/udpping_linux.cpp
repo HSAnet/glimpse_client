@@ -34,7 +34,8 @@ namespace
 
         if (!rp)
         {
-            rp = result;
+            freeaddrinfo(result);
+            return false;
         }
 
         memcpy(addr, rp->ai_addr, rp->ai_addrlen);
@@ -116,11 +117,6 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     else if (m_destAddress.sa.sa_family == AF_INET6)
     {
         m_destAddress.sin6.sin6_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
-    }
-    else
-    {
-        // unreachable
-        return false;
     }
 
     return true;
@@ -216,11 +212,6 @@ int UdpPing::initSocket()
     {
         src_addr.sin6.sin6_port = htons(definition->sourcePort);
     }
-    else
-    {
-        // unreachable
-        goto cleanup;
-    }
 
     if (src_addr.sa.sa_family == AF_INET)
     {
@@ -270,11 +261,6 @@ int UdpPing::initSocket()
             emit error("setsockopt IPV6_RECVERR: " + QString(strerror(errno)));
             goto cleanup;
         }
-    }
-    else
-    {
-        // unreachable
-        goto cleanup;
     }
 
     return sock;
