@@ -52,6 +52,7 @@ namespace
         int sock = 0;
 
         sock = socket(m_destAddress.sa.sa_family, SOCK_DGRAM, IPPROTO_ICMP);
+
         if (sock < 0)
         {
             //emit error("icmp socket: " + QString(strerror(errno)));
@@ -59,6 +60,7 @@ namespace
         }
 
         n = 1;
+
         if (setsockopt(sock, SOL_SOCKET, SO_TIMESTAMP, &n, sizeof(n)) < 0)
         {
             //emit error("icmp socket setsockopt SOL_TIMESTAMP: " + QString(strerror(errno)));
@@ -67,7 +69,7 @@ namespace
 
         return sock;
 
-    cleanup:
+cleanup:
         close(sock);
         return -1;
     }
@@ -117,7 +119,7 @@ void UdpPing::setStatus(Status status)
     }
 }
 
-bool UdpPing::prepare(NetworkManager* networkManager, const MeasurementDefinitionPtr& measurementDefinition)
+bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
 
@@ -153,10 +155,12 @@ bool UdpPing::start()
 
     // include null-character
     m_payload = new char[definition->payload + 1];
+
     if (m_payload == NULL)
     {
         return false;
     }
+
     memset(m_payload, 0, definition->payload + 1);
 
     setStartDateTime(QDateTime::currentDateTime());
@@ -228,6 +232,7 @@ int UdpPing::initSocket()
     memset(&src_addr, 0, sizeof(src_addr));
 
     sock = socket(m_destAddress.sa.sa_family, SOCK_DGRAM, IPPROTO_UDP);
+
     if (sock < 0)
     {
         emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
@@ -239,6 +244,7 @@ int UdpPing::initSocket()
         src_addr.sin.sin_port = htons(definition->sourcePort);
         src_addr.sin.sin_family = AF_INET;
         src_addr.sin.sin_addr.s_addr = htonl(INADDR_ANY);
+
         if (bind(sock, (struct sockaddr *) &src_addr, sizeof(struct sockaddr_in)) < 0)
         {
             emit error(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
@@ -250,6 +256,7 @@ int UdpPing::initSocket()
         src_addr.sin6.sin6_port = htons(definition->sourcePort);
         src_addr.sin6.sin6_family = AF_INET6;
         src_addr.sin6.sin6_addr = in6addr_any;
+
         if (bind(sock, (struct sockaddr *) &src_addr, sizeof(struct sockaddr_in6)) < 0)
         {
             emit error(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
@@ -263,6 +270,7 @@ int UdpPing::initSocket()
     }
 
     n = 1;
+
     if (setsockopt(sock, SOL_SOCKET, SO_TIMESTAMP, &n, sizeof(n)) < 0)
     {
         emit error(QString("setsockopt SOL_TIMESTAMP: %1").arg(QString::fromLocal8Bit(strerror(errno))));
@@ -294,10 +302,10 @@ bool UdpPing::sendData(PingProbe *probe)
     // randomize payload to prevent caching
     randomizePayload(m_payload, definition->payload);
 
-    if(m_destAddress.sa.sa_family == AF_INET)
+    if (m_destAddress.sa.sa_family == AF_INET)
     {
         if (sendto(probe->sock, m_payload, definition->payload, 0,
-               (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in)) < 0)
+                   (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in)) < 0)
         {
             emit error(QString("send: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             return false;
@@ -306,7 +314,7 @@ bool UdpPing::sendData(PingProbe *probe)
     else if (m_destAddress.sa.sa_family == AF_INET6)
     {
         if (sendto(probe->sock, m_payload, definition->payload, 0,
-               (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in6)) < 0)
+                   (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in6)) < 0)
         {
             emit error(QString("send: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             return false;
@@ -358,7 +366,7 @@ void UdpPing::receiveData(PingProbe *probe)
     pfd[0].events = POLLIN;
     pfd[1].events = POLLIN;
 
-    if ( (ret = poll(pfd, 2, definition->receiveTimeout)) < 0)
+    if ((ret = poll(pfd, 2, definition->receiveTimeout)) < 0)
     {
         emit error(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
@@ -371,7 +379,7 @@ void UdpPing::receiveData(PingProbe *probe)
     }
 
     //Which socket is ready to receive? Likely the ICMP socket
-    if(pfd[1].revents & POLLIN)
+    if (pfd[1].revents & POLLIN)
     {
         //socket ready to receive
         if (recvmsg(probe->icmpSock, &msg, 0) < 0)
@@ -385,11 +393,12 @@ void UdpPing::receiveData(PingProbe *probe)
         //get the Internet header length (in 32 bit quantaties)
         unsigned char ihl = buf[0] & 0x0F;
 
-        if(ihl < 5 || ihl > 15)
+        if (ihl < 5 || ihl > 15)
         {
             emit error(QString("parsing icmp message failed (IHL value out of bounds)"));
             goto cleanup;
         }
+
         ihl *= 4;
 
         unsigned char icmp_type = 0;
@@ -398,11 +407,11 @@ void UdpPing::receiveData(PingProbe *probe)
         icmp_type = buf[ihl];
         icmp_code = buf[ihl + 1];
 
-        if(icmp_type == 3 && icmp_code == 3)
+        if (icmp_type == 3 && icmp_code == 3)
         {
             emit destinationUnreachable(*probe);
         }
-        else if(icmp_type == 11 && icmp_code == 0)
+        else if (icmp_type == 11 && icmp_code == 0)
         {
             emit ttlExceeded(*probe);
         }
@@ -438,9 +447,10 @@ void UdpPing::receiveData(PingProbe *probe)
         {
             //the good folks at Apple decided to not use the standard names here
             //god bless their souls
-            if (cm->cmsg_type == SCM_TIMESTAMP && cm->cmsg_len == CMSG_LEN(sizeof (struct timeval)))
+            if (cm->cmsg_type == SCM_TIMESTAMP && cm->cmsg_len == CMSG_LEN(sizeof(struct timeval)))
             {
                 struct timeval *tv_tmp = (struct timeval *) ptr;
+
                 if (tv_tmp == NULL)
                 {
                     break;
