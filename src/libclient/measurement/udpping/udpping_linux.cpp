@@ -145,7 +145,7 @@ bool UdpPing::start()
 
     if (probe.sock < 0)
     {
-        emit error("socket: " + QString(strerror(errno)));
+        emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         delete[] m_payload;
         return false;
     }
@@ -198,7 +198,7 @@ int UdpPing::initSocket()
 
     if (sock < 0)
     {
-        emit error("socket: " + QString(strerror(errno)));
+        emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         return -1;
     }
 
@@ -224,7 +224,7 @@ int UdpPing::initSocket()
 
     if (n < 0)
     {
-        emit error("bind: " + QString(strerror(errno)));
+        emit error(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
 
@@ -232,14 +232,16 @@ int UdpPing::initSocket()
 
     if (setsockopt(sock, SOL_SOCKET, SO_TIMESTAMP, &n, sizeof(n)) < 0)
     {
-        emit error("setsockopt SOL_TIMESTAMP: " + QString(strerror(errno)));
+        emit error(QString("setsockopt SOL_TIMESTAMP: %1").arg(
+                       QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
 
     // set TTL
     if (setsockopt(sock, SOL_IP, IP_TTL, &ttl, sizeof(ttl)) < 0)
     {
-        emit error("setsockopt IP_TTL: " + QString(strerror(errno)));
+        emit error(QString("setsockopt IP_TTL: %1").arg(
+                       QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
 
@@ -250,7 +252,8 @@ int UdpPing::initSocket()
     {
         if (setsockopt(sock, SOL_IP, IP_RECVERR, &n, sizeof(n)) < 0)
         {
-            emit error("setsockopt IP_RECVERR: " + QString(strerror(errno)));
+            emit error(QString("setsockopt IP_RECVERR: %1").arg(
+                           QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
     }
@@ -258,7 +261,8 @@ int UdpPing::initSocket()
     {
         if (setsockopt(sock, IPPROTO_IPV6, IPV6_RECVERR, &n, sizeof(n)) < 0)
         {
-            emit error("setsockopt IPV6_RECVERR: " + QString(strerror(errno)));
+            emit error(QString("setsockopt IPV6_RECVERR: %1").arg(
+                           QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
     }
@@ -295,7 +299,7 @@ bool UdpPing::sendData(PingProbe *probe)
 
     if (n < 0)
     {
-        emit error("send: " + QString(strerror(errno)));
+        emit error(QString("send: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         return false;
     }
 
@@ -330,7 +334,7 @@ void UdpPing::receiveData(PingProbe *probe)
 
     if (poll(&pfd, 1, definition->receiveTimeout) < 0)
     {
-        emit error("poll: " + QString(strerror(errno)));
+        emit error(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
 
@@ -342,7 +346,7 @@ void UdpPing::receiveData(PingProbe *probe)
 
     if (recvmsg(probe->sock, &msg, MSG_ERRQUEUE) < 0)
     {
-        emit error("recvmsg: " + QString(strerror(errno)));
+        emit error(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
 
