@@ -2,10 +2,12 @@ TEMPLATE = lib
 CONFIG += staticlib
 CONFIG -= qt
 
-strings.commands = cd $$PWD/miniupnp/miniupnpc && sh updateminiupnpcstrings.sh
-QMAKE_EXTRA_TARGETS += strings
-PRE_TARGETDEPS += strings
-target.depends = strings
+!win32 {
+    strings.commands = cd $$PWD/miniupnp/miniupnpc && sh updateminiupnpcstrings.sh
+    QMAKE_EXTRA_TARGETS += strings
+    PRE_TARGETDEPS += strings
+    target.depends = strings
+}
 
 DEFINES += HAVE_UPNP STATICLIB
 
@@ -13,8 +15,6 @@ android:DEFINES += sun # Atleast needed for android
 else:linux:DEFINES += _GNU_SOURCE
 mac:DEFINES += _DARWIN_C_SOURCE
 win32:DEFINES += _CRT_SECURE_NO_WARNINGS
-
-#linux:LIBS += -lminiupnpc
 
 android|mac|win32|linux {
     INCLUDEPATH += $$PWD/miniupnp
