@@ -82,20 +82,7 @@ FlickablePage {
             }
         }
 
-//        Image{
-//            id: diagram
-//            source: "images/diagram.png"
-//            width: parent.width - units.gu(30)
-//            fillMode: Image.PreserveAspectFit
 
-//            anchors {
-//                left: parent.left
-//                top: border2.bottom
-
-//                topMargin: units.gu(10)
-//                leftMargin: units.gu(30)
-//            }
-//        }
         Canvas {
             id: diagram
             width: parent.width - units.gu(50)
@@ -109,7 +96,6 @@ FlickablePage {
                 left: parent.left
                 top: border2.bottom
 
-//                topMargin: units.gu(10)
                 leftMargin: units.gu(10)
             }
 
