@@ -50,7 +50,10 @@ QVariant Channel::toVariant() const
     hash.insert("id", d->id);
     hash.insert("target", d->target);
     hash.insert("certificate", d->certificate);
-    hash.insert("timing", d->timing->toVariant());
+    if(d->timing)
+    {
+        hash.insert("timing", d->timing->toVariant());
+    }
     return hash;
 }
 
