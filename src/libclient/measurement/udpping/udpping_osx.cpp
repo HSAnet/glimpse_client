@@ -124,6 +124,19 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     Q_UNUSED(networkManager);
 
     definition = measurementDefinition.dynamicCast<UdpPingDefinition>();
+
+    if (definition->payload > 1400)
+    {
+        emit error("payload is too large (> 1400 bytes)");
+        return false;
+    }
+
+    if (definition->receiveTimeout > 60000)
+    {
+        emit error("receive timeout is too large (> 60 s)");
+        return false;
+    }
+
     memset(&m_destAddress, 0, sizeof(m_destAddress));
 
     // resolve
@@ -155,11 +168,6 @@ bool UdpPing::start()
 
     // include null-character
     m_payload = new char[definition->payload + 1];
-
-    if (m_payload == NULL)
-    {
-        return false;
-    }
 
     memset(m_payload, 0, definition->payload + 1);
 
