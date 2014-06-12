@@ -311,10 +311,11 @@ void UdpPing::receiveData(PingProbe *probe)
     struct msghdr msg;
     sockaddr_any from;
     struct iovec iov;
-    char buf[1280];
-    char control[1024];
+    char buf[1500];
+    char control[CMSG_SPACE(sizeof(probe->sock))];
     struct cmsghdr *cm;
     struct sock_extended_err *ee = NULL;
+    struct timeval *tv;
 
     memset(&msg, 0, sizeof(msg));
     msg.msg_name = &from;
@@ -346,27 +347,39 @@ void UdpPing::receiveData(PingProbe *probe)
 
     if (recvmsg(probe->sock, &msg, MSG_ERRQUEUE) < 0)
     {
-        emit error(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-        goto cleanup;
+        // receive UDP packet
+        if (recvmsg(probe->sock, &msg, 0) < 0)
+        {
+            emit error(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            goto cleanup;
+        }
+
+        // msg_name provides the source address if the initial request packet
+        // was successful
+        memcpy(&probe->source, &from, sizeof(sockaddr_any));
     }
 
     for (cm = CMSG_FIRSTHDR(&msg); cm; cm = CMSG_NXTHDR(&msg, cm))
     {
         void *ptr = CMSG_DATA(cm);
 
-        if (cm->cmsg_level == SOL_SOCKET)
+        switch (cm->cmsg_level)
         {
-
-            if (cm->cmsg_type == SO_TIMESTAMP)
+        case SOL_SOCKET:
+            switch (cm->cmsg_type)
             {
-                struct timeval *tv = (struct timeval *) ptr;
+            case SO_TIMESTAMP:
+                tv = (struct timeval *) ptr;
                 probe->recvTime = tv->tv_sec * 1e6 + tv->tv_usec;
+                break;
             }
-        }
-        else if (cm->cmsg_level == SOL_IP)
-        {
-            if (cm->cmsg_type == IP_RECVERR)
+
+            break;
+
+        case SOL_IP:
+            switch (cm->cmsg_type)
             {
+            case IP_RECVERR:
                 ee = (struct sock_extended_err *) ptr;
 
                 if (ee->ee_origin != SO_EE_ORIGIN_ICMP)
@@ -379,7 +392,17 @@ void UdpPing::receiveData(PingProbe *probe)
                 {
                     goto cleanup;
                 }
+
+                break;
+
+            default:
+                break;
             }
+
+            break;
+
+        default:
+            break;
         }
     }
 
