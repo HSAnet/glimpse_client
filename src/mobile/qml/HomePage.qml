@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import mplane 1.0
 import "controls"
+import "controls/charts/linechart.js" as Chart
 
 FlickablePage {
     contentHeight: campaignsPanel.y + campaignsPanel.height
@@ -81,19 +82,23 @@ FlickablePage {
             }
         }
 
-        Image{
-            id: diagram
-            source: "images/diagram.png"
-            width: parent.width - units.gu(30)
-            fillMode: Image.PreserveAspectFit
 
+        Canvas {
+            id: diagram
+            width: parent.width - units.gu(50)
+            height: 220
+
+            onPaint: {
+                var chart = new Chart.Chart();
+                chart.drawLineChart(0, 0, getContext("2d"));
+            }
             anchors {
                 left: parent.left
                 top: border2.bottom
 
-                topMargin: units.gu(10)
-                leftMargin: units.gu(30)
+                leftMargin: units.gu(10)
             }
+
         }
     }
 
