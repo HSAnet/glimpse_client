@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="0.1.0" package="de.hsaugsburg.informatik.mplane.client" android:versionCode="1">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="0.1.0" package="net.measureit.glimpse" android:versionCode="1">
     <application android:name="org.qtproject.qt5.android.bindings.QtApplication" android:theme="@android:style/Theme.NoTitleBar" android:label="glimpse" android:icon="@drawable/logo">
         <activity android:configChanges="orientation|locale|fontScale|keyboard|keyboardHidden|navigation|screenSize" android:name="de.hsaugsburg.informatik.mplane.MobileActivity" android:label="glimpse" android:screenOrientation="portrait" android:icon="@drawable/logo">
             <intent-filter>

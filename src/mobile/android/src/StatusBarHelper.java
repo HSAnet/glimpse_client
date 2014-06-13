@@ -1,6 +1,6 @@
 package de.hsaugsburg.informatik.mplane;
 
-import de.hsaugsburg.informatik.mplane.client.R;
+import net.measureit.glimpse.R;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;

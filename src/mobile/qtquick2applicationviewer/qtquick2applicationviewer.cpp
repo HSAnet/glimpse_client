@@ -91,7 +91,7 @@ void QtQuick2ApplicationViewer::setMainQmlFile(const QString &file)
 #if 0 // defined(QT_DEBUG)
     setSource(QUrl(QLatin1String("assets:/") + d->mainQmlFile));
 #else
-    setSource(QUrl(QLatin1String("qrc:/") + d->mainQmlFile));
+    setSource(QUrl(QLatin1String("qrc:/") + file));
 #endif
 #else
     setSource(QUrl::fromLocalFile(d->mainQmlFile));

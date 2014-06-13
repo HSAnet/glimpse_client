@@ -21,8 +21,8 @@ include(../../dist.pri)
 include(../libclient/libclient.pri)
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
-ANDROID_PACKAGE = "de.hsaugsburg.informatik.mplane.client"
-ANDROID_APP_NAME = "mPlane"
+ANDROID_PACKAGE = "net.measureit.glimpse"
+ANDROID_APP_NAME = "glimpse"
 
 android {
     QT += androidextras
