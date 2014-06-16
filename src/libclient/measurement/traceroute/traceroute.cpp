@@ -9,12 +9,12 @@
 
 LOGGER("Traceroute");
 
-Traceroute::Traceroute(QObject *parent) :
-    Measurement(parent),
-    currentStatus(Unknown),
-    udpPing(),
-    receivedDestinationUnreachable(false),
-    ttl(0)
+Traceroute::Traceroute(QObject *parent)
+: Measurement(parent)
+, currentStatus(Unknown)
+, udpPing()
+, endOfRoute(false)
+, ttl(0)
 {
 }
 
@@ -50,6 +50,9 @@ bool Traceroute::prepare(NetworkManager *networkManager,
 
     connect(&udpPing, SIGNAL(timeout(const PingProbe &)),
             this, SLOT(timeout(const PingProbe &)));
+
+    connect(&udpPing, SIGNAL(udpResponse(const Ping &)), this,
+            SLOT(udpResponse(const Ping &)));
 
     connect(&udpPing, SIGNAL(finished()), this, SLOT(pingFinished()));
 
@@ -130,7 +133,7 @@ void Traceroute::destinationUnreachable(const PingProbe &probe)
 {
     Hop hop = {probe, traceroute::DESTINATION_UNREACHABLE};
     hops << hop;
-    receivedDestinationUnreachable = true;
+    endOfRoute = true;
 }
 
 void Traceroute::ttlExceeded(const PingProbe &probe)
@@ -145,9 +148,16 @@ void Traceroute::timeout(const PingProbe &probe)
     hops << hop;
 }
 
+void Traceroute::udpResponse(const PingProbe &probe)
+{
+    Hop hop = {probe, traceroute::UDP_RESPONSE};
+    hops << hop;
+    endOfRoute = true;
+}
+
 void Traceroute::pingFinished()
 {
-    if (receivedDestinationUnreachable)
+    if (endOfRoute)
     {
         emit finished();
     }

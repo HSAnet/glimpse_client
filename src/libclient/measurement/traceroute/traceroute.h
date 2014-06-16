@@ -18,7 +18,8 @@ namespace traceroute
     {
         TTL_EXCEEDED,
         DESTINATION_UNREACHABLE,
-        TIMEOUT
+        TIMEOUT,
+        UDP_RESPONSE
     };
 }
 
@@ -51,7 +52,7 @@ private:
     Status currentStatus;
     UdpPing udpPing;
     QList<Hop> hops;
-    bool receivedDestinationUnreachable;
+    bool endOfRoute;
     int ttl;
 
 signals:
@@ -62,6 +63,7 @@ public slots:
     void destinationUnreachable(const PingProbe &probe);
     void ttlExceeded(const PingProbe &probe);
     void timeout(const PingProbe &probe);
+    void udpResponse(const PingProbe &probe);
     void pingFinished();
 };
 

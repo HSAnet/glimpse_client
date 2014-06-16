@@ -316,6 +316,7 @@ void UdpPing::receiveData(PingProbe *probe)
     struct cmsghdr *cm;
     struct sock_extended_err *ee = NULL;
     struct timeval *tv;
+    bool udp_response = false;
 
     memset(&msg, 0, sizeof(msg));
     msg.msg_name = &from;
@@ -353,6 +354,8 @@ void UdpPing::receiveData(PingProbe *probe)
             emit error(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
+
+        udp_response = true;
 
         // msg_name provides the source address if the initial request packet
         // was successful
@@ -418,6 +421,11 @@ void UdpPing::receiveData(PingProbe *probe)
         {
             emit destinationUnreachable(*probe);
         }
+    }
+
+    if (udp_response)
+    {
+        emit udpResponse(*probe);
     }
 
 cleanup:

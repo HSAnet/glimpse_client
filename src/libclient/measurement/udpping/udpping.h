@@ -122,6 +122,7 @@ signals:
     void statusChanged(Status status);
     void destinationUnreachable(const PingProbe &probe);
     void ttlExceeded(const PingProbe &probe);
+    void udpResponse(const PingProbe &probe);
     void error(QString message);
     void timeout(const PingProbe &probe);
 };
