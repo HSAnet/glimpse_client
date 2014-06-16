@@ -51,8 +51,8 @@ bool Traceroute::prepare(NetworkManager *networkManager,
     connect(&udpPing, SIGNAL(timeout(const PingProbe &)),
             this, SLOT(timeout(const PingProbe &)));
 
-    connect(&udpPing, SIGNAL(udpResponse(const Ping &)), this,
-            SLOT(udpResponse(const Ping &)));
+    connect(&udpPing, SIGNAL(udpResponse(const PingProbe &)), this,
+            SLOT(udpResponse(const PingProbe &)));
 
     connect(&udpPing, SIGNAL(finished()), this, SLOT(pingFinished()));
 

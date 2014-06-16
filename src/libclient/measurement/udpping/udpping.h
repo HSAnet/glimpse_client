@@ -41,7 +41,8 @@ namespace udpping
     {
         DESTINATION_UNREACHABLE = 1,
         TTL_EXCEEDED,
-        UNHANDLED_ICMP
+        UNHANDLED_ICMP,
+        UDP_RESPONSE
     };
 
     enum PacketType

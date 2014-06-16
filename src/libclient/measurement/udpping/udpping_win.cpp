@@ -89,12 +89,32 @@ namespace
         switch (*ipProto)
         {
         case 17:
-            // UDP request
+            // UDP packet
             probe.type = udpping::UDP;
-            probe.sendTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
-            payload = QByteArray::fromRawData(reinterpret_cast<char *>(const_cast<u_char *>(data + 42)),
-                                              payloadSize);
-            probe.hash = QCryptographicHash::hash(payload, QCryptographicHash::Sha256).toHex();
+
+            if (!strncmp(sourceAddress, destinationAddress, INET_ADDRSTRLEN))
+            {
+                /*
+                 * UDP response
+                 *
+                 * It is quite possible that the UDP response is not caused by our request.
+                 * This however cannot be determined, as such a response most likely will not
+                 * echo back our packet/payload which we could analyse.
+                 */
+                probe.recvTime = header->ts.tv_sec * 1e6 +
+                                 header->ts.tv_usec;
+                probe.response = udpping::UDP_RESPONSE;
+                getAddress(sourceAddress, &probe.source);
+            }
+            else
+            {
+                // UDP request
+                probe.sendTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
+                payload = QByteArray::fromRawData(reinterpret_cast<char *>(const_cast<u_char *>(data + 42)),
+                                                  payloadSize);
+                probe.hash = QCryptographicHash::hash(payload, QCryptographicHash::Sha256).toHex();
+            }
+
             break;
 
         case 1:
@@ -185,13 +205,26 @@ namespace
         switch (*ipProto)
         {
         case 17:
-            // UDP request
+            // UDP packet
             probe.type = udpping::UDP;
-            probe.sendTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
 
-            payload = QByteArray::fromRawData(reinterpret_cast<char *>(const_cast<u_char *>(data + 62)),
-                                              payloadSize);
-            probe.hash = QCryptographicHash::hash(payload, QCryptographicHash::Sha256).toHex();
+            if (!strncmp(sourceAddress, destinationAddress, INET6_ADDRSTRLEN))
+            {
+                // UDP response
+                probe.recvTime = header->ts.tv_sec * 1e6 +
+                                 header->ts.tv_usec;
+                probe.response = udpping::UDP_RESPONSE;
+                getAddress(sourceAddress, &probe.source);
+            }
+            else
+            {
+                // UDP request
+                probe.sendTime = header->ts.tv_sec * 1e6 + header->ts.tv_usec;
+                payload = QByteArray::fromRawData(reinterpret_cast<char *>(const_cast<u_char *>(data + 62)),
+                                                  payloadSize);
+                probe.hash = QCryptographicHash::hash(payload, QCryptographicHash::Sha256).toHex();
+            }
+
             break;
 
         case 58:
@@ -444,8 +477,9 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     }
 
     // capture only our UDP request and some ICMP responses
-    QString filter = "((icmp or icmp6) and icmptype != icmp-echo) or (udp and dst host " +
-                     QString::fromLocal8Bit(address) + ")";
+    QString filter = QString("((icmp or icmp6) and icmptype != icmp-echo)"
+                             " or (udp and (dst host %1 or dst port %2))").arg(
+                     address).arg(definition->destinationPort);
 
     if (pcap_compile(m_capture, &fcode, filter.toStdString().c_str(), 1, 0) < 0)
     {
@@ -630,16 +664,26 @@ void UdpPing::ping(PingProbe *probe)
         return;
     }
 
+    // use marker to skip already processed packets (see below)
+    int marker = 1;
+
     foreach (const PingProbe &p, result)
     {
-        if (p.type != udpping::UDP)
+        // match a request packet ...
+        if (p.type != udpping::UDP || p.response == udpping::UDP_RESPONSE)
         {
             continue;
         }
 
-        foreach (const PingProbe &q, result)
+        /*
+         * Do not start the loop from the beginning again, as this would cause
+         * incorrect matches and falsify the RTTs.
+         */
+        foreach (const PingProbe &q, result.mid(marker))
         {
-            if (q.type != udpping::ICMP || p.hash != q.hash)
+            // ... with a response packet
+            if ((q.type != udpping::UDP || q.response != udpping::UDP_RESPONSE) &&
+                (q.type != udpping::ICMP || p.hash != q.hash))
             {
                 continue;
             }
@@ -667,8 +711,16 @@ void UdpPing::ping(PingProbe *probe)
                 emit error("Unhandled ICMP packet (type/code): " +
                            QString::number(newProbe.icmpType) + "/" +
                            QString::number(newProbe.icmpCode));
+                break;
+
+            case udpping::UDP_RESPONSE:
+                emit udpResponse(newProbe);
             }
+
+            break;
         }
+
+        marker += 2;
     }
 }
 
