@@ -125,16 +125,12 @@ Page {
             visible: !root.loginMode
             anchors.horizontalCenter: parent.horizontalCenter
 
-            Text {
-                text: qsTr("Confirm password")
-                font.pixelSize: units.gu(40)
-            }
-
             TextField {
                 id: passwordField2
-                style: TextFieldStyle{}
+                style: TextFieldStyleBottom{}
                 echoMode: TextInput.Password
                 onAccepted: root.login()
+                placeholderText: qsTr("Confirm password")
             }
         }
 

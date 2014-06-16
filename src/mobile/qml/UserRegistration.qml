@@ -2,12 +2,10 @@ import QtQuick 2.0
 import mplane 1.0
 import "controls"
 
-Login {
+Page {
     id: root
 
     title: qsTr("registration")
-    loginMode: false
-    buttonTitle: qsTr("Register")
 
     function registerAnonymous() {
         client.loginController.anonymousRegistration();
@@ -61,6 +59,8 @@ Login {
            id: loginPage
            width: parent.width
            isWizard: true
+           loginMode: false
+           buttonTitle: qsTr("Register")
 
            anchors {
                top: title.bottom
@@ -92,11 +92,5 @@ Login {
            anchors.horizontalCenter: parent.horizontalCenter
            color: "#3680ab"
        }
-
-//       Button {
-//           anchors.horizontalCenter: parent.horizontalCenter
-//           text: qsTr("I don't want to register")
-//           onClicked: root.registerAnonymous()
-//       }
     }
 }

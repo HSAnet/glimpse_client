@@ -78,5 +78,13 @@ Page {
            text: qsTr("Register")
            onClicked: nextPage("WelcomeRegistrationPage.qml")
        }
+
+       BigButton {
+           anchors.horizontalCenter: parent.horizontalCenter
+           anchors.bottom: parent.bottom
+           anchors.bottomMargin: units.gu(20)
+           text: qsTr("Don't register")
+           onClicked: client.loginController.anonymousRegistration()
+       }
     }
 }

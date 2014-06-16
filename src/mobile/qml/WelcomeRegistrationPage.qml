@@ -3,6 +3,4 @@ import "controls"
 
 UserRegistration {
     id: root
-
-    isWizard: true
 }
