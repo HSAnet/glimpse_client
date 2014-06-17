@@ -24,6 +24,7 @@
 #include <QTimer>
 #include <QDebug>
 #include <QNetworkConfigurationManager>
+#include <QDnsLookup>
 
 LOGGER(NetworkManager);
 
@@ -77,6 +78,9 @@ public:
     : q(q)
     {
         connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
+        connect(&keepaliveAddressLookup, SIGNAL(finished()), this, SLOT(lookupFinished()));
+
+        keepaliveAddressLookup.setType(QDnsLookup::A);
     }
 
     NetworkManager *q;
@@ -97,6 +101,10 @@ public:
 
     QNetworkConfigurationManager ncm;
 
+    RemoteHost keepaliveHost;
+    QHostAddress keepaliveAddress;
+    QDnsLookup keepaliveAddressLookup;
+
     // Functions
     QAbstractSocket *createSocket(NetworkManager::SocketType socketType);
 
@@ -109,6 +117,7 @@ public slots:
     void responseChanged();
     void timeout();
     void onDatagramReady();
+    void lookupFinished();
 };
 
 QAbstractSocket *NetworkManager::Private::createSocket(NetworkManager::SocketType socketType)
@@ -162,23 +171,20 @@ void NetworkManager::Private::updateSocket()
         socket.clear();
     }
 
-    QString keepaliveAddress = settings->config()->keepaliveAddress();
-    RemoteHost remote = NetworkHelper::remoteHost(keepaliveAddress);
-
-    if (!remote.isValid())
+    if (!keepaliveHost.isValid())
     {
         return;
     }
 
-    localPort = remote.port;
+    localPort = keepaliveHost.port;
 
     socket = qobject_cast<QUdpSocket *>(q->createConnection(NetworkManager::UdpSocket));
     socket->setParent(this);
     connect(socket.data(), SIGNAL(readyRead()), this, SLOT(onDatagramReady()));
 
-    if (!socket->bind(remote.port))
+    if (!socket->bind(keepaliveHost.port))
     {
-        LOG_ERROR(QString("Unable to bind port %1: %2").arg(remote.port).arg(socket->errorString()));
+        LOG_ERROR(QString("Unable to bind port %1: %2").arg(keepaliveHost.port).arg(socket->errorString()));
     }
 }
 
@@ -320,20 +326,22 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
 
 void NetworkManager::Private::responseChanged()
 {
+    // Update the keepalive host address
+    keepaliveHost = NetworkHelper::remoteHost(settings->config()->keepaliveAddress());
+
     updateSocket();
     updateTimer();
 
-    // Send the first timeout now
-    timeout();
+    // Lookup the host
+    keepaliveAddressLookup.setName(keepaliveHost.host);
+    keepaliveAddressLookup.lookup();
 }
 
 void NetworkManager::Private::timeout()
 {
-    RemoteHost remote = NetworkHelper::remoteHost(settings->config()->keepaliveAddress());
-
-    if (!remote.isValid())
+    if (keepaliveAddress.isNull())
     {
-        LOG_INFO("Invalid keepalive host (normal at first app start)");
+        LOG_INFO("Invalid keepalive address (normal at first app start)");
         return;
     }
 
@@ -355,7 +363,7 @@ void NetworkManager::Private::timeout()
     map.insert("src_port", localPort);
 
     QByteArray data = QJsonDocument::fromVariant(map).toJson();
-    socket->writeDatagram(data, QHostAddress(remote.host), remote.port);
+    socket->writeDatagram(data, keepaliveAddress, keepaliveHost.port);
 
     LOG_DEBUG("Alive packet sent");
 }
@@ -373,6 +381,28 @@ void NetworkManager::Private::onDatagramReady()
 
         // Process the datagram
         processDatagram(datagram, host, port);
+    }
+}
+
+void NetworkManager::Private::lookupFinished()
+{
+    // Check for errors
+    if (keepaliveAddressLookup.error() != QDnsLookup::NoError)
+    {
+        LOG_ERROR(QString("Unable to look up host %1: %2").arg(keepaliveAddressLookup.name()).arg(keepaliveAddressLookup.errorString()));
+        return;
+    }
+
+    foreach(const QDnsHostAddressRecord& record, keepaliveAddressLookup.hostAddressRecords())
+    {
+        // TODO: Take multiple host records
+        QHostAddress value = record.value();
+        if (!value.isNull())
+        {
+            keepaliveAddress = value;
+            timeout();
+            break;
+        }
     }
 }
 
@@ -480,12 +510,12 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
     }
 
     RemoteHost remote = NetworkHelper::remoteHost(hostname);
-    RemoteHost aliveRemote = NetworkHelper::remoteHost(d->settings->config()->keepaliveAddress());
+    RemoteHost aliveRemote = d->keepaliveHost;
 
-    if (!aliveRemote.isValid())
+    if (d->keepaliveAddress.isNull())
     {
-        LOG_ERROR(QString("Invalid alive remote: '%1' can't talk to alive server").arg(
-                      d->settings->config()->keepaliveAddress()));
+        LOG_ERROR(QString("Invalid keepalivealive address: '%1' can't talk to alive server").arg(
+                      d->keepaliveAddress.toString()));
         delete socket;
         return NULL;
     }
@@ -527,7 +557,7 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
     testSocket->writeDatagram(data, QHostAddress(remote.host), d->localPort);
 
     // Step two: Send test offer to peer via alive-server
-    testSocket->writeDatagram(data, QHostAddress(aliveRemote.host), aliveRemote.port);
+    testSocket->writeDatagram(data, d->keepaliveAddress, aliveRemote.port);
 
     LOG_TRACE("Sent test offer to peer and alive-server");
 
