@@ -18,7 +18,7 @@ namespace
     {
         struct addrinfo *rp = NULL, *result = NULL;
 
-        if (getaddrinfo(address.toStdString().c_str(), NULL, NULL, &result))
+        if (getaddrinfo(address.toLatin1(), NULL, NULL, &result))
         {
             return false;
         }
@@ -346,7 +346,7 @@ void UdpPing::receiveData(PingProbe *probe)
     char control[256];
     struct cmsghdr *cm;
     int ret = 0;
-
+    bool udp_response = false;
     struct timeval tv;
 
     memset(&buf, 0, 1280);
@@ -435,6 +435,7 @@ void UdpPing::receiveData(PingProbe *probe)
             goto cleanup;
         }
 
+        udp_response = true;
     }
     else
     {
@@ -472,6 +473,11 @@ void UdpPing::receiveData(PingProbe *probe)
                 break;
             }
         }
+    }
+
+    if (udp_response)
+    {
+        emit udpResponse(*probe);
     }
 
 cleanup:

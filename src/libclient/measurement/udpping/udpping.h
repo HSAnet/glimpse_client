@@ -41,7 +41,8 @@ namespace udpping
     {
         DESTINATION_UNREACHABLE = 1,
         TTL_EXCEEDED,
-        UNHANDLED_ICMP
+        UNHANDLED_ICMP,
+        UDP_RESPONSE
     };
 
     enum PacketType
@@ -122,6 +123,7 @@ signals:
     void statusChanged(Status status);
     void destinationUnreachable(const PingProbe &probe);
     void ttlExceeded(const PingProbe &probe);
+    void udpResponse(const PingProbe &probe);
     void error(QString message);
     void timeout(const PingProbe &probe);
 };
