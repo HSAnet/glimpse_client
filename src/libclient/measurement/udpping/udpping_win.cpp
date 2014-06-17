@@ -419,9 +419,15 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
 
     definition = measurementDefinition.dynamicCast<UdpPingDefinition>();
 
-    if (definition->payload > 65536)
+    if (definition->payload > 1400)
     {
-        emit error("payload is too large (> 65536 bytes)");
+        emit error("payload is too large (> 1400 bytes)");
+        return false;
+    }
+
+    if (definition->receiveTimeout > 60000)
+    {
+        emit error("receive timeout is too large (> 60 s)");
         return false;
     }
 
