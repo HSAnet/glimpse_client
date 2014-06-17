@@ -144,11 +144,19 @@ void WebRequester::Private::requestFinished()
     {
         if (!timer.isActive())
         {
-            errorString = "Operation timed out";
+            errorString = tr("Operation timed out");
         }
         else
         {
-            errorString = reply->errorString();
+            QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+            if (statusCode.isValid() && statusCode.toInt() == 401)
+            {
+                errorString = tr("Email or Password wrong");
+            }
+            else
+            {
+                errorString = reply->errorString();
+            }
         }
 
         LOG_WARNING(QString("Network error: %1").arg(errorString));
