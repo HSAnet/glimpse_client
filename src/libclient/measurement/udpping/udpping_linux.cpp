@@ -21,7 +21,7 @@ namespace
         memset(&hints, 0, sizeof(hints));
         hints.ai_family = PF_UNSPEC;
 
-        if (getaddrinfo(address.toStdString().c_str(), NULL, &hints, &result))
+        if (getaddrinfo(address.toLatin1(), NULL, &hints, &result))
         {
             return false;
         }

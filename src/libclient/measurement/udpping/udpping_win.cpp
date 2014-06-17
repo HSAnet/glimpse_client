@@ -34,7 +34,7 @@ namespace
         memset(&hints, 0, sizeof(hints));
         hints.ai_family = AF_UNSPEC;
 
-        if (getaddrinfo(address.toStdString().c_str(), NULL, &hints, &result))
+        if (getaddrinfo(address.toLatin1(), NULL, &hints, &result))
         {
             return false;
         }
@@ -481,7 +481,7 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
                              " or (udp and (dst host %1 or dst port %2))").arg(
                      address).arg(definition->destinationPort);
 
-    if (pcap_compile(m_capture, &fcode, filter.toStdString().c_str(), 1, 0) < 0)
+    if (pcap_compile(m_capture, &fcode, filter.toLatin1(), 1, 0) < 0)
     {
         pcap_freealldevs(alldevs);
         return false;

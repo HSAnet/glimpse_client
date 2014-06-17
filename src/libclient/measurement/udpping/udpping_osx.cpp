@@ -18,7 +18,7 @@ namespace
     {
         struct addrinfo *rp = NULL, *result = NULL;
 
-        if (getaddrinfo(address.toStdString().c_str(), NULL, NULL, &result))
+        if (getaddrinfo(address.toLatin1(), NULL, NULL, &result))
         {
             return false;
         }
