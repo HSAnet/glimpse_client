@@ -24,10 +24,10 @@ linux:!android {
 
 INCLUDEPATH += $$PWD
 
-include(../../dist.pri)
-include(../../3rdparty/miniupnpc.pri)
-include(../../3rdparty/breakpad.pri)
-include(../../3rdparty/winpcap.pri)
+include($$SOURCE_DIRECTORY/dist.pri)
+include($$SOURCE_DIRECTORY/3rdparty/miniupnpc.pri)
+include($$SOURCE_DIRECTORY/3rdparty/breakpad.pri)
+include($$SOURCE_DIRECTORY/3rdparty/winpcap.pri)
 
 android {
     QT += androidextras
