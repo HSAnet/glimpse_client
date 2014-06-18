@@ -69,6 +69,7 @@ struct PingProbe
     quint8 icmpType;
     quint8 icmpCode;
     QByteArray hash;
+    bool marked;
 
     bool operator==(const PingProbe &p) const
     {

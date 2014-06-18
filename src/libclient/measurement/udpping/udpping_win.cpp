@@ -482,9 +482,9 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
         return false;
     }
 
-    // capture only our UDP request and some ICMP responses
-    QString filter = QString("((icmp or icmp6) and icmptype != icmp-echo)"
-                             " or (udp and (dst host %1 or dst port %2))").arg(
+    // capture only our UDP request and some ICMP/UDP responses
+    QString filter = QString("(((icmp or icmp6) and icmptype != icmp-echo and dst host %1)"
+                             " or (udp and dst port %2))").arg(
                      address).arg(definition->destinationPort);
 
     if (pcap_compile(m_capture, &fcode, filter.toLatin1(), 1, 0) < 0)
@@ -670,36 +670,41 @@ void UdpPing::ping(PingProbe *probe)
         return;
     }
 
-    // use marker to skip already processed packets (see below)
-    int marker = 1;
-
-    foreach (const PingProbe &p, result)
+    /*
+     * Should there be ICMP responses, they need to be processed first as they can
+     * be matched against UDP requests by comparing their payload hash. Processed
+     * packets are marked and are then not used for any future matching.
+     *
+     * Possible remaining UDP responses are processed afterwards. Since UDP
+     * requests and responses cannot be matched by their payload, they are matched
+     * according to their capturing order, i.e.
+     * 1st request -> 1st response, 2nd request -> 2nd response, and so on.
+     */
+    for (QVector<PingProbe>::iterator p = result.begin(); p != result.end(); p++)
     {
         // match a request packet ...
-        if (p.type != udpping::UDP || p.response == udpping::UDP_RESPONSE)
+        if (p->marked || p->type != udpping::UDP || p->response == udpping::UDP_RESPONSE)
         {
             continue;
         }
 
-        /*
-         * Do not start the loop from the beginning again, as this would cause
-         * incorrect matches and falsify the RTTs.
-         */
-        foreach (const PingProbe &q, result.mid(marker))
+        for (QVector<PingProbe>::iterator q = result.begin(); q != result.end(); q++)
         {
             // ... with a response packet
-            if ((q.type != udpping::UDP || q.response != udpping::UDP_RESPONSE) &&
-                (q.type != udpping::ICMP || p.hash != q.hash))
+            if (q->marked || (q->type != udpping::ICMP || p->hash != q->hash))
             {
                 continue;
             }
 
-            newProbe.sendTime = p.sendTime;
-            newProbe.recvTime = q.recvTime;
-            newProbe.source = q.source;
-            newProbe.response = q.response;
-            newProbe.icmpType = q.icmpType;
-            newProbe.icmpCode = q.icmpCode;
+            p->marked = true;
+            q->marked = true;
+
+            newProbe.sendTime = p->sendTime;
+            newProbe.recvTime = q->recvTime;
+            newProbe.source = q->source;
+            newProbe.response = q->response;
+            newProbe.icmpType = q->icmpType;
+            newProbe.icmpCode = q->icmpCode;
 
             m_pingProbes.append(newProbe);
 
@@ -718,15 +723,40 @@ void UdpPing::ping(PingProbe *probe)
                            QString::number(newProbe.icmpType) + "/" +
                            QString::number(newProbe.icmpCode));
                 break;
-
-            case udpping::UDP_RESPONSE:
-                emit udpResponse(newProbe);
             }
 
             break;
         }
+    }
 
-        marker += 2;
+    // process possible UDP responses
+    for (QVector<PingProbe>::iterator p = result.begin(); p != result.end(); p++)
+    {
+        if (p->marked || p->type != udpping::UDP || p->response == udpping::UDP_RESPONSE)
+        {
+            continue;
+        }
+
+        for (QVector<PingProbe>::iterator q = result.begin(); q != result.end(); q++)
+        {
+            if (!q->marked && (q->type == udpping::UDP && q->response == udpping::UDP_RESPONSE))
+            {
+                p->marked = true;
+                q->marked = true;
+
+                newProbe.sendTime = p->sendTime;
+                newProbe.recvTime = q->recvTime;
+                newProbe.source = q->source;
+                newProbe.response = q->response;
+                newProbe.icmpType = q->icmpType;
+                newProbe.icmpCode = q->icmpCode;
+
+                m_pingProbes.append(newProbe);
+
+                emit udpResponse(newProbe);
+                break;
+            }
+        }
     }
 }
 
