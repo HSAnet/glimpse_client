@@ -27,6 +27,36 @@ enum RequestType
 #define enumFromString(className, enumName, value) \
     className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator(enumName)).keyToValue(value)
 
+
+inline QString pingTypeToString(QAbstractSocket::SocketType pingType)
+{
+    if(pingType == QAbstractSocket::UdpSocket)
+    {
+        return QString("UdpSocket");
+    }
+    else if(pingType == QAbstractSocket::TcpSocket)
+    {
+        return QString("TcpSocket");
+    }
+
+    return QString("UnkownSocketType");
+}
+
+
+inline QAbstractSocket::SocketType pingTypeFromString(QString pingType)
+{
+    if(pingType == "UdpSocket")
+    {
+        return QAbstractSocket::UdpSocket;
+    }
+    else if(pingType == "TcpSocket")
+    {
+        return QAbstractSocket::TcpSocket;
+    }
+
+    return QAbstractSocket::UnknownSocketType;
+}
+
 template <typename T>
 QVariantList ptrListToVariant(const QList<T> &list)
 {

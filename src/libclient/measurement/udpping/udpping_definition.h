@@ -2,6 +2,7 @@
 #define UDPPING_DEFINITION_H
 
 #include "../measurementdefinition.h"
+#include <QAbstractSocket>
 
 class UdpPingDefinition;
 
@@ -13,7 +14,8 @@ class UdpPingDefinition : public MeasurementDefinition
 public:
     ~UdpPingDefinition();
     UdpPingDefinition(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
-                      const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload);
+                      const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload,
+                      const QAbstractSocket::SocketType &pingType);
 
     // Storage
     static UdpPingDefinitionPtr fromVariant(const QVariant &variant);
@@ -27,6 +29,7 @@ public:
     quint16 destinationPort;
     quint16 sourcePort;
     quint32 payload;
+    QAbstractSocket::SocketType pingType;
 
     // Serializable interface
     QVariant toVariant() const;

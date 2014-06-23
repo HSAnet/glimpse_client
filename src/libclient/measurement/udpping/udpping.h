@@ -127,6 +127,8 @@ signals:
     void udpResponse(const PingProbe &probe);
     void error(QString message);
     void timeout(const PingProbe &probe);
+    void tcpReset(const PingProbe &probe);
+    void tcpConnect(const PingProbe &probe);
 };
 
 #endif // UDPPING_H

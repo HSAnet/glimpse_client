@@ -125,7 +125,8 @@ void Traceroute::ping()
                                  ttl,
                                  definition->destinationPort,
                                  definition->sourcePort,
-                                 definition->payload);
+                                 definition->payload,
+                                 definition->pingType);
     udpPing.prepare(NULL, UdpPingPlugin().createMeasurementDefinition(
                         "udpping",
                         udpPingDef.toVariant()));

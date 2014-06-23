@@ -1,8 +1,10 @@
 #include "udpping_definition.h"
+#include "../../types.h"
 
 UdpPingDefinition::UdpPingDefinition(const QString &url, const quint32 &count, const quint32 &interval,
-                                     const quint32 &receiveTimeout,
-                                     const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload)
+                                     const quint32 &receiveTimeout,const int &ttl,
+                                     const quint16 &destinationPort, const quint16 &sourcePort,
+                                     const quint32 &payload, const QAbstractSocket::SocketType &pingType)
 : url(url)
 , count(count)
 , interval(interval)
@@ -11,6 +13,7 @@ UdpPingDefinition::UdpPingDefinition(const QString &url, const quint32 &count, c
 , destinationPort(destinationPort)
 , sourcePort(sourcePort)
 , payload(payload)
+, pingType(pingType)
 {
 
 }
@@ -30,7 +33,8 @@ UdpPingDefinitionPtr UdpPingDefinition::fromVariant(const QVariant &variant)
                                                       map.value("ttl", 64).toInt(),
                                                       map.value("destinationPort", 33434).toUInt(),
                                                       map.value("sourcePort", 33434).toUInt(),
-                                                      map.value("payload", 74).toUInt()));
+                                                      map.value("payload", 74).toUInt(),
+                                                      pingTypeFromString(map.value("pingType", "UdpSocket").toString())));
 }
 
 QVariant UdpPingDefinition::toVariant() const
@@ -44,5 +48,6 @@ QVariant UdpPingDefinition::toVariant() const
     map.insert("destinationPort", destinationPort);
     map.insert("sourcePort", sourcePort);
     map.insert("payload", payload);
+    map.insert("pingType", pingTypeToString(pingType));
     return map;
 }

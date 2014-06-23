@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <poll.h>
+#include <fcntl.h>
 
 #include "udpping.h"
 #include "../../log/logger.h"
@@ -206,7 +207,11 @@ bool UdpPing::start()
     }
 
     close(probe.sock);
-    close(probe.icmpSock);
+
+    if (definition->pingType == QAbstractSocket::UdpSocket)
+    {
+        close(probe.icmpSock);
+    }
 
     setStatus(UdpPing::Finished);
     delete[] m_payload;
@@ -242,15 +247,65 @@ int UdpPing::initSocket()
     int sock = 0;
     int ttl = definition->ttl ? definition->ttl : 64;
     sockaddr_any src_addr;
+    struct linger sockLinger;
 
     memset(&src_addr, 0, sizeof(src_addr));
 
-    sock = socket(m_destAddress.sa.sa_family, SOCK_DGRAM, IPPROTO_UDP);
+    memset(&sockLinger, 0, sizeof(sockLinger));
+
+    sockLinger.l_linger = 0; //will make a call to close() send a RST
+    sockLinger.l_onoff = 1;
+
+    if(definition->pingType == QAbstractSocket::UdpSocket)
+    {
+        sock = socket(m_destAddress.sa.sa_family, SOCK_DGRAM, IPPROTO_UDP);
+    }
+    else if (definition->pingType == QAbstractSocket::TcpSocket)
+    {
+        sock = socket(m_destAddress.sa.sa_family, SOCK_STREAM, IPPROTO_TCP);
+    }
+    //this should never happen
+    else
+    {
+        return -1;
+    }
 
     if (sock < 0)
     {
         emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         return -1;
+    }
+
+    n = 1;
+
+    if (definition->pingType == QAbstractSocket::TcpSocket)
+    {
+        //needs to be called before bind, or it will not work
+        if (setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &n, sizeof(n)) < 0)
+        {
+            emit error(QString("setsockopt SO_REUSEPORT: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            goto cleanup;
+        }
+
+        //this option will make TCP send a RST on close(), this way we do not run into
+        //TIME_WAIT, which would make us not to being able to reuse the 5-tuple
+        //for some time (we want to do that howerver for our Paris traceroute
+        if (setsockopt(sock, SOL_SOCKET, SO_LINGER, &sockLinger, sizeof(sockLinger)) < 0)
+        {
+            emit error(QString("setsockopt SO_LINGER: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            goto cleanup;
+        }
+
+        //we need to make the TCP socket non-blocking, otherwise we might end up blocking
+        //in connect later for a really really long time
+        int flags = 0;
+        flags = fcntl(sock, F_GETFL, 0);
+        if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0)
+        {
+            emit error(QString("making TCP socket non-blocking : %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            //we don't go to clean-up here since the code will still function... there just might
+            //be a potential longish wait
+        }
     }
 
     if (m_destAddress.sa.sa_family == AF_INET)
@@ -313,34 +368,151 @@ bool UdpPing::sendData(PingProbe *probe)
     gettimeofday(&tv, NULL);
     probe->sendTime = tv.tv_sec * 1e6 + tv.tv_usec;
 
-    // randomize payload to prevent caching
-    randomizePayload(m_payload, definition->payload);
 
-    if (m_destAddress.sa.sa_family == AF_INET)
+    if (definition->pingType == QAbstractSocket::UdpSocket)
     {
-        if (sendto(probe->sock, m_payload, definition->payload, 0,
-                   (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in)) < 0)
+        // randomize payload to prevent caching
+        randomizePayload(m_payload, definition->payload);
+
+        if (m_destAddress.sa.sa_family == AF_INET)
         {
-            emit error(QString("send: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            if (sendto(probe->sock, m_payload, definition->payload, 0,
+                       (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in)) < 0)
+            {
+                emit error(QString("send: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+                return false;
+            }
+        }
+        else if (m_destAddress.sa.sa_family == AF_INET6)
+        {
+            if (sendto(probe->sock, m_payload, definition->payload, 0,
+                       (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in6)) < 0)
+            {
+                emit error(QString("send v6: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+                return false;
+            }
+        }
+        else
+        {
+            //should never be reached
             return false;
         }
+
+        return true;
     }
-    else if (m_destAddress.sa.sa_family == AF_INET6)
+    else if (definition->pingType == QAbstractSocket::TcpSocket)
     {
-        if (sendto(probe->sock, m_payload, definition->payload, 0,
-                   (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in6)) < 0)
+        int ret = 0;
+
+        if (m_destAddress.sa.sa_family == AF_INET)
         {
-            emit error(QString("send: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-            return false;
+            ret = ::connect(probe->sock, (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in));
         }
+        else if (m_destAddress.sa.sa_family == AF_INET6)
+        {
+            ret = ::connect(probe->sock, (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in6));
+        }
+
+        //for a TCP socket we only call connect (remeber, the socket is non-blocking)
+        if (ret < 0)
+        {
+            if (errno == ECONNRESET || errno == ECONNREFUSED)
+            {
+                //check immediately, as connect could return immediately if called
+                //for host-local addresses
+                emit tcpReset(*probe);
+            }
+            else if (errno == EINPROGRESS)
+            {
+                //the call to connect came right back, we now wait a little
+                //till it goes through or till we receive a reset
+                struct pollfd pfd;
+                int ret = 0;
+
+                memset(&pfd, 0, sizeof(pfd));
+                pfd.fd = probe->sock;
+                pfd.events = POLLIN | POLLOUT | POLLERR;
+
+                //careful: when an error occured, the socket becomes also writeable
+                //i.e. POLLOUT.
+                if ( (ret = poll(&pfd, 1, definition->receiveTimeout)) < 0)
+                {
+                    emit error(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+                    goto tcpcleanup;
+                }
+
+                //timeout... the other end is not responding...
+                //maybe a stupid Windows host or something
+                //other went wrong (ICMP)... need to distinguish
+                //the two
+                if (ret == 0)
+                {
+                    //it seems counter intuitive, but we
+                    //return true here, so we actually
+                    //try to read from the ICMP socket...
+                    close(probe->sock);
+                    probe->sock = initSocket();
+                    return true;
+                }
+
+                //the call to connect could have failed (RST) or actually went through
+                //need to check
+                int error_num = 0;
+                socklen_t len = sizeof(error_num);
+
+                if (getsockopt(probe->sock, SOL_SOCKET, SO_ERROR, &error_num, &len) < 0)
+                {
+                    emit error(QString("getsockopt: %1").arg(QString::fromLocal8Bit(strerror(error_num))));
+                    goto tcpcleanup;
+                }
+                else if (error_num == 0)
+                {
+                    //connection established
+                    emit tcpConnect(*probe);
+                }
+                else if (error_num == ECONNRESET || error_num == ECONNREFUSED)
+                {
+                    //we really expected this reset...
+                    emit tcpReset(*probe);
+                }
+                else
+                {
+                    //unexpected
+                    emit error(QString("getsockopt: %1").arg(QString::fromLocal8Bit(strerror(error_num))));
+                    goto tcpcleanup;
+                }
+            }
+            else
+            {
+                //unexpected
+                emit error(QString("connect: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+                goto tcpcleanup;
+            }
+        }
+
+        //when we are here, the 3-way handshake went through... ping done
+        //or we received a RST... ping done
+        gettimeofday(&tv, NULL);
+        probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
+        memcpy(&(probe->source), &(m_destAddress.sin), sizeof(m_destAddress.sin));
+        goto tcpcleanup;
     }
     else
     {
-        //should never be reached
+        //should never happen
         return false;
     }
 
-    return true;
+tcpcleanup:
+
+    //closing after unsuccessful connect() OK
+    close(probe->sock);
+    probe->sock = initSocket();
+
+    //we return false to not enter receiveData() in ping()
+    //which needs to be avoided for both a successful and
+    //unsuccessful connect()
+    return false;
 }
 
 void UdpPing::receiveData(PingProbe *probe)
@@ -429,11 +601,10 @@ void UdpPing::receiveData(PingProbe *probe)
         {
             emit ttlExceeded(*probe);
         }
-
     }
     else if (pfd[0].revents & POLLIN)
     {
-        //the UDP sender socket is ready to receive, there was indeed something
+        //the UDP/TCP sender socket is ready to receive, there was indeed something
         //listening... how interesting (should be rare)
         if (recvmsg(probe->sock, &msg, 0) < 0)
         {
