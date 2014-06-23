@@ -494,7 +494,7 @@ bool UdpPing::sendData(PingProbe *probe)
         //or we received a RST... ping done
         gettimeofday(&tv, NULL);
         probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
-        memcpy(&(probe->source), &(m_destAddress.sin), sizeof(m_destAddress.sin));
+        memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
         goto tcpcleanup;
     }
     else
