@@ -106,7 +106,8 @@ public:
 private:
     void setStatus(Status status);
     int initSocket();
-    bool sendData(PingProbe *probe);
+    bool sendUdpData(PingProbe *probe);
+    bool sendTcpData(PingProbe *probe);
     void receiveData(PingProbe *probe);
     void ping(PingProbe *probe);
 
