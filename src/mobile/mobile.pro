@@ -49,6 +49,12 @@ android {
     SOURCES += desktopstatusbarhelper.cpp
 }
 
+win32 {
+    conf.files = qt.conf
+    conf.path = $${target.path}
+    INSTALLS += conf
+}
+
 osx {
     QT += macextras
     LIBS += -framework AppKit -framework CoreFoundation -framework DiskArbitration
@@ -77,5 +83,6 @@ qtcAddDeployment()
 
 OTHER_FILES += $$files(qml/*) \
                $$files(qml/controls/*) \
-               $$files(qml/android/*)
+               $$files(qml/android/*) \
+               qt.conf
 
