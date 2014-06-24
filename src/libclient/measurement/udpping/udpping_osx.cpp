@@ -90,6 +90,39 @@ cleanup:
             strncpy(&payload[size - 15], " measure-it.net", 15);
         }
     }
+
+    inline bool extractTimestamp(struct msghdr &msg, quint64 &time)
+    {
+        struct cmsghdr *cm = NULL;
+
+        //need to parse the control data and search for the timestamp if available
+        for (cm = CMSG_FIRSTHDR(&msg); cm; cm = CMSG_NXTHDR(&msg, cm))
+        {
+            void *ptr = CMSG_DATA(cm);
+
+            if (cm->cmsg_level == SOL_SOCKET)
+            {
+                //the good folks at Apple decided to not use the standard names here
+                //god bless their souls
+                if (cm->cmsg_type == SCM_TIMESTAMP && cm->cmsg_len == CMSG_LEN(sizeof(struct timeval)))
+                {
+                    struct timeval *tv_tmp = (struct timeval *) ptr;
+
+                    if (tv_tmp == NULL)
+                    {
+                        return false;
+                    }
+
+                    time = tv_tmp->tv_sec * 1e6 + tv_tmp->tv_usec;
+                    //we break after the first found timestamp, since on Mac OS there are
+                    //multiple (I assume for now these are for Ethernet, IP and UDP).
+                    //Tests showed they are increasing in the usec range whereas the first
+                    //seems deterministially the smallest
+                    return true;
+                }
+            }
+        }
+    }
 }
 
 UdpPing::UdpPing(QObject *parent)
@@ -333,7 +366,7 @@ int UdpPing::initSocket()
     else
     {
         // unreachable
-        emit error(QString("init socket: unknown address familiy"));
+        emit error(QString("init socket: unknown address family"));
         goto cleanup;
     }
 
@@ -418,6 +451,11 @@ bool UdpPing::sendTcpData(PingProbe *probe)
     {
         ret = ::connect(probe->sock, (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in6));
     }
+    else
+    {
+        emit error(QString("connect: unknown address family"));
+        return false;
+    }
 
     //for a TCP socket we only call connect (remeber, the socket is non-blocking)
     if (ret < 0)
@@ -426,7 +464,12 @@ bool UdpPing::sendTcpData(PingProbe *probe)
         {
             //check immediately, as connect could return immediately if called
             //for host-local addresses
+            gettimeofday(&tv, NULL);
+            probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
+            memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
+
             emit tcpReset(*probe);
+            goto tcpcleanup;
         }
         else if (errno == EINPROGRESS)
         {
@@ -465,6 +508,7 @@ bool UdpPing::sendTcpData(PingProbe *probe)
                     return false;
                 }
 
+                //receiveData will return the right signal for us
                 return true;
             }
 
@@ -481,12 +525,22 @@ bool UdpPing::sendTcpData(PingProbe *probe)
             else if (error_num == 0)
             {
                 //connection established
+                gettimeofday(&tv, NULL);
+                probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
+                memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
+
                 emit tcpConnect(*probe);
+                goto tcpcleanup;
             }
             else if (error_num == ECONNRESET || error_num == ECONNREFUSED)
             {
                 //we really expected this reset...
+                gettimeofday(&tv, NULL);
+                probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
+                memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
+
                 emit tcpReset(*probe);
+                goto tcpcleanup;
             }
             else
             {
@@ -503,11 +557,13 @@ bool UdpPing::sendTcpData(PingProbe *probe)
         }
     }
 
-    //when we are here, the 3-way handshake went through... ping done
-    //or we received a RST... ping done
+    //when we are here, the 3-way handshake went through...
+    //really, really fast which could happen if the destination is host local
     gettimeofday(&tv, NULL);
     probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
     memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
+
+    emit tcpConnect(*probe);
 
 tcpcleanup:
 
@@ -533,18 +589,11 @@ void UdpPing::receiveData(PingProbe *probe)
     struct iovec iov;
     char buf[1280];
     char control[256];
-    struct cmsghdr *cm;
     int ret = 0;
-    bool udp_response = false;
     struct timeval tv;
 
     memset(&buf, 0, 1280);
     memset(&tv, 0, sizeof(tv));
-
-    //will be overwritten if the packet was timestamped by the kernel
-    //note: on Mavericks (10.9.3) the kernel did
-    gettimeofday(&tv, NULL);
-    probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
 
     msg.msg_name = &from;
     msg.msg_namelen = sizeof(from);
@@ -566,13 +615,19 @@ void UdpPing::receiveData(PingProbe *probe)
     if ((ret = poll(pfd, 2, definition->receiveTimeout)) < 0)
     {
         emit error(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-        goto cleanup;
+        return;
     }
+
+    //will be overwritten if the packet was timestamped by the kernel
+    //note: on Mavericks (10.9.3) the kernel did
+    gettimeofday(&tv, NULL);
+    probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
 
     if (ret == 0)
     {
+        memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
         emit timeout(*probe);
-        goto cleanup;
+        return;
     }
 
     //Which socket is ready to receive? Likely the ICMP socket
@@ -582,7 +637,7 @@ void UdpPing::receiveData(PingProbe *probe)
         if (recvmsg(probe->icmpSock, &msg, 0) < 0)
         {
             emit error(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-            goto cleanup;
+            return;
         }
 
         //we received an ICMP error... emit the right signal
@@ -593,7 +648,7 @@ void UdpPing::receiveData(PingProbe *probe)
         if (ihl < 5 || ihl > 15)
         {
             emit error(QString("parsing icmp message failed (IHL value out of bounds)"));
-            goto cleanup;
+            return;
         }
 
         ihl *= 4;
@@ -603,6 +658,9 @@ void UdpPing::receiveData(PingProbe *probe)
 
         icmp_type = buf[ihl];
         icmp_code = buf[ihl + 1];
+
+        extractTimestamp(msg, probe->recvTime);
+        memcpy(&probe->source, &from, sizeof(sockaddr_any));
 
         if (icmp_type == 3 && icmp_code == 3)
         {
@@ -620,55 +678,21 @@ void UdpPing::receiveData(PingProbe *probe)
         if (recvmsg(probe->sock, &msg, 0) < 0)
         {
             emit error(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-            goto cleanup;
+            return;
         }
 
-        udp_response = true;
+        extractTimestamp(msg, probe->recvTime);
+        memcpy(&probe->source, &from, sizeof(sockaddr_any));
+
+        emit udpResponse(*probe);
     }
     else
     {
         //somthing else happened... not expected
         emit error(QString("recvmsg failed: No socket to read data from."));
-        goto cleanup;
+        return;
     }
 
-    //not interested in the actual data at this point, only the sender
-    memcpy(&probe->source, &from, sizeof(sockaddr_any));
-
-    //need to parse the control data and search for the timestamp if available
-    for (cm = CMSG_FIRSTHDR(&msg); cm; cm = CMSG_NXTHDR(&msg, cm))
-    {
-        void *ptr = CMSG_DATA(cm);
-
-        if (cm->cmsg_level == SOL_SOCKET)
-        {
-            //the good folks at Apple decided to not use the standard names here
-            //god bless their souls
-            if (cm->cmsg_type == SCM_TIMESTAMP && cm->cmsg_len == CMSG_LEN(sizeof(struct timeval)))
-            {
-                struct timeval *tv_tmp = (struct timeval *) ptr;
-
-                if (tv_tmp == NULL)
-                {
-                    break;
-                }
-
-                probe->recvTime = tv_tmp->tv_sec * 1e6 + tv_tmp->tv_usec;
-                //we break after the first found timestamp, since on Mac OS there are
-                //multiple (I assume for now these are for Ethernet, IP and UDP).
-                //Tests showed they are increasing in the usec range whereas the first
-                //seems deterministially the smallest
-                break;
-            }
-        }
-    }
-
-    if (udp_response)
-    {
-        emit udpResponse(*probe);
-    }
-
-cleanup:
     return;
 }
 
