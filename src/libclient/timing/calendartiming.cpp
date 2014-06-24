@@ -91,6 +91,11 @@ QDateTime CalendarTiming::nextRun() const
     return dateTime; // never
 }
 
+bool CalendarTiming::isValid() const
+{
+    return false; // not implemented yet
+}
+
 QVariant CalendarTiming::toVariant() const
 {
     QVariantMap hash;

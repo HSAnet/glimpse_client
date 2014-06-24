@@ -34,6 +34,11 @@ QDateTime OnOffTiming::nextRun() const
     return d->dateTime.addSecs(ntp->offset());
 }
 
+bool OnOffTiming::isValid() const
+{
+    return d->dateTime.isValid();
+}
+
 QVariant OnOffTiming::toVariant() const
 {
     QVariantMap hash;

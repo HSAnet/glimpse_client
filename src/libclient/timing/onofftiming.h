@@ -19,6 +19,7 @@ public:
     QString type() const;
     bool reset();
     QDateTime nextRun() const;
+    bool isValid() const;
 
     // Serializable interface
     QVariant toVariant() const;

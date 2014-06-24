@@ -62,6 +62,18 @@ QDateTime PeriodicTiming::nextRun() const
     return nextRun;
 }
 
+bool PeriodicTiming::isValid() const
+{
+    if (!d->start.isValid() || !d->end.isValid() || d->period <= 0)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
 QVariant PeriodicTiming::toVariant() const
 {
     QVariantMap hash;
