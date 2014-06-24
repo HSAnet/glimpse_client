@@ -1,10 +1,25 @@
 import QtQuick 2.0
 
 Page {
+    id: root
     title: qsTr("report")
     subtitle: qsTr("see what happened recently")
+    actionTitle: "Diagram"
 
     property alias resultText: textView.text
+    property variant resultJSON
+
+    function actionClicked(){
+
+        var params = {
+            item: Qt.resolvedUrl("ResultDiagram.qml"),
+            properties: {
+                resultJSON: root.resultJSON
+            }
+        }
+
+        pageStack.push(params);
+    }
 
     Rectangle {
         id: listBackground

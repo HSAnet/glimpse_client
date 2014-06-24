@@ -12,7 +12,8 @@ ListPage {
             item: Qt.resolvedUrl("ResultPage.qml"),
             properties: {
                 subtitle: qsTr("report details"),
-                resultText: JSON.stringify(report, null, "   ")
+                resultText: JSON.stringify(report, null, "   "),
+                resultJSON: report
             }
         }
 
