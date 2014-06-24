@@ -6,6 +6,7 @@
 #include "../webrequester.h"
 #include "../network/requests/loginrequest.h"
 #include "../network/requests/userregisterrequest.h"
+#include "../network/requests/gettasksrequest.h"
 #include "../response.h"
 #include "../client.h"
 #include "../types.h"
@@ -43,6 +44,8 @@ public:
     UserRegisterRequest registerRequest;
     LoginRequest loginRequest;
     LoginResponse response;
+    GetTasksRequest taskRequest;
+    GetTasksResponse taskResponse;
 
     bool loggedIn;
     bool registeredDevice;
@@ -98,12 +101,8 @@ void LoginController::Private::onFinished()
     {
         isLogin = false;
         settings->setUserId(registerRequest.userId());
-        settings->setPassword(registerRequest.password());
-
-        LOG_DEBUG("Wrote username and password to settings");
+        LOG_DEBUG("Wrote username to settings");
     }
-
-    settings->setApiKey(response.apiKey());
 
     setRegisterdDevice(response.registeredDevice());
     setLoggedIn(true);
@@ -174,6 +173,7 @@ void LoginController::registration(const QString &username, const QString &passw
     d->registerRequest.setPassword(password);
 
     d->requester.setRequest(&d->registerRequest);
+    d->requester.setResponse(&d->response);
     d->requester.start();
 }
 
@@ -183,6 +183,15 @@ void LoginController::login()
     d->loginRequest.setPassword(d->settings->password());
 
     d->requester.setRequest(&d->loginRequest);
+    d->requester.setResponse(&d->response);
+    d->requester.start();
+}
+
+void LoginController::checkApiKey()
+{
+
+    d->requester.setRequest(&d->taskRequest);
+    d->requester.setResponse(&d->taskResponse);
     d->requester.start();
 }
 

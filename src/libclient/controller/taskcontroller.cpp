@@ -9,57 +9,13 @@
 #include "../log/logger.h"
 #include "../timing/periodictiming.h"
 #include "../client.h"
+#include "../response.h"
 
 #include <QPointer>
 #include <QTimer>
 
 LOGGER(TaskController);
 
-class GetTasksResponse : public Response
-{
-    Q_OBJECT
-
-public:
-    GetTasksResponse(QObject *parent = 0)
-    : Response(parent)
-    {
-    }
-
-    TestDefinitionList tasks() const
-    {
-        return m_tasks;
-    }
-
-    bool fillFromVariant(const QVariantMap &variant)
-    {
-        m_tasks.clear();
-
-        QVariantList tasks = variant.value("tasks").toList();
-
-        foreach (const QVariant &taskVariant, tasks)
-        {
-            TestDefinitionPtr test = TestDefinition::fromVariant(taskVariant);
-
-            if (m_validator.validate(test) == TaskValidator::Valid)
-            {
-                m_tasks.append(test);
-            }
-            else
-            {
-                // TODO: Get more information
-                LOG_DEBUG(QString("Received invalid task, ignoring."));
-            }
-        }
-
-        LOG_DEBUG(QString("Received %1 tasks").arg(m_tasks.size()));
-
-        return true;
-    }
-
-protected:
-    TaskValidator m_validator;
-    TestDefinitionList m_tasks;
-};
 
 class TaskController::Private : public QObject
 {

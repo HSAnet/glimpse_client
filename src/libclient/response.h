@@ -6,6 +6,8 @@
 
 #include "timing/timing.h"
 #include "channel.h"
+#include "task/task.h"
+#include "task/taskvalidator.h"
 
 // TODO: Remove QObject base if we don't use it anymore in DeviceRegistration.qml
 
@@ -82,6 +84,24 @@ protected:
     ChannelPtr m_keepaliveChannel;
     ChannelPtr m_configChannel;
     ChannelPtr m_reportChannel;
+};
+
+class GetTasksResponse : public Response
+{
+    Q_OBJECT
+
+public:
+    GetTasksResponse(QObject *parent = 0)
+    : Response(parent)
+    {
+    }
+
+    TestDefinitionList tasks() const;
+    bool fillFromVariant(const QVariantMap &variant);
+
+protected:
+    TaskValidator m_validator;
+    TestDefinitionList m_tasks;
 };
 
 #endif // RESPONSE_H
