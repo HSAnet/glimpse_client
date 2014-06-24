@@ -61,6 +61,8 @@ Source: "{#BuildDir}\build-install\mplane.exe"; DestDir: "{app}"; Flags: ignorev
 ; Mobile Ui
 Source: "{#BuildDir}\build-install\mobile.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BuildDir}\src\mobile\qml\*"; DestDir: "{app}\qml"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "{#BuildDir}\build-install\qt.conf"; DestDir: "{app}"; Flags: ignoreversion
+
 
 ; Url Files
 Source: "urls\*.url"; DestDir: "{app}\urls"; Flags: ignoreversion createallsubdirs recursesubdirs
