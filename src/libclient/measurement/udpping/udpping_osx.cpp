@@ -459,6 +459,10 @@ bool UdpPing::sendTcpData(PingProbe *probe)
         return false;
     }
 
+    gettimeofday(&tv, NULL);
+    probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
+    memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
+
     //for a TCP socket we only call connect (remeber, the socket is non-blocking)
     if (ret < 0)
     {
@@ -466,10 +470,6 @@ bool UdpPing::sendTcpData(PingProbe *probe)
         {
             //check immediately, as connect could return immediately if called
             //for host-local addresses
-            gettimeofday(&tv, NULL);
-            probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
-            memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
-
             emit tcpReset(*probe);
             goto tcpcleanup;
         }
@@ -524,23 +524,20 @@ bool UdpPing::sendTcpData(PingProbe *probe)
                 emit error(QString("getsockopt: %1").arg(QString::fromLocal8Bit(strerror(error_num))));
                 goto tcpcleanup;
             }
-            else if (error_num == 0)
+
+            gettimeofday(&tv, NULL);
+            probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
+            memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
+
+            if (error_num == 0)
             {
                 //connection established
-                gettimeofday(&tv, NULL);
-                probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
-                memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
-
                 emit tcpConnect(*probe);
                 goto tcpcleanup;
             }
             else if (error_num == ECONNRESET || error_num == ECONNREFUSED)
             {
                 //we really expected this reset...
-                gettimeofday(&tv, NULL);
-                probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
-                memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
-
                 emit tcpReset(*probe);
                 goto tcpcleanup;
             }
@@ -561,9 +558,6 @@ bool UdpPing::sendTcpData(PingProbe *probe)
 
     //when we are here, the 3-way handshake went through...
     //really, really fast which could happen if the destination is host local
-    gettimeofday(&tv, NULL);
-    probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
-    memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
 
     emit tcpConnect(*probe);
 
@@ -709,6 +703,10 @@ void UdpPing::ping(PingProbe *probe)
     else if (definition->pingType == QAbstractSocket::TcpSocket)
     {
         ret = sendTcpData(probe);
+    }
+    else
+    {
+        emit error(QString("ping: unkown socket type"));
     }
 
     if (ret)
