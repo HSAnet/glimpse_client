@@ -69,7 +69,7 @@ Source: "urls\*.url"; DestDir: "{app}\urls"; Flags: ignoreversion createallsubdi
 
 ; Qt Files
 Source: "{#QtDir}\plugins\*"; DestDir: "{app}\plugins"; Excludes: "*d.dll,*.pdb"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "{#QtDir}\qml\*"; DestDir: "{app}\qml"; Excludes: "*d.dll,*.pdb,*.qmltypes"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "{#QtDir}\qml\*"; DestDir: "{app}\plugins\qml"; Excludes: "*d.dll,*.pdb,*.qmltypes"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 Source: "{#QtDir}\bin\d3dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#QtDir}\bin\icudt52.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -164,10 +164,6 @@ begin
   Result := MsiQueryProductState(ProductID) = INSTALLSTATE_DEFAULT;
 end;
 
-function silentlyInstallWINPCAP: Boolean;
-begin
-  
-end;
 
 function VCRedist2008PacNeedsInstall: Boolean;
 begin
