@@ -14,17 +14,27 @@ Page {
         width: parent.width - units.gu(50)
         height: 220
 
-        Component.onCompleted: {
-            console.log(root.resultJSON)
-            //console.log(root.resultJSON.results)
-        }
-
         onPaint: {
-            var chart = new LineChart.Chart();
-            chart.width = 400;
-            chart.pointJSON = root.resultJSON.results[0].probe_result[0];
-            chart.drawLineChart(0, 0, getContext("2d"));
+            var chart = new LineChart.LineChart();
+//            how many results should be shown in the graph
+//            to show all uncommment the line below
+            var numberOfResultsToShow = 3;
+//            var numberOfResultsToShow = root.resultJSON.results.length;
+            var pointJSON = new Array(numberOfResultsToShow);
 
+            for (var i = 0; i < numberOfResultsToShow; i++) {
+                pointJSON[i] = new Array(root.resultJSON.results[i].probe_result.length);
+                for (var n = 0; n < root.resultJSON.results[i].probe_result.length; n++) {
+                    pointJSON[i][n] = new Array(1);
+                    pointJSON[i][n][0] = parseFloat(root.resultJSON.results[i].probe_result[n]);
+                }
+            }
+
+            chart.width = 400;
+            chart.matrix_textPaddingLeft = 0.7;
+            chart.pointJSON = pointJSON;
+
+            chart.drawLineChart(0, 0, getContext("2d"));
         }
 
 
