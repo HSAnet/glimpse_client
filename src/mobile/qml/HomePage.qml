@@ -89,7 +89,7 @@ FlickablePage {
             height: 220
 
             onPaint: {
-                var chart = new Chart.Chart();
+                var chart = new Chart.LineChart();
                 chart.drawLineChart(0, 0, getContext("2d"));
             }
             anchors {
