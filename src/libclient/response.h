@@ -80,10 +80,10 @@ signals:
     void responseChanged();
 
 protected:
-    ChannelPtr m_supervisorChannel;
-    ChannelPtr m_keepaliveChannel;
-    ChannelPtr m_configChannel;
-    ChannelPtr m_reportChannel;
+    Channel m_supervisorChannel;
+    Channel m_keepaliveChannel;
+    Channel m_configChannel;
+    Channel m_reportChannel;
 };
 
 class GetTasksResponse : public Response

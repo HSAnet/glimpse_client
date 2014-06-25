@@ -84,6 +84,7 @@ inline QVariant qVariantFromValue(const Result &result)
 
 
 Q_DECLARE_METATYPE(Result)
+Q_DECLARE_TYPEINFO(Result, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(ResultList)
 
 #endif // RESULT_H

@@ -66,6 +66,7 @@ private:
 };
 
 Q_DECLARE_METATYPE(TestDefinition)
+Q_DECLARE_TYPEINFO(TestDefinition, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(TestDefinitionList)
 
 #endif // TASK_H

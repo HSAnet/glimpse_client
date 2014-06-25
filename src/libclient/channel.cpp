@@ -1,27 +1,18 @@
 #include "channel.h"
 #include "timing/timingfactory.h"
 
-class Channel::Private
-{
-public:
-    Private()
-    : id(0)
-    {
-    }
-
-    int id;
-    QString target;
-    QString certificate;
-    TimingPtr timing;
-};
-
 Channel::Channel()
-: d(new Private)
+: d(new ChannelData)
+{
+}
+
+Channel::Channel(const Channel &other)
+: d(other.d)
 {
 }
 
 Channel::Channel(const int &id, const QString &target, const QString &certificate, const TimingPtr &timing)
-: d(new Private)
+: d(new ChannelData)
 {
     d->id = id;
     d->target = target;
@@ -29,19 +20,19 @@ Channel::Channel(const int &id, const QString &target, const QString &certificat
     d->timing = timing;
 }
 
-Channel::~Channel()
+bool Channel::isNull() const
 {
-    delete d;
+    return d->ref == 1;
 }
 
-ChannelPtr Channel::fromVariant(const QVariant &variant)
+Channel Channel::fromVariant(const QVariant &variant)
 {
     QVariantMap hash = variant.toMap();
 
-    return ChannelPtr(new Channel(hash.value("id").toInt(),
-                                  hash.value("target").toString(),
-                                  hash.value("certificate").toString(),
-                                  TimingFactory::timingFromVariant(hash.value("timing"))));
+    return Channel(hash.value("id").toInt(),
+                      hash.value("target").toString(),
+                      hash.value("certificate").toString(),
+                      TimingFactory::timingFromVariant(hash.value("timing")));
 }
 
 QVariant Channel::toVariant() const
@@ -65,6 +56,11 @@ void Channel::setTarget(const QString &target)
 QString Channel::target() const
 {
     return d->target;
+}
+
+void Channel::setTiming(const TimingPtr &timing)
+{
+    d->timing = timing;
 }
 
 TimingPtr Channel::timing() const

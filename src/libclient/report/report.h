@@ -66,6 +66,7 @@ private:
 };
 
 Q_DECLARE_METATYPE(Report)
+Q_DECLARE_TYPEINFO(Report, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(ReportList)
 
 #endif // REPORT_H
