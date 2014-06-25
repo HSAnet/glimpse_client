@@ -366,7 +366,7 @@ bool Client::autoLogin()
     if (d->settings.hasLoginData())
     {
         // check if api key is still valid
-        d->loginController.checkApiKey(); // asynchronous
+        d->taskController.fetchTasks();
 
         return true;
     }
