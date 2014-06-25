@@ -22,7 +22,7 @@ Channel::Channel(const int &id, const QString &target, const QString &certificat
 
 bool Channel::isNull() const
 {
-    return d->ref == 1;
+    return d->id == 0;
 }
 
 Channel Channel::fromVariant(const QVariant &variant)

@@ -29,7 +29,7 @@ bool Report::operator ==(const Report &other) const
 
 bool Report::isNull() const
 {
-    return d->ref == 1;
+    return d->taskId.isNull();
 }
 
 void Report::setTaskId(const QUuid &id)

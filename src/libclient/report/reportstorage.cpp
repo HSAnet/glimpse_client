@@ -107,9 +107,9 @@ ReportStorage::ReportStorage(ReportScheduler *scheduler, QObject *parent)
 {
     d->scheduler = scheduler;
 
-    connect(scheduler, SIGNAL(reportAdded(ReportPtr)), d, SLOT(reportAdded(ReportPtr)));
-    connect(scheduler, SIGNAL(reportModified(ReportPtr)), d, SLOT(reportModified(ReportPtr)));
-    connect(scheduler, SIGNAL(reportRemoved(ReportPtr)), d, SLOT(reportRemoved(ReportPtr)));
+    connect(scheduler, SIGNAL(reportAdded(Report)), d, SLOT(reportAdded(Report)));
+    connect(scheduler, SIGNAL(reportModified(Report)), d, SLOT(reportModified(Report)));
+    connect(scheduler, SIGNAL(reportRemoved(Report)), d, SLOT(reportRemoved(Report)));
 }
 
 ReportStorage::~ReportStorage()

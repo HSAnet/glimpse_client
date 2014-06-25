@@ -24,7 +24,7 @@ Result::Result(const QDateTime &startDateTime, const QDateTime &endDateTime, con
 
 bool Result::isNull() const
 {
-    return d->ref == 1;
+    return d->startDateTime.isNull() || d->endDateTime.isNull();
 }
 
 Result Result::fromVariant(const QVariant &variant)

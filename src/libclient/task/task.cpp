@@ -24,7 +24,7 @@ TestDefinition::TestDefinition(const QUuid &id, const QString &name, const Timin
 
 bool TestDefinition::isNull() const
 {
-    return d->ref == 1;
+    return d->id.isNull();
 }
 
 void TestDefinition::setId(const QUuid &id)
