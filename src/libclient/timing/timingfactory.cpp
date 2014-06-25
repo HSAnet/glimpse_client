@@ -27,16 +27,26 @@ TimingPtr TimingFactory::timingFromVariant(const QVariant &variant)
         return TimingPtr();
     }
 
-    QString type = hash.keys().first();
-
-    CreateFunction cf = factories.value(type);
-
-    if (cf)
+    QHashIterator<QString, CreateFunction> iter(factories);
+    while (iter.hasNext())
     {
-        return cf(hash.value(type));
+        iter.next();
+
+        QString type = iter.key();
+        QVariant value = hash.value(type);
+        if (!value.isNull())
+        {
+            CreateFunction cf = factories.value(type);
+            if (cf)
+            {
+                return cf(iter.value());
+            }
+            else
+            {
+                return TimingPtr();
+            }
+        }
     }
-    else
-    {
-        return TimingPtr();
-    }
+
+    return TimingPtr();
 }
