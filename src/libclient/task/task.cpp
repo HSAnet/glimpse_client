@@ -49,7 +49,7 @@ TestDefinition TestDefinition::fromVariant(const QVariant &variant)
     return TestDefinition(hash.value("id").toUuid(),
                           hash.value("method").toString(),
                           TimingFactory::timingFromVariant(hash.value("timing")),
-                          hash.value("parameters"));
+                          hash.value("options"));
 }
 
 QUuid TestDefinition::id() const
