@@ -74,6 +74,19 @@ QVariantList listToVariant(const QList<T> &list)
     return lst;
 }
 
+template <typename T>
+QList<T> listFromVariant(const QVariant &variant)
+{
+    QList<T> lst;
+
+    foreach (const QVariant &entry, variant.toList())
+    {
+        lst.append(T::fromVariant(entry));
+    }
+
+    return lst;
+}
+
 /// Converts a QUuid to a QString. It removes the braces
 /// and makes it readable by QML's implementation of
 /// JSON.stringify()
