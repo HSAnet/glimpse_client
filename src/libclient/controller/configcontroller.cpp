@@ -27,6 +27,7 @@ public:
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
 
+        request.setPath("/supervisor/api/v1/configuration/1/");
         requester.setRequest(&request);
         //requester.setResponse(&response);
     }

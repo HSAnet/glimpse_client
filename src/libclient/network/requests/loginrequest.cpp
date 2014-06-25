@@ -11,6 +11,7 @@ LoginRequest::LoginRequest(QObject *parent)
 : Request(parent)
 , d(new Private)
 {
+    setPath("/auth/api/v1/apikey/1/");
 }
 
 LoginRequest::~LoginRequest()

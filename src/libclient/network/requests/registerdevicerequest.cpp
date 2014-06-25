@@ -43,6 +43,7 @@ RegisterDeviceRequest::RegisterDeviceRequest(QObject *parent)
 : Request(parent)
 , d(new Private)
 {
+    setPath("/auth/api/v1/device/");
 }
 
 RegisterDeviceRequest::~RegisterDeviceRequest()

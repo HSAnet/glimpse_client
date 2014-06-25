@@ -6,7 +6,7 @@
 #include "../webrequester.h"
 #include "../network/requests/loginrequest.h"
 #include "../network/requests/userregisterrequest.h"
-#include "../network/requests/gettasksrequest.h"
+#include "../network/requests/resourcerequest.h"
 #include "../response.h"
 #include "../client.h"
 #include "../types.h"
@@ -30,6 +30,7 @@ public:
         connect(&requester, SIGNAL(statusChanged(WebRequester::Status)), q, SIGNAL(statusChanged()));
         connect(&requester, SIGNAL(started()), q, SIGNAL(started()));
 
+        taskRequest.setPath(("/supervisor/api/v1/instruction/1/"));
         requester.setResponse(&response);
     }
 
@@ -44,8 +45,8 @@ public:
     UserRegisterRequest registerRequest;
     LoginRequest loginRequest;
     LoginResponse response;
-    GetTasksRequest taskRequest;
-    GetTasksResponse taskResponse;
+    GetResourceRequest taskRequest;
+    GetInstructionResponse taskResponse;
 
     bool loggedIn;
     bool registeredDevice;
