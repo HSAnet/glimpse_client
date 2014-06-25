@@ -91,7 +91,7 @@ Settings::StorageType Settings::init()
 
 bool Settings::hasLoginData() const
 {
-    return !userId().isEmpty() && !password().isEmpty();
+    return !userId().isEmpty() && !apiKey().isEmpty();
 }
 
 void Settings::setDeviceId(const QString &deviceId)

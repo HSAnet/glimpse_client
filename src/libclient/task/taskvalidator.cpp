@@ -44,7 +44,15 @@ TaskValidator::ValidationResult TaskValidator::validate(const TestDefinitionPtr 
     }
 
     // Check the timing
-    if (testDefinition->timing()->nextRun().isNull())
+    TimingPtr timing = testDefinition->timing();
+
+    if (timing->isValid())
+    {
+        LOG_INFO(QString("Measurement '%1' has no valid timing, ignoring").arg(testDefinition->name()));
+        return Invalid;
+    }
+
+    if (timing->nextRun().isNull())
     {
         LOG_INFO(QString("Measurement '%1' has no next run, ignoring").arg(testDefinition->name()));
         return Invalid;

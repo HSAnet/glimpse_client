@@ -25,6 +25,11 @@ QDateTime ImmediateTiming::nextRun() const
     return QDateTime::currentDateTime();
 }
 
+bool ImmediateTiming::isValid() const
+{
+    return true;
+}
+
 QVariant ImmediateTiming::toVariant() const
 {
     QVariantMap hash;

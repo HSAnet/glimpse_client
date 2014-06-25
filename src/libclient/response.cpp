@@ -4,6 +4,9 @@
 
 #include "timing/timingfactory.h"
 #include "channel.h"
+#include "log/logger.h"
+
+LOGGER(Response);
 
 Response::Response(QObject *parent)
 : QObject(parent)
@@ -149,4 +152,36 @@ QString GetConfigResponse::reportAddress() const
 TimingPtr GetConfigResponse::reportTiming() const
 {
     return m_reportChannel->timing();
+}
+
+
+TestDefinitionList GetTasksResponse::tasks() const
+{
+    return m_tasks;
+}
+
+bool GetTasksResponse::fillFromVariant(const QVariantMap &variant)
+{
+    m_tasks.clear();
+
+    QVariantList tasks = variant.value("tasks").toList();
+
+    foreach (const QVariant &taskVariant, tasks)
+    {
+        TestDefinitionPtr test = TestDefinition::fromVariant(taskVariant);
+
+        if (m_validator.validate(test) == TaskValidator::Valid)
+        {
+            m_tasks.append(test);
+        }
+        else
+        {
+            // TODO: Get more information
+            LOG_DEBUG(QString("Received invalid task, ignoring."));
+        }
+    }
+
+    LOG_DEBUG(QString("Received %1 tasks").arg(m_tasks.size()));
+
+    return true;
 }

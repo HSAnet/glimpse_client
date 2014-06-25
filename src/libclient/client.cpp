@@ -365,7 +365,9 @@ bool Client::autoLogin()
 {
     if (d->settings.hasLoginData())
     {
-        d->loginController.login();
+        // check if api key is still valid
+        d->loginController.checkApiKey(); // asynchronous
+
         return true;
     }
 
