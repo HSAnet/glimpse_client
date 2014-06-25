@@ -83,18 +83,18 @@ void ReportModel::setScheduler(ReportScheduler *scheduler)
 
     if (d->scheduler)
     {
-        disconnect(d->scheduler.data(), SIGNAL(reportAdded(ReportPtr)), d, SLOT(reportAdded(ReportPtr)));
-        disconnect(d->scheduler.data(), SIGNAL(reportModified(ReportPtr)), d, SLOT(reportModified(ReportPtr)));
-        disconnect(d->scheduler.data(), SIGNAL(reportRemoved(ReportPtr)), d, SLOT(reportRemoved(ReportPtr)));
+        disconnect(d->scheduler.data(), SIGNAL(reportAdded(Report)), d, SLOT(reportAdded(Report)));
+        disconnect(d->scheduler.data(), SIGNAL(reportModified(Report)), d, SLOT(reportModified(Report)));
+        disconnect(d->scheduler.data(), SIGNAL(reportRemoved(Report)), d, SLOT(reportRemoved(Report)));
     }
 
     d->scheduler = scheduler;
 
     if (d->scheduler)
     {
-        connect(d->scheduler.data(), SIGNAL(reportAdded(ReportPtr)), d, SLOT(reportAdded(ReportPtr)));
-        connect(d->scheduler.data(), SIGNAL(reportModified(ReportPtr)), d, SLOT(reportModified(ReportPtr)));
-        connect(d->scheduler.data(), SIGNAL(reportRemoved(ReportPtr)), d, SLOT(reportRemoved(ReportPtr)));
+        connect(d->scheduler.data(), SIGNAL(reportAdded(Report)), d, SLOT(reportAdded(Report)));
+        connect(d->scheduler.data(), SIGNAL(reportModified(Report)), d, SLOT(reportModified(Report)));
+        connect(d->scheduler.data(), SIGNAL(reportRemoved(Report)), d, SLOT(reportRemoved(Report)));
     }
 
     emit schedulerChanged();
