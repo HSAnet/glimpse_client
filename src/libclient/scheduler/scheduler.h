@@ -18,17 +18,17 @@ public:
 
     TestDefinitionList tests() const;
 
-    void enqueue(const TestDefinitionPtr &testDefinition);
+    void enqueue(const TestDefinition &testDefinition);
     void dequeue();
 
-    void execute(const TestDefinitionPtr &testDefinition);
+    void execute(const TestDefinition &testDefinition);
 
     int executeOnDemandTest(const QUuid &id);
 
 signals:
-    void testAdded(const TestDefinitionPtr &test, int position);
-    void testRemoved(const TestDefinitionPtr &test, int position);
-    void testMoved(const TestDefinitionPtr &test, int from, int to);
+    void testAdded(const TestDefinition &test, int position);
+    void testRemoved(const TestDefinition &test, int position);
+    void testMoved(const TestDefinition &test, int from, int to);
 
 protected:
     class Private;

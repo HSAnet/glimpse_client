@@ -24,41 +24,41 @@ public:
     ReportList reports;
 
 public slots:
-    void reportAdded(const ReportPtr &report);
-    void reportModified(const ReportPtr &report);
-    void reportRemoved(const ReportPtr &report);
+    void reportAdded(const Report &report);
+    void reportModified(const Report &report);
+    void reportRemoved(const Report &report);
 };
 
-void ReportModel::Private::reportAdded(const ReportPtr &report)
+void ReportModel::Private::reportAdded(const Report &report)
 {
     int position = reports.size();
 
     q->beginInsertRows(QModelIndex(), position, position);
-    identToReport.insert(report->taskId(), position);
+    identToReport.insert(report.taskId(), position);
     reports.append(report);
     q->endInsertRows();
 }
 
-void ReportModel::Private::reportModified(const ReportPtr &report)
+void ReportModel::Private::reportModified(const Report &report)
 {
-    int pos = identToReport.value(report->taskId());
+    int pos = identToReport.value(report.taskId());
     Q_ASSERT(pos != -1);
 
     // No need to change identToReport here
     reports.replace(pos, report);
 
-    QModelIndex index = q->indexFromTaskId(report->taskId());
+    QModelIndex index = q->indexFromTaskId(report.taskId());
     Q_ASSERT(index.isValid());
     emit q->dataChanged(index, index);
 }
 
-void ReportModel::Private::reportRemoved(const ReportPtr &report)
+void ReportModel::Private::reportRemoved(const Report &report)
 {
-    int position = identToReport.value(report->taskId());
+    int position = identToReport.value(report.taskId());
     Q_ASSERT(position != -1);
 
     q->beginRemoveRows(QModelIndex(), position, position);
-    identToReport.remove(report->taskId());
+    identToReport.remove(report.taskId());
     reports.removeAt(position);
     q->endRemoveRows();
 }
@@ -83,18 +83,18 @@ void ReportModel::setScheduler(ReportScheduler *scheduler)
 
     if (d->scheduler)
     {
-        disconnect(d->scheduler.data(), SIGNAL(reportAdded(ReportPtr)), d, SLOT(reportAdded(ReportPtr)));
-        disconnect(d->scheduler.data(), SIGNAL(reportModified(ReportPtr)), d, SLOT(reportModified(ReportPtr)));
-        disconnect(d->scheduler.data(), SIGNAL(reportRemoved(ReportPtr)), d, SLOT(reportRemoved(ReportPtr)));
+        disconnect(d->scheduler.data(), SIGNAL(reportAdded(Report)), d, SLOT(reportAdded(Report)));
+        disconnect(d->scheduler.data(), SIGNAL(reportModified(Report)), d, SLOT(reportModified(Report)));
+        disconnect(d->scheduler.data(), SIGNAL(reportRemoved(Report)), d, SLOT(reportRemoved(Report)));
     }
 
     d->scheduler = scheduler;
 
     if (d->scheduler)
     {
-        connect(d->scheduler.data(), SIGNAL(reportAdded(ReportPtr)), d, SLOT(reportAdded(ReportPtr)));
-        connect(d->scheduler.data(), SIGNAL(reportModified(ReportPtr)), d, SLOT(reportModified(ReportPtr)));
-        connect(d->scheduler.data(), SIGNAL(reportRemoved(ReportPtr)), d, SLOT(reportRemoved(ReportPtr)));
+        connect(d->scheduler.data(), SIGNAL(reportAdded(Report)), d, SLOT(reportAdded(Report)));
+        connect(d->scheduler.data(), SIGNAL(reportModified(Report)), d, SLOT(reportModified(Report)));
+        connect(d->scheduler.data(), SIGNAL(reportRemoved(Report)), d, SLOT(reportRemoved(Report)));
     }
 
     emit schedulerChanged();
@@ -139,8 +139,8 @@ QVariant ReportModel::get(int index) const
         return QVariant();
     }
 
-    const ReportPtr &report = d->reports.at(index);
-    return report->toVariant();
+    const Report &report = d->reports.at(index);
+    return report.toVariant();
 }
 
 QHash<int, QByteArray> ReportModel::roleNames() const
@@ -170,7 +170,7 @@ int ReportModel::columnCount(const QModelIndex &parent) const
 
 QVariant ReportModel::data(const QModelIndex &index, int role) const
 {
-    const ReportPtr &report = d->reports.at(index.row());
+    const Report &report = d->reports.at(index.row());
 
     if (role == Qt::DisplayRole)
     {
@@ -180,10 +180,10 @@ QVariant ReportModel::data(const QModelIndex &index, int role) const
     switch (role)
     {
     case TaskIdRole:
-        return uuidToString(report->taskId());
+        return uuidToString(report.taskId());
 
     case DateTimeRole:
-        return report->dateTime();
+        return report.dateTime();
         //case ResultsRole: return report->results(); // FIXME: Scripting can't do anything with that
     }
 

@@ -73,7 +73,7 @@ bool Traceroute::stop()
     return true;
 }
 
-ResultPtr Traceroute::result() const
+Result Traceroute::result() const
 {
     QVariantList res;
     QVariantList pings;
@@ -104,7 +104,7 @@ ResultPtr Traceroute::result() const
         res << hop;
     }
 
-    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
+    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant());
 }
 
 void Traceroute::ping()

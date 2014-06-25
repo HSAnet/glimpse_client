@@ -136,8 +136,8 @@ bool PacketTrainsMA::stop()
     return true;
 }
 
-ResultPtr PacketTrainsMA::result() const
+Result PacketTrainsMA::result() const
 {
-    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), QVariant(), QVariant(),
-                                definition->measurementUuid));
+    return Result(startDateTime(), QDateTime::currentDateTime(), QVariant(), QVariant(),
+                  definition->measurementUuid);
 }

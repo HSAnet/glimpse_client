@@ -227,7 +227,7 @@ bool BulkTransportCapacityMA::stop()
     return true;
 }
 
-ResultPtr BulkTransportCapacityMA::result() const
+Result BulkTransportCapacityMA::result() const
 {
     QVariantList res;
 
@@ -236,6 +236,6 @@ ResultPtr BulkTransportCapacityMA::result() const
         res << QString::number(val, 'f');
     }
 
-    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant(),
-                                definition->measurementUuid));
+    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant(),
+                  definition->measurementUuid);
 }

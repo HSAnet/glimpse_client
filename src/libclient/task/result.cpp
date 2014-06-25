@@ -1,19 +1,19 @@
 #include "result.h"
 #include "../types.h"
 
-class Result::Private
+Result::Result()
+: d(new ResultData)
 {
-public:
-    QDateTime startDateTime;
-    QDateTime endDateTime;
-    QVariant probeResult;
-    QVariant peerResult;
-    QUuid measureUuid;
-};
+}
+
+Result::Result(const Result &other)
+: d(other.d)
+{
+}
 
 Result::Result(const QDateTime &startDateTime, const QDateTime &endDateTime, const QVariant &probeResult,
                const QVariant &peerResult, const QUuid &measureUuid)
-: d(new Private)
+: d(new ResultData)
 {
     d->startDateTime = startDateTime;
     d->endDateTime = endDateTime;
@@ -22,20 +22,25 @@ Result::Result(const QDateTime &startDateTime, const QDateTime &endDateTime, con
     d->measureUuid = measureUuid;
 }
 
-Result::~Result()
+bool Result::isNull() const
 {
-    delete d;
+    return d->startDateTime.isNull() || d->endDateTime.isNull();
 }
 
-ResultPtr Result::fromVariant(const QVariant &variant)
+Result Result::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
 
-    return ResultPtr(new Result(map.value("start_date_time").toDateTime(),
-                                map.value("end_date_time").toDateTime(),
-                                map.value("probe_result"),
-                                map.value("peer_result"),
-                                map.value("measure_uuid").toUuid()));
+    return Result(map.value("start_date_time").toDateTime(),
+                  map.value("end_date_time").toDateTime(),
+                  map.value("probe_result"),
+                  map.value("peer_result"),
+                  map.value("measure_uuid").toUuid());
+}
+
+void Result::setStartDateTime(const QDateTime &startDateTime)
+{
+    d->startDateTime = startDateTime;
 }
 
 QDateTime Result::startDateTime() const

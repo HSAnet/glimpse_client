@@ -239,7 +239,7 @@ bool UPnP::stop()
     return true;
 }
 
-ResultPtr UPnP::result() const
+Result UPnP::result() const
 {
     // List for all results
     QVariantList deviceResultList;
@@ -268,5 +268,5 @@ ResultPtr UPnP::result() const
         deviceResultList.append(deviceResult);
     }
 
-    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), deviceResultList, QVariant()));
+    return Result(startDateTime(), QDateTime::currentDateTime(), deviceResultList, QVariant());
 }

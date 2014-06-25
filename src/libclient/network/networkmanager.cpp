@@ -308,8 +308,8 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
         //        and we can't access.
 
         TimingPtr timing(new ImmediateTiming);
-        TestDefinitionPtr testDefinition(new TestDefinition(request.taskId, request.measurement, timing,
-                                                            request.measurementDefinition));
+        TestDefinition testDefinition(request.taskId, request.measurement, timing,
+                                                            request.measurementDefinition);
 
         // Bypass scheduler and run directly on the executor
         scheduler->executor()->execute(testDefinition, observer);

@@ -68,7 +68,7 @@ bool HTTPDownload::stop()
     return true;
 }
 
-ResultPtr HTTPDownload::result() const
+Result HTTPDownload::result() const
 {
     QVariantList res;
 
@@ -77,7 +77,7 @@ ResultPtr HTTPDownload::result() const
         res << QString::number(val, 'f');
     }
 
-    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
+    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant());
 }
 
 void HTTPDownload::setStatus(Status status)

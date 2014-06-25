@@ -193,11 +193,11 @@ bool PacketTrainsMP::stop()
     return true;
 }
 
-ResultPtr PacketTrainsMP::result() const
+Result PacketTrainsMP::result() const
 {
     QVariantMap map;
     map.insert("sending_speed", listToVariant(m_sendSpeed));
     map.insert("receiving_speed", listToVariant(m_recvSpeed));
 
-    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), map, QVariant(), getMeasurementUuid()));
+    return Result(startDateTime(), QDateTime::currentDateTime(), map, QVariant(), getMeasurementUuid());
 }

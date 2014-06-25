@@ -42,7 +42,7 @@ public:
                  const MeasurementDefinitionPtr &measurementDefinition);
     bool start();
     bool stop();
-    ResultPtr result() const;
+    Result result() const;
 
 private:
     void setStatus(Status status);

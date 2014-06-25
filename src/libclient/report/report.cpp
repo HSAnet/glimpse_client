@@ -3,17 +3,18 @@
 
 #include <QUuid>
 
-class Report::Private
+Report::Report()
+: d(new ReportData)
 {
-public:
-    QUuid taskId;
-    QDateTime dateTime;
-    ResultList results;
-    QString appVersion;
-};
+}
+
+Report::Report(const Report &other)
+: d(other.d)
+{
+}
 
 Report::Report(const QUuid &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results)
-: d(new Private)
+: d(new ReportData)
 {
     d->taskId = taskId;
     d->dateTime = dateTime;
@@ -21,19 +22,29 @@ Report::Report(const QUuid &taskId, const QDateTime &dateTime, const QString &ap
     d->results = results;
 }
 
-Report::~Report()
+bool Report::operator ==(const Report &other) const
 {
-    delete d;
+    return (d == other.d) || (d->taskId == other.d->taskId);
 }
 
-ReportPtr Report::fromVariant(const QVariant &variant)
+bool Report::isNull() const
+{
+    return d->taskId.isNull();
+}
+
+void Report::setTaskId(const QUuid &id)
+{
+    d->taskId = id;
+}
+
+Report Report::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
 
-    return ReportPtr(new Report(map.value("task_id").toUuid(),
-                                map.value("report_time").toDateTime(),
-                                map.value("app_version").toString(),
-                                ptrListFromVariant<Result>(map.value("results"))));
+    return Report(map.value("task_id").toUuid(),
+                    map.value("report_time").toDateTime(),
+                    map.value("app_version").toString(),
+                    listFromVariant<Result>(map.value("results")));
 }
 
 QUuid Report::taskId() const
@@ -41,14 +52,29 @@ QUuid Report::taskId() const
     return d->taskId;
 }
 
+void Report::setDateTime(const QDateTime &dateTime)
+{
+    d->dateTime = dateTime;
+}
+
 QDateTime Report::dateTime() const
 {
     return d->dateTime;
 }
 
+void Report::setAppVersion(const QString &appVersion)
+{
+    d->appVersion = appVersion;
+}
+
 QString Report::appVersion() const
 {
     return d->appVersion;
+}
+
+void Report::setResults(const ResultList &results)
+{
+    d->results = results;
 }
 
 ResultList Report::results() const
@@ -62,6 +88,6 @@ QVariant Report::toVariant() const
     map.insert("task_id", uuidToString(taskId()));
     map.insert("report_time", dateTime());
     map.insert("app_version", appVersion());
-    map.insert("results", ptrListToVariant(results()));
+    map.insert("results", listToVariant(results()));
     return map;
 }

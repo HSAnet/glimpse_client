@@ -39,7 +39,7 @@ public:
     virtual bool start() = 0;
     virtual bool stop() = 0;
 
-    virtual ResultPtr result() const = 0;
+    virtual Result result() const = 0;
 
     QUuid taskId() const;
     void setTaskId(const QUuid &taskId);

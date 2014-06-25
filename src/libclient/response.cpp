@@ -72,10 +72,6 @@ bool RegisterDeviceResponse::fillFromVariant(const QVariantMap &variant)
 
 GetConfigResponse::GetConfigResponse(QObject *parent)
 : Response(parent)
-, m_supervisorChannel(new Channel)
-, m_keepaliveChannel(new Channel)
-, m_configChannel(new Channel)
-, m_reportChannel(new Channel)
 {
 }
 
@@ -92,10 +88,10 @@ bool GetConfigResponse::fillFromVariant(const QVariantMap &variant)
 QVariant GetConfigResponse::toVariant() const
 {
     QVariantMap map;
-    map.insert("supervisor_channel", m_supervisorChannel->toVariant());
-    map.insert("keepalive_channel", m_keepaliveChannel->toVariant());
-    map.insert("config_channel", m_configChannel->toVariant());
-    map.insert("report_channel", m_reportChannel->toVariant());
+    map.insert("supervisor_channel", m_supervisorChannel.toVariant());
+    map.insert("keepalive_channel", m_keepaliveChannel.toVariant());
+    map.insert("config_channel", m_configChannel.toVariant());
+    map.insert("report_channel", m_reportChannel.toVariant());
     return map;
 }
 
@@ -111,49 +107,48 @@ void GetConfigResponse::finished()
 
 QString GetConfigResponse::supervisorAddress() const
 {
-    return m_supervisorChannel->target();
+    return m_supervisorChannel.target();
 }
 
 TimingPtr GetConfigResponse::supervisorTiming() const
 {
-    return m_supervisorChannel->timing();
+    return m_supervisorChannel.timing();
 }
 
 QString GetConfigResponse::keepaliveAddress() const
 {
-    return m_keepaliveChannel->target();
+    return m_keepaliveChannel.target();
 }
 
 TimingPtr GetConfigResponse::keepaliveTiming() const
 {
-    return m_keepaliveChannel->timing();
+    return m_keepaliveChannel.timing();
 }
 
 void GetConfigResponse::setConfigAddress(const QString &address)
 {
-    m_configChannel->setTarget(address);
+    m_configChannel.setTarget(address);
 }
 
 QString GetConfigResponse::configAddress() const
 {
-    return m_configChannel->target();
+    return m_configChannel.target();
 }
 
 TimingPtr GetConfigResponse::configTiming() const
 {
-    return m_configChannel->timing();
+    return m_configChannel.timing();
 }
 
 QString GetConfigResponse::reportAddress() const
 {
-    return m_reportChannel->target();
+    return m_reportChannel.target();
 }
 
 TimingPtr GetConfigResponse::reportTiming() const
 {
-    return m_reportChannel->timing();
+    return m_reportChannel.timing();
 }
-
 
 TestDefinitionList GetTasksResponse::tasks() const
 {
@@ -168,7 +163,7 @@ bool GetTasksResponse::fillFromVariant(const QVariantMap &variant)
 
     foreach (const QVariant &taskVariant, tasks)
     {
-        TestDefinitionPtr test = TestDefinition::fromVariant(taskVariant);
+        TestDefinition test = TestDefinition::fromVariant(taskVariant);
 
         if (m_validator.validate(test) == TaskValidator::Valid)
         {

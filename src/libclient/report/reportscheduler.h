@@ -11,18 +11,18 @@ public:
     ReportScheduler();
     ~ReportScheduler();
 
-    ReportPtr reportByTaskId(const QUuid &taskId) const;
+    Report reportByTaskId(const QUuid &taskId) const;
 
     ReportList reports() const;
 
-    void addReport(const ReportPtr &report);
-    void modifyReport(const ReportPtr &report); // FIXME: This should not belong here
-    void removeReport(const ReportPtr &report);
+    void addReport(const Report &report);
+    void modifyReport(const Report &report); // FIXME: This should not belong here
+    void removeReport(const Report &report);
 
 signals:
-    void reportAdded(const ReportPtr &report);
-    void reportModified(const ReportPtr &report);
-    void reportRemoved(const ReportPtr &report);
+    void reportAdded(const Report &report);
+    void reportModified(const Report &report);
+    void reportRemoved(const Report &report);
 
 protected:
     class Private;

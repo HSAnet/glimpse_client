@@ -20,7 +20,7 @@ public:
     bool prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition);
     bool start();
     bool stop();
-    ResultPtr result() const;
+    Result result() const;
 
 private:
     qint64 sendResponse(quint64 bytes);

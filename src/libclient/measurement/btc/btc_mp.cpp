@@ -122,7 +122,7 @@ bool BulkTransportCapacityMP::stop()
     return true;
 }
 
-ResultPtr BulkTransportCapacityMP::result() const
+Result BulkTransportCapacityMP::result() const
 {
-    return ResultPtr();
+    return Result();
 }
