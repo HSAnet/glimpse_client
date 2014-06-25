@@ -78,7 +78,7 @@ bool ReverseDnslookup::stop()
     return true;
 }
 
-ResultPtr ReverseDnslookup::result() const
+Result ReverseDnslookup::result() const
 {
     QVariantList res;
     QVariantMap map;
@@ -88,7 +88,7 @@ ResultPtr ReverseDnslookup::result() const
 
     res << map;
 
-    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
+    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant());
 }
 
 void ReverseDnslookup::started()

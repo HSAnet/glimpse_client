@@ -22,7 +22,7 @@ public:
     bool stop();
     void waitForFinished();
     float averagePingTime();
-    ResultPtr result() const;
+    Result result() const;
 
 private:
     void setStatus(Status status);

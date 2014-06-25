@@ -40,7 +40,7 @@ public:
 
     // Functions
     void updateTimer();
-    int enqueue(const TestDefinitionPtr &testDefinition);
+    int enqueue(const TestDefinition &testDefinition);
 
 public slots:
     void timeout();
@@ -55,42 +55,42 @@ void Scheduler::Private::updateTimer()
     }
     else
     {
-        const TestDefinitionPtr td = tests.at(0);
-        int ms = td->timing()->timeLeft();
+        const TestDefinition td = tests.at(0);
+        int ms = td.timing()->timeLeft();
 
         if (ms > 0)
         {
-            LOG_DEBUG(QString("Scheduling timer executes %1 in %2 ms").arg(td->name()).arg(ms));
+            LOG_DEBUG(QString("Scheduling timer executes %1 in %2 ms").arg(td.name()).arg(ms));
             timer.start(ms);
         }
         else
         {
             // If we would call timeout() directly, the testAdded() signal
             // would be emitted after execution.
-            LOG_DEBUG(QString("Scheduling timer executes %1 now").arg(td->name()));
+            LOG_DEBUG(QString("Scheduling timer executes %1 now").arg(td.name()));
             timer.start(1);
         }
     }
 }
 
-int Scheduler::Private::enqueue(const TestDefinitionPtr &testDefinition)
+int Scheduler::Private::enqueue(const TestDefinition &testDefinition)
 {
     // abort if test-id is already in scheduler or if the test has no next run time
-    if (testIds.contains(testDefinition->id()) || !testDefinition->timing()->nextRun().isValid())
+    if (testIds.contains(testDefinition.id()) || !testDefinition.timing()->nextRun().isValid())
     {
         return -1;
     }
 
-    int timeLeft = testDefinition->timing()->timeLeft();
+    int timeLeft = testDefinition.timing()->timeLeft();
 
     for (int i = 0; i < tests.size(); i++)
     {
-        const TestDefinitionPtr &td = tests.at(i);
+        const TestDefinition &td = tests.at(i);
 
-        if (timeLeft < td->timing()->timeLeft())
+        if (timeLeft < td.timing()->timeLeft())
         {
             tests.insert(i, testDefinition);
-            testIds.insert(testDefinition->id());
+            testIds.insert(testDefinition.id());
 
             // update the timer if this is the new first element
             if (i == 0)
@@ -116,15 +116,15 @@ int Scheduler::Private::enqueue(const TestDefinitionPtr &testDefinition)
 void Scheduler::Private::timeout()
 {
     // get the test and execute it
-    TestDefinitionPtr td = tests.at(0);
+    TestDefinition td = tests.at(0);
     q->execute(td);
 
     // remove it from the list
     tests.removeAt(0);
-    testIds.remove(td->id());
+    testIds.remove(td.id());
 
     // check if it needs to be enqueued again or permanentely removed
-    if (!td->timing()->reset())
+    if (!td.timing()->reset())
     {
         emit q->testRemoved(td, 0);
         updateTimer();
@@ -164,9 +164,9 @@ TestDefinitionList Scheduler::tests() const
     return d->tests;
 }
 
-void Scheduler::enqueue(const TestDefinitionPtr &testDefinition)
+void Scheduler::enqueue(const TestDefinition &testDefinition)
 {
-    if (testDefinition->timing()->type() != "ondemand")
+    if (testDefinition.timing()->type() != "ondemand")
     {
         int pos = d->enqueue(testDefinition);
         emit testAdded(testDefinition, pos);
@@ -182,16 +182,16 @@ void Scheduler::dequeue()
     // Whatever
 }
 
-void Scheduler::execute(const TestDefinitionPtr &testDefinition)
+void Scheduler::execute(const TestDefinition &testDefinition)
 {
     d->executor->execute(testDefinition);
 }
 
 int Scheduler::executeOnDemandTest(const QUuid &id)
 {
-    foreach (TestDefinitionPtr td, d->onDemandTests)
+    foreach (const TestDefinition& td, d->onDemandTests)
     {
-        if (td->id() == id)
+        if (td.id() == id)
         {
             execute(td);
 

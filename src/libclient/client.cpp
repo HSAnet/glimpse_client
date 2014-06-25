@@ -61,8 +61,8 @@ public:
         executor.setNetworkManager(&networkManager);
         scheduler.setExecutor(&executor);
 
-        connect(&executor, SIGNAL(finished(TestDefinitionPtr, ResultPtr)), this, SLOT(taskFinished(TestDefinitionPtr,
-                                                                                                   ResultPtr)));
+        connect(&executor, SIGNAL(finished(TestDefinition, Result)), this, SLOT(taskFinished(TestDefinition,
+                                                                                                   Result)));
         connect(&loginController, SIGNAL(finished()), this, SLOT(loginStatusChanged()));
     }
 
@@ -117,7 +117,7 @@ public slots:
     void handleSigHup();
     void handleSigTerm();
 #endif // Q_OS_UNIX
-    void taskFinished(const TestDefinitionPtr &test, const ResultPtr &result);
+    void taskFinished(const TestDefinition &test, const Result &result);
     void loginStatusChanged();
 };
 
@@ -269,22 +269,22 @@ void Client::Private::handleSigHup()
 }
 #endif // Q_OS_UNIX
 
-void Client::Private::taskFinished(const TestDefinitionPtr &test, const ResultPtr &result)
+void Client::Private::taskFinished(const TestDefinition &test, const Result &result)
 {
-    ReportPtr oldReport = reportScheduler.reportByTaskId(test->id());
+    Report report = reportScheduler.reportByTaskId(test.id());
 
-    ResultList results = oldReport.isNull() ? ResultList() : oldReport->results();
+    ResultList results = report.isNull() ? ResultList() : report.results();
     results.append(result);
 
-    ReportPtr report(new Report(test->id(), QDateTime::currentDateTime(), Client::version(), results));
-
-    if (oldReport)
+    if (report.isNull())
     {
-        reportScheduler.modifyReport(report);
+        report = Report(test.id(), QDateTime::currentDateTime(), Client::version(), results);
+        reportScheduler.addReport(report);
     }
     else
     {
-        reportScheduler.addReport(report);
+        report.setResults(results);
+        reportScheduler.modifyReport(report);
     }
 }
 
@@ -323,8 +323,8 @@ Client *Client::instance()
 
 bool Client::init()
 {
-    qRegisterMetaType<TestDefinitionPtr>();
-    qRegisterMetaType<ResultPtr>();
+    qRegisterMetaType<TestDefinition>();
+    qRegisterMetaType<Result>();
 
     // Get network time from ntp server
     QHostInfo hostInfo = QHostInfo::fromName("ptbtime1.ptb.de");
@@ -378,8 +378,8 @@ void Client::btc(const QString &host)
 {
     BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024);
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("7ba297e2-e13c-4478-886d-e9cf60cd33e5", "btc_ma", timing,
-                                                        btcDef.toVariant()));
+    TestDefinition testDefinition("7ba297e2-e13c-4478-886d-e9cf60cd33e5", "btc_ma", timing,
+                                                        btcDef.toVariant());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -387,16 +387,16 @@ void Client::http(const QString &url)
 {
     HTTPDownloadDefinition httpDef(url, false);
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("39faf457-7195-4628-b313-09f034512a40", "httpdownload", timing,
-                                                        httpDef.toVariant()));
+    TestDefinition testDefinition("39faf457-7195-4628-b313-09f034512a40", "httpdownload", timing,
+                                                        httpDef.toVariant());
     d->scheduler.enqueue(testDefinition);
 }
 
 void Client::upnp()
 {
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("3702e527-f84f-4542-8df6-4e3d2a0ec977", "upnp", timing,
-                                                        QVariant()));
+    TestDefinition testDefinition("3702e527-f84f-4542-8df6-4e3d2a0ec977", "upnp", timing,
+                                                        QVariant());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -404,8 +404,8 @@ void Client::ping(const QString &host, quint16 count, quint32 timeout, quint32 i
 {
     PingDefinition pingDef(host.isNull() ? "measure-it.de" : host, count, timeout, interval);
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("fe8189e7-afce-4ec8-863d-c4525c13ad73", "ping", timing,
-                                                        pingDef.toVariant()));
+    TestDefinition testDefinition("fe8189e7-afce-4ec8-863d-c4525c13ad73", "ping", timing,
+                                                        pingDef.toVariant());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -413,8 +413,8 @@ void Client::dnslookup()
 {
     DnslookupDefinition dnslookupDef("www.google.com", "8.8.8.8");
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832180", "dnslookup", timing,
-                                                        dnslookupDef.toVariant()));
+    TestDefinition testDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832180", "dnslookup", timing,
+                                                        dnslookupDef.toVariant());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -422,8 +422,8 @@ void Client::reverseDnslookup()
 {
     ReverseDnslookupDefinition reverseDnslookupDef("8.8.8.8");
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832181", "reverseDnslookup", timing,
-                                                        reverseDnslookupDef.toVariant()));
+    TestDefinition testDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832181", "reverseDnslookup", timing,
+                                                        reverseDnslookupDef.toVariant());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -433,8 +433,8 @@ void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint1
     PacketTrainsDefinition packetTrainsDef(host, port, packetSize, trainLength, iterations, rateMin, rateMax, delay);
 
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832177", "packettrains_ma", timing,
-                                                        packetTrainsDef.toVariant()));
+    TestDefinition testDefinition("29665ba7-ddf8-4aed-9deb-aaf1db832177", "packettrains_ma", timing,
+                                                        packetTrainsDef.toVariant());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -444,8 +444,8 @@ void Client::udpPing(const QString &url, const quint32 &count, const quint32 &in
     UdpPingDefinition udpPingDef(url, count, interval, receiveTimeout, ttl, destinationPort, sourcePort, payload);
 
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("d55b0091-2a83-4b9f-b9c3-f4690c485a13", "udpping", timing,
-                                                        udpPingDef.toVariant()));
+    TestDefinition testDefinition("d55b0091-2a83-4b9f-b9c3-f4690c485a13", "udpping", timing,
+                                                        udpPingDef.toVariant());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -460,8 +460,8 @@ void Client::traceroute(const QString &url,
     TracerouteDefinition tracerouteDef(url, count, interval, receiveTimeout, destinationPort, sourcePort, payload);
 
     TimingPtr timing(new ImmediateTiming());
-    TestDefinitionPtr testDefinition(new TestDefinition("0184435f-48ad-41fe-9079-9b3bce9f2b8a", "traceroute", timing,
-                                                        tracerouteDef.toVariant()));
+    TestDefinition testDefinition("0184435f-48ad-41fe-9079-9b3bce9f2b8a", "traceroute", timing,
+                                                        tracerouteDef.toVariant());
     d->scheduler.enqueue(testDefinition);
 }
 

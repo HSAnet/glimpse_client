@@ -43,7 +43,7 @@ public:
     {
         QVariantMap map;
         map.insert("session_id", sessionId());
-        map.insert("reports", ptrListToVariant(m_reports));
+        map.insert("reports", listToVariant(m_reports));
         return map;
     }
 
@@ -160,7 +160,7 @@ void ReportController::Private::onFinished()
 
     foreach (const QString &taskId, taskIds)
     {
-        ReportPtr report = scheduler->reportByTaskId(taskId);
+        Report report = scheduler->reportByTaskId(taskId);
 
         if (report.isNull())
         {

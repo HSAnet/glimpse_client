@@ -91,7 +91,7 @@ void TaskController::Private::updateTimer()
 
 void TaskController::Private::finished()
 {
-    foreach (const TestDefinitionPtr &testDefinition, response.tasks())
+    foreach (const TestDefinition &testDefinition, response.tasks())
     {
         scheduler->enqueue(testDefinition);
     }

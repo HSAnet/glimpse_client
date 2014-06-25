@@ -26,35 +26,35 @@ TaskValidator::~TaskValidator()
     delete d;
 }
 
-TaskValidator::ValidationResult TaskValidator::validate(const TestDefinitionPtr &testDefinition)
+TaskValidator::ValidationResult TaskValidator::validate(const TestDefinition &testDefinition)
 {
     // Simple checks
     if (testDefinition.isNull()
-        || testDefinition->id().isNull()
-        || testDefinition->timing().isNull())
+        || testDefinition.id().isNull()
+        || testDefinition.timing().isNull())
     {
         return Invalid;
     }
 
     // Check if we have the measurment
-    if (d->availableMeasurements.contains(testDefinition->name()) == false)
+    if (d->availableMeasurements.contains(testDefinition.name()) == false)
     {
-        LOG_WARNING(QString("Measurement named '%1' does not exist").arg(testDefinition->name()));
+        LOG_WARNING(QString("Measurement named '%1' does not exist").arg(testDefinition.name()));
         return Invalid;
     }
 
     // Check the timing
-    TimingPtr timing = testDefinition->timing();
+    TimingPtr timing = testDefinition.timing();
 
     if (timing->isValid())
     {
-        LOG_INFO(QString("Measurement '%1' has no valid timing, ignoring").arg(testDefinition->name()));
+        LOG_INFO(QString("Measurement '%1' has no valid timing, ignoring").arg(testDefinition.name()));
         return Invalid;
     }
 
     if (timing->nextRun().isNull())
     {
-        LOG_INFO(QString("Measurement '%1' has no next run, ignoring").arg(testDefinition->name()));
+        LOG_INFO(QString("Measurement '%1' has no next run, ignoring").arg(testDefinition.name()));
         return Invalid;
     }
 

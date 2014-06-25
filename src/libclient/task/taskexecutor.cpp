@@ -16,19 +16,19 @@ public:
     MeasurementFactory factory;
     QPointer<NetworkManager> networkManager;
 
-    TestDefinitionPtr currentTest;
+    TestDefinition currentTest;
     MeasurementPtr measurement;
 
 public slots:
-    void execute(const TestDefinitionPtr &test, MeasurementObserver *observer)
+    void execute(const TestDefinition &test, MeasurementObserver *observer)
     {
-        LOG_INFO(QString("Starting execution of %1").arg(test->name()));
+        LOG_INFO(QString("Starting execution of %1").arg(test.name()));
 
         emit started(test);
 
         // TODO: Check the timing (too long ago?)
         currentTest = test;
-        measurement = factory.createMeasurement(test->name(), test->id());
+        measurement = factory.createMeasurement(test.name(), test.id());
 
         if (!measurement.isNull())
         {
@@ -40,7 +40,7 @@ public slots:
                 delete observer;
             }
 
-            MeasurementDefinitionPtr definition = factory.createMeasurementDefinition(test->name(), test->measurementDefinition());
+            MeasurementDefinitionPtr definition = factory.createMeasurementDefinition(test.name(), test.measurementDefinition());
 
             if (measurement->prepare(networkManager, definition))
             {
@@ -53,25 +53,25 @@ public slots:
         }
         else
         {
-            LOG_ERROR(QString("Unable to create measurement: %1").arg(test->name()));
+            LOG_ERROR(QString("Unable to create measurement: %1").arg(test.name()));
         }
 
-        LOG_INFO(QString("Finished execution of %1 (failed)").arg(test->name()));
-        emit finished(test, ResultPtr());
+        LOG_INFO(QString("Finished execution of %1 (failed)").arg(test.name()));
+        emit finished(test, Result());
     }
 
     void measurementFinished()
     {
         measurement->disconnect(this, SLOT(measurementFinished()));
-        LOG_INFO(QString("Finished execution of %1 (success)").arg(currentTest->name()));
+        LOG_INFO(QString("Finished execution of %1 (success)").arg(currentTest.name()));
         emit finished(currentTest, measurement->result());
         measurement->stop();
         measurement.clear();
     }
 
 signals:
-    void started(const TestDefinitionPtr &test);
-    void finished(const TestDefinitionPtr &test, const ResultPtr &result);
+    void started(const TestDefinition &test);
+    void finished(const TestDefinition &test, const Result &result);
 };
 
 class TaskExecutor::Private : public QObject
@@ -89,11 +89,11 @@ public:
         taskThread.setObjectName("TaskExecutorThread");
         taskThread.start();
 
-        connect(&executor, SIGNAL(started(TestDefinitionPtr)), this, SLOT(onStarted()));
-        connect(&executor, SIGNAL(finished(TestDefinitionPtr, ResultPtr)), this, SLOT(onFinished()));
+        connect(&executor, SIGNAL(started(TestDefinition)), this, SLOT(onStarted()));
+        connect(&executor, SIGNAL(finished(TestDefinition, Result)), this, SLOT(onFinished()));
 
-        connect(&executor, SIGNAL(started(TestDefinitionPtr)), q, SIGNAL(started(TestDefinitionPtr)));
-        connect(&executor, SIGNAL(finished(TestDefinitionPtr, ResultPtr)), q, SIGNAL(finished(TestDefinitionPtr, ResultPtr)));
+        connect(&executor, SIGNAL(started(TestDefinition)), q, SIGNAL(started(TestDefinition)));
+        connect(&executor, SIGNAL(finished(TestDefinition, Result)), q, SIGNAL(finished(TestDefinition, Result)));
     }
 
     ~Private()
@@ -104,7 +104,7 @@ public:
 
     struct QueueEntry
     {
-        TestDefinitionPtr definition;
+        TestDefinition definition;
         MeasurementObserver *observer;
     };
 
@@ -145,7 +145,7 @@ void TaskExecutor::Private::onFinished()
     else
     {
         QueueEntry entry = queue.takeFirst();
-        QMetaObject::invokeMethod(&executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinitionPtr, entry.definition),
+        QMetaObject::invokeMethod(&executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinition, entry.definition),
                                   Q_ARG(MeasurementObserver *, entry.observer));
     }
 }
@@ -176,12 +176,12 @@ bool TaskExecutor::isRunning() const
     return d->running;
 }
 
-void TaskExecutor::execute(const TestDefinitionPtr &test, MeasurementObserver *observer)
+void TaskExecutor::execute(const TestDefinition &test, MeasurementObserver *observer)
 {
     // Abort if we are on a mobile connection
     if (d->executor.networkManager->onMobileConnection())
     {
-        LOG_ERROR(QString("Unable to execute measurement, we are on a mobile connection: %1").arg(test->name()));
+        LOG_ERROR(QString("Unable to execute measurement, we are on a mobile connection: %1").arg(test.name()));
         return;
     }
 
@@ -190,7 +190,7 @@ void TaskExecutor::execute(const TestDefinitionPtr &test, MeasurementObserver *o
         d->running = true;
         emit runningChanged(d->running);
 
-        QMetaObject::invokeMethod(&d->executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinitionPtr, test),
+        QMetaObject::invokeMethod(&d->executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinition, test),
                                   Q_ARG(MeasurementObserver *, observer));
     }
     else

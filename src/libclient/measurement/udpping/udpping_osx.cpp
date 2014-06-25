@@ -215,7 +215,7 @@ bool UdpPing::stop()
     return true;
 }
 
-ResultPtr UdpPing::result() const
+Result UdpPing::result() const
 {
     QVariantList res;
 
@@ -227,7 +227,7 @@ ResultPtr UdpPing::result() const
         }
     }
 
-    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
+    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant());
 }
 
 int UdpPing::initSocket()

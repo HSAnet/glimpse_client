@@ -7,39 +7,83 @@
 #include <QMetaType>
 #include <QUuid>
 
+#include <QSharedDataPointer>
+
 class Result;
-typedef QSharedPointer<Result> ResultPtr;
-typedef QList<ResultPtr> ResultList;
+typedef QList<Result> ResultList;
+
+
+class ResultData : public QSharedData
+{
+public:
+    ResultData()
+    {
+    }
+
+    ResultData(const ResultData &other)
+    : QSharedData(other)
+    , startDateTime(other.startDateTime)
+    , endDateTime(other.endDateTime)
+    , probeResult(other.probeResult)
+    , peerResult(other.peerResult)
+    , measureUuid(other.measureUuid)
+    {
+    }
+
+    QDateTime startDateTime;
+    QDateTime endDateTime;
+    QVariant probeResult;
+    QVariant peerResult;
+    QUuid measureUuid;
+};
+
 
 class CLIENT_API Result : public Serializable
 {
 public:
+    Result();
+    Result(const Result &other);
     Result(const QDateTime &startDateTime,
            const QDateTime &endDateTime,
            const QVariant &probeResult,
            const QVariant &peerResult,
            const QUuid &measureUuid = QUuid());
-    ~Result();
+
+    bool isNull() const;
+
+    void setStartDateTime(const QDateTime& startDateTime);
+    QDateTime startDateTime() const;
+
+    void setEndDateTime(const QDateTime& endDateTime);
+    QDateTime endDateTime() const;
+
+    void setProbeResult(const QVariant& probeResult);
+    QVariant probeResult() const;
+
+    void setPeerResult(const QVariant& peerResult);
+    QVariant peerResult() const;
+
+    void setMeasureUuid(const QUuid& measureUuid);
+    QUuid measureUuid() const;
 
     // Storage
-    static ResultPtr fromVariant(const QVariant &variant);
-
-    // Getters
-    QDateTime startDateTime() const;
-    QDateTime endDateTime() const;
-    QVariant probeResult() const;
-    QVariant peerResult() const;
-    QUuid measureUuid() const;
+    static Result fromVariant(const QVariant &variant);
 
     // Serializable interface
     QVariant toVariant() const;
 
-protected:
-    class Private;
-    Private *d;
+private:
+    QSharedDataPointer<ResultData> d;
 };
 
-Q_DECLARE_METATYPE(ResultPtr)
+
+inline QVariant qVariantFromValue(const Result &result)
+{
+    return result.toVariant();
+}
+
+
+Q_DECLARE_METATYPE(Result)
 Q_DECLARE_METATYPE(ResultList)
 
 #endif // RESULT_H

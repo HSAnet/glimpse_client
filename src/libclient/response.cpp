@@ -168,7 +168,7 @@ bool GetTasksResponse::fillFromVariant(const QVariantMap &variant)
 
     foreach (const QVariant &taskVariant, tasks)
     {
-        TestDefinitionPtr test = TestDefinition::fromVariant(taskVariant);
+        TestDefinition test = TestDefinition::fromVariant(taskVariant);
 
         if (m_validator.validate(test) == TaskValidator::Valid)
         {

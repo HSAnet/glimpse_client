@@ -91,7 +91,7 @@ bool Dnslookup::stop()
     return true;
 }
 
-ResultPtr Dnslookup::result() const
+Result Dnslookup::result() const
 {
     QVariantList res;
     QVariantMap error;
@@ -125,7 +125,7 @@ ResultPtr Dnslookup::result() const
         res << map;
     }
 
-    return ResultPtr(new Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant()));
+    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant());
 }
 
 void Dnslookup::started()

@@ -44,18 +44,18 @@ public:
     QPointer<ReportScheduler> scheduler;
 
     // Functions
-    void store(const ReportPtr &report);
-    QString fileNameForReport(const ReportPtr &report) const;
+    void store(const Report &report);
+    QString fileNameForReport(const Report &report) const;
 
 public slots:
-    void reportAdded(const ReportPtr &report);
-    void reportModified(const ReportPtr &report);
-    void reportRemoved(const ReportPtr &report);
+    void reportAdded(const Report &report);
+    void reportModified(const Report &report);
+    void reportRemoved(const Report &report);
 };
 
-void ReportStorage::Private::store(const ReportPtr &report)
+void ReportStorage::Private::store(const Report &report)
 {
-    QJsonDocument document = QJsonDocument::fromVariant(report->toVariant());
+    QJsonDocument document = QJsonDocument::fromVariant(report.toVariant());
 
     QFile file(dir.absoluteFilePath(fileNameForReport(report)));
 
@@ -70,12 +70,12 @@ void ReportStorage::Private::store(const ReportPtr &report)
     }
 }
 
-QString ReportStorage::Private::fileNameForReport(const ReportPtr &report) const
+QString ReportStorage::Private::fileNameForReport(const Report &report) const
 {
-    return uuidToString(report->taskId());
+    return uuidToString(report.taskId());
 }
 
-void ReportStorage::Private::reportAdded(const ReportPtr &report)
+void ReportStorage::Private::reportAdded(const Report &report)
 {
     if (!realTime || loading)
     {
@@ -85,13 +85,13 @@ void ReportStorage::Private::reportAdded(const ReportPtr &report)
     store(report);
 }
 
-void ReportStorage::Private::reportModified(const ReportPtr &report)
+void ReportStorage::Private::reportModified(const Report &report)
 {
     // Treat it like it was added for now
     reportAdded(report);
 }
 
-void ReportStorage::Private::reportRemoved(const ReportPtr &report)
+void ReportStorage::Private::reportRemoved(const Report &report)
 {
     if (!realTime)
     {
@@ -136,7 +136,7 @@ void ReportStorage::storeData()
         return;
     }
 
-    foreach (const ReportPtr &report, d->scheduler->reports())
+    foreach (const Report &report, d->scheduler->reports())
     {
         d->store(report);
     }
@@ -157,7 +157,7 @@ void ReportStorage::loadData()
 
         if (error.error == QJsonParseError::NoError)
         {
-            ReportPtr report = Report::fromVariant(document.toVariant());
+            Report report = Report::fromVariant(document.toVariant());
             d->scheduler->addReport(report);
         }
         else
