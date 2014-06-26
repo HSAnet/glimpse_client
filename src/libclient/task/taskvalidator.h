@@ -5,6 +5,8 @@
 
 class CLIENT_API TaskValidator
 {
+    Q_DISABLE_COPY(TaskValidator)
+
 public:
     TaskValidator();
     ~TaskValidator();
