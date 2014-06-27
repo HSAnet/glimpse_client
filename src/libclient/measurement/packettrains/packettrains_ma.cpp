@@ -35,6 +35,8 @@ namespace help
 PacketTrainsMA::PacketTrainsMA()
 : m_udpSocket(NULL)
 {
+    connect(this, SIGNAL(error(const QString &)), this,
+            SLOT(setErrorString(const QString &)));
 }
 
 bool PacketTrainsMA::start()
@@ -94,6 +96,7 @@ void PacketTrainsMA::handleError(QAbstractSocket::SocketError socketError)
 
     QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
     LOG_ERROR(QString("Socket error: %1").arg(socket->errorString()));
+    emit error(socket->errorString());
 }
 
 
@@ -119,6 +122,7 @@ bool PacketTrainsMA::prepare(NetworkManager *networkManager, const MeasurementDe
     if (!m_udpSocket)
     {
         LOG_ERROR("Preparation failed");
+        emit error("Preparation failed");
         return false;
     }
 
@@ -139,5 +143,5 @@ bool PacketTrainsMA::stop()
 Result PacketTrainsMA::result() const
 {
     return Result(startDateTime(), QDateTime::currentDateTime(), QVariant(), QVariant(),
-                  definition->measurementUuid);
+                  definition->measurementUuid, errorString());
 }

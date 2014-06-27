@@ -387,6 +387,8 @@ UdpPing::UdpPing(QObject *parent)
 , m_destAddress()
 , m_payload(NULL)
 {
+    connect(this, SIGNAL(error(const QString &)), this,
+            SLOT(setErrorString(const QString &)));
 }
 
 UdpPing::~UdpPing()
@@ -436,6 +438,7 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     // resolve
     if (!getAddress(definition->url, &m_destAddress))
     {
+        emit error(QString("could not resolve hostname '%1'").arg(definition->url));
         return false;
     }
 
@@ -448,6 +451,12 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     else if (m_destAddress.sa.sa_family == AF_INET6)
     {
         RtlIpv6AddressToStringA(&m_destAddress.sin6.sin6_addr, address);
+    }
+    else
+    {
+        emit error(QString("unknown address family '%1'").arg(
+                       m_destAddress.sa.sa_family));
+        return false;
     }
 
     if (pcap_createsrcstr(source, PCAP_SRC_IFLOCAL, address, NULL, NULL, errbuf) != 0)
@@ -485,7 +494,7 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     // capture only our UDP request and some ICMP/UDP responses
     QString filter = QString("(((icmp or icmp6) and icmptype != icmp-echo and dst host %1)"
                              " or (udp and dst port %2))").arg(
-                     address).arg(definition->destinationPort);
+                         address).arg(definition->destinationPort);
 
     if (pcap_compile(m_capture, &fcode, filter.toLatin1(), 1, 0) < 0)
     {
@@ -558,7 +567,7 @@ Result UdpPing::result() const
     }
 
     return Result(startDateTime(), QDateTime::currentDateTime(),
-                                res, QVariant());
+                  res, QVariant());
 }
 
 int UdpPing::initSocket()

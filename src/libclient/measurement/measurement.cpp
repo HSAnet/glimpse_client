@@ -10,6 +10,7 @@ public:
     QUuid taskId;
     QUuid measurementUuid;
     QDateTime startDateTime;
+    QString errorString;
 };
 
 Measurement::Measurement(QObject *parent)
@@ -60,4 +61,14 @@ QDateTime Measurement::startDateTime() const
 void Measurement::setStartDateTime(const QDateTime &startDateTime)
 {
     d->startDateTime = startDateTime;
+}
+
+QString Measurement::errorString() const
+{
+    return d->errorString;
+}
+
+void Measurement::setErrorString(const QString &message)
+{
+    d->errorString = message;
 }

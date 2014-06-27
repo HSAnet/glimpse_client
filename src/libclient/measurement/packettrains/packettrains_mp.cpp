@@ -18,6 +18,8 @@ LOGGER(PacketTrainsMA);
 PacketTrainsMP::PacketTrainsMP()
 : m_udpSocket(NULL)
 {
+    connect(this, SIGNAL(error(const QString &)), this,
+            SLOT(setErrorString(const QString &)));
 }
 
 bool PacketTrainsMP::start()
@@ -144,6 +146,7 @@ void PacketTrainsMP::handleError(QAbstractSocket::SocketError socketError)
 
     QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
     LOG_ERROR(QString("Socket error: %1").arg(socket->errorString()));
+    emit error(socket->errorString());
 }
 
 Measurement::Status PacketTrainsMP::status() const
@@ -167,6 +170,7 @@ bool PacketTrainsMP::prepare(NetworkManager *networkManager, const MeasurementDe
     if (!m_udpSocket)
     {
         LOG_ERROR("Preparation failed");
+        emit error("Preparation failed");
         return false;
     }
 
@@ -199,5 +203,6 @@ Result PacketTrainsMP::result() const
     map.insert("sending_speed", listToVariant(m_sendSpeed));
     map.insert("receiving_speed", listToVariant(m_recvSpeed));
 
-    return Result(startDateTime(), QDateTime::currentDateTime(), map, QVariant(), getMeasurementUuid());
+    return Result(startDateTime(), QDateTime::currentDateTime(), map, QVariant(), getMeasurementUuid(),
+                  errorString());
 }

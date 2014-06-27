@@ -10,6 +10,8 @@ BulkTransportCapacityMP::BulkTransportCapacityMP(QObject *parent)
 : Measurement(parent)
 , m_tcpServer(NULL)
 {
+    connect(this, SIGNAL(error(const QString &)), this,
+            SLOT(setErrorString(const QString &)));
     resetServer();
 }
 
@@ -85,6 +87,7 @@ void BulkTransportCapacityMP::handleError(QAbstractSocket::SocketError socketErr
 
     QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
     LOG_ERROR(QString("Socket Error: %1").arg(socket->errorString()));
+    emit error(socket->errorString());
 }
 
 Measurement::Status BulkTransportCapacityMP::status() const
@@ -124,5 +127,5 @@ bool BulkTransportCapacityMP::stop()
 
 Result BulkTransportCapacityMP::result() const
 {
-    return Result();
+    return Result(errorString());
 }
