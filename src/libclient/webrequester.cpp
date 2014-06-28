@@ -314,18 +314,16 @@ void WebRequester::start()
         return;
     }
 
-    // Get classinfos
-    int pathIdx = d->request->metaObject()->indexOfClassInfo("path");
+    // Get path
+    QString path = d->request->path();
 
-    if (pathIdx == -1)
+    if (path.isEmpty())
     {
         d->errorString = tr("No path found for request");
         d->setStatus(Error);
         LOG_ERROR("No path found for request");
         return;
     }
-
-    QMetaClassInfo pathClassInfo = d->request->metaObject()->classInfo(pathIdx);
 
     int methodIdx = d->request->metaObject()->indexOfClassInfo("http_request_method");
 
@@ -357,7 +355,7 @@ void WebRequester::start()
     QVariantMap data = d->request->toVariant().toMap();
 
     QUrl url = d->url;
-    url.setPath(pathClassInfo.value());
+    url.setPath(path);
 
     QNetworkRequest request;
     QNetworkReply *reply;
