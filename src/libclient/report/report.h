@@ -24,7 +24,7 @@ public:
     {
     }
 
-    QUuid taskId;
+    quint32 taskId;
     QDateTime dateTime;
     ResultList results;
     QString appVersion;
@@ -36,15 +36,15 @@ class CLIENT_API Report : public Serializable
 public:
     Report();
     Report(const Report &other);
-    Report(const QUuid &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results);
+    Report(const quint32 &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results);
 
     bool operator ==(const Report &other) const;
 
     bool isNull() const;
 
     // Getters
-    void setTaskId(const QUuid &id);
-    QUuid taskId() const;
+    void setTaskId(const quint32 &id);
+    quint32 taskId() const;
 
     void setDateTime(const QDateTime &dateTime);
     QDateTime dateTime() const;

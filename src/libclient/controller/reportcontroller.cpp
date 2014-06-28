@@ -62,11 +62,13 @@ public:
     {
     }
 
-    QStringList taskIds;
+    QList<quint32> taskIds;
 
     // Response interface
     bool fillFromVariant(const QVariantMap &variant)
     {
+        /*
+        // TODO: new format
         this->taskIds.clear();
 
         QVariantList taskIds = variant.value("successful_task_ids").toList();
@@ -74,7 +76,7 @@ public:
         foreach (const QVariant &id, taskIds)
         {
             this->taskIds.append(id.toString());
-        }
+        }*/
 
         return true;
     }
@@ -155,10 +157,10 @@ void ReportController::Private::updateTimer()
 
 void ReportController::Private::onFinished()
 {
-    QStringList taskIds = response.taskIds;
+    QList<quint32> taskIds = response.taskIds;
     LOG_INFO(QString("%1 Reports successfully sent").arg(taskIds.size()));
 
-    foreach (const QString &taskId, taskIds)
+    foreach (const quint32 &taskId, taskIds)
     {
         Report report = scheduler->reportByTaskId(taskId);
 

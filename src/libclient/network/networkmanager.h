@@ -41,7 +41,7 @@ public:
     // Creates a new connection
     QAbstractSocket *createConnection(SocketType socketType);
     QAbstractSocket *establishConnection(const QString &hostname,
-                                         const QUuid &taskId,
+                                         const quint32 &taskId,
                                          const QString &measurement,
                                          MeasurementDefinitionPtr measurementDefinition,
                                          NetworkManager::SocketType socketType);

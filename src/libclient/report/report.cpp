@@ -13,7 +13,7 @@ Report::Report(const Report &other)
 {
 }
 
-Report::Report(const QUuid &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results)
+Report::Report(const quint32 &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results)
 : d(new ReportData)
 {
     d->taskId = taskId;
@@ -29,10 +29,10 @@ bool Report::operator ==(const Report &other) const
 
 bool Report::isNull() const
 {
-    return d->taskId.isNull();
+    return (d->taskId == 0);
 }
 
-void Report::setTaskId(const QUuid &id)
+void Report::setTaskId(const quint32 &id)
 {
     d->taskId = id;
 }
@@ -41,13 +41,13 @@ Report Report::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
 
-    return Report(map.value("task_id").toUuid(),
-                    map.value("report_time").toDateTime(),
-                    map.value("app_version").toString(),
-                    listFromVariant<Result>(map.value("results")));
+    return Report(map.value("task_id").toInt(),
+                  map.value("report_time").toDateTime(),
+                  map.value("app_version").toString(),
+                  listFromVariant<Result>(map.value("results")));
 }
 
-QUuid Report::taskId() const
+quint32 Report::taskId() const
 {
     return d->taskId;
 }
@@ -85,7 +85,7 @@ ResultList Report::results() const
 QVariant Report::toVariant() const
 {
     QVariantMap map;
-    map.insert("task_id", uuidToString(taskId()));
+    map.insert("task_id", taskId());
     map.insert("report_time", dateTime());
     map.insert("app_version", appVersion());
     map.insert("results", listToVariant(results()));

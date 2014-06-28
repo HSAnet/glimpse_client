@@ -51,7 +51,7 @@ public:
 
         PeerRequest request;
         request.measurementDefinition = map.value("measurementDefinition");
-        request.taskId = map.value("taskId").toUuid();
+        request.taskId = map.value("taskId").toInt();
         request.measurementUuid = map.value("measurementUuid").toUuid();
         request.measurement = map.value("measurement").toString();
         request.peer = map.value("peer").toString();
@@ -61,7 +61,7 @@ public:
     }
 
     QVariant measurementDefinition;
-    QUuid taskId;
+    quint32 taskId;
     QUuid measurementUuid;
     QString measurement;
     QString peer;
@@ -309,7 +309,7 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
 
         TimingPtr timing(new ImmediateTiming);
         TestDefinition testDefinition(request.taskId, request.measurement, timing,
-                                                            request.measurementDefinition);
+                                      request.measurementDefinition);
 
         // Bypass scheduler and run directly on the executor
         scheduler->executor()->execute(testDefinition, observer);
@@ -496,7 +496,7 @@ QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType soc
 }
 
 QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
-                                                     const QUuid &taskId,
+                                                     const quint32 &taskId,
                                                      const QString &measurement,
                                                      MeasurementDefinitionPtr measurementDefinition,
                                                      NetworkManager::SocketType socketType)

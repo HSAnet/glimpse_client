@@ -27,7 +27,7 @@ public:
     {
     }
 
-    QUuid id;
+    quint32 id;
     QString name;
     TimingPtr timing;
     QVariant measurementDefinition;
@@ -39,12 +39,12 @@ class CLIENT_API TestDefinition : public Serializable
 public:
     TestDefinition();
     TestDefinition(const TestDefinition &other);
-    TestDefinition(const QUuid &id, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition);
+    TestDefinition(const quint32 &id, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition);
 
     bool isNull() const;
 
-    void setId(const QUuid &id);
-    QUuid id() const;
+    void setId(const quint32 &id);
+    quint32 id() const;
 
     void setName(const QString &name);
     QString name() const;

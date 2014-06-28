@@ -72,7 +72,7 @@ void ReportStorage::Private::store(const Report &report)
 
 QString ReportStorage::Private::fileNameForReport(const Report &report) const
 {
-    return uuidToString(report.taskId());
+    return QString::number(report.taskId());
 }
 
 void ReportStorage::Private::reportAdded(const Report &report)
