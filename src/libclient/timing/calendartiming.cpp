@@ -54,7 +54,10 @@ QVariant TimingRandomness::toVariant() const
     map.insert("upperCut", d->upperCut);
     map.insert("lowerCut", d->lowerCut);
     map.insert("spread", d->spread);
-    return map;
+
+    QVariantMap resultMap;
+    resultMap.insert("calendar", map);
+    return resultMap;
 }
 
 
