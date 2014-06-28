@@ -39,7 +39,7 @@ TimingPtr TimingFactory::timingFromVariant(const QVariant &variant)
             CreateFunction cf = factories.value(type);
             if (cf)
             {
-                return cf(iter.value());
+                return cf(value);
             }
             else
             {
