@@ -3,9 +3,17 @@ import "controls"
 
 Page {
     title: "glimpse."
-    actionTitle: "settings"
+    actionTitle: {
+        if (tab.currentItem && tab.currentItem.actionTitle)
+            return tab.currentItem.actionTitle;
+
+        return "settings";
+    }
 
     function actionClicked() {
+        if (tab.currentItem && tab.currentItem.actionTitle)
+            return tab.currentItem.actionClicked();
+
         if (app.state == "")
             app.state = "settings";
         else
@@ -46,8 +54,14 @@ Page {
 
         Item {
             property string title: "Reports"
+            property alias actionTitle: reports.actionTitle
+
+            function actionClicked() {
+                return reports.actionClicked();
+            }
 
             Reports {
+                id: reports
                 anchors.fill: parent
             }
         }

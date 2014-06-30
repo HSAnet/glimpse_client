@@ -5,6 +5,7 @@ import mplane 1.0
 Item {
     id: root
 
+    property Item currentItem: listModel.children[currentIndex]
     property int currentIndex: 0
     default property alias content: listModel.children
 
