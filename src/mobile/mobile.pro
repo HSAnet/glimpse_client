@@ -20,6 +20,9 @@ QT += gui quick qml concurrent
 include(../../dist.pri)
 include(../libclient/libclient.pri)
 
+osx:TARGET = glimpse
+QMAKE_INFO_PLIST = Info.plist
+
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 ANDROID_PACKAGE = "net.measureit.glimpse"
 ANDROID_APP_NAME = "glimpse"
@@ -84,5 +87,6 @@ qtcAddDeployment()
 OTHER_FILES += $$files(qml/*) \
                $$files(qml/controls/*) \
                $$files(qml/android/*) \
-               qt.conf
+               qt.conf \
+               Info.plist
 
