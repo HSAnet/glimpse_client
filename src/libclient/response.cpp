@@ -172,7 +172,7 @@ bool GetInstructionResponse::fillFromVariant(const QVariantMap &variant)
 
     m_scheduleIds.clear();
 
-    foreach (const QVariant &entry, variant.value("tasks").toList())
+    foreach (const QVariant &entry, variant.value("schedules").toList())
     {
       m_scheduleIds.append(entry.toInt());
     }
