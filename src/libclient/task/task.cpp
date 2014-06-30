@@ -12,7 +12,7 @@ TestDefinition::TestDefinition(const TestDefinition &other)
 {
 }
 
-TestDefinition::TestDefinition(const QUuid &id, const QString &name, const TimingPtr &timing,
+TestDefinition::TestDefinition(const quint32 &id, const QString &name, const TimingPtr &timing,
                                const QVariant &measurementDefinition)
 : d(new TaskData)
 {
@@ -24,10 +24,10 @@ TestDefinition::TestDefinition(const QUuid &id, const QString &name, const Timin
 
 bool TestDefinition::isNull() const
 {
-    return d->id.isNull();
+    return (d->id == 0);
 }
 
-void TestDefinition::setId(const QUuid &id)
+void TestDefinition::setId(const quint32 &id)
 {
     d->id = id;
 }
@@ -35,10 +35,10 @@ void TestDefinition::setId(const QUuid &id)
 QVariant TestDefinition::toVariant() const
 {
     QVariantMap hash;
-    hash.insert("id", uuidToString(d->id));
+    hash.insert("id", d->id);
     hash.insert("method", d->name);
     hash.insert("timing", d->timing->toVariant());
-    hash.insert("parameters", d->measurementDefinition);
+    hash.insert("options", d->measurementDefinition);
     return hash;
 }
 
@@ -46,13 +46,13 @@ TestDefinition TestDefinition::fromVariant(const QVariant &variant)
 {
     QVariantMap hash = variant.toMap();
 
-    return TestDefinition(hash.value("id").toUuid(),
+    return TestDefinition(hash.value("id").toInt(),
                           hash.value("method").toString(),
                           TimingFactory::timingFromVariant(hash.value("timing")),
-                          hash.value("parameters"));
+                          hash.value("options"));
 }
 
-QUuid TestDefinition::id() const
+quint32 TestDefinition::id() const
 {
     return d->id;
 }

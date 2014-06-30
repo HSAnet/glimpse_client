@@ -3,6 +3,7 @@
 GetConfigRequest::GetConfigRequest(QObject *parent)
 : Request(parent)
 {
+    setPath("/supervisor/api/v1/configuration/1/");
 }
 
 GetConfigRequest::~GetConfigRequest()

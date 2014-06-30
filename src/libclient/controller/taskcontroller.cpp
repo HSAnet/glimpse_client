@@ -3,7 +3,7 @@
 #include "../scheduler/scheduler.h"
 #include "../settings.h"
 #include "../webrequester.h"
-#include "../network/requests/gettasksrequest.h"
+#include "../network/requests/resourcerequest.h"
 #include "../task/task.h"
 #include "../task/taskvalidator.h"
 #include "../log/logger.h"
@@ -26,15 +26,19 @@ public:
     : q(q)
     {
         connect(&timer, SIGNAL(timeout()), q, SLOT(fetchTasks()));
-        connect(&requester, SIGNAL(error()), this, SLOT(error()));
-        connect(&requester, SIGNAL(finished()), this, SLOT(finished()));
-        connect(&requester, SIGNAL(statusChanged(WebRequester::Status)), q, SIGNAL(statusChanged()));
-        connect(&requester, SIGNAL(started()), q, SIGNAL(started()));
-        connect(&requester, SIGNAL(finished()), q, SIGNAL(finished()));
-        connect(&requester, SIGNAL(error()), q, SIGNAL(error()));
+        connect(&instructionRequester, SIGNAL(error()), this, SLOT(instructionError()));
+        connect(&instructionRequester, SIGNAL(finished()), this, SLOT(instructionFinished()));
+        connect(&instructionRequester, SIGNAL(started()), q, SIGNAL(started()));
+        connect(&instructionRequester, SIGNAL(error()), q, SIGNAL(error()));
 
-        requester.setRequest(&request);
-        requester.setResponse(&response);
+        connect(&scheduleRequester, SIGNAL(error()), this, SLOT(scheduleError()));
+        connect(&scheduleRequester, SIGNAL(finished()), this, SLOT(scheduleFinished()));
+        connect(&scheduleRequester, SIGNAL(finished()), q, SIGNAL(finished()));
+        connect(&scheduleRequester, SIGNAL(error()), q, SIGNAL(error()));
+
+        instructionRequest.setPath(("/supervisor/api/v1/instruction/1/"));
+        instructionRequester.setRequest(&instructionRequest);
+        instructionRequester.setResponse(&instructionResponse);
     }
 
     TaskController *q;
@@ -44,16 +48,22 @@ public:
     QPointer<Scheduler> scheduler;
     QPointer<Settings> settings;
 
-    WebRequester requester;
-    GetTasksRequest request;
-    GetTasksResponse response;
+    WebRequester instructionRequester;
+    GetResourceRequest instructionRequest;
+    GetInstructionResponse instructionResponse;
+
+    WebRequester scheduleRequester;
+    GetResourceRequest scheduleRequest;
+    GetScheduleResponse scheduleResponse;
 
     QTimer timer;
 
 public slots:
     void updateTimer();
-    void finished();
-    void error();
+    void instructionFinished();
+    void scheduleFinished();
+    void instructionError();
+    void scheduleError();
 };
 
 void TaskController::Private::updateTimer()
@@ -61,10 +71,16 @@ void TaskController::Private::updateTimer()
     // Set the new url
     QString newUrl = QString("http://%1").arg(Client::instance()->settings()->config()->supervisorAddress());
 
-    if (requester.url() != newUrl)
+    if (instructionRequester.url() != newUrl)
     {
-        LOG_INFO(QString("Task url set to %1").arg(newUrl));
-        requester.setUrl(newUrl);
+        LOG_INFO(QString("Instruction url set to %1").arg(newUrl));
+        instructionRequester.setUrl(newUrl);
+    }
+
+    if (scheduleRequester.url() != newUrl)
+    {
+        LOG_INFO(QString("Schedule url set to %1").arg(newUrl));
+        scheduleRequester.setUrl(newUrl);
     }
 
     TimingPtr timing = settings->config()->supervisorTiming();
@@ -89,17 +105,39 @@ void TaskController::Private::updateTimer()
     timer.start();
 }
 
-void TaskController::Private::finished()
+void TaskController::Private::instructionFinished()
 {
-    foreach (const TestDefinition &testDefinition, response.tasks())
+    // TODO1: check which schedules we need and get new ones
+
+    scheduleRequest.setPath("/supervisor/api/v1/schedule/");
+
+    foreach (const int id, instructionResponse.scheduleIds())
+    {
+        scheduleRequest.addResourceId(id);
+    }
+
+    scheduleRequester.setRequest(&scheduleRequest);
+    scheduleRequester.setResponse(&scheduleResponse);
+
+    scheduleRequester.start();
+}
+
+void TaskController::Private::scheduleFinished()
+{
+    foreach (const TestDefinition &testDefinition, scheduleResponse.tasks())
     {
         scheduler->enqueue(testDefinition);
     }
 }
 
-void TaskController::Private::error()
+void TaskController::Private::instructionError()
 {
-    LOG_ERROR(QString("Error fetching tasks: %1").arg(requester.errorString()));
+    LOG_ERROR(QString("Error fetching instructions: %1").arg(instructionRequester.errorString()));
+}
+
+void TaskController::Private::scheduleError()
+{
+    LOG_ERROR(QString("Error fetching schedules: %1").arg(scheduleRequester.errorString()));
 }
 
 TaskController::TaskController(QObject *parent)
@@ -127,17 +165,17 @@ bool TaskController::init(NetworkManager *networkManager, Scheduler *scheduler, 
 
 Controller::Status TaskController::status() const
 {
-    return (Status)d->requester.status();
+    return (Status)d->instructionRequester.status();
 }
 
 QString TaskController::errorString() const
 {
-    return d->requester.errorString();
+    return (QStringList() << d->instructionRequester.errorString() << d->scheduleRequester.errorString()).join("\n");
 }
 
 void TaskController::fetchTasks()
 {
-    d->requester.start();
+    d->instructionRequester.start();
 }
 
 #include "taskcontroller.moc"

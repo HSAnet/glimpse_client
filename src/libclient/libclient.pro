@@ -149,7 +149,6 @@ SOURCES +=  \
     controller/configcontroller.cpp \
     measurement/measurementplugin.cpp \
     controller/taskcontroller.cpp \
-    network/requests/gettasksrequest.cpp \
     measurement/packettrains/packettrainsdefinition.cpp \
     measurement/packettrains/packettrains_ma.cpp \
     measurement/packettrains/packettrains_mp.cpp \
@@ -171,7 +170,8 @@ SOURCES +=  \
     measurement/reverse_dnslookup/reverseDnslookup.cpp \
     measurement/reverse_dnslookup/reverseDnslookup_definition.cpp \
     measurement/reverse_dnslookup/reverseDnslookup_plugin.cpp \
-    channel.cpp
+    channel.cpp \
+    network/requests/resourcerequest.cpp
 
 HEADERS += \
     export.h \
@@ -234,7 +234,6 @@ HEADERS += \
     log/logmodel.h \
     controller/configcontroller.h \
     controller/taskcontroller.h \
-    network/requests/gettasksrequest.h \
     measurement/packettrains/packettrainsdefinition.h \
     measurement/packettrains/packettrains_mp.h \
     measurement/packettrains/packettrains_ma.h \
@@ -257,7 +256,8 @@ HEADERS += \
     measurement/reverse_dnslookup/reverseDnslookup.h \
     measurement/reverse_dnslookup/reverseDnslookup_definition.h \
     measurement/reverse_dnslookup/reverseDnslookup_plugin.h \
-    channel.h
+    channel.h \
+    network/requests/resourcerequest.h
 
 OTHER_FILES += \
     libclient.pri

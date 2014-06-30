@@ -5,6 +5,7 @@ class Request::Private
 public:
     QString deviceId;
     QString sessionId;
+    QString path;
 };
 
 Request::Request(QObject *parent)
@@ -44,4 +45,18 @@ void Request::setSessionId(const QString &sessionId)
 QString Request::sessionId() const
 {
     return d->sessionId;
+}
+
+void Request::setPath(const QString &path)
+{
+    if (d->path != path)
+    {
+        d->path = path;
+        emit pathChanged(path);
+    }
+}
+
+QString Request::path() const
+{
+    return d->path;
 }

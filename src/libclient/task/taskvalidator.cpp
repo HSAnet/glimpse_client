@@ -30,7 +30,6 @@ TaskValidator::ValidationResult TaskValidator::validate(const TestDefinition &te
 {
     // Simple checks
     if (testDefinition.isNull()
-        || testDefinition.id().isNull()
         || testDefinition.timing().isNull())
     {
         return Invalid;
@@ -46,7 +45,7 @@ TaskValidator::ValidationResult TaskValidator::validate(const TestDefinition &te
     // Check the timing
     TimingPtr timing = testDefinition.timing();
 
-    if (timing->isValid())
+    if (!timing->isValid())
     {
         LOG_INFO(QString("Measurement '%1' has no valid timing, ignoring").arg(testDefinition.name()));
         return Invalid;

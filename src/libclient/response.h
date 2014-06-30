@@ -86,18 +86,37 @@ protected:
     Channel m_reportChannel;
 };
 
-class GetTasksResponse : public Response
+class GetInstructionResponse : public Response
 {
     Q_OBJECT
 
 public:
-    GetTasksResponse(QObject *parent = 0)
+    GetInstructionResponse(QObject *parent = 0)
     : Response(parent)
     {
     }
 
-    TestDefinitionList tasks() const;
+    QList<int> taskIds() const;
+    QList<int> scheduleIds() const;
     bool fillFromVariant(const QVariantMap &variant);
+
+protected:
+    QList<int> m_taskIds;
+    QList<int> m_scheduleIds;
+};
+
+class GetScheduleResponse : public Response
+{
+    Q_OBJECT
+
+public:
+    GetScheduleResponse(QObject *parent = 0)
+    : Response(parent)
+    {
+    }
+
+    bool fillFromVariant(const QVariantMap &variant);
+    TestDefinitionList tasks() const;
 
 protected:
     TaskValidator m_validator;

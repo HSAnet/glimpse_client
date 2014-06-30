@@ -21,6 +21,7 @@ UserRegisterRequest::UserRegisterRequest(QObject *parent)
 : Request(parent)
 , d(new Private)
 {
+    setPath("/auth/api/v1/user/");
 }
 
 UserRegisterRequest::~UserRegisterRequest()

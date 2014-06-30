@@ -74,7 +74,7 @@ QStringList MeasurementFactory::availableMeasurements() const
     return d->pluginNameHash.keys();
 }
 
-MeasurementPtr MeasurementFactory::createMeasurement(const QString &name, const QUuid &id)
+MeasurementPtr MeasurementFactory::createMeasurement(const QString &name, const quint32 &id)
 {
     if (MeasurementPlugin *plugin = d->pluginNameHash.value(name))
     {

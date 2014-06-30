@@ -6,7 +6,6 @@
 class CLIENT_API LoginRequest : public Request
 {
     Q_OBJECT
-    Q_CLASSINFO("path", "/auth/api/v1/apikey/1/")
     Q_CLASSINFO("http_request_method", "get")
     Q_CLASSINFO("authentication_method", "basic")
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)

@@ -5,6 +5,7 @@
 #include "timing/timingfactory.h"
 #include "channel.h"
 #include "log/logger.h"
+#include "types.h"
 
 LOGGER(Response);
 
@@ -150,20 +151,52 @@ TimingPtr GetConfigResponse::reportTiming() const
     return m_reportChannel.timing();
 }
 
-TestDefinitionList GetTasksResponse::tasks() const
+QList<int> GetInstructionResponse::taskIds() const
 {
-    return m_tasks;
+    return m_taskIds;
 }
 
-bool GetTasksResponse::fillFromVariant(const QVariantMap &variant)
+QList<int> GetInstructionResponse::scheduleIds() const
 {
-    m_tasks.clear();
+    return m_scheduleIds;
+}
 
-    QVariantList tasks = variant.value("tasks").toList();
+bool GetInstructionResponse::fillFromVariant(const QVariantMap &variant)
+{
+    m_taskIds.clear();
 
-    foreach (const QVariant &taskVariant, tasks)
+    foreach (const QVariant &entry, variant.value("tasks").toList())
     {
-        TestDefinition test = TestDefinition::fromVariant(taskVariant);
+        m_taskIds.append(entry.toInt());
+    }
+
+    m_scheduleIds.clear();
+
+    foreach (const QVariant &entry, variant.value("schedules").toList())
+    {
+      m_scheduleIds.append(entry.toInt());
+    }
+
+    LOG_DEBUG(QString("Received %1 tasks").arg(m_taskIds.size()));
+    LOG_DEBUG(QString("Received %1 schedules").arg(m_scheduleIds.size()));
+
+    return true;
+}
+
+
+bool GetScheduleResponse::fillFromVariant(const QVariantMap &variant)
+{
+
+    foreach (const QVariant &entry, variant.value("objects").toList())
+    {
+        QVariantMap variantMap = entry.toMap();
+
+        // generate task
+        TestDefinition test = TestDefinition::fromVariant(variantMap.value("task"));
+
+        // get timing and merge into task FIXME this is an evil hack
+        TimingPtr timing = TimingFactory::timingFromVariant(variantMap.value("timing"));
+        test.setTiming(timing);
 
         if (m_validator.validate(test) == TaskValidator::Valid)
         {
@@ -176,7 +209,12 @@ bool GetTasksResponse::fillFromVariant(const QVariantMap &variant)
         }
     }
 
-    LOG_DEBUG(QString("Received %1 tasks").arg(m_tasks.size()));
+
 
     return true;
+}
+
+TestDefinitionList GetScheduleResponse::tasks() const
+{
+    return m_tasks;
 }

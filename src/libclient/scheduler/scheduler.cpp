@@ -34,7 +34,7 @@ public:
 
     TestDefinitionList tests;
     TestDefinitionList onDemandTests;
-    QSet<QUuid> testIds;
+    QSet<quint32> testIds;
 
     QPointer<TaskExecutor> executor;
 
@@ -103,6 +103,7 @@ int Scheduler::Private::enqueue(const TestDefinition &testDefinition)
     }
 
     tests.append(testDefinition);
+    testIds.insert(testDefinition.id());
 
     // update the timer if the list was empty
     if (tests.size() == 1)
@@ -187,7 +188,7 @@ void Scheduler::execute(const TestDefinition &testDefinition)
     d->executor->execute(testDefinition);
 }
 
-int Scheduler::executeOnDemandTest(const QUuid &id)
+int Scheduler::executeOnDemandTest(const quint32 &id)
 {
     foreach (const TestDefinition& td, d->onDemandTests)
     {

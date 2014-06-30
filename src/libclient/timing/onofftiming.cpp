@@ -42,9 +42,11 @@ bool OnOffTiming::isValid() const
 QVariant OnOffTiming::toVariant() const
 {
     QVariantMap hash;
-    hash.insert("type", type());
     hash.insert("time", d->dateTime);
-    return hash;
+
+    QVariantMap resultMap;
+    resultMap.insert(type(), hash);
+    return resultMap;
 }
 
 TimingPtr OnOffTiming::fromVariant(const QVariant &variant)

@@ -8,7 +8,6 @@
 class CLIENT_API UserRegisterRequest : public Request
 {
     Q_OBJECT
-    Q_CLASSINFO("path", "/auth/api/v1/user/")
     Q_CLASSINFO("http_request_method", "post")
     Q_CLASSINFO("authentication_method", "apikey")
     Q_PROPERTY(QString lastName READ lastName WRITE setLastName NOTIFY lastNameChanged)

@@ -77,11 +77,13 @@ bool PeriodicTiming::isValid() const
 QVariant PeriodicTiming::toVariant() const
 {
     QVariantMap hash;
-    hash.insert("type", type());
     hash.insert("start", d->start);
     hash.insert("end", d->end);
     hash.insert("interval", d->period);
-    return hash;
+
+    QVariantMap resultMap;
+    resultMap.insert(type(), hash);
+    return resultMap;
 }
 
 TimingPtr PeriodicTiming::fromVariant(const QVariant &variant)

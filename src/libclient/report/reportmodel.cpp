@@ -20,7 +20,7 @@ public:
 
     QPointer<ReportScheduler> scheduler;
 
-    QHash<QUuid, int> identToReport;
+    QHash<quint32, int> identToReport;
     ReportList reports;
 
 public slots:
@@ -106,7 +106,7 @@ ReportScheduler *ReportModel::scheduler() const
     return d->scheduler;
 }
 
-QModelIndex ReportModel::indexFromTaskId(const QUuid &taskId) const
+QModelIndex ReportModel::indexFromTaskId(const quint32 &taskId) const
 {
     int pos = d->identToReport.value(taskId);
 
@@ -180,7 +180,7 @@ QVariant ReportModel::data(const QModelIndex &index, int role) const
     switch (role)
     {
     case TaskIdRole:
-        return uuidToString(report.taskId());
+        return report.taskId();
 
     case DateTimeRole:
         return report.dateTime();

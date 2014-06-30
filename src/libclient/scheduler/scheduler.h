@@ -23,7 +23,7 @@ public:
 
     void execute(const TestDefinition &testDefinition);
 
-    int executeOnDemandTest(const QUuid &id);
+    int executeOnDemandTest(const quint32 &id);
 
 signals:
     void testAdded(const TestDefinition &test, int position);
