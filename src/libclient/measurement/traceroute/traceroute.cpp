@@ -56,6 +56,9 @@ bool Traceroute::prepare(NetworkManager *networkManager,
 
     connect(&udpPing, SIGNAL(finished()), this, SLOT(pingFinished()));
 
+    connect(&udpPing, SIGNAL(error(const QString &)), &udpPing,
+            SLOT(setErrorString(const QString &)));
+
     return true;
 }
 

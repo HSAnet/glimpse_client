@@ -99,6 +99,8 @@ UdpPing::UdpPing(QObject *parent)
 , m_destAddress()
 , m_payload(NULL)
 {
+    connect(this, SIGNAL(error(const QString &)), this,
+            SLOT(setErrorString(const QString &)));
 }
 
 UdpPing::~UdpPing()
@@ -142,6 +144,7 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     // resolve
     if (!getAddress(definition->url, &m_destAddress))
     {
+        emit error(QString("could not resolve hostname '%1'").arg(definition->url));
         return false;
     }
 
@@ -156,6 +159,8 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     else
     {
         // unreachable
+        emit error(QString("unknown address family '%1'").arg(
+                       m_destAddress.sa.sa_family));
         return false;
     }
 

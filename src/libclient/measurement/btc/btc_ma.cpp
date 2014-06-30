@@ -15,6 +15,8 @@ BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
 , m_lasttime(-1)
 , m_status(Unknown)
 {
+    connect(this, SIGNAL(error(const QString &)), this,
+            SLOT(setErrorString(const QString &)));
 }
 
 bool BulkTransportCapacityMA::start()
@@ -166,6 +168,7 @@ void BulkTransportCapacityMA::handleError(QAbstractSocket::SocketError socketErr
 
     QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
     LOG_ERROR(QString("Socket Error: %1").arg(socket->errorString()));
+    emit error(socket->errorString());
 }
 
 Measurement::Status BulkTransportCapacityMA::status() const
@@ -191,6 +194,7 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager,
     if (!m_tcpSocket)
     {
         LOG_ERROR("Preparation failed");
+        emit error("Preparation failed");
         return false;
     }
 
@@ -237,5 +241,5 @@ Result BulkTransportCapacityMA::result() const
     }
 
     return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant(),
-                  definition->measurementUuid);
+                  definition->measurementUuid, errorString());
 }

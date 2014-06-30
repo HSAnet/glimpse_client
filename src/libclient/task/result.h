@@ -27,6 +27,7 @@ public:
     , probeResult(other.probeResult)
     , peerResult(other.peerResult)
     , measureUuid(other.measureUuid)
+    , errorString(other.errorString)
     {
     }
 
@@ -35,6 +36,7 @@ public:
     QVariant probeResult;
     QVariant peerResult;
     QUuid measureUuid;
+    QString errorString;
 };
 
 
@@ -42,12 +44,14 @@ class CLIENT_API Result : public Serializable
 {
 public:
     Result();
+    Result(const QString &errorString);
     Result(const Result &other);
     Result(const QDateTime &startDateTime,
            const QDateTime &endDateTime,
            const QVariant &probeResult,
            const QVariant &peerResult,
-           const QUuid &measureUuid = QUuid());
+           const QUuid &measureUuid = QUuid(),
+           const QString &errorString = QString());
 
     bool isNull() const;
 
@@ -65,6 +69,9 @@ public:
 
     void setMeasureUuid(const QUuid& measureUuid);
     QUuid measureUuid() const;
+
+    void setErrorString(const QString &errorString);
+    QString errorString() const;
 
     // Storage
     static Result fromVariant(const QVariant &variant);

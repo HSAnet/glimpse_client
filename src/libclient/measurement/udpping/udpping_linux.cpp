@@ -70,6 +70,8 @@ UdpPing::UdpPing(QObject *parent)
 , m_destAddress()
 , m_payload(NULL)
 {
+    connect(this, SIGNAL(error(const QString &)), this,
+            SLOT(setErrorString(const QString &)));
 }
 
 UdpPing::~UdpPing()
@@ -113,6 +115,7 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     // resolve
     if (!getAddress(definition->url, &m_destAddress))
     {
+        emit error(QString("could not resolve hostname '%1'").arg(definition->url));
         return false;
     }
 
@@ -123,6 +126,12 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     else if (m_destAddress.sa.sa_family == AF_INET6)
     {
         m_destAddress.sin6.sin6_port = htons(definition->destinationPort ? definition->destinationPort : 33434);
+    }
+    else
+    {
+        emit error(QString("unknown address family '%1'").arg(
+                       m_destAddress.sa.sa_family));
+        return false;
     }
 
     return true;

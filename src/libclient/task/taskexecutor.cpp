@@ -57,7 +57,9 @@ public slots:
         }
 
         LOG_INFO(QString("Finished execution of %1 (failed)").arg(test.name()));
-        emit finished(test, Result());
+        // the result should at least contain the errorString, as all the other
+        // fields will be empty
+        emit finished(test, Result(measurement->errorString()));
     }
 
     void measurementFinished()

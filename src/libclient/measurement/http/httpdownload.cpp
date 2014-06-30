@@ -14,6 +14,8 @@ HTTPDownload::HTTPDownload(QObject *parent)
 , m_nam(NULL)
 , m_reply(NULL)
 {
+    connect(this, SIGNAL(error(const QString &)), this,
+            SLOT(setErrorString(const QString &)));
 }
 
 HTTPDownload::~HTTPDownload()
@@ -77,7 +79,8 @@ Result HTTPDownload::result() const
         res << QString::number(val, 'f');
     }
 
-    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant());
+    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant(),
+                  QUuid(), errorString());
 }
 
 void HTTPDownload::setStatus(Status status)
@@ -92,6 +95,7 @@ void HTTPDownload::setStatus(Status status)
 void HTTPDownload::requestFinished()
 {
     QVariant statusCode = m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+
 
     if (m_reply->error() == QNetworkReply::NoError)
     {
@@ -129,6 +133,7 @@ void HTTPDownload::requestFinished()
     else
     {
         // handle errors here
+        emit error(m_reply->errorString());
     }
 
     setStatus(HTTPDownload::Finished);

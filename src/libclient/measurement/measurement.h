@@ -50,13 +50,19 @@ public:
     QDateTime startDateTime() const;
     void setStartDateTime(const QDateTime &startDateTime);
 
+    QString errorString() const;
+
 signals:
     void started();
     void finished();
+    void error(const QString &message);
 
 protected:
     class Private;
     Private *d;
+
+protected slots:
+    void setErrorString(const QString &message);
 };
 
 #endif // MEASUREMENT_H
