@@ -68,7 +68,7 @@ Settings::StorageType Settings::init()
     // Create new settings
     if (newSettings)
     {
-        d->config.setConfigAddress("supervisor.measure-it.de:5105");
+        d->config.setConfigAddress("supervisor.measure-it.net:80");
         LOG_INFO("Created new settings for this device");
 
         return NewSettings;
@@ -81,7 +81,7 @@ Settings::StorageType Settings::init()
         if (d->config.configAddress().isEmpty())
         {
             LOG_WARNING("Controller address lost, setting back default one");
-            d->config.setConfigAddress("supervisor.measure-it.de:5105");
+            d->config.setConfigAddress("supervisor.measure-it.net:80");
         }
 
         LOG_INFO("Loaded existing settings for this device");
