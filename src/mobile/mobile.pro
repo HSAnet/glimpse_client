@@ -21,6 +21,7 @@ include(../../dist.pri)
 include(../libclient/libclient.pri)
 
 osx:TARGET = glimpse
+osx:ICON = glimpse.icns
 QMAKE_INFO_PLIST = Info.plist
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
