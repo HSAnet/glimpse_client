@@ -276,7 +276,7 @@ void Client::Private::taskFinished(const TestDefinition &test, const Result &res
     ResultList results = report.isNull() ? ResultList() : report.results();
     results.append(result);
 
-    if (report.isNull())
+    if (report.isNull() || results.size() == 1)
     {
         report = Report(test.id(), QDateTime::currentDateTime(), Client::version(), results);
         reportScheduler.addReport(report);
