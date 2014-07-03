@@ -36,6 +36,8 @@ bool Dnslookup::prepare(NetworkManager *networkManager, const MeasurementDefinit
 
 bool Dnslookup::start()
 {
+    setStartDateTime(QDateTime::currentDateTime());
+
     m_dns.setType(QDnsLookup::ANY);
     m_dns.setName(m_definition->host);
 
@@ -48,8 +50,6 @@ bool Dnslookup::start()
     }
 
 #endif
-
-    setStartDateTime(QDateTime::currentDateTime());
 
     m_dns.lookup();
     return true;
@@ -67,6 +67,7 @@ void Dnslookup::handleServers()
     m_dnsError = m_dns.errorString();
 
     setStatus(Dnslookup::Finished);
+    setEndDateTime(QDateTime::currentDateTime());
     emit finished();
 }
 
@@ -125,7 +126,7 @@ Result Dnslookup::result() const
         res << map;
     }
 
-    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant());
+    return Result(startDateTime(), endDateTime(), res, QVariant());
 }
 
 void Dnslookup::started()

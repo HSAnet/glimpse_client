@@ -51,12 +51,13 @@ bool HTTPDownload::prepare(NetworkManager *networkManager, const MeasurementDefi
 
 bool HTTPDownload::start()
 {
+    setStartDateTime(QDateTime::currentDateTime());
+
     // start timer
     m_timer.start();
 
     // start
     m_reply = m_nam->get(m_request);
-    setStartDateTime(QDateTime::currentDateTime());
     setStatus(HTTPDownload::Running);
 
     QObject::connect(m_reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
@@ -79,7 +80,7 @@ Result HTTPDownload::result() const
         res << QString::number(val, 'f');
     }
 
-    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant(),
+    return Result(startDateTime(), endDateTime(), res, QVariant(),
                   QUuid(), errorString());
 }
 
@@ -95,7 +96,6 @@ void HTTPDownload::setStatus(Status status)
 void HTTPDownload::requestFinished()
 {
     QVariant statusCode = m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-
 
     if (m_reply->error() == QNetworkReply::NoError)
     {
@@ -137,6 +137,7 @@ void HTTPDownload::requestFinished()
     }
 
     setStatus(HTTPDownload::Finished);
+    setEndDateTime(QDateTime::currentDateTime());
     emit finished();
 }
 

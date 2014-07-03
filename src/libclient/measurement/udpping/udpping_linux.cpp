@@ -139,13 +139,13 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
 
 bool UdpPing::start()
 {
+    setStartDateTime(QDateTime::currentDateTime());
+
     PingProbe probe;
 
     // include null-character
     m_payload = new char[definition->payload + 1];
     memset(m_payload, 0, definition->payload + 1);
-
-    setStartDateTime(QDateTime::currentDateTime());
 
     setStatus(UdpPing::Running);
 
@@ -169,6 +169,7 @@ bool UdpPing::start()
 
     setStatus(UdpPing::Finished);
     delete[] m_payload;
+    setEndDateTime(QDateTime::currentDateTime());
     emit finished();
 
     return true;
@@ -191,7 +192,7 @@ Result UdpPing::result() const
         }
     }
 
-    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant());
+    return Result(startDateTime(), endDateTime(), res, QVariant());
 }
 
 int UdpPing::initSocket()

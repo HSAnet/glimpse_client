@@ -134,6 +134,7 @@ void PacketTrainsMP::eval()
         }
     }
 
+    setEndDateTime(QDateTime::currentDateTime());
     emit finished();
 }
 
@@ -203,6 +204,6 @@ Result PacketTrainsMP::result() const
     map.insert("sending_speed", listToVariant(m_sendSpeed));
     map.insert("receiving_speed", listToVariant(m_recvSpeed));
 
-    return Result(startDateTime(), QDateTime::currentDateTime(), map, QVariant(), getMeasurementUuid(),
+    return Result(startDateTime(), endDateTime(), map, QVariant(), getMeasurementUuid(),
                   errorString());
 }

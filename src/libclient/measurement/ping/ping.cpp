@@ -40,9 +40,9 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 
 bool Ping::start()
 {
-    QStringList args;
-
     setStartDateTime(QDateTime::currentDateTime());
+
+    QStringList args;
 
 #ifdef Q_OS_LINUX
     args << "-c" << QString::number(definition->count)
@@ -99,7 +99,7 @@ Result Ping::result() const
         res << QString::number(val, 'f', 3);
     }
 
-    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant());
+    return Result(startDateTime(), endDateTime(), res, QVariant());
 }
 
 void Ping::started()
@@ -115,6 +115,7 @@ void Ping::finished(int exitCode, QProcess::ExitStatus exitStatus)
     Q_UNUSED(exitStatus);
 
     setStatus(Ping::Finished);
+    setEndDateTime(QDateTime::currentDateTime());
     emit Measurement::finished();
 }
 

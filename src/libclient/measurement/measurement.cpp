@@ -10,6 +10,7 @@ public:
     quint32 taskId;
     QUuid measurementUuid;
     QDateTime startDateTime;
+    QDateTime endDateTime;
     QString errorString;
 };
 
@@ -61,6 +62,16 @@ QDateTime Measurement::startDateTime() const
 void Measurement::setStartDateTime(const QDateTime &startDateTime)
 {
     d->startDateTime = startDateTime;
+}
+
+QDateTime Measurement::endDateTime() const
+{
+    return d->endDateTime;
+}
+
+void Measurement::setEndDateTime(const QDateTime &endDateTime)
+{
+    d->endDateTime = endDateTime;
 }
 
 QString Measurement::errorString() const

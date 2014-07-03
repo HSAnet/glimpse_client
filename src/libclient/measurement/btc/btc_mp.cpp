@@ -17,6 +17,8 @@ BulkTransportCapacityMP::BulkTransportCapacityMP(QObject *parent)
 
 bool BulkTransportCapacityMP::start()
 {
+    setStartDateTime(QDateTime::currentDateTime());
+
     // Start listening
     bool ret = m_tcpServer->listen(QHostAddress::Any, definition->port);
     LOG_DEBUG(QString("Listening on port %1: %2").arg(definition->port).arg(ret));
@@ -87,6 +89,8 @@ void BulkTransportCapacityMP::handleError(QAbstractSocket::SocketError socketErr
 
     QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
     LOG_ERROR(QString("Socket Error: %1").arg(socket->errorString()));
+
+    setEndDateTime(QDateTime::currentDateTime());
     emit error(socket->errorString());
 }
 
@@ -122,6 +126,7 @@ bool BulkTransportCapacityMP::prepare(NetworkManager *networkManager,
 bool BulkTransportCapacityMP::stop()
 {
     delete m_tcpSocket;
+    setEndDateTime(QDateTime::currentDateTime());
     return true;
 }
 
