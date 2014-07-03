@@ -10,6 +10,9 @@
 #include <sys/time.h>
 
 #include "udpping.h"
+#include "../../log/logger.h"
+
+LOGGER("UdpPing");
 
 namespace
 {
@@ -321,7 +324,7 @@ void UdpPing::receiveData(PingProbe *probe)
     sockaddr_any from;
     struct iovec iov;
     char buf[1500];
-    char control[CMSG_SPACE(sizeof(probe->sock))];
+    char control[256];
     struct cmsghdr *cm;
     struct sock_extended_err *ee = NULL;
     struct timeval *tv;
@@ -369,6 +372,11 @@ void UdpPing::receiveData(PingProbe *probe)
         // msg_name provides the source address if the initial request packet
         // was successful
         memcpy(&probe->source, &from, sizeof(sockaddr_any));
+    }
+
+    if (msg.msg_flags & MSG_CTRUNC)
+    {
+        LOG_WARNING("control message buffer is too short to store all messages");
     }
 
     for (cm = CMSG_FIRSTHDR(&msg); cm; cm = CMSG_NXTHDR(&msg, cm))
