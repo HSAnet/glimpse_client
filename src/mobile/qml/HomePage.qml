@@ -90,6 +90,8 @@ FlickablePage {
 
             onPaint: {
                 var chart = new Chart.LineChart();
+                chart.width = width;
+                chart.matrix_textPaddingLeft = 0.7;
                 chart.drawLineChart(0, 0, getContext("2d"));
             }
             anchors {

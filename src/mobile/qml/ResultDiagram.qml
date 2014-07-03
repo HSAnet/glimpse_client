@@ -30,8 +30,9 @@ Page {
                 }
             }
 
-            chart.width = 400;
+            chart.width = width - 10;
             chart.matrix_textPaddingLeft = 0.7;
+            chart.matrix_scale_round_digits = 1;
             chart.pointJSON = pointJSON;
 
             chart.drawLineChart(0, 0, getContext("2d"));
