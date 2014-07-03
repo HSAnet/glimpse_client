@@ -20,7 +20,9 @@ LOGGER(ReportController);
 class ReportPost : public Request
 {
     Q_OBJECT
-    Q_CLASSINFO("path", "/send_results")
+
+    Q_CLASSINFO("http_request_method", "post")
+    Q_CLASSINFO("authentication_method", "apikey")
 
 public:
     ReportPost(QObject *parent = 0)
@@ -42,8 +44,14 @@ public:
     QVariant toVariant() const
     {
         QVariantMap map;
-        map.insert("session_id", sessionId());
-        map.insert("reports", listToVariant(m_reports));
+        QVariantList list;
+
+        foreach (Report report, m_reports)
+        {
+            list.append(report.toVariant());
+        }
+
+        map.insert("reports", list);
         return map;
     }
 
@@ -100,6 +108,7 @@ public:
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
 
+        post.setPath(("/api/v1/report/"));
         requester.setRequest(&post);
         requester.setResponse(&response);
     }
