@@ -52,6 +52,8 @@ public:
         }
 
         map.insert("reports", list);
+        map.insert("device_id", deviceId());
+
         return map;
     }
 
@@ -75,16 +77,16 @@ public:
     // Response interface
     bool fillFromVariant(const QVariantMap &variant)
     {
-        /*
+
         // TODO: new format
         this->taskIds.clear();
 
-        QVariantList taskIds = variant.value("successful_task_ids").toList();
+        QVariantList taskIds = variant.value("tasks").toList();
 
         foreach (const QVariant &id, taskIds)
         {
-            this->taskIds.append(id.toString());
-        }*/
+            this->taskIds.append(id.toInt());
+        }
 
         return true;
     }
@@ -167,7 +169,7 @@ void ReportController::Private::updateTimer()
 void ReportController::Private::onFinished()
 {
     QList<quint32> taskIds = response.taskIds;
-    LOG_INFO(QString("%1 Reports successfully sent").arg(taskIds.size()));
+    LOG_INFO(QString("%1 Results successfully inserted").arg(taskIds.size()));
 
     foreach (const quint32 &taskId, taskIds)
     {
@@ -211,7 +213,7 @@ bool ReportController::init(ReportScheduler *scheduler, Settings *settings)
     d->settings = settings;
 
     connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(updateTimer()));
-    d->updateTimer();
+    //d->updateTimer();
 
     return true;
 }
