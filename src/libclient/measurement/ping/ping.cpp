@@ -2,6 +2,8 @@
 #include "../../log/logger.h"
 
 #include <QProcess>
+#include <QtMath>
+#include <limits.h>
 
 LOGGER(Ping);
 
@@ -92,12 +94,31 @@ bool Ping::stop()
 
 Result Ping::result() const
 {
-    QVariantList res;
+    QVariantMap res;
+    QVariantList roundTripMs;
+    float variance = 0.0;
+
+    float avg = averagePingTime();
+
+    // get max and min
+    QList<float>::const_iterator it = std::max_element(pingTime.begin(), pingTime.end());
+    float max = *it;
+    it = std::min_element(pingTime.begin(), pingTime.end());
+    float min = *it;
 
     foreach (float val, pingTime)
     {
-        res << QString::number(val, 'f', 3);
+        roundTripMs << QString::number(val, 'f', 3);
+        variance += (val-avg) * (val-avg);
     }
+
+    variance = variance / pingTime.length();
+
+    res.insert("round_trip_ms", roundTripMs);
+    res.insert("round_trip_avg", avg);
+    res.insert("round_trip_min", min);
+    res.insert("round_trip_max", max);
+    res.insert("round_trip_stddev", qSqrt(qAbs(variance)));
 
     return Result(startDateTime(), endDateTime(), res, QVariant());
 }
@@ -151,7 +172,7 @@ void Ping::waitForFinished()
     process.waitForFinished(1000);
 }
 
-float Ping::averagePingTime()
+float Ping::averagePingTime() const
 {
     float time = 0;
 
