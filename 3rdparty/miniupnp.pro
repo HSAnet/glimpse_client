@@ -3,10 +3,12 @@ CONFIG += staticlib
 CONFIG -= qt
 
 !win32 {
+    strings.target = miniupnp/miniupnpc/miniupnpcstrings.h
     strings.commands = cd $$PWD/miniupnp/miniupnpc && sh updateminiupnpcstrings.sh
+    strings.depends = FORCE
+
     QMAKE_EXTRA_TARGETS += strings
-    PRE_TARGETDEPS += strings
-    target.depends = strings
+    PRE_TARGETDEPS += miniupnp/miniupnpc/miniupnpcstrings.h
 }
 
 DEFINES += HAVE_UPNP STATICLIB
