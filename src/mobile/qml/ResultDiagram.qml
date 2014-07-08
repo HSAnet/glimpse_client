@@ -34,6 +34,7 @@ Page {
             chart.matrix_textPaddingLeft = 0.7;
             chart.matrix_scale_round_digits = 1;
             chart.pointJSON = pointJSON;
+            chart.graph_linePaddingLeft = 0.11;
 
             chart.drawLineChart(0, 0, getContext("2d"));
         }
