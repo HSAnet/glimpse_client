@@ -32,3 +32,7 @@ win32 {
 }
 
 win32:LIBS += -lws2_32
+
+# If we link libclient statically, one also needs to link
+# miniupnpc statically
+android|osx:include(../../3rdparty/miniupnpc.pri)
