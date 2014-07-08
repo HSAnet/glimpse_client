@@ -17,7 +17,7 @@ win32 {
     else:BUILDCONFIG = "debug"
 
     LIBS += -L../../3rdparty/$$BUILDCONFIG -lminiupnp
-    PRE_TARGETDEPS = ../../3rdparty/miniupnp.lib
+    PRE_TARGETDEPS = ../../3rdparty/$$BUILDCONFIG/miniupnp.lib
 } else {
     LIBS += ../../3rdparty/libminiupnp.a
     PRE_TARGETDEPS = ../../3rdparty/libminiupnp.a
