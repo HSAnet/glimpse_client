@@ -57,10 +57,10 @@ QStringList GetValuesFromNameValueList(struct NameValueParserData *pdata,
 
 bool UPnP::start()
 {
+    setStartDateTime(QDateTime::currentDateTime());
+
     int error = 0;
     int devNumber = 0;
-
-    setStartDateTime(QDateTime::currentDateTime());
 
     UPNPDev *devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
     UPNPDev *devlistBegin = devlist;
@@ -230,6 +230,7 @@ bool UPnP::start()
 
     freeUPNPDevlist(devlistBegin);
 
+    setEndDateTime(QDateTime::currentDateTime());
     emit finished();
     return true; // TODO return false if something went wrong or if there are no results
 }
@@ -268,5 +269,5 @@ Result UPnP::result() const
         deviceResultList.append(deviceResult);
     }
 
-    return Result(startDateTime(), QDateTime::currentDateTime(), deviceResultList, QVariant());
+    return Result(startDateTime(), endDateTime(), deviceResultList, QVariant());
 }

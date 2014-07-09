@@ -110,6 +110,7 @@ void BulkTransportCapacityMA::calculateResult()
 
         m_status = BulkTransportCapacityMA::Finished;
 
+        setEndDateTime(QDateTime::currentDateTime());
         emit finished();
     }
 }
@@ -240,6 +241,6 @@ Result BulkTransportCapacityMA::result() const
         res << QString::number(val, 'f');
     }
 
-    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant(),
+    return Result(startDateTime(), endDateTime(), res, QVariant(),
                   definition->measurementUuid, errorString());
 }

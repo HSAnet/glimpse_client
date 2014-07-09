@@ -50,6 +50,9 @@ public:
     QDateTime startDateTime() const;
     void setStartDateTime(const QDateTime &startDateTime);
 
+    QDateTime endDateTime() const;
+    void setEndDateTime(const QDateTime &endDateTime);
+
     QString errorString() const;
 
 signals:

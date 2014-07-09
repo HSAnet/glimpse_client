@@ -21,8 +21,8 @@ public:
     bool start();
     bool stop();
     void waitForFinished();
-    float averagePingTime();
     Result result() const;
+    float averagePingTime() const;
 
 private:
     void setStatus(Status status);

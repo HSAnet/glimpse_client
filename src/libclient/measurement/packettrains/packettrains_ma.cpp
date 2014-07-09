@@ -41,6 +41,8 @@ PacketTrainsMA::PacketTrainsMA()
 
 bool PacketTrainsMA::start()
 {
+    setStartDateTime(QDateTime::currentDateTime());
+
     QByteArray buffer;
     buffer.resize(definition->packetSize);
 
@@ -57,8 +59,6 @@ bool PacketTrainsMA::start()
         disp[i] = (quint64)(definition->packetSize * 1000000000.0 / ((R_MAX - R_MIN) / definition->iterations * i +
                                                                      R_MIN));  // Linear Rate
     }
-
-    setStartDateTime(QDateTime::currentDateTime());
 
     QElapsedTimer timer;
     timer.start();
@@ -83,6 +83,7 @@ bool PacketTrainsMA::start()
 
     delete[] disp;
 
+    setEndDateTime(QDateTime::currentDateTime());
     emit finished();
     return true;
 }
@@ -142,6 +143,6 @@ bool PacketTrainsMA::stop()
 
 Result PacketTrainsMA::result() const
 {
-    return Result(startDateTime(), QDateTime::currentDateTime(), QVariant(), QVariant(),
+    return Result(startDateTime(), endDateTime(), QVariant(), QVariant(),
                   definition->measurementUuid, errorString());
 }

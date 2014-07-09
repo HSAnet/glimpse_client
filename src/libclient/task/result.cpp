@@ -89,8 +89,9 @@ QString Result::errorString() const
 QVariant Result::toVariant() const
 {
     QVariantMap map;
-    map.insert("start_date_time", d->startDateTime);
-    map.insert("end_date_time", d->endDateTime);
+    map.insert("start_time", d->startDateTime);
+    map.insert("end_time", d->endDateTime);
+    map.insert("duration", d->startDateTime.msecsTo(d->endDateTime));
     map.insert("probe_result", d->probeResult);
     map.insert("peer_result", d->peerResult);
     map.insert("measure_uuid", uuidToString(d->measureUuid));

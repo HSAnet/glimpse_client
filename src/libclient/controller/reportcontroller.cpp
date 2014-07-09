@@ -20,7 +20,9 @@ LOGGER(ReportController);
 class ReportPost : public Request
 {
     Q_OBJECT
-    Q_CLASSINFO("path", "/send_results")
+
+    Q_CLASSINFO("http_request_method", "post")
+    Q_CLASSINFO("authentication_method", "apikey")
 
 public:
     ReportPost(QObject *parent = 0)
@@ -42,8 +44,16 @@ public:
     QVariant toVariant() const
     {
         QVariantMap map;
-        map.insert("session_id", sessionId());
-        map.insert("reports", listToVariant(m_reports));
+        QVariantList list;
+
+        foreach (Report report, m_reports)
+        {
+            list.append(report.toVariant());
+        }
+
+        map.insert("reports", list);
+        map.insert("device_id", deviceId());
+
         return map;
     }
 
@@ -67,16 +77,16 @@ public:
     // Response interface
     bool fillFromVariant(const QVariantMap &variant)
     {
-        /*
+
         // TODO: new format
         this->taskIds.clear();
 
-        QVariantList taskIds = variant.value("successful_task_ids").toList();
+        QVariantList taskIds = variant.value("tasks").toList();
 
         foreach (const QVariant &id, taskIds)
         {
-            this->taskIds.append(id.toString());
-        }*/
+            this->taskIds.append(id.toInt());
+        }
 
         return true;
     }
@@ -100,6 +110,7 @@ public:
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
 
+        post.setPath(("/api/v1/report/"));
         requester.setRequest(&post);
         requester.setResponse(&response);
     }
@@ -158,7 +169,7 @@ void ReportController::Private::updateTimer()
 void ReportController::Private::onFinished()
 {
     QList<quint32> taskIds = response.taskIds;
-    LOG_INFO(QString("%1 Reports successfully sent").arg(taskIds.size()));
+    LOG_INFO(QString("%1 Results successfully inserted").arg(taskIds.size()));
 
     foreach (const quint32 &taskId, taskIds)
     {
@@ -202,7 +213,7 @@ bool ReportController::init(ReportScheduler *scheduler, Settings *settings)
     d->settings = settings;
 
     connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(updateTimer()));
-    d->updateTimer();
+    //d->updateTimer();
 
     return true;
 }

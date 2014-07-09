@@ -88,7 +88,7 @@ Result ReverseDnslookup::result() const
 
     res << map;
 
-    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant());
+    return Result(startDateTime(), endDateTime(), res, QVariant());
 }
 
 void ReverseDnslookup::started()
@@ -101,5 +101,6 @@ void ReverseDnslookup::started()
 void ReverseDnslookup::finished()
 {
     setStatus(ReverseDnslookup::Finished);
+    setEndDateTime(QDateTime::currentDateTime());
     emit Measurement::finished();
 }

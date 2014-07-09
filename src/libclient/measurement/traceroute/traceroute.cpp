@@ -107,7 +107,7 @@ Result Traceroute::result() const
         res << hop;
     }
 
-    return Result(startDateTime(), QDateTime::currentDateTime(), res, QVariant());
+    return Result(startDateTime(), endDateTime(), res, QVariant());
 }
 
 void Traceroute::ping()

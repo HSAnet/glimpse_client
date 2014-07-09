@@ -87,6 +87,7 @@ void ConfigController::Private::updateTimer()
 
 void ConfigController::Private::onFinished()
 {
+    emit q->finished();
 }
 
 void ConfigController::Private::onError()
