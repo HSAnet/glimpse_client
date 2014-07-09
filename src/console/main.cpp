@@ -4,6 +4,7 @@
 #include "settings.h"
 #include "controller/logincontroller.h"
 #include "controller/taskcontroller.h"
+#include "controller/configcontroller.h"
 
 #include "webrequester.h"
 #include "network/requests/registerdevicerequest.h"
@@ -25,6 +26,20 @@
 #endif // Q_OS_UNIX
 
 LOGGER(main);
+
+struct LoginData
+{
+    enum Type
+    {
+        AnonymousRegister,
+        Register,
+        Login
+    };
+
+    Type type;
+    QString userId;
+    QString password;
+};
 
 class DeviceRegistrationWatcher : public QObject
 {
@@ -117,17 +132,70 @@ protected:
     LoginController *m_controller;
 };
 
-struct LoginData
+class ConfigWatcher : public QObject
 {
-    enum Type
+    Q_OBJECT
+public:
+    ConfigWatcher(Client *client, LoginData loginData)
+    : m_client(client)
+    , m_loginData(loginData)
     {
-        Register,
-        Login
-    };
+        connect(m_client->configController(), SIGNAL(finished()), this, SLOT(onStatusChanged()));
+    }
 
-    Type type;
-    QString userId;
-    QString password;
+private slots:
+    void onStatusChanged()
+    {
+        switch (m_client->configController()->status())
+        {
+        case ConfigController::Error:
+            LOG_INFO("Getting config failed, quitting.");
+            qApp->quit();
+            break;
+
+        case ConfigController::Finished:
+            LOG_INFO("Getting config successful");
+            deleteLater();
+
+            if (!m_loginData.password.isEmpty())
+            {
+                switch (m_loginData.type)
+                {
+                case LoginData::Register:
+                    m_client->loginController()->registration(m_loginData.userId, m_loginData.password);
+                    break;
+
+                case LoginData::Login:
+                    m_client->settings()->setUserId(m_loginData.userId);
+                    m_client->settings()->setPassword(m_loginData.password);
+                    m_client->loginController()->login();
+                    break;
+                default:
+                    break;
+                }
+            }
+            else if (m_loginData.type == LoginData::AnonymousRegister)
+            {
+                m_client->loginController()->anonymousRegistration();
+            }
+            else
+            {
+                if (!m_client->autoLogin())
+                {
+                    LOG_ERROR("No login data found for autologin");
+                    qApp->quit();
+                }
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+
+protected:
+    Client *m_client;
+    LoginData m_loginData;
 };
 
 int main(int argc, char *argv[])
@@ -202,6 +270,11 @@ int main(int argc, char *argv[])
     {
         loginData.type = LoginData::Login;
         passwordOption = &loginOption;
+    }
+
+    if (parser.isSet(registerAnonymous))
+    {
+        loginData.type = LoginData::AnonymousRegister;
     }
 
     if (passwordOption)
@@ -304,34 +377,7 @@ int main(int argc, char *argv[])
 
     new LoginWatcher(client->loginController());
     new DeviceRegistrationWatcher(client->loginController());
-
-    if (passwordOption)
-    {
-        switch (loginData.type)
-        {
-        case LoginData::Register:
-            client->loginController()->registration(loginData.userId, loginData.password);
-            break;
-
-        case LoginData::Login:
-            client->settings()->setUserId(loginData.userId);
-            client->settings()->setPassword(loginData.password);
-            client->loginController()->login();
-            break;
-        }
-    }
-    else if (parser.isSet(registerAnonymous))
-    {
-        client->loginController()->anonymousRegistration();
-    }
-    else
-    {
-        if (!client->autoLogin())
-        {
-            LOG_ERROR("No login data found for autologin");
-            return 1;
-        }
-    }
+    new ConfigWatcher(client, loginData);
 
     int value = app.exec();
     out << "Application shutting down.\n";
