@@ -141,6 +141,7 @@ UdpPing::UdpPing(QObject *parent)
 
 UdpPing::~UdpPing()
 {
+    delete[] m_payload;
 }
 
 Measurement::Status UdpPing::status() const
@@ -200,29 +201,31 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
         return false;
     }
 
+    // include null-character
+    m_payload = new (std::nothrow) char[definition->payload + 1];
+
+    if (m_payload == NULL)
+    {
+        return false;
+    }
+
+    memset(m_payload, 0, definition->payload + 1);
+
     return true;
 }
 
 bool UdpPing::start()
 {
-    setStartDateTime(QDateTime::currentDateTime());
-
     PingProbe probe;
 
-    // include null-character
-    m_payload = new char[definition->payload + 1];
-
-    memset(m_payload, 0, definition->payload + 1);
-
+    setStartDateTime(QDateTime::currentDateTime());
     setStatus(UdpPing::Running);
 
-    memset(&probe, 0, sizeof(probe));
     probe.sock = initSocket();
 
     if (probe.sock < 0)
     {
         emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-        delete[] m_payload;
         return false;
     }
 
@@ -232,7 +235,6 @@ bool UdpPing::start()
     {
         close(probe.sock);
         emit error(QString("icmp socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-        delete[] m_payload;
         return false;
     }
 
@@ -246,7 +248,6 @@ bool UdpPing::start()
     close(probe.icmpSock);
 
     setStatus(UdpPing::Finished);
-    delete[] m_payload;
     setEndDateTime(QDateTime::currentDateTime());
     emit finished();
 

@@ -493,6 +493,7 @@ UdpPing::UdpPing(QObject *parent)
 
 UdpPing::~UdpPing()
 {
+    delete[] m_payload;
 }
 
 Measurement::Status UdpPing::status() const
@@ -633,17 +634,8 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     // At this point, we don't need any more the device list. Free it
     pcap_freealldevs(alldevs);
 
-    return true;
-}
-
-bool UdpPing::start()
-{
-    setStartDateTime(QDateTime::currentDateTime());
-
-    PingProbe probe;
-
     // include null-character
-    m_payload = new char[definition->payload + 1];
+    m_payload = new (std::nothrow) char[definition->payload + 1];
 
     if (m_payload == NULL)
     {
@@ -652,19 +644,26 @@ bool UdpPing::start()
 
     memset(m_payload, 0, definition->payload + 1);
 
+    return true;
+}
+
+bool UdpPing::start()
+{
+    PingProbe probe;
+
+    setStartDateTime(QDateTime::currentDateTime());
     setStatus(UdpPing::Running);
+
     probe.sock = initSocket();
 
     if (probe.sock < 0)
     {
         emit error("initSocket");
-        delete[] m_payload;
         return false;
     }
 
     ping(&probe);
     closesocket(probe.sock);
-    delete[] m_payload;
 
     setStatus(UdpPing::Finished);
     setEndDateTime(QDateTime::currentDateTime());
