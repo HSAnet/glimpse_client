@@ -608,10 +608,15 @@ void UdpPing::receiveData(PingProbe *probe)
     pfd[0].events = POLLIN;
     pfd[1].events = POLLIN;
 
-    if ((ret = poll(pfd, 2, definition->receiveTimeout)) < 0)
+    // Don't poll on TCP sockets since the sendTcpData method already does
+    // that.
+    if (definition->pingType == QAbstractSocket::UdpSocket)
     {
-        emit error(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-        return;
+        if ((ret = poll(pfd, 2, definition->receiveTimeout)) < 0)
+        {
+            emit error(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            return;
+        }
     }
 
     //will be overwritten if the packet was timestamped by the kernel
