@@ -236,16 +236,6 @@ int UdpPing::initSocket()
 
     if (definition->pingType == QAbstractSocket::TcpSocket)
     {
-        n = 1;
-
-        //needs to be called before bind, or it will not work
-        if (setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &n, sizeof(n)) < 0)
-        {
-            emit error(QString("setsockopt SO_REUSEPORT: %1").arg(
-                       QString::fromLocal8Bit(strerror(errno))));
-            goto cleanup;
-        }
-
         //this option will make TCP send a RST on close(), this way we do not run into
         //TIME_WAIT, which would make us not to being able to reuse the 5-tuple
         //for some time (we want to do that howerver for our Paris traceroute
