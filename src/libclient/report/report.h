@@ -38,7 +38,7 @@ class CLIENT_API Report : public Serializable
 public:
     Report();
     Report(const Report &other);
-    Report(const quint32 &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLables, const ResultList &results);
+    Report(const quint32 &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLabels, const ResultList &results);
 
     bool operator ==(const Report &other) const;
 
@@ -54,8 +54,8 @@ public:
     void setAppVersion(const QString &appVersion);
     QString appVersion() const;
 
-    void setColumnLabels(const QStringList &columnLables);
-    QStringList columnLables() const;
+    void setColumnLabels(const QStringList &columnLabels);
+    QStringList columnLabels() const;
 
     void setResults(const ResultList &results);
     ResultList results() const;

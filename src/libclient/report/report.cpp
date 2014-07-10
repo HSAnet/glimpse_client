@@ -19,8 +19,8 @@ Report::Report(const quint32 &taskId, const QDateTime &dateTime, const QString &
     d->taskId = taskId;
     d->dateTime = dateTime;
     d->appVersion = appVersion;
-    d->columnLabels = QStringList() << "start_time" << "end_time" << "conflicting-tasks"
-                                    << "cross-traffic" << "duration" << "measure_uuid" << "error" << columnLables;
+    d->columnLabels = QStringList() << "start_time" << "end_time" << "conflicting_tasks"
+                                    << "cross_traffic" << "duration" << "measure_uuid" << "error" << columnLables;
     d->results = results;
 }
 
@@ -80,7 +80,7 @@ void Report::setColumnLabels(const QStringList &columnLables)
     d->columnLabels = columnLables;
 }
 
-QStringList Report::columnLables() const
+QStringList Report::columnLabels() const
 {
     return d->columnLabels;
 }
@@ -101,7 +101,7 @@ QVariant Report::toVariant() const
     map.insert("task_id", taskId());
     map.insert("report_time", dateTime());
     map.insert("app_version", appVersion());
-    map.insert("column_lables", columnLables());
+    map.insert("column_labels", columnLabels());
     map.insert("results", listToVariant(results()));
     return map;
 }
