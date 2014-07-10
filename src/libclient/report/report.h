@@ -19,6 +19,7 @@ public:
     : QSharedData(other)
     , taskId(other.taskId)
     , dateTime(other.dateTime)
+    , columnLabels(other.columnLabels)
     , results(other.results)
     , appVersion(other.appVersion)
     {
@@ -26,6 +27,7 @@ public:
 
     quint32 taskId;
     QDateTime dateTime;
+    QStringList columnLabels;
     ResultList results;
     QString appVersion;
 };
@@ -36,7 +38,7 @@ class CLIENT_API Report : public Serializable
 public:
     Report();
     Report(const Report &other);
-    Report(const quint32 &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results);
+    Report(const quint32 &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLables, const ResultList &results);
 
     bool operator ==(const Report &other) const;
 
@@ -51,6 +53,9 @@ public:
 
     void setAppVersion(const QString &appVersion);
     QString appVersion() const;
+
+    void setColumnLabels(const QStringList &columnLables);
+    QStringList columnLables() const;
 
     void setResults(const ResultList &results);
     ResultList results() const;

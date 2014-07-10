@@ -55,6 +55,9 @@ public:
 
     QString errorString() const;
 
+    QStringList resultHeader() const;
+    void setResultHeader(const QStringList &resultHeader);
+
 signals:
     void started();
     void finished();

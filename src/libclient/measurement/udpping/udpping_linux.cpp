@@ -192,7 +192,7 @@ Result UdpPing::result() const
         }
     }
 
-    return Result(startDateTime(), endDateTime(), res, QVariant());
+    return Result(startDateTime(), endDateTime(), res);
 }
 
 int UdpPing::initSocket()

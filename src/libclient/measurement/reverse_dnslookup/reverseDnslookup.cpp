@@ -11,6 +11,7 @@ ReverseDnslookup::ReverseDnslookup(QObject *parent)
 , m_currentStatus(ReverseDnslookup::Unknown)
 , m_lookupId(0)
 {
+    setResultHeader(QStringList() << "hostname" << "address");
 }
 
 ReverseDnslookup::~ReverseDnslookup()
@@ -47,11 +48,11 @@ void ReverseDnslookup::handleServers(QHostInfo info)
     if (info.error() != QHostInfo::NoError)
     {
         LOG_DEBUG(QString("IP lookup failed: %1").arg(info.errorString()));
+        setErrorString(info.errorString());
     }
 
     m_reverseDnslookupOutput = info.hostName();
     m_reverseDnslookupAddresses = info.addresses();
-    m_reverseDnslookupError = info.errorString();
 
     setStatus(ReverseDnslookup::Finished);
     emit finished();
@@ -81,14 +82,11 @@ bool ReverseDnslookup::stop()
 Result ReverseDnslookup::result() const
 {
     QVariantList res;
-    QVariantMap map;
-    map.insert("error", m_reverseDnslookupError);
-    map.insert("hostname", m_reverseDnslookupOutput);
-    map.insert("address", listToVariant(m_reverseDnslookupAddresses));
 
-    res << map;
+    res.append(m_reverseDnslookupOutput);
+    res.append(listToVariant(m_reverseDnslookupAddresses));
 
-    return Result(startDateTime(), endDateTime(), res, QVariant());
+    return Result(startDateTime(), endDateTime(), res);
 }
 
 void ReverseDnslookup::started()

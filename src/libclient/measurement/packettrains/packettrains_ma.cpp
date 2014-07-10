@@ -143,6 +143,6 @@ bool PacketTrainsMA::stop()
 
 Result PacketTrainsMA::result() const
 {
-    return Result(startDateTime(), endDateTime(), QVariant(), QVariant(),
+    return Result(startDateTime(), endDateTime(), QVariantList(),
                   definition->measurementUuid, errorString());
 }

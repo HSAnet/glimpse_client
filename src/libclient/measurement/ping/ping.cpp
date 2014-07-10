@@ -3,7 +3,7 @@
 
 #include <QProcess>
 #include <QtMath>
-#include <limits.h>
+#include <numeric>
 
 LOGGER(Ping);
 
@@ -12,6 +12,8 @@ Ping::Ping(QObject *parent)
 , stream(&process)
 , currentStatus(Ping::Unknown)
 {
+    setResultHeader(QStringList() << "round_trip_avg" << "round_trip_min" << "round_trip_max"
+                                  << "round_trip_stdev" << "round_trip_ms");
 }
 
 Ping::~Ping()
@@ -94,11 +96,9 @@ bool Ping::stop()
 
 Result Ping::result() const
 {
-    QVariantMap res;
+    QVariantList res;
     QVariantList roundTripMs;
-    float variance = 0.0;
-
-    float avg = averagePingTime();
+    float avg = 0.0;
 
     // get max and min
     QList<float>::const_iterator it = std::max_element(pingTime.begin(), pingTime.end());
@@ -106,21 +106,26 @@ Result Ping::result() const
     it = std::min_element(pingTime.begin(), pingTime.end());
     float min = *it;
 
+    // calculate average and fill ping times
     foreach (float val, pingTime)
     {
-        roundTripMs << QString::number(val, 'f', 3);
-        variance += (val-avg) * (val-avg);
+        roundTripMs << val;
+        avg += val;
     }
 
-    variance = variance / pingTime.length();
+    avg /= pingTime.size();
 
-    res.insert("round_trip_ms", roundTripMs);
-    res.insert("round_trip_avg", avg);
-    res.insert("round_trip_min", min);
-    res.insert("round_trip_max", max);
-    res.insert("round_trip_stddev", qSqrt(qAbs(variance)));
+    // calculate standard deviation
+    qreal sq_sum = std::inner_product(pingTime.begin(), pingTime.end(), pingTime.begin(), 0.0);
+    qreal stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
 
-    return Result(startDateTime(), endDateTime(), res, QVariant());
+    res.append(avg);
+    res.append(min);
+    res.append(max);
+    res.append(stdev);
+    res.append(QVariant(roundTripMs));
+
+    return Result(startDateTime(), endDateTime(), res);
 }
 
 void Ping::started()

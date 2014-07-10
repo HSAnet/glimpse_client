@@ -3,6 +3,7 @@
 
 #include <QDnsLookup>
 #include <QHostAddress>
+#include "../../types.h"
 
 LOGGER(Dnslookup);
 
@@ -10,6 +11,7 @@ Dnslookup::Dnslookup(QObject *parent)
 : Measurement(parent)
 , m_currentStatus(Dnslookup::Unknown)
 {
+    setResultHeader(QStringList() << "records");
 }
 
 Dnslookup::~Dnslookup()
@@ -31,13 +33,6 @@ bool Dnslookup::prepare(NetworkManager *networkManager, const MeasurementDefinit
 
     m_currentStatus = Dnslookup::Unknown;
 
-    return true;
-}
-
-bool Dnslookup::start()
-{
-    setStartDateTime(QDateTime::currentDateTime());
-
     m_dns.setType(QDnsLookup::ANY);
     m_dns.setName(m_definition->host);
 
@@ -51,6 +46,13 @@ bool Dnslookup::start()
 
 #endif
 
+    return true;
+}
+
+bool Dnslookup::start()
+{
+    setStartDateTime(QDateTime::currentDateTime());
+
     m_dns.lookup();
     return true;
 }
@@ -61,10 +63,10 @@ void Dnslookup::handleServers()
     if (m_dns.error() != QDnsLookup::NoError)
     {
         LOG_DEBUG(QString("DNS lookup failed: %1").arg(m_dns.errorString()));
+        m_dnsError = enumToString(QDnsLookup, "Error", m_dns.error());
     }
 
     m_dnslookupOutput = m_dns.hostAddressRecords();
-    m_dnsError = m_dns.errorString();
 
     setStatus(Dnslookup::Finished);
     setEndDateTime(QDateTime::currentDateTime());
@@ -95,9 +97,8 @@ bool Dnslookup::stop()
 Result Dnslookup::result() const
 {
     QVariantList res;
-    QVariantMap error;
-    error.insert("error", m_dnsError);
-    res << error;
+
+    QVariantList records;
 
     foreach (const QDnsHostAddressRecord &val, m_dnslookupOutput)
     {
@@ -123,10 +124,12 @@ Result Dnslookup::result() const
         map.insert("value", val.value().toString());
         map.insert("type", type);
 
-        res << map;
+        records << map;
     }
 
-    return Result(startDateTime(), endDateTime(), res, QVariant());
+    res.append(QVariant(records));
+
+    return Result(startDateTime(), endDateTime(), res, QUuid(), m_dnsError);
 }
 
 void Dnslookup::started()

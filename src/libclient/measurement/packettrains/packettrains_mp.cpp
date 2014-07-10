@@ -20,6 +20,7 @@ PacketTrainsMP::PacketTrainsMP()
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
+    setResultHeader(QStringList() << "sending_speed" << "receiving_speed");
 }
 
 bool PacketTrainsMP::start()
@@ -200,10 +201,13 @@ bool PacketTrainsMP::stop()
 
 Result PacketTrainsMP::result() const
 {
-    QVariantMap map;
-    map.insert("sending_speed", listToVariant(m_sendSpeed));
-    map.insert("receiving_speed", listToVariant(m_recvSpeed));
+    QVariantList res;
+    //map.insert("sending_speed", listToVariant(m_sendSpeed));
+    //map.insert("receiving_speed", listToVariant(m_recvSpeed));
 
-    return Result(startDateTime(), endDateTime(), map, QVariant(), getMeasurementUuid(),
+    res.append(listToVariant(m_sendSpeed));
+    res.append(listToVariant(m_recvSpeed));
+
+    return Result(startDateTime(), endDateTime(), res, getMeasurementUuid(),
                   errorString());
 }

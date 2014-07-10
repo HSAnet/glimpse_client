@@ -17,6 +17,8 @@ BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
+    setResultHeader(QStringList() << "down_kBs" << "down_kBs_avg" << "down_kBs_min"
+                                  << "down_kBs_max" << "down_kBs_stddev");
 }
 
 bool BulkTransportCapacityMA::start()
@@ -235,12 +237,33 @@ bool BulkTransportCapacityMA::stop()
 Result BulkTransportCapacityMA::result() const
 {
     QVariantList res;
+    QVariantList downSpeeds;
+    float avg = 0.0;
 
+    // get max and min
+    QList<qreal>::const_iterator it = std::max_element(m_downloadSpeeds.begin(), m_downloadSpeeds.end());
+    float max = *it;
+    it = std::min_element(m_downloadSpeeds.begin(), m_downloadSpeeds.end());
+    float min = *it;
+
+    // calculate average and fill downspeeds
     foreach (qreal val, m_downloadSpeeds)
     {
-        res << QString::number(val, 'f');
+        downSpeeds << val;
+        avg += val;
     }
 
-    return Result(startDateTime(), endDateTime(), res, QVariant(),
-                  definition->measurementUuid, errorString());
+    avg /= m_downloadSpeeds.size();
+
+    // calculate standard deviation
+    qreal sq_sum = std::inner_product(m_downloadSpeeds.begin(), m_downloadSpeeds.end(), m_downloadSpeeds.begin(), 0.0);
+    qreal stdev = qSqrt(sq_sum / m_downloadSpeeds.size() - avg * avg);
+
+    res.append(avg);
+    res.append(min);
+    res.append(max);
+    res.append(stdev);
+    res.append(QVariant(downSpeeds));
+
+    return Result(startDateTime(), endDateTime(), res, definition->measurementUuid, errorString());
 }

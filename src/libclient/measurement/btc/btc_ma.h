@@ -34,7 +34,7 @@ private:
     qint64 m_totalBytesReceived; // with first packets
     qint64 m_bytesExpected;
     qint64 m_lasttime;
-    QVector<qreal> m_downloadSpeeds;
+    QList<qreal> m_downloadSpeeds;
     Status m_status;
     QVector<qint64> m_bytesReceivedList;
     QVector<qint64> m_times;

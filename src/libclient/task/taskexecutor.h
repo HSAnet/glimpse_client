@@ -36,7 +36,7 @@ signals:
     void runningChanged(bool running);
 
     void started(const TestDefinition &test);
-    void finished(const TestDefinition &test, const Result &result);
+    void finished(const TestDefinition &test, const QStringList &resultHeader, const Result &result);
 
 protected:
     class Private;
