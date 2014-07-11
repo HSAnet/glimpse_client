@@ -39,17 +39,21 @@ namespace udpping
 {
     enum Response
     {
-        DESTINATION_UNREACHABLE = 1,
+        INVALID_ICMP = 1,
+        DESTINATION_UNREACHABLE,
         TTL_EXCEEDED,
         UNHANDLED_ICMP,
-        UDP_RESPONSE
+        UDP_RESPONSE,
+        TCP_RESET,
+        TCP_CONNECT
     };
 
     enum PacketType
     {
         UNKNOWN,
         UDP,
-        ICMP
+        ICMP,
+        TCP
     };
 }
 #else
@@ -106,9 +110,14 @@ public:
 private:
     void setStatus(Status status);
     int initSocket();
-    bool sendData(PingProbe *probe);
+    bool sendUdpData(PingProbe *probe);
+    bool sendTcpData(PingProbe *probe);
     void receiveData(PingProbe *probe);
     void ping(PingProbe *probe);
+#if defined(Q_OS_WIN)
+    void processUdpPackets(QVector<PingProbe> *probes);
+    void processTcpPackets(QVector<PingProbe> *probes);
+#endif
 
     UdpPingDefinitionPtr definition;
     Status currentStatus;
@@ -125,8 +134,9 @@ signals:
     void destinationUnreachable(const PingProbe &probe);
     void ttlExceeded(const PingProbe &probe);
     void udpResponse(const PingProbe &probe);
-    void error(QString message);
     void timeout(const PingProbe &probe);
+    void tcpReset(const PingProbe &probe);
+    void tcpConnect(const PingProbe &probe);
 };
 
 #endif // UDPPING_H

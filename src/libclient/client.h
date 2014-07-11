@@ -4,6 +4,7 @@
 #include "export.h"
 
 #include <QObject>
+#include <QAbstractSocket>
 
 class ConfigController;
 class RegistrationController;
@@ -111,14 +112,16 @@ public slots:
                  const int &ttl = 54,
                  const quint16 &destinationPort = 33434,
                  const quint16 &sourcePort = 33434,
-                 const quint32 &payload = 74);
+                 const quint32 &payload = 74,
+                 const QAbstractSocket::SocketType &pingType = QAbstractSocket::UdpSocket);
     void traceroute(const QString &url = "measure-it.de",
                     const quint32 &count = 3,
                     const quint32 &interval = 1000,
                     const quint32 &receiveTimeout = 1000,
                     const quint16 &destinationPort = 33434,
                     const quint16 &sourcePort = 33434,
-                    const quint32 &payload = 74);
+                    const quint32 &payload = 74,
+                    const QAbstractSocket::SocketType pingType = QAbstractSocket::UdpSocket);
     void measureIt();
 
 signals:

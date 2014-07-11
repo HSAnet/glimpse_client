@@ -2,6 +2,7 @@
 #define TRACEROUTE_DEFINITION_H
 
 #include "../measurementdefinition.h"
+#include <QAbstractSocket>
 
 class TracerouteDefinition;
 
@@ -14,7 +15,8 @@ public:
     TracerouteDefinition(const QString &url, const quint32 &count,
                          const quint32 &interval, const quint32 &receiveTimeout,
                          const quint16 &destinationPort,
-                         const quint16 &sourcePort, const quint32 &payload);
+                         const quint16 &sourcePort, const quint32 &payload,
+                         const QAbstractSocket::SocketType &pingType);
     ~TracerouteDefinition();
 
     // Storage
@@ -28,6 +30,7 @@ public:
     quint16 destinationPort;
     quint16 sourcePort;
     quint32 payload;
+    QAbstractSocket::SocketType pingType;
 
     // Serializable interface
     QVariant toVariant() const;
