@@ -75,11 +75,14 @@ cleanup:
         return -1;
     }
 
-    void randomizePayload(char *payload, const quint32 size)
+    QByteArray randomizePayload(const quint32 size)
     {
         char chars[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        QByteArray payload;
 
-        for (quint32 i = 0; i < size; i++)
+        payload.resize(size);
+
+        for (quint32 i = 0; i < (size > 15 ? size - 15: size); i++)
         {
             payload[i] = chars[qrand() % strlen(chars)];
         }
@@ -87,8 +90,10 @@ cleanup:
         if (size > 15)
         {
             // ignore terminating null character
-            strncpy(&payload[size - 15], " measure-it.net", 15);
+            payload.insert(size - 15, " measure-it.net", 15);
         }
+
+        return payload;
     }
 
     inline bool extractTimestamp(struct msghdr &msg, quint64 &time)
@@ -133,7 +138,6 @@ UdpPing::UdpPing(QObject *parent)
 , m_device(NULL)
 , m_capture(NULL)
 , m_destAddress()
-, m_payload(NULL)
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
@@ -141,7 +145,6 @@ UdpPing::UdpPing(QObject *parent)
 
 UdpPing::~UdpPing()
 {
-    delete[] m_payload;
 }
 
 Measurement::Status UdpPing::status() const
@@ -200,16 +203,6 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
                        m_destAddress.sa.sa_family));
         return false;
     }
-
-    // include null-character
-    m_payload = new (std::nothrow) char[definition->payload + 1];
-
-    if (m_payload == NULL)
-    {
-        return false;
-    }
-
-    memset(m_payload, 0, definition->payload + 1);
 
     return true;
 }
@@ -392,16 +385,14 @@ bool UdpPing::sendUdpData(PingProbe *probe)
 
     memset(&tv, 0, sizeof(tv));
 
-    // randomize payload to prevent caching
-    randomizePayload(m_payload, definition->payload);
-
     gettimeofday(&tv, NULL);
     probe->sendTime = tv.tv_sec * 1e6 + tv.tv_usec;
 
     if (m_destAddress.sa.sa_family == AF_INET)
     {
-        if (sendto(probe->sock, m_payload, definition->payload, 0,
-                   (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in)) < 0)
+        if (sendto(probe->sock, randomizePayload(definition->payload).data(),
+                   definition->payload, 0, (sockaddr *)&m_destAddress,
+                   sizeof(struct sockaddr_in)) < 0)
         {
             emit error(QString("send: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             return false;
@@ -409,8 +400,9 @@ bool UdpPing::sendUdpData(PingProbe *probe)
     }
     else if (m_destAddress.sa.sa_family == AF_INET6)
     {
-        if (sendto(probe->sock, m_payload, definition->payload, 0,
-                      (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in6)) < 0)
+        if (sendto(probe->sock, randomizePayload(definition->payload).data(),
+                   definition->payload, 0, (sockaddr *)&m_destAddress,
+                   sizeof(struct sockaddr_in6)) < 0)
         {
             emit error(QString("send v6: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             return false;
