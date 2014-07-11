@@ -22,40 +22,11 @@ enum RequestType
 };
 
 #define enumToString(className, enumName, value) \
-    className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator(enumName)).valueToKey(value)
+    className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator("enumName")).valueToKey(value)
 
 #define enumFromString(className, enumName, value) \
-    className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator(enumName)).keyToValue(value)
-
-
-inline QString pingTypeToString(QAbstractSocket::SocketType pingType)
-{
-    if(pingType == QAbstractSocket::UdpSocket)
-    {
-        return QString("UdpSocket");
-    }
-    else if(pingType == QAbstractSocket::TcpSocket)
-    {
-        return QString("TcpSocket");
-    }
-
-    return QString("UnkownSocketType");
-}
-
-
-inline QAbstractSocket::SocketType pingTypeFromString(QString pingType)
-{
-    if(pingType == "UdpSocket")
-    {
-        return QAbstractSocket::UdpSocket;
-    }
-    else if(pingType == "TcpSocket")
-    {
-        return QAbstractSocket::TcpSocket;
-    }
-
-    return QAbstractSocket::UnknownSocketType;
-}
+    static_cast<className::enumName>(className::staticMetaObject.enumerator( \
+    className::staticMetaObject.indexOfEnumerator("enumName")).keyToValue(value))
 
 template <typename T>
 QVariantList ptrListToVariant(const QList<T> &list)

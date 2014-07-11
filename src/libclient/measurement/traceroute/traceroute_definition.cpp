@@ -35,7 +35,8 @@ TracerouteDefinitionPtr TracerouteDefinition::fromVariant(const QVariant &varian
                                        map.value("destinationPort", 33434).toUInt(),
                                        map.value("sourcePort", 33434).toUInt(),
                                        map.value("payload", 74).toUInt(),
-                                       pingTypeFromString(map.value("pingType", "UdpSocket").toString())));
+                                       enumFromString(QAbstractSocket, SocketType,
+                                                      map.value("pingType", "UdpSocket").toString().toLatin1())));
 }
 
 QVariant TracerouteDefinition::toVariant() const
@@ -48,6 +49,6 @@ QVariant TracerouteDefinition::toVariant() const
     map.insert("destinationPort", destinationPort);
     map.insert("sourcePort", sourcePort);
     map.insert("payload", payload);
-    map.insert("pingType", pingTypeToString(pingType));
+    map.insert("pingType", enumToString(QAbstractSocket, SocketType, pingType));
     return map;
 }
