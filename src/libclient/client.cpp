@@ -377,7 +377,7 @@ bool Client::autoLogin()
 
 void Client::btc(const QString &host)
 {
-    BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024);
+    BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024, 10);
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(9, "btc_ma", timing,
                                   btcDef.toVariant());
@@ -405,7 +405,7 @@ void Client::ping(const QString &host, quint16 count, quint32 timeout, quint32 i
 {
     PingDefinition pingDef(host.isNull() ? "measure-it.de" : host, count, timeout, interval);
     TimingPtr timing(new ImmediateTiming());
-    TestDefinition testDefinition(4, "ping", timing,
+    TestDefinition testDefinition(1, "ping", timing,
                                   pingDef.toVariant());
     d->scheduler.enqueue(testDefinition);
 }

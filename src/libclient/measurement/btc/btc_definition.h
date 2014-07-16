@@ -11,7 +11,7 @@ typedef QList<BulkTransportCapacityDefinitionPtr> BulkTransportCapacityDefinitio
 class BulkTransportCapacityDefinition : public MeasurementDefinition
 {
 public:
-    BulkTransportCapacityDefinition(const QString &host, quint16 port, quint64 initialDataSize);
+    BulkTransportCapacityDefinition(const QString &host, quint16 port, quint64 initialDataSize, quint16 slices);
     ~BulkTransportCapacityDefinition();
 
     // Storage
@@ -21,6 +21,7 @@ public:
     QString host;
     quint16 port;
     quint64 initialDataSize;
+    quint16 slices;
 
     // Serializable interface
     QVariant toVariant() const;

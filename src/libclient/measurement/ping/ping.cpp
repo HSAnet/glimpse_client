@@ -13,7 +13,7 @@ Ping::Ping(QObject *parent)
 , currentStatus(Ping::Unknown)
 {
     setResultHeader(QStringList() << "round_trip_avg" << "round_trip_min" << "round_trip_max"
-                                  << "round_trip_stdev" << "round_trip_ms");
+                                  << "round_trip_stdev" << "round_trip_count" <<"round_trip_ms");
 }
 
 Ping::~Ping()
@@ -123,6 +123,7 @@ Result Ping::result() const
     res.append(min);
     res.append(max);
     res.append(stdev);
+    res.append(pingTime.size());
     res.append(QVariant(roundTripMs));
 
     return Result(startDateTime(), endDateTime(), res);
