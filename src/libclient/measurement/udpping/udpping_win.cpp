@@ -461,11 +461,14 @@ namespace
         return probes;
     }
 
-    void randomizePayload(char *payload, const quint32 size)
+    QByteArray randomizePayload(const quint32 size)
     {
         char chars[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        QByteArray payload;
 
-        for (quint32 i = 0; i < size; i++)
+        payload.resize(size);
+
+        for (quint32 i = 0; i < (size > 15 ? size - 15: size); i++)
         {
             payload[i] = chars[qrand() % strlen(chars)];
         }
@@ -473,8 +476,10 @@ namespace
         if (size > 15)
         {
             // ignore terminating null character
-            strncpy(&payload[size - 15], " measure-it.net", 15);
+            payload.insert(size - 15, " measure-it.net", 15);
         }
+
+        return payload;
     }
 }
 
@@ -485,7 +490,6 @@ UdpPing::UdpPing(QObject *parent)
 , m_device(NULL)
 , m_capture(NULL)
 , m_destAddress()
-, m_payload(NULL)
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
@@ -493,7 +497,6 @@ UdpPing::UdpPing(QObject *parent)
 
 UdpPing::~UdpPing()
 {
-    delete[] m_payload;
 }
 
 Measurement::Status UdpPing::status() const
@@ -633,16 +636,6 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
 
     // At this point, we don't need any more the device list. Free it
     pcap_freealldevs(alldevs);
-
-    // include null-character
-    m_payload = new (std::nothrow) char[definition->payload + 1];
-
-    if (m_payload == NULL)
-    {
-        return false;
-    }
-
-    memset(m_payload, 0, definition->payload + 1);
 
     return true;
 }
@@ -819,11 +812,9 @@ bool UdpPing::sendTcpData(PingProbe *probe)
 
 bool UdpPing::sendUdpData(PingProbe *probe)
 {
-    // randomize payload to prevent caching
-    randomizePayload(m_payload, definition->payload);
-
-    if (sendto(probe->sock, m_payload, definition->payload, 0,
-               (sockaddr *)&m_destAddress, sizeof(m_destAddress)) < 0)
+    if (sendto(probe->sock, randomizePayload(definition->payload).data(),
+               definition->payload, 0, (sockaddr *)&m_destAddress,
+               sizeof(m_destAddress)) < 0)
     {
         emit error("send: " + QString(strerror(errno)));
         return false;

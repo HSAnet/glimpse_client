@@ -16,7 +16,6 @@ UdpPing::UdpPing(QObject *parent)
 , m_device(NULL)
 , m_capture(NULL)
 , m_destAddress()
-, m_payload(NULL)
 {
 }
 
