@@ -386,7 +386,7 @@ void Client::btc(const QString &host)
 
 void Client::http(const QString &url)
 {
-    HTTPDownloadDefinition httpDef(url, false);
+    HTTPDownloadDefinition httpDef(url, false, 1);
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(3, "httpdownload", timing,
                                   httpDef.toVariant());

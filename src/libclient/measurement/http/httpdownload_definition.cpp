@@ -1,8 +1,9 @@
 #include "httpdownload_definition.h"
 
-HTTPDownloadDefinition::HTTPDownloadDefinition(const QString &url, bool cacheTest)
+HTTPDownloadDefinition::HTTPDownloadDefinition(const QString &url, const bool cacheTest, const int threads)
 : url(url)
 , cacheTest(cacheTest)
+, threads(threads)
 {
 
 }
@@ -16,13 +17,15 @@ HTTPDownloadDefinitionPtr HTTPDownloadDefinition::fromVariant(const QVariant &va
 {
     QVariantMap map = variant.toMap();
     return HTTPDownloadDefinitionPtr(new HTTPDownloadDefinition(map.value("url", "").toString(),
-                                                                map.value("cacheTest", false).toBool()));
+                                                                map.value("cache_test", false).toBool(),
+                                                                map.value("threads", 1).toInt()));
 }
 
 QVariant HTTPDownloadDefinition::toVariant() const
 {
     QVariantMap map;
     map.insert("url", url);
-    map.insert("cacheTest", cacheTest);
+    map.insert("cache_test", cacheTest);
+    map.insert("threads", threads);
     return map;
 }
