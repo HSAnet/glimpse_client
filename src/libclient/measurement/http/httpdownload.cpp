@@ -15,8 +15,8 @@ HTTPDownload::HTTPDownload(QObject *parent)
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
-    setResultHeader(QStringList() << "down_kBs_avg" << "down_kBs_min" << "down_kBs_max"
-                                  << "down_kBs_stddev" << "down_kBs");
+    setResultHeader(QStringList() << "kBs_avg" << "kBs_min" << "kBs_max"
+                                  << "kBs_stddev" << "kBs");
 }
 
 HTTPDownload::~HTTPDownload()
