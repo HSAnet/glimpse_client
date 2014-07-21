@@ -20,11 +20,11 @@ QVariant PacketTrainsDefinition::toVariant() const
     QVariantMap map;
     map.insert("host", host);
     map.insert("port", port);
-    map.insert("packetSize", packetSize);
-    map.insert("trainLength", trainLength);
+    map.insert("packet_size", packetSize);
+    map.insert("train_length", trainLength);
     map.insert("iterations", iterations);
-    map.insert("rateMin", rateMin);
-    map.insert("rateMax", rateMax);
+    map.insert("rate_min", rateMin);
+    map.insert("rate_max", rateMax);
     map.insert("delay", delay);
     return map;
 }
@@ -34,10 +34,10 @@ PacketTrainsDefinitionPtr PacketTrainsDefinition::fromVariant(const QVariant &va
     QVariantMap map = variant.toMap();
     return PacketTrainsDefinitionPtr(new PacketTrainsDefinition(map.value("host", "").toString(),
                                                                 map.value("port", 0).toUInt(),
-                                                                map.value("packetSize", 1000).toUInt(),
-                                                                map.value("trainLength", 48).toUInt(),
+                                                                map.value("packet_size", 1000).toUInt(),
+                                                                map.value("train_length", 48).toUInt(),
                                                                 map.value("iterations", 1).toUInt(),
-                                                                map.value("rateMin", 10485760).toUInt(),
-                                                                map.value("rateMax", 262144000).toUInt(),
+                                                                map.value("rate_min", 10485760).toUInt(),
+                                                                map.value("rate_max", 262144000).toUInt(),
                                                                 map.value("delay", 200000000).toUInt()));
 }

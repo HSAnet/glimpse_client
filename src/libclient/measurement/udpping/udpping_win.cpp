@@ -540,9 +540,9 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     memset(&m_destAddress, 0, sizeof(m_destAddress));
 
     // resolve
-    if (!getAddress(definition->url, &m_destAddress))
+    if (!getAddress(definition->host, &m_destAddress))
     {
-        emit error(QString("could not resolve hostname '%1'").arg(definition->url));
+        emit error(QString("could not resolve hostname '%1'").arg(definition->host));
         return false;
     }
 

@@ -118,7 +118,7 @@ void Traceroute::ping()
         return;
     }
 
-    UdpPingDefinition udpPingDef(definition->url,
+    UdpPingDefinition udpPingDef(definition->host,
                                  definition->count,
                                  definition->interval,
                                  definition->receiveTimeout,

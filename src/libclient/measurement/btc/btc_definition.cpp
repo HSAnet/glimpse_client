@@ -18,7 +18,7 @@ QVariant BulkTransportCapacityDefinition::toVariant() const
     QVariantMap map;
     map.insert("host", host);
     map.insert("port", port);
-    map.insert("initialDataSize", initialDataSize);
+    map.insert("initial_data_size", initialDataSize);
     map.insert("slices", slices);
     return map;
 }
@@ -29,6 +29,6 @@ BulkTransportCapacityDefinitionPtr BulkTransportCapacityDefinition::fromVariant(
 
     return BulkTransportCapacityDefinitionPtr(new BulkTransportCapacityDefinition(map.value("host", "").toString(),
                                                                                   map.value("port", 0).toUInt(),
-                                                                                  map.value("initialDataSize", 1024 * 1024).toUInt(),
+                                                                                  map.value("initial_data_size", 1024 * 1024).toUInt(),
                                                                                   map.value("slices", 10).toUInt()));
 }
