@@ -63,7 +63,7 @@ void Dnslookup::handleServers()
     if (m_dns.error() != QDnsLookup::NoError)
     {
         LOG_DEBUG(QString("DNS lookup failed: %1").arg(m_dns.errorString()));
-        m_dnsError = enumToString(QDnsLookup, "Error", m_dns.error());
+        m_dnsError = enumToString(QDnsLookup, Error, m_dns.error());
     }
 
     m_dnslookupOutput = m_dns.hostAddressRecords();
