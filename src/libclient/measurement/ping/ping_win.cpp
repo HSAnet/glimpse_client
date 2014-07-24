@@ -1,4 +1,4 @@
-#include "udpping.h"
+#include "ping.h"
 #include "../../log/logger.h"
 
 #include <time.h>
@@ -12,7 +12,7 @@
 #include <QThread>
 #include <QtMath>
 
-LOGGER("UdpPing");
+LOGGER("Ping");
 
 namespace
 {
@@ -94,7 +94,7 @@ namespace
         {
         case 17:
             // UDP packet
-            probe.type = udpping::UDP;
+            probe.type = ping::UDP;
 
             if (!strncmp(sourceAddress, destinationAddress, INET_ADDRSTRLEN))
             {
@@ -107,7 +107,7 @@ namespace
                  */
                 probe.recvTime = header->ts.tv_sec * 1e6 +
                                  header->ts.tv_usec;
-                probe.response = udpping::UDP_RESPONSE;
+                probe.response = ping::UDP_RESPONSE;
                 getAddress(sourceAddress, &probe.source);
             }
             else
@@ -123,7 +123,7 @@ namespace
 
         case 6:
             // TCP
-            probe.type = udpping::TCP;
+            probe.type = ping::TCP;
 
             if (!strncmp(sourceAddress, destinationAddress, INET_ADDRSTRLEN))
             {
@@ -137,12 +137,12 @@ namespace
                 {
                 // SYN and ACK flags set
                 case 0x12:
-                    probe.response = udpping::TCP_CONNECT;
+                    probe.response = ping::TCP_CONNECT;
                     break;
 
                 // RST and ACK flags set
                 case 0x14:
-                    probe.response = udpping::TCP_RESET;
+                    probe.response = ping::TCP_RESET;
                     break;
 
                 default:
@@ -159,7 +159,7 @@ namespace
 
         case 1:
             // ICMP response
-            probe.type = udpping::ICMP;
+            probe.type = ping::ICMP;
             getAddress(sourceAddress, &probe.source);
 
             if ((*icmpType == 3 && *icmpCode == 3) ||
@@ -182,13 +182,13 @@ namespace
                     probe.recvTime = header->ts.tv_sec * 1e6 +
                                      header->ts.tv_usec;
                     probe.response = *icmpType == 3
-                                     ? udpping::DESTINATION_UNREACHABLE
-                                     : udpping::TTL_EXCEEDED;
+                                     ? ping::DESTINATION_UNREACHABLE
+                                     : ping::TTL_EXCEEDED;
                 }
                 else
                 {
                     // This is not our packet and can be dismissed.
-                    probe.response = udpping::INVALID_ICMP;
+                    probe.response = ping::INVALID_ICMP;
                     break;
                 }
             }
@@ -200,7 +200,7 @@ namespace
                  */
                 probe.icmpType = *icmpType;
                 probe.icmpCode = *icmpCode;
-                probe.response = udpping::UNHANDLED_ICMP;
+                probe.response = ping::UNHANDLED_ICMP;
             }
 
             break;
@@ -211,7 +211,7 @@ namespace
              * filter is set to capture certain ICMP and UDP packets only and
              * therefore should never end up here.
              */
-            probe.icmpType = udpping::UNKNOWN;
+            probe.icmpType = ping::UNKNOWN;
             probe.sendTime = -1;
             probe.recvTime = -1;
         }
@@ -254,14 +254,14 @@ namespace
         {
         case 17:
             // UDP packet
-            probe.type = udpping::UDP;
+            probe.type = ping::UDP;
 
             if (!strncmp(sourceAddress, destinationAddress, INET6_ADDRSTRLEN))
             {
                 // UDP response
                 probe.recvTime = header->ts.tv_sec * 1e6 +
                                  header->ts.tv_usec;
-                probe.response = udpping::UDP_RESPONSE;
+                probe.response = ping::UDP_RESPONSE;
                 getAddress(sourceAddress, &probe.source);
             }
             else
@@ -277,7 +277,7 @@ namespace
 
         case 6:
             // TCP
-            probe.type = udpping::TCP;
+            probe.type = ping::TCP;
 
             if (!strncmp(sourceAddress, destinationAddress, INET_ADDRSTRLEN))
             {
@@ -291,12 +291,12 @@ namespace
                 {
                 // SYN and ACK flags set
                 case 0x12:
-                    probe.response = udpping::TCP_CONNECT;
+                    probe.response = ping::TCP_CONNECT;
                     break;
 
                 // RST and ACK flags set
                 case 0x14:
-                    probe.response = udpping::TCP_RESET;
+                    probe.response = ping::TCP_RESET;
                     break;
 
                 default:
@@ -313,7 +313,7 @@ namespace
 
         case 58:
             // ICMPv6 response
-            probe.type = udpping::ICMP;
+            probe.type = ping::ICMP;
             getAddress(sourceAddress, &probe.source);
 
             if ((*icmpType == 1 && *icmpCode == 4) ||
@@ -333,13 +333,13 @@ namespace
                     probe.recvTime = header->ts.tv_sec * 1e6 +
                                      header->ts.tv_usec;
                     probe.response = *icmpType == 1
-                                     ? udpping::DESTINATION_UNREACHABLE
-                                     : udpping::TTL_EXCEEDED;
+                                     ? ping::DESTINATION_UNREACHABLE
+                                     : ping::TTL_EXCEEDED;
                 }
                 else
                 {
                     // This is not our packet and can be dismissed.
-                    probe.response = udpping::INVALID_ICMP;
+                    probe.response = ping::INVALID_ICMP;
                     break;
                 }
             }
@@ -351,7 +351,7 @@ namespace
                  */
                 probe.icmpType = *icmpType;
                 probe.icmpCode = *icmpCode;
-                probe.response = udpping::UNHANDLED_ICMP;
+                probe.response = ping::UNHANDLED_ICMP;
             }
 
             break;
@@ -362,7 +362,7 @@ namespace
              * filter is set to capture certain ICMP and UDP packets only and
              * therefore should never end up here.
              */
-            probe.icmpType = udpping::UNKNOWN;
+            probe.icmpType = ping::UNKNOWN;
             probe.sendTime = -1;
             probe.recvTime = -1;
         }
@@ -416,7 +416,7 @@ namespace
                                                destination,
                                                payloadSize);
 
-                    if (probe.response == udpping::INVALID_ICMP)
+                    if (probe.response == ping::INVALID_ICMP)
                     {
                         // invalid packet
                         continue;
@@ -439,7 +439,7 @@ namespace
                                                destination,
                                                payloadSize);
 
-                    if (probe.response == udpping::INVALID_ICMP)
+                    if (probe.response == ping::INVALID_ICMP)
                     {
                         // invalid packet
                         continue;
@@ -485,7 +485,7 @@ namespace
     }
 }
 
-UdpPing::UdpPing(QObject *parent)
+Ping::Ping(QObject *parent)
 : Measurement(parent)
 , currentStatus(Unknown)
 , m_pingProbes(0)
@@ -501,7 +501,7 @@ UdpPing::UdpPing(QObject *parent)
             SLOT(setErrorString(const QString &)));
 }
 
-UdpPing::~UdpPing()
+Ping::~Ping()
 {
     if (definition->pingType == ping::System)
     {
@@ -510,12 +510,12 @@ UdpPing::~UdpPing()
     }
 }
 
-Measurement::Status UdpPing::status() const
+Measurement::Status Ping::status() const
 {
     return currentStatus;
 }
 
-void UdpPing::setStatus(Status status)
+void Ping::setStatus(Status status)
 {
     if (currentStatus != status)
     {
@@ -524,7 +524,7 @@ void UdpPing::setStatus(Status status)
     }
 }
 
-bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
+bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
 
@@ -534,7 +534,7 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     char address[INET6_ADDRSTRLEN] = "";
     struct bpf_program fcode;
 
-    definition = measurementDefinition.dynamicCast<UdpPingDefinition>();
+    definition = measurementDefinition.dynamicCast<PingDefinition>();
 
     if (definition.isNull())
     {
@@ -670,12 +670,12 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     return true;
 }
 
-bool UdpPing::start()
+bool Ping::start()
 {
     PingProbe probe;
 
     setStartDateTime(QDateTime::currentDateTime());
-    setStatus(UdpPing::Running);
+    setStatus(Ping::Running);
 
     if (definition->pingType == ping::System)
     {
@@ -703,14 +703,14 @@ bool UdpPing::start()
     ping(&probe);
     closesocket(probe.sock);
 
-    setStatus(UdpPing::Finished);
+    setStatus(Ping::Finished);
     setEndDateTime(QDateTime::currentDateTime());
     emit Measurement::finished();
 
     return true;
 }
 
-bool UdpPing::stop()
+bool Ping::stop()
 {
     if (definition->pingType == ping::System)
     {
@@ -720,7 +720,7 @@ bool UdpPing::stop()
     return true;
 }
 
-Result UdpPing::result() const
+Result Ping::result() const
 {
     QVariantList res;
     QVariantList roundTripMs;
@@ -755,7 +755,7 @@ Result UdpPing::result() const
     return Result(startDateTime(), endDateTime(), res);
 }
 
-int UdpPing::initSocket()
+int Ping::initSocket()
 {
     int ttl = definition->ttl ? definition->ttl : 64;
     sockaddr_any src_addr;
@@ -846,7 +846,7 @@ cleanup:
     return -1;
 }
 
-bool UdpPing::sendTcpData(PingProbe *probe)
+bool Ping::sendTcpData(PingProbe *probe)
 {
     int ret = 0;
 
@@ -881,7 +881,7 @@ bool UdpPing::sendTcpData(PingProbe *probe)
     return true;
 }
 
-bool UdpPing::sendUdpData(PingProbe *probe)
+bool Ping::sendUdpData(PingProbe *probe)
 {
     if (sendto(probe->sock, randomizePayload(definition->payload).data(),
                definition->payload, 0, (sockaddr *)&m_destAddress,
@@ -894,12 +894,12 @@ bool UdpPing::sendUdpData(PingProbe *probe)
     return true;
 }
 
-void UdpPing::receiveData(PingProbe *probe)
+void Ping::receiveData(PingProbe *probe)
 {
     Q_UNUSED(probe);
 }
 
-void UdpPing::ping(PingProbe *probe)
+void Ping::ping(PingProbe *probe)
 {
     QVector<PingProbe> result;
     QFuture<QVector<PingProbe>> future;
@@ -959,7 +959,7 @@ void UdpPing::ping(PingProbe *probe)
     }
 }
 
-void UdpPing::processUdpPackets(QVector<PingProbe> *probes)
+void Ping::processUdpPackets(QVector<PingProbe> *probes)
 {
     PingProbe newProbe = {0};
 
@@ -976,7 +976,7 @@ void UdpPing::processUdpPackets(QVector<PingProbe> *probes)
     for (QVector<PingProbe>::iterator p = probes->begin(); p != probes->end(); p++)
     {
         // match a request packet ...
-        if (p->marked || p->type != udpping::UDP || p->response == udpping::UDP_RESPONSE)
+        if (p->marked || p->type != ping::UDP || p->response == ping::UDP_RESPONSE)
         {
             continue;
         }
@@ -984,7 +984,7 @@ void UdpPing::processUdpPackets(QVector<PingProbe> *probes)
         for (QVector<PingProbe>::iterator q = probes->begin(); q != probes->end(); q++)
         {
             // ... with a response packet
-            if (q->marked || (q->type != udpping::ICMP || p->hash != q->hash))
+            if (q->marked || (q->type != ping::ICMP || p->hash != q->hash))
             {
                 continue;
             }
@@ -1003,15 +1003,15 @@ void UdpPing::processUdpPackets(QVector<PingProbe> *probes)
 
             switch (newProbe.response)
             {
-            case udpping::DESTINATION_UNREACHABLE:
+            case ping::DESTINATION_UNREACHABLE:
                 emit destinationUnreachable(newProbe);
                 break;
 
-            case udpping::TTL_EXCEEDED:
+            case ping::TTL_EXCEEDED:
                 emit ttlExceeded(newProbe);
                 break;
 
-            case udpping::UNHANDLED_ICMP:
+            case ping::UNHANDLED_ICMP:
                 emit error("Unhandled ICMP packet (type/code): " +
                            QString::number(newProbe.icmpType) + "/" +
                            QString::number(newProbe.icmpCode));
@@ -1025,14 +1025,14 @@ void UdpPing::processUdpPackets(QVector<PingProbe> *probes)
     // process possible UDP responses
     for (QVector<PingProbe>::iterator p = probes->begin(); p != probes->end(); p++)
     {
-        if (p->marked || p->type != udpping::UDP || p->response == udpping::UDP_RESPONSE)
+        if (p->marked || p->type != ping::UDP || p->response == ping::UDP_RESPONSE)
         {
             continue;
         }
 
         for (QVector<PingProbe>::iterator q = probes->begin(); q != probes->end(); q++)
         {
-            if (!q->marked && (q->type == udpping::UDP && q->response == udpping::UDP_RESPONSE))
+            if (!q->marked && (q->type == ping::UDP && q->response == ping::UDP_RESPONSE))
             {
                 p->marked = true;
                 q->marked = true;
@@ -1053,23 +1053,23 @@ void UdpPing::processUdpPackets(QVector<PingProbe> *probes)
     }
 }
 
-void UdpPing::processTcpPackets(QVector<PingProbe> *probes)
+void Ping::processTcpPackets(QVector<PingProbe> *probes)
 {
     PingProbe newProbe = {0};
 
     // match TCP requests and responses first
     for (QVector<PingProbe>::iterator p = probes->begin(); p != probes->end(); p++)
     {
-        if (p->marked || p->type != udpping::TCP || (p->response == udpping::TCP_CONNECT ||
-                                                     p->response == udpping::TCP_RESET))
+        if (p->marked || p->type != ping::TCP || (p->response == ping::TCP_CONNECT ||
+                                                     p->response == ping::TCP_RESET))
         {
             continue;
         }
 
         for (QVector<PingProbe>::iterator q = probes->begin(); q != probes->end(); q++)
         {
-            if (!q->marked && (q->type == udpping::TCP && (q->response == udpping::TCP_CONNECT ||
-                                                           q->response == udpping::TCP_RESET)))
+            if (!q->marked && (q->type == ping::TCP && (q->response == ping::TCP_CONNECT ||
+                                                           q->response == ping::TCP_RESET)))
             {
                 p->marked = true;
                 q->marked = true;
@@ -1083,11 +1083,11 @@ void UdpPing::processTcpPackets(QVector<PingProbe> *probes)
 
                 switch (newProbe.response)
                 {
-                case udpping::TCP_CONNECT:
+                case ping::TCP_CONNECT:
                     emit tcpConnect(newProbe);
                     break;
 
-                case udpping::TCP_RESET:
+                case ping::TCP_RESET:
                     emit tcpReset(newProbe);
                     break;
                 }
@@ -1100,15 +1100,15 @@ void UdpPing::processTcpPackets(QVector<PingProbe> *probes)
     // match remaining TCP and ICMP packets
     for (QVector<PingProbe>::iterator p = probes->begin(); p != probes->end(); p++)
     {
-        if (p->marked || p->type != udpping::TCP || (p->response == udpping::TCP_CONNECT ||
-                                                     p->response == udpping::TCP_RESET))
+        if (p->marked || p->type != ping::TCP || (p->response == ping::TCP_CONNECT ||
+                                                     p->response == ping::TCP_RESET))
         {
             continue;
         }
 
         for (QVector<PingProbe>::iterator q = probes->begin(); q != probes->end(); q++)
         {
-            if (!q->marked && q->type == udpping::ICMP)
+            if (!q->marked && q->type == ping::ICMP)
             {
                 p->marked = true;
                 q->marked = true;
@@ -1124,15 +1124,15 @@ void UdpPing::processTcpPackets(QVector<PingProbe> *probes)
 
                 switch (newProbe.response)
                 {
-                case udpping::DESTINATION_UNREACHABLE:
+                case ping::DESTINATION_UNREACHABLE:
                     emit destinationUnreachable(newProbe);
                     break;
 
-                case udpping::TTL_EXCEEDED:
+                case ping::TTL_EXCEEDED:
                     emit ttlExceeded(newProbe);
                     break;
 
-                case udpping::UNHANDLED_ICMP:
+                case ping::UNHANDLED_ICMP:
                     emit error("Unhandled ICMP packet (type/code): " +
                                QString::number(newProbe.icmpType) + "/" +
                                QString::number(newProbe.icmpCode));
@@ -1145,24 +1145,24 @@ void UdpPing::processTcpPackets(QVector<PingProbe> *probes)
     }
 }
 
-void UdpPing::started()
+void Ping::started()
 {
     pingTime.clear();
 
-    setStatus(UdpPing::Running);
+    setStatus(Ping::Running);
 }
 
-void UdpPing::finished(int exitCode, QProcess::ExitStatus exitStatus)
+void Ping::finished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     Q_UNUSED(exitCode);
     Q_UNUSED(exitStatus);
 
-    setStatus(UdpPing::Finished);
+    setStatus(Ping::Finished);
     setEndDateTime(QDateTime::currentDateTime());
     emit Measurement::finished();
 }
 
-void UdpPing::readyRead()
+void Ping::readyRead()
 {
     // Antwort von 193.99.144.80: Bytes=32 Zeit=32ms TTL=245
     QRegExp re("=(\\d+)ms");
@@ -1181,12 +1181,12 @@ void UdpPing::readyRead()
     }
 }
 
-void UdpPing::waitForFinished()
+void Ping::waitForFinished()
 {
     process.waitForFinished(1000);
 }
 
-float UdpPing::averagePingTime() const
+float Ping::averagePingTime() const
 {
     float time = 0;
 

@@ -79,12 +79,6 @@ ListPage {
         }
 
         ListElement {
-            text: "Ping"
-            func: "ping"
-            group: "Measurements"
-        }
-
-        ListElement {
             text: "Dnslookup"
             func: "dnslookup"
             group: "Measurements"
@@ -103,8 +97,8 @@ ListPage {
         }
 
         ListElement {
-            text: "Udp Ping"
-            func: "udpPing"
+            text: "Ping"
+            func: "ping"
             group: "Measurements"
         }
 

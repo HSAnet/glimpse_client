@@ -1,7 +1,9 @@
-#ifndef PING_DEFINITION_H
-#define PING_DEFINITION_H
+#ifndef UDPPING_DEFINITION_H
+#define UDPPING_DEFINITION_H
 
 #include "../measurementdefinition.h"
+#include "../../types.h"
+#include <QAbstractSocket>
 
 class PingDefinition;
 
@@ -11,20 +13,27 @@ typedef QList<PingDefinitionPtr> PingDefinitionList;
 class PingDefinition : public MeasurementDefinition
 {
 public:
-    PingDefinition(const QString &host, quint16 count, quint32 timeout, quint32 interval);
     ~PingDefinition();
+    PingDefinition(const QString &host, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
+                      const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload,
+                      const ping::PingType &pingType);
 
     // Storage
     static PingDefinitionPtr fromVariant(const QVariant &variant);
 
     // Getters
     QString host;
-    quint16 count;
-    quint32 timeout; // in ms
-    quint32 interval; // in ms
+    quint32 count;
+    quint32 interval;
+    quint32 receiveTimeout;
+    int ttl;
+    quint16 destinationPort;
+    quint16 sourcePort;
+    quint32 payload;
+    ping::PingType pingType;
 
     // Serializable interface
     QVariant toVariant() const;
 };
 
-#endif // PING_DEFINITION_H
+#endif // UDPPING_DEFINITION_H

@@ -1,28 +1,34 @@
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
 #include <errno.h>
-#include <sys/time.h>
-#include <poll.h>
 #include <fcntl.h>
+#include <netdb.h>
+#include <poll.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <linux/errqueue.h>
+#include <linux/icmp.h>
+#include <sys/socket.h>
+#include <sys/time.h>
 #include <numeric>
 
 #include <QtMath>
 
-#include "udpping.h"
+#include "ping.h"
 #include "../../log/logger.h"
 
-//#include <arpa/inet.h>
-
-LOGGER(UdpPing);
+LOGGER("Ping");
 
 namespace
 {
     bool getAddress(const QString &address, sockaddr_any *addr)
     {
+        struct addrinfo hints;
         struct addrinfo *rp = NULL, *result = NULL;
 
-        if (getaddrinfo(address.toLatin1(), NULL, NULL, &result))
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = PF_UNSPEC;
+
+        if (getaddrinfo(address.toLatin1(), NULL, &hints, &result))
         {
             return false;
         }
@@ -35,8 +41,6 @@ namespace
 
         if (!rp)
         {
-            //being here means that neither a v4 nor a v6 address was found
-            //does that make any sense? Could this happen?
             freeaddrinfo(result);
             return false;
         }
@@ -46,36 +50,6 @@ namespace
         freeaddrinfo(result);
 
         return true;
-    }
-
-    //for the Mac OS version of UDPPing, the ICMP socket is used only
-    //to receive the incoming ICMP errors
-    int initIcmpSocket(const sockaddr_any &m_destAddress)
-    {
-        int n = 0;
-        int sock = 0;
-
-        sock = socket(m_destAddress.sa.sa_family, SOCK_DGRAM, IPPROTO_ICMP);
-
-        if (sock < 0)
-        {
-            //emit error("icmp socket: " + QString(strerror(errno)));
-            return -1;
-        }
-
-        n = 1;
-
-        if (setsockopt(sock, SOL_SOCKET, SO_TIMESTAMP, &n, sizeof(n)) < 0)
-        {
-            //emit error("icmp socket setsockopt SOL_TIMESTAMP: " + QString(strerror(errno)));
-            goto cleanup;
-        }
-
-        return sock;
-
-cleanup:
-        close(sock);
-        return -1;
     }
 
     QByteArray randomizePayload(const quint32 size)
@@ -98,44 +72,9 @@ cleanup:
 
         return payload;
     }
-
-    inline bool extractTimestamp(struct msghdr &msg, quint64 &time)
-    {
-        struct cmsghdr *cm = NULL;
-
-        //need to parse the control data and search for the timestamp if available
-        for (cm = CMSG_FIRSTHDR(&msg); cm; cm = CMSG_NXTHDR(&msg, cm))
-        {
-            void *ptr = CMSG_DATA(cm);
-
-            if (cm->cmsg_level == SOL_SOCKET)
-            {
-                //the good folks at Apple decided to not use the standard names here
-                //god bless their souls
-                if (cm->cmsg_type == SCM_TIMESTAMP && cm->cmsg_len == CMSG_LEN(sizeof(struct timeval)))
-                {
-                    struct timeval *tv_tmp = (struct timeval *) ptr;
-
-                    if (tv_tmp == NULL)
-                    {
-                        return false;
-                    }
-
-                    time = tv_tmp->tv_sec * 1e6 + tv_tmp->tv_usec;
-                    //we break after the first found timestamp, since on Mac OS there are
-                    //multiple (I assume for now these are for Ethernet, IP and UDP).
-                    //Tests showed they are increasing in the usec range whereas the first
-                    //seems deterministially the smallest
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
 }
 
-UdpPing::UdpPing(QObject *parent)
+Ping::Ping(QObject *parent)
 : Measurement(parent)
 , currentStatus(Unknown)
 , m_device(NULL)
@@ -150,7 +89,7 @@ UdpPing::UdpPing(QObject *parent)
             SLOT(setErrorString(const QString &)));
 }
 
-UdpPing::~UdpPing()
+Ping::~Ping()
 {
     if (definition->pingType == ping::System)
     {
@@ -159,12 +98,12 @@ UdpPing::~UdpPing()
     }
 }
 
-Measurement::Status UdpPing::status() const
+Measurement::Status Ping::status() const
 {
     return currentStatus;
 }
 
-void UdpPing::setStatus(Status status)
+void Ping::setStatus(Status status)
 {
     if (currentStatus != status)
     {
@@ -173,11 +112,17 @@ void UdpPing::setStatus(Status status)
     }
 }
 
-bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
+bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
 
-    definition = measurementDefinition.dynamicCast<UdpPingDefinition>();
+    definition = measurementDefinition.dynamicCast<PingDefinition>();
+
+    if (definition.isNull())
+    {
+        LOG_WARNING("Definition is empty");
+        return false;
+    }
 
     if (definition->pingType != ping::System)
     {
@@ -222,7 +167,6 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     }
     else
     {
-        // unreachable
         emit error(QString("unknown address family '%1'").arg(
                        m_destAddress.sa.sa_family));
         return false;
@@ -231,19 +175,20 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     return true;
 }
 
-bool UdpPing::start()
+bool Ping::start()
 {
     PingProbe probe;
 
     setStartDateTime(QDateTime::currentDateTime());
-    setStatus(UdpPing::Running);
+    setStatus(Ping::Running);
 
     if (definition->pingType == ping::System)
     {
         QStringList args;
 
         args << "-c" << QString::number(definition->count)
-             << "-W" << QString::number(definition->receiveTimeout)
+             << "-n" // Don't resolve hostnames
+             << "-W" << QString::number((float)definition->receiveTimeout / 1000)
              << "-i" << QString::number((float)definition->interval / 1000)
              << definition->host;
 
@@ -261,15 +206,6 @@ bool UdpPing::start()
         return false;
     }
 
-    probe.icmpSock = initIcmpSocket(m_destAddress);
-
-    if (probe.icmpSock < 0)
-    {
-        close(probe.sock);
-        emit error(QString("icmp socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-        return false;
-    }
-
     for (quint32 i = 0; i < definition->count; i++)
     {
         ping(&probe);
@@ -277,7 +213,6 @@ bool UdpPing::start()
     }
 
     close(probe.sock);
-    close(probe.icmpSock);
 
     foreach (const PingProbe &probe, m_pingProbes)
     {
@@ -287,19 +222,24 @@ bool UdpPing::start()
         }
     }
 
-    setStatus(UdpPing::Finished);
+    setStatus(Ping::Finished);
     setEndDateTime(QDateTime::currentDateTime());
     emit Measurement::finished();
 
     return true;
 }
 
-bool UdpPing::stop()
+bool Ping::stop()
 {
+    if (definition->pingType == ping::System)
+    {
+        process.kill();
+    }
+
     return true;
 }
 
-Result UdpPing::result() const
+Result Ping::result() const
 {
     QVariantList res;
     QVariantList roundTripMs;
@@ -334,7 +274,7 @@ Result UdpPing::result() const
     return Result(startDateTime(), endDateTime(), res);
 }
 
-int UdpPing::initSocket()
+int Ping::initSocket()
 {
     int n = 0;
     int sock = 0;
@@ -343,7 +283,6 @@ int UdpPing::initSocket()
     struct linger sockLinger;
 
     memset(&src_addr, 0, sizeof(src_addr));
-
     memset(&sockLinger, 0, sizeof(sockLinger));
 
     sockLinger.l_linger = 0; //will make a call to close() send a RST
@@ -357,10 +296,10 @@ int UdpPing::initSocket()
     {
         sock = socket(m_destAddress.sa.sa_family, SOCK_STREAM, IPPROTO_TCP);
     }
-    //this should never happen
     else
     {
-        emit error(QString("init socket: unkown socket type"));
+        // this should never happen
+        emit error(QString("Unknown ping type '%1'").arg(definition->pingType));
         return -1;
     }
 
@@ -377,7 +316,8 @@ int UdpPing::initSocket()
         //for some time (we want to do that howerver for our Paris traceroute
         if (setsockopt(sock, SOL_SOCKET, SO_LINGER, &sockLinger, sizeof(sockLinger)) < 0)
         {
-            emit error(QString("setsockopt SO_LINGER: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            emit error(QString("setsockopt SO_LINGER: %1").arg(
+                           QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
 
@@ -388,55 +328,68 @@ int UdpPing::initSocket()
 
         if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0)
         {
-            emit error(QString("making TCP socket non-blocking : %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            emit error(QString("making TCP socket non-blocking : %1").arg(
+                           QString::fromLocal8Bit(strerror(errno))));
             //we don't go to clean-up here since the code will still function... there just might
             //be a potential longish wait
         }
     }
 
+    src_addr.sa.sa_family = m_destAddress.sa.sa_family;
+
+    // use RECVRR
+    n = 1;
+
     if (m_destAddress.sa.sa_family == AF_INET)
     {
         src_addr.sin.sin_port = htons(definition->sourcePort);
-        src_addr.sin.sin_family = AF_INET;
-        src_addr.sin.sin_addr.s_addr = htonl(INADDR_ANY);
 
-        if (bind(sock, (struct sockaddr *) &src_addr, sizeof(struct sockaddr_in)) < 0)
+        if (bind(sock, (struct sockaddr *) &src_addr, sizeof(src_addr.sin)) < 0)
         {
             emit error(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            goto cleanup;
+        }
+
+        if (setsockopt(sock, SOL_IP, IP_RECVERR, &n, sizeof(n)) < 0)
+        {
+            emit error(QString("setsockopt IP_RECVERR: %1").arg(
+                           QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
     }
     else if (m_destAddress.sa.sa_family == AF_INET6)
     {
         src_addr.sin6.sin6_port = htons(definition->sourcePort);
-        src_addr.sin6.sin6_family = AF_INET6;
-        src_addr.sin6.sin6_addr = in6addr_any;
 
-        if (bind(sock, (struct sockaddr *) &src_addr, sizeof(struct sockaddr_in6)) < 0)
+        if (bind(sock, (struct sockaddr *) &src_addr, sizeof(src_addr.sin6)) < 0)
         {
             emit error(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
-    }
-    else
-    {
-        // unreachable
-        emit error(QString("init socket: unknown address family"));
-        goto cleanup;
+
+        if (setsockopt(sock, IPPROTO_IPV6, IPV6_RECVERR, &n, sizeof(n)) < 0)
+        {
+            emit error(QString("setsockopt IPV6_RECVERR: %1").arg(
+                           QString::fromLocal8Bit(strerror(errno))));
+            goto cleanup;
+        }
     }
 
+    // Enable the receiving of the SO_TIMESTAMP control message
     n = 1;
 
     if (setsockopt(sock, SOL_SOCKET, SO_TIMESTAMP, &n, sizeof(n)) < 0)
     {
-        emit error(QString("setsockopt SOL_TIMESTAMP: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+        emit error(QString("setsockopt SOL_TIMESTAMP: %1").arg(
+                       QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
 
     // set TTL
-    if (setsockopt(sock, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl)) < 0)
+    if (setsockopt(sock, SOL_IP, IP_TTL, &ttl, sizeof(ttl)) < 0)
     {
-        emit error(QString("setsockopt IP_TTL: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+        emit error(QString("setsockopt IP_TTL: %1").arg(
+                       QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
 
@@ -447,8 +400,9 @@ cleanup:
     return -1;
 }
 
-bool UdpPing::sendUdpData(PingProbe *probe)
+bool Ping::sendUdpData(PingProbe *probe)
 {
+    int ret = 0;
     struct timeval tv;
 
     memset(&tv, 0, sizeof(tv));
@@ -458,57 +412,44 @@ bool UdpPing::sendUdpData(PingProbe *probe)
 
     if (m_destAddress.sa.sa_family == AF_INET)
     {
-        if (sendto(probe->sock, randomizePayload(definition->payload).data(),
-                   definition->payload, 0, (sockaddr *)&m_destAddress,
-                   sizeof(struct sockaddr_in)) < 0)
-        {
-            emit error(QString("send: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-            return false;
-        }
+        ret = sendto(probe->sock, randomizePayload(definition->payload).data(),
+                     definition->payload, 0, (sockaddr *)&m_destAddress,
+                     sizeof(m_destAddress.sin));
     }
     else if (m_destAddress.sa.sa_family == AF_INET6)
     {
-        if (sendto(probe->sock, randomizePayload(definition->payload).data(),
-                   definition->payload, 0, (sockaddr *)&m_destAddress,
-                   sizeof(struct sockaddr_in6)) < 0)
-        {
-            emit error(QString("send v6: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-            return false;
-        }
+        ret = sendto(probe->sock, randomizePayload(definition->payload).data(),
+                     definition->payload, 0, (sockaddr *)&m_destAddress,
+                     sizeof(m_destAddress.sin6));
     }
-    else
+
+    if (ret < 0)
     {
-        //should never be reached
-        emit error(QString("sendUdpData: unkown address family"));
+        LOG_WARNING(QString("send: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         return false;
     }
 
     return true;
 }
 
-bool UdpPing::sendTcpData(PingProbe *probe)
+bool Ping::sendTcpData(PingProbe *probe)
 {
+    int ret = 0;
     struct timeval tv;
 
     memset(&tv, 0, sizeof(tv));
-
-    int ret = 0;
-
     gettimeofday(&tv, NULL);
     probe->sendTime = tv.tv_sec * 1e6 + tv.tv_usec;
 
     if (m_destAddress.sa.sa_family == AF_INET)
     {
-        ret = ::connect(probe->sock, (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in));
+        ret = ::connect(probe->sock, (sockaddr *)&m_destAddress,
+                        sizeof(struct sockaddr_in));
     }
     else if (m_destAddress.sa.sa_family == AF_INET6)
     {
-        ret = ::connect(probe->sock, (sockaddr *)&m_destAddress, sizeof(struct sockaddr_in6));
-    }
-    else
-    {
-        emit error(QString("connect: unknown address family"));
-        return false;
+        ret = ::connect(probe->sock, (sockaddr *)&m_destAddress,
+                        sizeof(struct sockaddr_in6));
     }
 
     gettimeofday(&tv, NULL);
@@ -523,7 +464,6 @@ bool UdpPing::sendTcpData(PingProbe *probe)
             //check immediately, as connect could return immediately if called
             //for host-local addresses
             emit tcpReset(*probe);
-            goto tcpcleanup;
         }
         else if (errno == EINPROGRESS)
         {
@@ -540,9 +480,14 @@ bool UdpPing::sendTcpData(PingProbe *probe)
             //i.e. POLLOUT.
             if ((ret = poll(&pfd, 1, definition->receiveTimeout)) < 0)
             {
-                emit error(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+                LOG_WARNING(QString("poll: %1").arg(QString::fromLocal8Bit(
+                                                        strerror(errno))));
                 goto tcpcleanup;
             }
+
+            gettimeofday(&tv, NULL);
+            probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
+            memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
 
             //timeout... the other end is not responding...
             //maybe a stupid Windows host or something
@@ -552,17 +497,7 @@ bool UdpPing::sendTcpData(PingProbe *probe)
             {
                 //it seems counter intuitive, but we
                 //return true here, so we actually
-                //try to read from the ICMP socket...
-                close(probe->sock);
-                probe->sock = initSocket();
-
-                if (probe->sock < 0)
-                {
-                    emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-                    return false;
-                }
-
-                //receiveData will return the right signal for us
+                //try to read from the socket...
                 return true;
             }
 
@@ -573,13 +508,11 @@ bool UdpPing::sendTcpData(PingProbe *probe)
 
             if (getsockopt(probe->sock, SOL_SOCKET, SO_ERROR, &error_num, &len) < 0)
             {
-                emit error(QString("getsockopt: %1").arg(QString::fromLocal8Bit(strerror(error_num))));
+                LOG_WARNING(QString("getsockopt: %1").arg(QString::fromLocal8Bit(
+                                                              strerror(error_num))));
                 goto tcpcleanup;
             }
 
-            gettimeofday(&tv, NULL);
-            probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
-            memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
 
             if (error_num == 0)
             {
@@ -596,25 +529,21 @@ bool UdpPing::sendTcpData(PingProbe *probe)
             else
             {
                 //unexpected
-                emit error(QString("getsockopt: %1").arg(QString::fromLocal8Bit(strerror(error_num))));
+                emit error(QString("getsockopt: %1").arg(QString::fromLocal8Bit(
+                                                             strerror(error_num))));
                 goto tcpcleanup;
             }
         }
         else
         {
             //unexpected
-            emit error(QString("connect: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            emit error(QString("connect: %1").arg(QString::fromLocal8Bit(
+                                                      strerror(errno))));
             goto tcpcleanup;
         }
     }
 
-    //when we are here, the 3-way handshake went through...
-    //really, really fast which could happen if the destination is host local
-
-    emit tcpConnect(*probe);
-
 tcpcleanup:
-
     //closing after unsuccessful connect() OK
     close(probe->sock);
     probe->sock = initSocket();
@@ -624,25 +553,22 @@ tcpcleanup:
         emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
     }
 
-    //we return false to not enter receiveData() in ping()
-    //which needs to be avoided for both a successful and
-    //unsuccessful connect()
     return false;
 }
 
-void UdpPing::receiveData(PingProbe *probe)
+void Ping::receiveData(PingProbe *probe)
 {
     struct msghdr msg;
     sockaddr_any from;
     struct iovec iov;
-    char buf[1280];
+    char buf[1500];
     char control[256];
-    int ret = 0;
-    struct timeval tv;
+    struct cmsghdr *cm;
+    struct sock_extended_err *ee = NULL;
+    struct timeval *tv;
+    bool udp_response = false;
 
-    memset(&buf, 0, 1280);
-    memset(&tv, 0, sizeof(tv));
-
+    memset(&msg, 0, sizeof(msg));
     msg.msg_name = &from;
     msg.msg_namelen = sizeof(from);
     msg.msg_control = control;
@@ -653,105 +579,124 @@ void UdpPing::receiveData(PingProbe *probe)
     msg.msg_iovlen = 1;
 
     // poll here
-    struct pollfd pfd[2];
-    memset(&pfd, 0, sizeof(struct pollfd) * 2);
-    pfd[0].fd = probe->sock;
-    pfd[1].fd = probe->icmpSock;
-    pfd[0].events = POLLIN;
-    pfd[1].events = POLLIN;
+    struct pollfd pfd;
+    memset(&pfd, 0, sizeof(pfd));
+    pfd.fd = probe->sock;
+    pfd.events = POLLIN | POLLERR;
 
-    // Don't poll on TCP sockets since the sendTcpData method already does
-    // that.
-    if (definition->pingType == ping::Udp)
+    if (poll(&pfd, 1, definition->receiveTimeout) < 0)
     {
-        if ((ret = poll(pfd, 2, definition->receiveTimeout)) < 0)
-        {
-            emit error(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-            return;
-        }
+        LOG_WARNING(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+        goto cleanup;
     }
 
-    //will be overwritten if the packet was timestamped by the kernel
-    //note: on Mavericks (10.9.3) the kernel did
-    gettimeofday(&tv, NULL);
-    probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
-
-    if (ret == 0)
+    if (!pfd.revents)
     {
-        memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
         emit timeout(*probe);
-        return;
+
+        if (definition->pingType == ping::Tcp)
+        {
+            close(probe->sock);
+            probe->sock = initSocket();
+        }
+
+        goto cleanup;
     }
 
-    //Which socket is ready to receive? Likely the ICMP socket
-    if (pfd[1].revents & POLLIN)
+    if (recvmsg(probe->sock, &msg, MSG_ERRQUEUE) < 0)
     {
-        //socket ready to receive
-        if (recvmsg(probe->icmpSock, &msg, 0) < 0)
+        // receive UDP packet
+        if (recvmsg(probe->sock, &msg, 0) < 0)
         {
-            emit error(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-            return;
+            LOG_WARNING(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            goto cleanup;
         }
 
-        //we received an ICMP error... emit the right signal
-        //so parse the header
-        //get the Internet header length (in 32 bit quantaties)
-        unsigned char ihl = buf[0] & 0x0F;
+        udp_response = true;
 
-        if (ihl < 5 || ihl > 15)
-        {
-            emit error(QString("parsing icmp message failed (IHL value out of bounds)"));
-            return;
-        }
-
-        ihl *= 4;
-
-        unsigned char icmp_type = 0;
-        unsigned char icmp_code = 0;
-
-        icmp_type = buf[ihl];
-        icmp_code = buf[ihl + 1];
-
-        extractTimestamp(msg, probe->recvTime);
+        // msg_name provides the source address if the initial request packet
+        // was successful
         memcpy(&probe->source, &from, sizeof(sockaddr_any));
+    }
 
-        if (icmp_type == 3 && icmp_code == 3)
+    if (msg.msg_flags & MSG_CTRUNC)
+    {
+        LOG_WARNING("control message buffer is too short to store all messages");
+    }
+
+    for (cm = CMSG_FIRSTHDR(&msg); cm; cm = CMSG_NXTHDR(&msg, cm))
+    {
+        void *ptr = CMSG_DATA(cm);
+
+        switch (cm->cmsg_level)
         {
-            emit destinationUnreachable(*probe);
+        case SOL_SOCKET:
+            switch (cm->cmsg_type)
+            {
+            case SO_TIMESTAMP:
+                tv = (struct timeval *) ptr;
+                probe->recvTime = tv->tv_sec * 1e6 + tv->tv_usec;
+                break;
+            }
+
+            break;
+
+        case SOL_IP:
+            switch (cm->cmsg_type)
+            {
+            case IP_RECVERR:
+                ee = (struct sock_extended_err *) ptr;
+
+                if (ee->ee_origin != SO_EE_ORIGIN_ICMP)
+                {
+                    ee = NULL;
+                    continue;
+                }
+
+                if (ee->ee_type == ICMP_SOURCE_QUENCH || ee->ee_type == ICMP_REDIRECT)
+                {
+                    goto cleanup;
+                }
+
+                break;
+
+            default:
+                break;
+            }
+
+            break;
+
+        default:
+            break;
         }
-        else if (icmp_type == 11 && icmp_code == 0)
+    }
+
+    if (ee)
+    {
+        memcpy(&probe->source, SO_EE_OFFENDER(ee), sizeof(probe->source));
+
+        if (ee->ee_type == ICMP_TIME_EXCEEDED && ee->ee_code == ICMP_EXC_TTL)
         {
             emit ttlExceeded(*probe);
         }
-    }
-    else if (pfd[0].revents & POLLIN)
-    {
-        //the UDP/TCP sender socket is ready to receive, there was indeed something
-        //listening... how interesting (should be rare)
-        if (recvmsg(probe->sock, &msg, 0) < 0)
+        else if (ee->ee_type == ICMP_DEST_UNREACH)
         {
-            emit error(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-            return;
+            emit destinationUnreachable(*probe);
         }
+    }
 
-        extractTimestamp(msg, probe->recvTime);
-        memcpy(&probe->source, &from, sizeof(sockaddr_any));
-
+    if (udp_response)
+    {
         emit udpResponse(*probe);
     }
-    else
-    {
-        //somthing else happened... not expected
-        emit error(QString("recvmsg failed: No socket to read data from."));
-        return;
-    }
 
+cleanup:
     return;
 }
 
-void UdpPing::ping(PingProbe *probe)
+void Ping::ping(PingProbe *probe)
 {
-    bool ret = true;
+    bool ret = false;
 
     // send
     if (definition->pingType == ping::Udp)
@@ -762,36 +707,31 @@ void UdpPing::ping(PingProbe *probe)
     {
         ret = sendTcpData(probe);
     }
-    else
-    {
-        emit error(QString("ping: unkown socket type"));
-    }
 
     if (ret)
     {
         receiveData(probe);
     }
-
 }
 
-void UdpPing::started()
+void Ping::started()
 {
     pingTime.clear();
 
-    setStatus(UdpPing::Running);
+    setStatus(Ping::Running);
 }
 
-void UdpPing::finished(int exitCode, QProcess::ExitStatus exitStatus)
+void Ping::finished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     Q_UNUSED(exitCode);
     Q_UNUSED(exitStatus);
 
-    setStatus(UdpPing::Finished);
+    setStatus(Ping::Finished);
     setEndDateTime(QDateTime::currentDateTime());
     emit Measurement::finished();
 }
 
-void UdpPing::readyRead()
+void Ping::readyRead()
 {
     // 64 bytes from 193.99.144.80: icmp_seq=0 ttl=245 time=32.031 ms
     QRegExp re("time=(\\d+.*)ms");
@@ -810,12 +750,12 @@ void UdpPing::readyRead()
     }
 }
 
-void UdpPing::waitForFinished()
+void Ping::waitForFinished()
 {
     process.waitForFinished(1000);
 }
 
-float UdpPing::averagePingTime() const
+float Ping::averagePingTime() const
 {
     float time = 0;
 

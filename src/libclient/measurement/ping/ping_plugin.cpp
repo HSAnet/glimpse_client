@@ -1,9 +1,11 @@
 #include "ping_plugin.h"
 #include "ping.h"
+#include "ping_definition.h"
 
 QStringList PingPlugin::measurements() const
 {
-    return QStringList() << "ping";
+    return QStringList()
+           << "ping";
 }
 
 MeasurementPtr PingPlugin::createMeasurement(const QString &name)
