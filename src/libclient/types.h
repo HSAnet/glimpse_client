@@ -21,12 +21,65 @@ enum RequestType
     PeerResponse = 1024
 };
 
+namespace ping
+{
+    enum PingType
+    {
+        Unknown,
+        System,
+        Udp,
+        Tcp
+    };
+}
+
+/*
+ * The macros enum{To,From}String only work for classes which have a
+ * QMetaObject variable named 'staticMetaObject'. The Qt macro 'Q_OBJECT' takes
+ * care of this.
+ */
 #define enumToString(className, enumName, value) \
     className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator("enumName")).valueToKey(value)
 
 #define enumFromString(className, enumName, value) \
     static_cast<className::enumName>(className::staticMetaObject.enumerator( \
     className::staticMetaObject.indexOfEnumerator("enumName")).keyToValue(value))
+
+
+inline QString pingTypeToString(const ping::PingType &pingType)
+{
+    if (pingType == ping::System)
+    {
+        return "System";
+    }
+    else if (pingType == ping::Udp)
+    {
+        return "Udp";
+    }
+    else if (pingType == ping::Tcp)
+    {
+        return "Tcp";
+    }
+
+    return "";
+}
+
+inline ping::PingType pingTypeFromString(const QString &pingType)
+{
+    if (pingType == "System")
+    {
+        return ping::System;
+    }
+    else if (pingType == "Udp")
+    {
+        return ping::Udp;
+    }
+    else if (pingType == "Tcp")
+    {
+        return ping::Tcp;
+    }
+
+    return ping::Unknown;
+}
 
 template <typename T>
 QVariantList ptrListToVariant(const QList<T> &list)

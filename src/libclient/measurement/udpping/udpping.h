@@ -4,6 +4,8 @@
 #include <QtGlobal>
 #include <QString>
 #include <QVector>
+#include <QProcess>
+#include <QList>
 
 #if defined(Q_OS_WIN)
 #include <QtConcurrent/QtConcurrentRun>
@@ -106,6 +108,8 @@ public:
     bool start();
     bool stop();
     Result result() const;
+    void waitForFinished();
+    float averagePingTime() const;
 
 private:
     void setStatus(Status status);
@@ -122,11 +126,15 @@ private:
     UdpPingDefinitionPtr definition;
     Status currentStatus;
     QVector<PingProbe> m_pingProbes;
+    QList<float> pingTime;
 
     pcap_if_t *m_device;
     pcap_t *m_capture;
     sockaddr_any m_destAddress;
 
+    // for system ping only
+    QProcess process;
+    QTextStream stream;
 
 signals:
     void statusChanged(Status status);
@@ -136,6 +144,13 @@ signals:
     void timeout(const PingProbe &probe);
     void tcpReset(const PingProbe &probe);
     void tcpConnect(const PingProbe &probe);
+    void ping(int time);
+
+private slots:
+    void started();
+    void finished(int exitCode, QProcess::ExitStatus exitStatus);
+    void readyRead();
+
 };
 
 #endif // UDPPING_H

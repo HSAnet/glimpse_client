@@ -2,6 +2,7 @@
 #define CLIENT_H
 
 #include "export.h"
+#include "types.h"
 
 #include <QObject>
 #include <QAbstractSocket>
@@ -113,7 +114,7 @@ public slots:
                  const quint16 &destinationPort = 33434,
                  const quint16 &sourcePort = 33434,
                  const quint32 &payload = 74,
-                 const QAbstractSocket::SocketType &pingType = QAbstractSocket::UdpSocket);
+                 const ping::PingType &pingType = ping::Udp);
     void traceroute(const QString &url = "measure-it.de",
                     const quint32 &count = 3,
                     const quint32 &interval = 1000,
@@ -121,7 +122,7 @@ public slots:
                     const quint16 &destinationPort = 33434,
                     const quint16 &sourcePort = 33434,
                     const quint32 &payload = 74,
-                    const QAbstractSocket::SocketType pingType = QAbstractSocket::UdpSocket);
+                    const ping::PingType pingType = ping::Udp);
     void measureIt();
 
 signals:

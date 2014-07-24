@@ -1,5 +1,4 @@
 #include "traceroute_definition.h"
-#include "../../types.h"
 
 TracerouteDefinition::TracerouteDefinition(const QString &host,
                                            const quint32 &count,
@@ -8,7 +7,7 @@ TracerouteDefinition::TracerouteDefinition(const QString &host,
                                            const quint16 &destinationPort,
                                            const quint16 &sourcePort,
                                            const quint32 &payload,
-                                           const QAbstractSocket::SocketType &pingType)
+                                           const ping::PingType &pingType)
 : host(host)
 , count(count)
 , interval(interval)
@@ -35,8 +34,8 @@ TracerouteDefinitionPtr TracerouteDefinition::fromVariant(const QVariant &varian
                                        map.value("destination_port", 33434).toUInt(),
                                        map.value("source_port", 33434).toUInt(),
                                        map.value("payload", 74).toUInt(),
-                                       enumFromString(QAbstractSocket, SocketType,
-                                                      map.value("pingType", "UdpSocket").toString().toLatin1())));
+                                       pingTypeFromString(map.value(
+                                                              "pingType", "UdpSocket").toString().toLatin1())));
 }
 
 QVariant TracerouteDefinition::toVariant() const
@@ -49,6 +48,6 @@ QVariant TracerouteDefinition::toVariant() const
     map.insert("destination_port", destinationPort);
     map.insert("source_port", sourcePort);
     map.insert("payload", payload);
-    map.insert("pingType", enumToString(QAbstractSocket, SocketType, pingType));
+    map.insert("pingType", pingTypeToString(pingType));
     return map;
 }
