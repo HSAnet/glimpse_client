@@ -15,7 +15,7 @@ glimpse_client
 
 ### Running requirements
 * **Linux**: openssl
-* **Windows**: [OpenSSL](http://slproweb.com/products/Win32OpenSSL.html)
+* **Windows**: [OpenSSL](http://slproweb.com/products/Win32OpenSSL.html), [WinPcap](http://www.winpcap.org/install/default.htm)
 
 ### Building
 1. Download and install the latest Qt version for your platform from http://download.qt-project.org/
