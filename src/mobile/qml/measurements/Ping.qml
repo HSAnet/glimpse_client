@@ -6,14 +6,14 @@ import "../"
 Base {
     id: root
 
-    title: qsTr("ping")
+    title: qsTr("Ping")
 
     measurement: "ping"
     properties: [
         {
             "label": "Host",
             "type": "TextField",
-            "text": "google.com"
+            "text": "measure-it.de"
         },
 
         {
@@ -22,17 +22,7 @@ Base {
             "stepSize": 1,
             "minimumValue": 1,
             "maximumValue": 255,
-            "value": 4
-        },
-
-        {
-            "label": "Timeout",
-            "type": "Slider",
-            "stepSize": 1,
-            "minimumValue": 25,
-            "maximumValue": 20000,
-            "value": 2000,
-            "format": qsTr("%1 milliseconds")
+            "value": 3
         },
 
         {
@@ -41,8 +31,55 @@ Base {
             "stepSize": 1,
             "minimumValue": 25,
             "maximumValue": 10000,
-            "value": 200,
+            "value": 1000,
             "format": qsTr("%1 milliseconds")
-        }
+        },
+
+        {
+            "label": "Timeout",
+            "type": "Slider",
+            "stepSize": 1,
+            "minimumValue": 25,
+            "maximumValue": 20000,
+            "value": 1000,
+            "format": qsTr("%1 milliseconds")
+        },
+
+        {
+            "label": "Time to live",
+            "type": "Slider",
+            "stepSize": 1,
+            "minimumValue": 1,
+            "maximumValue": 255,
+            "value": 54
+        },
+
+        {
+            "label": "Destination Port",
+            "type": "Slider",
+            "stepSize": 1,
+            "minimumValue": 1025,
+            "maximumValue": 65535,
+            "value": 33434
+        },
+
+        {
+            "label": "Source Port",
+            "type": "Slider",
+            "stepSize": 1,
+            "minimumValue": 1025,
+            "maximumValue": 65535,
+            "value": 33434
+        },
+
+        {
+            "label": "Payload",
+            "type": "Slider",
+            "stepSize": 1,
+            "minimumValue": 1,
+            "maximumValue": 1450,
+            "value": 74,
+            "format": qsTr("%1 bytes")
+        },
     ]
 }

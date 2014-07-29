@@ -2,6 +2,7 @@
 #define CLIENT_H
 
 #include "export.h"
+#include "types.h"
 
 #include <QObject>
 #include <QAbstractSocket>
@@ -90,10 +91,6 @@ public slots:
     void btc(const QString &host = "141.82.57.241");
     void http(const QString &url = "http://ipv4.download.thinkbroadband.com:81/10MB.zip");
     void upnp();
-    void ping(const QString &host = QString(),
-              quint16 count = 4,
-              quint32 timeout = 2000,
-              quint32 interval = 200);
 
     void packetTrains(const QString host = "141.82.57.241",
                       quint16 port = 5106,
@@ -105,7 +102,7 @@ public slots:
                       quint64 delay = 200000000);
     void dnslookup();
     void reverseDnslookup();
-    void udpPing(const QString &url = "measure-it.de",
+    void ping(const QString &url = "measure-it.de",
                  const quint32 &count = 3,
                  const quint32 &interval = 1000,
                  const quint32 &receiveTimeout = 1000,
@@ -113,7 +110,7 @@ public slots:
                  const quint16 &destinationPort = 33434,
                  const quint16 &sourcePort = 33434,
                  const quint32 &payload = 74,
-                 const QAbstractSocket::SocketType &pingType = QAbstractSocket::UdpSocket);
+                 const ping::PingType &pingType = ping::Udp);
     void traceroute(const QString &url = "measure-it.de",
                     const quint32 &count = 3,
                     const quint32 &interval = 1000,
@@ -121,7 +118,7 @@ public slots:
                     const quint16 &destinationPort = 33434,
                     const quint16 &sourcePort = 33434,
                     const quint32 &payload = 74,
-                    const QAbstractSocket::SocketType pingType = QAbstractSocket::UdpSocket);
+                    const ping::PingType pingType = ping::Udp);
     void measureIt();
 
 signals:

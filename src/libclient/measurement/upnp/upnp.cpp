@@ -258,7 +258,7 @@ Result UPnP::result() const
         {
             iter.next();
 
-            QString name = enumToString(UPnP, "DataType", iter.key());
+            QString name = enumToString(UPnP, DataType, iter.key());
             name = name.replace(QRegExp("([A-Z])"), "_\\1").toLower();
             name.remove(0, 1);
 

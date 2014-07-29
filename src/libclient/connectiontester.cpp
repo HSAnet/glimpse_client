@@ -240,8 +240,8 @@ QString ConnectionTester::Private::findDefaultDNS() const
 
 bool ConnectionTester::Private::canPing(const QString &host, int *averagePing) const
 {
-    // TODO invoke scheduler or tell scheduler something is going on outside of its controll
-    PingDefinitionPtr pingDef(new PingDefinition(host, 4, 1000, 200));
+    // TODO: invoke scheduler or tell scheduler something is going on outside of its control
+    PingDefinitionPtr pingDef(new PingDefinition(host, 4, 200, 1000, 64, 0, 0, 0, ping::System));
     Ping ping;
     ping.prepare(NULL, pingDef);
     ping.start();
@@ -448,7 +448,7 @@ QVariant ConnectionTesterModel::result() const
     {
         const RowData &row = iter.next();
 
-        QString name = enumToString(ConnectionTester, "TestType", row.testType);
+        QString name = enumToString(ConnectionTester, TestType, row.testType);
         name = name.replace(QRegExp("([A-Z])"), "-\\1").toLower();
         name.remove(0, 1);
 
@@ -517,7 +517,7 @@ QVariant ConnectionTesterModel::data(const QModelIndex &index, int role) const
         }
     }
 
-    return enumToString(ConnectionTester, "TestType", data.testType);
+    return enumToString(ConnectionTester, TestType, data.testType);
 
     case TestTypeRole:
         return (int)data.testType;
