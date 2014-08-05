@@ -1,5 +1,5 @@
 Source: glimpse
-Section: unknown
+Section: utils
 Priority: extra
 Maintainer: Christoph Keller <gri@not-censored.com>
 Build-Depends: debhelper (>= 8.0.0)
@@ -9,6 +9,7 @@ Vcs-Git: git@github.com:HSAnet/glimpse_client.git
 Vcs-Browser: https://github.com/HSAnet/glimpse_client
 
 Package: libglimpse
+Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: The glimpse measurement platform library
