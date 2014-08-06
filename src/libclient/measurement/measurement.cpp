@@ -85,9 +85,9 @@ QStringList Measurement::resultHeader() const
     return d->resultHeader;
 }
 
-void Measurement::setResultHeader(const QStringList &columnLables)
+void Measurement::setResultHeader(const QStringList &columnLabels)
 {
-    d->resultHeader = columnLables;
+    d->resultHeader = columnLabels;
 }
 
 void Measurement::setErrorString(const QString &message)

@@ -13,14 +13,14 @@ Report::Report(const Report &other)
 {
 }
 
-Report::Report(const quint32 &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLables, const ResultList &results)
+Report::Report(const quint32 &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLabels, const ResultList &results)
 : d(new ReportData)
 {
     d->taskId = taskId;
     d->dateTime = dateTime;
     d->appVersion = appVersion;
     d->columnLabels = QStringList() << "start_time" << "end_time" << "conflicting_tasks"
-                                    << "cross_traffic" << "duration" << "measure_uuid" << "error" << columnLables;
+                                    << "cross_traffic" << "duration" << "measure_uuid" << "error" << columnLabels;
     d->results = results;
 }
 
@@ -46,7 +46,7 @@ Report Report::fromVariant(const QVariant &variant)
     return Report(map.value("task_id").toInt(),
                   map.value("report_time").toDateTime(),
                   map.value("app_version").toString(),
-                  map.value("columnLables").toStringList(),
+                  map.value("column_labels").toStringList(),
                   listFromVariant<Result>(map.value("results")));
 }
 
@@ -75,9 +75,9 @@ QString Report::appVersion() const
     return d->appVersion;
 }
 
-void Report::setColumnLabels(const QStringList &columnLables)
+void Report::setColumnLabels(const QStringList &columnLabels)
 {
-    d->columnLabels = columnLables;
+    d->columnLabels = columnLabels;
 }
 
 QStringList Report::columnLabels() const
