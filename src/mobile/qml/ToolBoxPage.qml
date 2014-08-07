@@ -19,14 +19,7 @@ ListPage {
             title: "Ping"
             group: "Public peer measurements"
             measurement: "Ping"
-            description: "Latency measurement with the systems ping tool"
-        }
-
-        ListElement {
-            title: "UDP Ping"
-            group: "Public peer measurements"
-            measurement: "UdpPing"
-            description: "Latency measurement with an UDP implementation"
+            description: "Latency measurement"
         }
 
         ListElement {

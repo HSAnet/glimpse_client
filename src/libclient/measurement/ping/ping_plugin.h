@@ -1,6 +1,8 @@
-#ifndef PING_PLUGIN_H
-#define PING_PLUGIN_H
+#ifndef UDPPING_PLUGIN_H
+#define UDPPING_PLUGIN_H
 
+#include "../measurement.h"
+#include "../measurementdefinition.h"
 #include "../measurementplugin.h"
 
 class PingPlugin : public MeasurementPlugin
@@ -13,4 +15,4 @@ public:
     MeasurementDefinitionPtr createMeasurementDefinition(const QString &name, const QVariant &data);
 };
 
-#endif // PING_PLUGIN_H
+#endif // UDPPING_PLUGIN_H

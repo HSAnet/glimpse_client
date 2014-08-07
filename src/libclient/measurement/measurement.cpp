@@ -12,6 +12,7 @@ public:
     QDateTime startDateTime;
     QDateTime endDateTime;
     QString errorString;
+    QStringList resultHeader;
 };
 
 Measurement::Measurement(QObject *parent)
@@ -77,6 +78,16 @@ void Measurement::setEndDateTime(const QDateTime &endDateTime)
 QString Measurement::errorString() const
 {
     return d->errorString;
+}
+
+QStringList Measurement::resultHeader() const
+{
+    return d->resultHeader;
+}
+
+void Measurement::setResultHeader(const QStringList &columnLabels)
+{
+    d->resultHeader = columnLabels;
 }
 
 void Measurement::setErrorString(const QString &message)

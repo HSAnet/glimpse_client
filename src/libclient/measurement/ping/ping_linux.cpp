@@ -9,11 +9,14 @@
 #include <linux/icmp.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <numeric>
 
-#include "udpping.h"
+#include <QtMath>
+
+#include "ping.h"
 #include "../../log/logger.h"
 
-LOGGER("UdpPing");
+LOGGER("Ping");
 
 namespace
 {
@@ -56,7 +59,7 @@ namespace
 
         payload.resize(size);
 
-        for (quint32 i = 0; i < (size > 15 ? size - 15: size); i++)
+        for (quint32 i = 0; i < (size > 15 ? size - 15 : size); i++)
         {
             payload[i] = chars[qrand() % strlen(chars)];
         }
@@ -71,27 +74,36 @@ namespace
     }
 }
 
-UdpPing::UdpPing(QObject *parent)
+Ping::Ping(QObject *parent)
 : Measurement(parent)
 , currentStatus(Unknown)
 , m_device(NULL)
 , m_capture(NULL)
 , m_destAddress()
+, stream(&process)
 {
+    setResultHeader(QStringList() << "round_trip_avg" << "round_trip_min" << "round_trip_max"
+                    << "round_trip_stdev" << "round_trip_count" << "round_trip_ms");
+
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
 }
 
-UdpPing::~UdpPing()
+Ping::~Ping()
 {
+    if (definition->pingType == ping::System)
+    {
+        process.kill();
+        process.waitForFinished(500);
+    }
 }
 
-Measurement::Status UdpPing::status() const
+Measurement::Status Ping::status() const
 {
     return currentStatus;
 }
 
-void UdpPing::setStatus(Status status)
+void Ping::setStatus(Status status)
 {
     if (currentStatus != status)
     {
@@ -100,16 +112,25 @@ void UdpPing::setStatus(Status status)
     }
 }
 
-bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
+bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
 
-    definition = measurementDefinition.dynamicCast<UdpPingDefinition>();
+    definition = measurementDefinition.dynamicCast<PingDefinition>();
 
-    if (definition->payload > 1400)
+    if (definition.isNull())
     {
-        emit error("payload is too large (> 1400 bytes)");
+        LOG_WARNING("Definition is empty");
         return false;
+    }
+
+    if (definition->pingType != ping::System)
+    {
+        if (definition->payload > 1400)
+        {
+            emit error("payload is too large (> 1400 bytes)");
+            return false;
+        }
     }
 
     if (definition->receiveTimeout > 60000)
@@ -118,12 +139,21 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
         return false;
     }
 
+    if (definition->pingType == ping::System)
+    {
+        connect(&process, SIGNAL(started()), this, SLOT(started()));
+        connect(&process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finished(int, QProcess::ExitStatus)));
+        connect(&process, SIGNAL(readyRead()), this, SLOT(readyRead()));
+        // We exit here since there's no need to proceed further.
+        return true;
+    }
+
     memset(&m_destAddress, 0, sizeof(m_destAddress));
 
     // resolve
-    if (!getAddress(definition->url, &m_destAddress))
+    if (!getAddress(definition->host, &m_destAddress))
     {
-        emit error(QString("could not resolve hostname '%1'").arg(definition->url));
+        emit error(QString("could not resolve hostname '%1'").arg(definition->host));
         return false;
     }
 
@@ -145,12 +175,28 @@ bool UdpPing::prepare(NetworkManager *networkManager, const MeasurementDefinitio
     return true;
 }
 
-bool UdpPing::start()
+bool Ping::start()
 {
     PingProbe probe;
 
     setStartDateTime(QDateTime::currentDateTime());
-    setStatus(UdpPing::Running);
+    setStatus(Ping::Running);
+
+    if (definition->pingType == ping::System)
+    {
+        QStringList args;
+
+        args << "-c" << QString::number(definition->count)
+             << "-n" // Don't resolve hostnames
+             << "-W" << QString::number((float)definition->receiveTimeout / 1000)
+             << "-i" << QString::number((float)definition->interval / 1000)
+             << definition->host;
+
+        process.kill();
+        process.start("ping", args);
+
+        return true;
+    }
 
     probe.sock = initSocket();
 
@@ -168,34 +214,67 @@ bool UdpPing::start()
 
     close(probe.sock);
 
-    setStatus(UdpPing::Finished);
-    setEndDateTime(QDateTime::currentDateTime());
-    emit finished();
-
-    return true;
-}
-
-bool UdpPing::stop()
-{
-    return true;
-}
-
-Result UdpPing::result() const
-{
-    QVariantList res;
-
     foreach (const PingProbe &probe, m_pingProbes)
     {
         if (probe.sendTime > 0 && probe.recvTime > 0)
         {
-            res << probe.recvTime - probe.sendTime;
+            pingTime.append((probe.recvTime - probe.sendTime) / 1000.);
         }
     }
 
-    return Result(startDateTime(), endDateTime(), res, QVariant());
+    setStatus(Ping::Finished);
+    setEndDateTime(QDateTime::currentDateTime());
+    emit Measurement::finished();
+
+    return true;
 }
 
-int UdpPing::initSocket()
+bool Ping::stop()
+{
+    if (definition->pingType == ping::System)
+    {
+        process.kill();
+    }
+
+    return true;
+}
+
+Result Ping::result() const
+{
+    QVariantList res;
+    QVariantList roundTripMs;
+    float avg = 0.0;
+
+    // get max and min
+    QList<float>::const_iterator it = std::max_element(pingTime.begin(), pingTime.end());
+    float max = *it;
+    it = std::min_element(pingTime.begin(), pingTime.end());
+    float min = *it;
+
+    // calculate average and fill ping times
+    foreach (float val, pingTime)
+    {
+        roundTripMs << val;
+        avg += val;
+    }
+
+    avg /= pingTime.size();
+
+    // calculate standard deviation
+    qreal sq_sum = std::inner_product(pingTime.begin(), pingTime.end(), pingTime.begin(), 0.0);
+    qreal stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
+
+    res.append(avg);
+    res.append(min);
+    res.append(max);
+    res.append(stdev);
+    res.append(pingTime.size());
+    res.append(QVariant(roundTripMs));
+
+    return Result(startDateTime(), endDateTime(), res);
+}
+
+int Ping::initSocket()
 {
     int n = 0;
     int sock = 0;
@@ -209,11 +288,11 @@ int UdpPing::initSocket()
     sockLinger.l_linger = 0; //will make a call to close() send a RST
     sockLinger.l_onoff = 1;
 
-    if (definition->pingType == QAbstractSocket::UdpSocket)
+    if (definition->pingType == ping::Udp)
     {
         sock = socket(m_destAddress.sa.sa_family, SOCK_DGRAM, IPPROTO_UDP);
     }
-    else if (definition->pingType == QAbstractSocket::TcpSocket)
+    else if (definition->pingType == ping::Tcp)
     {
         sock = socket(m_destAddress.sa.sa_family, SOCK_STREAM, IPPROTO_TCP);
     }
@@ -230,7 +309,7 @@ int UdpPing::initSocket()
         return -1;
     }
 
-    if (definition->pingType == QAbstractSocket::TcpSocket)
+    if (definition->pingType == ping::Tcp)
     {
         //this option will make TCP send a RST on close(), this way we do not run into
         //TIME_WAIT, which would make us not to being able to reuse the 5-tuple
@@ -238,7 +317,7 @@ int UdpPing::initSocket()
         if (setsockopt(sock, SOL_SOCKET, SO_LINGER, &sockLinger, sizeof(sockLinger)) < 0)
         {
             emit error(QString("setsockopt SO_LINGER: %1").arg(
-                       QString::fromLocal8Bit(strerror(errno))));
+                           QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
 
@@ -250,7 +329,7 @@ int UdpPing::initSocket()
         if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0)
         {
             emit error(QString("making TCP socket non-blocking : %1").arg(
-                       QString::fromLocal8Bit(strerror(errno))));
+                           QString::fromLocal8Bit(strerror(errno))));
             //we don't go to clean-up here since the code will still function... there just might
             //be a potential longish wait
         }
@@ -321,9 +400,9 @@ cleanup:
     return -1;
 }
 
-bool UdpPing::sendUdpData(PingProbe *probe)
+bool Ping::sendUdpData(PingProbe *probe)
 {
-    int ret;
+    int ret = 0;
     struct timeval tv;
 
     memset(&tv, 0, sizeof(tv));
@@ -353,9 +432,9 @@ bool UdpPing::sendUdpData(PingProbe *probe)
     return true;
 }
 
-bool UdpPing::sendTcpData(PingProbe *probe)
+bool Ping::sendTcpData(PingProbe *probe)
 {
-    int ret;
+    int ret = 0;
     struct timeval tv;
 
     memset(&tv, 0, sizeof(tv));
@@ -365,12 +444,12 @@ bool UdpPing::sendTcpData(PingProbe *probe)
     if (m_destAddress.sa.sa_family == AF_INET)
     {
         ret = ::connect(probe->sock, (sockaddr *)&m_destAddress,
-                sizeof(struct sockaddr_in));
+                        sizeof(struct sockaddr_in));
     }
     else if (m_destAddress.sa.sa_family == AF_INET6)
     {
         ret = ::connect(probe->sock, (sockaddr *)&m_destAddress,
-                sizeof(struct sockaddr_in6));
+                        sizeof(struct sockaddr_in6));
     }
 
     gettimeofday(&tv, NULL);
@@ -402,7 +481,7 @@ bool UdpPing::sendTcpData(PingProbe *probe)
             if ((ret = poll(&pfd, 1, definition->receiveTimeout)) < 0)
             {
                 LOG_WARNING(QString("poll: %1").arg(QString::fromLocal8Bit(
-                                strerror(errno))));
+                                                        strerror(errno))));
                 goto tcpcleanup;
             }
 
@@ -430,7 +509,7 @@ bool UdpPing::sendTcpData(PingProbe *probe)
             if (getsockopt(probe->sock, SOL_SOCKET, SO_ERROR, &error_num, &len) < 0)
             {
                 LOG_WARNING(QString("getsockopt: %1").arg(QString::fromLocal8Bit(
-                                strerror(error_num))));
+                                                              strerror(error_num))));
                 goto tcpcleanup;
             }
 
@@ -451,7 +530,7 @@ bool UdpPing::sendTcpData(PingProbe *probe)
             {
                 //unexpected
                 emit error(QString("getsockopt: %1").arg(QString::fromLocal8Bit(
-                                strerror(error_num))));
+                                                             strerror(error_num))));
                 goto tcpcleanup;
             }
         }
@@ -459,7 +538,7 @@ bool UdpPing::sendTcpData(PingProbe *probe)
         {
             //unexpected
             emit error(QString("connect: %1").arg(QString::fromLocal8Bit(
-                            strerror(errno))));
+                                                      strerror(errno))));
             goto tcpcleanup;
         }
     }
@@ -477,7 +556,7 @@ tcpcleanup:
     return false;
 }
 
-void UdpPing::receiveData(PingProbe *probe)
+void Ping::receiveData(PingProbe *probe)
 {
     struct msghdr msg;
     sockaddr_any from;
@@ -515,7 +594,7 @@ void UdpPing::receiveData(PingProbe *probe)
     {
         emit timeout(*probe);
 
-        if (definition->pingType == QAbstractSocket::TcpSocket)
+        if (definition->pingType == ping::Tcp)
         {
             close(probe->sock);
             probe->sock = initSocket();
@@ -615,16 +694,16 @@ cleanup:
     return;
 }
 
-void UdpPing::ping(PingProbe *probe)
+void Ping::ping(PingProbe *probe)
 {
     bool ret = false;
 
     // send
-    if (definition->pingType == QAbstractSocket::UdpSocket)
+    if (definition->pingType == ping::Udp)
     {
         ret = sendUdpData(probe);
     }
-    else if (definition->pingType == QAbstractSocket::TcpSocket)
+    else if (definition->pingType == ping::Tcp)
     {
         ret = sendTcpData(probe);
     }
@@ -633,6 +712,59 @@ void UdpPing::ping(PingProbe *probe)
     {
         receiveData(probe);
     }
+}
+
+void Ping::started()
+{
+    pingTime.clear();
+
+    setStatus(Ping::Running);
+}
+
+void Ping::finished(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    Q_UNUSED(exitCode);
+    Q_UNUSED(exitStatus);
+
+    setStatus(Ping::Finished);
+    setEndDateTime(QDateTime::currentDateTime());
+    emit Measurement::finished();
+}
+
+void Ping::readyRead()
+{
+    // 64 bytes from 193.99.144.80: icmp_seq=0 ttl=245 time=32.031 ms
+    QRegExp re("time=(\\d+.*)ms");
+
+    for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine())
+    {
+        if (re.indexIn(line) == -1)
+        {
+            continue;
+        }
+
+        float time = re.cap(1).toFloat();
+        pingTime.append(time);
+
+        emit ping(time);
+    }
+}
+
+void Ping::waitForFinished()
+{
+    process.waitForFinished(1000);
+}
+
+float Ping::averagePingTime() const
+{
+    float time = 0;
+
+    foreach (float t, pingTime)
+    {
+        time += t;
+    }
+
+    return time / pingTime.size();
 }
 
 // vim: set sts=4 sw=4 et:

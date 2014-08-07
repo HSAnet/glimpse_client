@@ -12,7 +12,7 @@ LOGGER("Traceroute");
 Traceroute::Traceroute(QObject *parent)
 : Measurement(parent)
 , currentStatus(Unknown)
-, udpPing()
+, m_ping()
 , endOfRoute(false)
 , ttl(0)
 {
@@ -42,21 +42,21 @@ bool Traceroute::prepare(NetworkManager *networkManager,
     Q_UNUSED(networkManager);
     definition = measurementDefinition.dynamicCast<TracerouteDefinition>();
 
-    connect(&udpPing, SIGNAL(destinationUnreachable(const PingProbe &)),
+    connect(&m_ping, SIGNAL(destinationUnreachable(const PingProbe &)),
             this, SLOT(destinationUnreachable(const PingProbe &)));
 
-    connect(&udpPing, SIGNAL(ttlExceeded(const PingProbe &)),
+    connect(&m_ping, SIGNAL(ttlExceeded(const PingProbe &)),
             this, SLOT(ttlExceeded(const PingProbe &)));
 
-    connect(&udpPing, SIGNAL(timeout(const PingProbe &)),
+    connect(&m_ping, SIGNAL(timeout(const PingProbe &)),
             this, SLOT(timeout(const PingProbe &)));
 
-    connect(&udpPing, SIGNAL(udpResponse(const PingProbe &)), this,
+    connect(&m_ping, SIGNAL(udpResponse(const PingProbe &)), this,
             SLOT(udpResponse(const PingProbe &)));
 
-    connect(&udpPing, SIGNAL(finished()), this, SLOT(pingFinished()));
+    connect(&m_ping, SIGNAL(finished()), this, SLOT(pingFinished()));
 
-    connect(&udpPing, SIGNAL(error(const QString &)), &udpPing,
+    connect(&m_ping, SIGNAL(error(const QString &)), &m_ping,
             SLOT(setErrorString(const QString &)));
 
     return true;
@@ -107,7 +107,7 @@ Result Traceroute::result() const
         res << hop;
     }
 
-    return Result(startDateTime(), endDateTime(), res, QVariant());
+    return Result(startDateTime(), endDateTime(), res);
 }
 
 void Traceroute::ping()
@@ -118,7 +118,7 @@ void Traceroute::ping()
         return;
     }
 
-    UdpPingDefinition udpPingDef(definition->url,
+    PingDefinition pingDef(definition->host,
                                  definition->count,
                                  definition->interval,
                                  definition->receiveTimeout,
@@ -127,10 +127,10 @@ void Traceroute::ping()
                                  definition->sourcePort,
                                  definition->payload,
                                  definition->pingType);
-    udpPing.prepare(NULL, UdpPingPlugin().createMeasurementDefinition(
-                        "udpping",
-                        udpPingDef.toVariant()));
-    udpPing.start();
+    m_ping.prepare(NULL, PingPlugin().createMeasurementDefinition(
+                        "ping",
+                        pingDef.toVariant()));
+    m_ping.start();
 }
 
 void Traceroute::destinationUnreachable(const PingProbe &probe)

@@ -7,6 +7,7 @@
 #include <QElapsedTimer>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QList>
 
 class HTTPDownload : public Measurement
 {
@@ -30,7 +31,7 @@ private:
     qint64 m_lasttime;
     QVector<qint64> m_bytesReceived;
     QVector<qint64> m_times;
-    QVector<qreal> m_downloadSpeeds;
+    QList<qreal> m_downloadSpeeds;
     Status currentStatus;
 
     QNetworkAccessManager *m_nam;

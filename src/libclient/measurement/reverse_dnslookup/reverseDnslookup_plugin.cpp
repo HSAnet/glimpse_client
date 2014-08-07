@@ -3,7 +3,7 @@
 
 QStringList ReverseDnslookupPlugin::measurements() const
 {
-    return QStringList() << "reverseDnslookup";
+    return QStringList() << "reversednslookup";
 }
 
 MeasurementPtr ReverseDnslookupPlugin::createMeasurement(const QString &name)

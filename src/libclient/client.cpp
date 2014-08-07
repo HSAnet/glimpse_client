@@ -35,11 +35,10 @@
 #include "task/task.h"
 #include "measurement/btc/btc_definition.h"
 #include "measurement/http/httpdownload_definition.h"
-#include "measurement/ping/ping_definition.h"
 #include "measurement/dnslookup/dnslookup_definition.h"
 #include "measurement/reverse_dnslookup/reverseDnslookup_definition.h"
 #include "measurement/packettrains/packettrainsdefinition.h"
-#include "measurement/udpping/udpping_definition.h"
+#include "measurement/ping/ping_definition.h"
 #include "measurement/traceroute/traceroute_definition.h"
 
 LOGGER(Client);
@@ -61,8 +60,9 @@ public:
         executor.setNetworkManager(&networkManager);
         scheduler.setExecutor(&executor);
 
-        connect(&executor, SIGNAL(finished(TestDefinition, Result)), this, SLOT(taskFinished(TestDefinition,
-                                                                                                   Result)));
+        connect(&executor, SIGNAL(finished(TestDefinition, QStringList, Result)), this, SLOT(taskFinished(TestDefinition,
+                                                                                                          QStringList,
+                                                                                                          Result)));
         connect(&loginController, SIGNAL(finished()), this, SLOT(loginStatusChanged()));
     }
 
@@ -117,7 +117,7 @@ public slots:
     void handleSigHup();
     void handleSigTerm();
 #endif // Q_OS_UNIX
-    void taskFinished(const TestDefinition &test, const Result &result);
+    void taskFinished(const TestDefinition &test, const QStringList &resultHeader, const Result &result);
     void loginStatusChanged();
 };
 
@@ -269,7 +269,7 @@ void Client::Private::handleSigHup()
 }
 #endif // Q_OS_UNIX
 
-void Client::Private::taskFinished(const TestDefinition &test, const Result &result)
+void Client::Private::taskFinished(const TestDefinition &test, const QStringList &resultHeader, const Result &result)
 {
     Report report = reportScheduler.reportByTaskId(test.id());
 
@@ -278,7 +278,7 @@ void Client::Private::taskFinished(const TestDefinition &test, const Result &res
 
     if (report.isNull() || results.size() == 1)
     {
-        report = Report(test.id(), QDateTime::currentDateTime(), Client::version(), results);
+        report = Report(test.id(), QDateTime::currentDateTime(), Client::version(), resultHeader, results);
         reportScheduler.addReport(report);
     }
     else
@@ -376,7 +376,7 @@ bool Client::autoLogin()
 
 void Client::btc(const QString &host)
 {
-    BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024);
+    BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024, 10);
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(9, "btc_ma", timing,
                                   btcDef.toVariant());
@@ -385,7 +385,7 @@ void Client::btc(const QString &host)
 
 void Client::http(const QString &url)
 {
-    HTTPDownloadDefinition httpDef(url, false);
+    HTTPDownloadDefinition httpDef(url, false, 1);
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(3, "httpdownload", timing,
                                   httpDef.toVariant());
@@ -397,15 +397,6 @@ void Client::upnp()
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(5, "upnp", timing,
                                   QVariant());
-    d->scheduler.enqueue(testDefinition);
-}
-
-void Client::ping(const QString &host, quint16 count, quint32 timeout, quint32 interval)
-{
-    PingDefinition pingDef(host.isNull() ? "measure-it.de" : host, count, timeout, interval);
-    TimingPtr timing(new ImmediateTiming());
-    TestDefinition testDefinition(4, "ping", timing,
-                                  pingDef.toVariant());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -438,15 +429,15 @@ void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint1
     d->scheduler.enqueue(testDefinition);
 }
 
-void Client::udpPing(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
+void Client::ping(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
                      const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload,
-                     const QAbstractSocket::SocketType &pingType)
+                     const ping::PingType &pingType)
 {
-    UdpPingDefinition udpPingDef(url, count, interval, receiveTimeout, ttl, destinationPort, sourcePort, payload, pingType);
+    PingDefinition pingDef(url, count, interval, receiveTimeout, ttl, destinationPort, sourcePort, payload, pingType);
 
     TimingPtr timing(new ImmediateTiming());
-    TestDefinition testDefinition(12, "udpping", timing,
-                                  udpPingDef.toVariant());
+    TestDefinition testDefinition(12, "ping", timing,
+                                  pingDef.toVariant());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -457,9 +448,10 @@ void Client::traceroute(const QString &url,
                         const quint16 &destinationPort,
                         const quint16 &sourcePort,
                         const quint32 &payload,
-                        const QAbstractSocket::SocketType pingType)
+                        const ping::PingType pingType)
 {
-    TracerouteDefinition tracerouteDef(url, count, interval, receiveTimeout, destinationPort, sourcePort, payload, pingType);
+    TracerouteDefinition tracerouteDef(url, count, interval, receiveTimeout, destinationPort, sourcePort, payload,
+                                       pingType);
 
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(13, "traceroute", timing,
@@ -481,7 +473,7 @@ void Client::measureIt()
     // PacketTrains
     d->scheduler.executeOnDemandTest(4);
 
-    // UdpPing
+    // Ping
     d->scheduler.executeOnDemandTest(5);
 
     // Traceroute

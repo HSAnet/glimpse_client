@@ -18,6 +18,7 @@ LOGGER(UPnP);
 UPnP::UPnP(QObject *parent)
 : Measurement(parent)
 {
+    setResultHeader(QStringList() << "results");
 }
 
 UPnP::~UPnP()
@@ -257,7 +258,7 @@ Result UPnP::result() const
         {
             iter.next();
 
-            QString name = enumToString(UPnP, "DataType", iter.key());
+            QString name = enumToString(UPnP, DataType, iter.key());
             name = name.replace(QRegExp("([A-Z])"), "_\\1").toLower();
             name.remove(0, 1);
 
@@ -269,5 +270,6 @@ Result UPnP::result() const
         deviceResultList.append(deviceResult);
     }
 
-    return Result(startDateTime(), endDateTime(), deviceResultList, QVariant());
+    // the results need to be in a list, because multiple dict-objects are possible
+    return Result(startDateTime(), endDateTime(), QVariantList()<<QVariant(deviceResultList));
 }

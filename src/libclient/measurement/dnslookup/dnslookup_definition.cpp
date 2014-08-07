@@ -14,12 +14,12 @@ QVariant DnslookupDefinition::toVariant() const
 {
     QVariantMap map;
     map.insert("host", host);
-    map.insert("dnsServer", dnsServer);
+    map.insert("dns_server", dnsServer);
     return map;
 }
 
 DnslookupDefinitionPtr DnslookupDefinition::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
-    return DnslookupDefinitionPtr(new DnslookupDefinition(map.value("host").toString(), map.value("dnsServer").toString()));
+    return DnslookupDefinitionPtr(new DnslookupDefinition(map.value("host").toString(), map.value("dns_server").toString()));
 }

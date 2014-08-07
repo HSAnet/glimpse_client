@@ -29,7 +29,6 @@ private:
     ReverseDnslookupDefinitionPtr m_definition;
     QString m_reverseDnslookupOutput;
     QList<QHostAddress> m_reverseDnslookupAddresses;
-    QString m_reverseDnslookupError;
 
 private slots:
     void started();

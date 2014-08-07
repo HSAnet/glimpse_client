@@ -6,7 +6,6 @@
 
 LOGGER(HTTPDownload);
 
-
 HTTPDownload::HTTPDownload(QObject *parent)
 : Measurement(parent)
 , m_lasttime(0)
@@ -16,6 +15,8 @@ HTTPDownload::HTTPDownload(QObject *parent)
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
+    setResultHeader(QStringList() << "kBs_avg" << "kBs_min" << "kBs_max"
+                                  << "kBs_stddev" << "kBs");
 }
 
 HTTPDownload::~HTTPDownload()
@@ -74,14 +75,36 @@ bool HTTPDownload::stop()
 Result HTTPDownload::result() const
 {
     QVariantList res;
+    QVariantList downSpeeds;
+    float avg = 0.0;
 
+    // get max and min
+    QList<qreal>::const_iterator it = std::max_element(m_downloadSpeeds.begin(), m_downloadSpeeds.end());
+    float max = *it;
+    it = std::min_element(m_downloadSpeeds.begin(), m_downloadSpeeds.end());
+    float min = *it;
+
+    // calculate average and fill downspeeds
     foreach (qreal val, m_downloadSpeeds)
     {
-        res << QString::number(val, 'f');
+        downSpeeds << val;
+        avg += val;
     }
 
-    return Result(startDateTime(), endDateTime(), res, QVariant(),
-                  QUuid(), errorString());
+    avg /= m_downloadSpeeds.size();
+
+    // calculate standard deviation
+    qreal sq_sum = std::inner_product(m_downloadSpeeds.begin(), m_downloadSpeeds.end(), m_downloadSpeeds.begin(), 0.0);
+    qreal stdev = qSqrt(sq_sum / m_downloadSpeeds.size() - avg * avg);
+
+    res.append(avg);
+    res.append(min);
+    res.append(max);
+    res.append(stdev);
+    res.append(QVariant(downSpeeds));
+
+    return Result(startDateTime(), endDateTime(), res,
+                  definition->measurementUuid, errorString());
 }
 
 void HTTPDownload::setStatus(Status status)

@@ -62,26 +62,30 @@ public slots:
         {
             // the result should at least contain the errorString, as all the other
             // fields will be empty
-            emit finished(test, Result(measurement->errorString()));
+            emit finished(test, QStringList(), Result(measurement->errorString()));
         }
         else
         {
-            emit finished(test, Result());
+            emit finished(test, QStringList(), Result());
         }
     }
 
     void measurementFinished()
     {
+        // TODO1: get local information (interface with ip, connection type, SNR, cpu usage, ...) and save in result or measurement
+
         measurement->disconnect(this, SLOT(measurementFinished()));
         LOG_INFO(QString("Finished execution of %1 (success)").arg(currentTest.name()));
-        emit finished(currentTest, measurement->result());
+        //
+
+        emit finished(currentTest, measurement->resultHeader(), measurement->result());
         measurement->stop();
         measurement.clear();
     }
 
 signals:
     void started(const TestDefinition &test);
-    void finished(const TestDefinition &test, const Result &result);
+    void finished(const TestDefinition &test, const QStringList &resultHeader, const Result &result);
 };
 
 class TaskExecutor::Private : public QObject
@@ -100,10 +104,10 @@ public:
         taskThread.start();
 
         connect(&executor, SIGNAL(started(TestDefinition)), this, SLOT(onStarted()));
-        connect(&executor, SIGNAL(finished(TestDefinition, Result)), this, SLOT(onFinished()));
+        connect(&executor, SIGNAL(finished(TestDefinition, QStringList, Result)), this, SLOT(onFinished()));
 
         connect(&executor, SIGNAL(started(TestDefinition)), q, SIGNAL(started(TestDefinition)));
-        connect(&executor, SIGNAL(finished(TestDefinition, Result)), q, SIGNAL(finished(TestDefinition, Result)));
+        connect(&executor, SIGNAL(finished(TestDefinition, QStringList, Result)), q, SIGNAL(finished(TestDefinition, QStringList, Result)));
     }
 
     ~Private()

@@ -7,9 +7,9 @@
 
 #include "../measurement.h"
 #include "../../task/task.h"
-#include "../udpping/udpping.h"
-#include "../udpping/udpping_plugin.h"
-#include "../udpping/udpping_definition.h"
+#include "../ping/ping.h"
+#include "../ping/ping_plugin.h"
+#include "../ping/ping_definition.h"
 #include "traceroute_definition.h"
 
 namespace traceroute
@@ -50,7 +50,7 @@ private:
 
     TracerouteDefinitionPtr definition;
     Status currentStatus;
-    UdpPing udpPing;
+    Ping m_ping;
     QList<Hop> hops;
     bool endOfRoute;
     int ttl;

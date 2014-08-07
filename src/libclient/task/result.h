@@ -24,8 +24,9 @@ public:
     : QSharedData(other)
     , startDateTime(other.startDateTime)
     , endDateTime(other.endDateTime)
+    , conflictingTasks()
+    , crossTraffic()
     , probeResult(other.probeResult)
-    , peerResult(other.peerResult)
     , measureUuid(other.measureUuid)
     , errorString(other.errorString)
     {
@@ -33,8 +34,9 @@ public:
 
     QDateTime startDateTime;
     QDateTime endDateTime;
-    QVariant probeResult;
-    QVariant peerResult;
+    QVariant conflictingTasks;
+    QVariant crossTraffic;
+    QVariantList probeResult;
     QUuid measureUuid;
     QString errorString;
 };
@@ -48,8 +50,7 @@ public:
     Result(const Result &other);
     Result(const QDateTime &startDateTime,
            const QDateTime &endDateTime,
-           const QVariant &probeResult,
-           const QVariant &peerResult,
+           const QVariantList &probeResult,
            const QUuid &measureUuid = QUuid(),
            const QString &errorString = QString());
 
@@ -61,11 +62,8 @@ public:
     void setEndDateTime(const QDateTime& endDateTime);
     QDateTime endDateTime() const;
 
-    void setProbeResult(const QVariant& probeResult);
-    QVariant probeResult() const;
-
-    void setPeerResult(const QVariant& peerResult);
-    QVariant peerResult() const;
+    void setProbeResult(const QVariantList& probeResult);
+    QVariantList probeResult() const;
 
     void setMeasureUuid(const QUuid& measureUuid);
     QUuid measureUuid() const;

@@ -41,7 +41,7 @@ android {
                deviceinfo_android.cpp \
                androidimageprovider.cpp \
                androidprocessmodel.cpp \
-               measurement/udpping/udpping_linux.cpp
+               measurement/ping/ping_linux.cpp
 } else: ios {
     SOURCES += log/logger_all.cpp
     OBJECTIVE_SOURCES += storage/storagepaths_ios.mm \
@@ -51,15 +51,15 @@ android {
                log/logger_all.cpp
 
     osx: SOURCES += deviceinfo_osx.cpp \
-                    measurement/udpping/udpping_osx.cpp
+                    measurement/ping/ping_osx.cpp
     else:unix: SOURCES += deviceinfo_unix.cpp
     else: SOURCES += deviceinfo.cpp \
-                     measurement/udpping/udpping_win.cpp
+                     measurement/ping/ping_win.cpp
 
     linux {
         HEADERS += linuxprocessmodel.h
         SOURCES += linuxprocessmodel.cpp \
-                   measurement/udpping/udpping_linux.cpp
+                   measurement/ping/ping_linux.cpp
 
         qtHaveModule(quick) {
             CONFIG += link_pkgconfig
@@ -136,9 +136,6 @@ SOURCES +=  \
     measurement/btc/btc_plugin.cpp \
     measurement/upnp/upnp.cpp \
     measurement/upnp/upnp_plugin.cpp \
-    measurement/ping/ping_plugin.cpp \
-    measurement/ping/ping_definition.cpp \
-    measurement/ping/ping.cpp \
     report/reportmodel.cpp \
     controller/reportcontroller.cpp \
     types.cpp \
@@ -159,8 +156,8 @@ SOURCES +=  \
     measurement/http/httpdownload_plugin.cpp \
     timing/ondemandtiming.cpp \
     log/filelogger.cpp \
-    measurement/udpping/udpping_definition.cpp \
-    measurement/udpping/udpping_plugin.cpp \
+    measurement/ping/ping_definition.cpp \
+    measurement/ping/ping_plugin.cpp \
     measurement/traceroute/traceroute.cpp \
     measurement/traceroute/traceroute_definition.cpp \
     measurement/traceroute/traceroute_plugin.cpp \
@@ -222,9 +219,6 @@ HEADERS += \
     measurement/btc/btc_plugin.h \
     measurement/upnp/upnp.h \
     measurement/upnp/upnp_plugin.h \
-    measurement/ping/ping_plugin.h \
-    measurement/ping/ping_definition.h \
-    measurement/ping/ping.h \
     report/reportmodel.h \
     storage/storagepaths.h \
     controller/reportcontroller.h \
@@ -244,9 +238,9 @@ HEADERS += \
     measurement/http/httpdownload_plugin.h \
     timing/ondemandtiming.h \
     log/filelogger.h \
-    measurement/udpping/udpping.h \
-    measurement/udpping/udpping_definition.h \
-    measurement/udpping/udpping_plugin.h \
+    measurement/ping/ping.h \
+    measurement/ping/ping_definition.h \
+    measurement/ping/ping_plugin.h \
     measurement/traceroute/traceroute.h \
     measurement/traceroute/traceroute_definition.h \
     measurement/traceroute/traceroute_plugin.h \
