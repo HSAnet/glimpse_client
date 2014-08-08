@@ -6,7 +6,7 @@ pkgrel=1
 
 pkgdesc="The glimpse measurement client."
 
-arch=('any')
+arch=('i686' 'x86_64' 'armv7h' 'armv6h')
 
 url="http://www.measure-it.net"
 
