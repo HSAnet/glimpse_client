@@ -6,7 +6,7 @@ pkgrel=1
 
 pkgdesc="The glimpse measurement client."
 
-arch=('i686' 'x86_64' 'armv7h')
+arch=('any')
 
 url="http://www.measure-it.net"
 
@@ -17,7 +17,7 @@ depends=('qt5-quickcontrols' 'qt5-base')
 makedepends=('qt5-base' 'libwnck')
 
 # Source for the package, you can specify a folder (for git or download name to overriding the default
-# name saved useful if the upstream use tarballs named 'pinkieþæý' for example
+# name saved useful if the upstream use tarballs named 'pinkieÃ¾Ã¦Ã½' for example
 source=("${pkgname}-${pkgver}.tar.gz")
 
 sha512sums=('%SHA512SUM%')
