@@ -6,6 +6,8 @@ TIMESTAMP=$(date -R)
 
 BUILDNUMBER=$1
 
+
+# Debian/Ubuntu/Mint
 cd `dirname $0`
 cd ..
 cd debian
@@ -23,3 +25,13 @@ echo " -- $MAINTAINER  $TIMESTAMP" >> changelog
 
 echo "Changelog for build #$BUILDNUMBER written."
 
+
+# Fedora/CentOS/OpenSuse
+cd ..
+sed "s/^Version:.*/Version:		$VERSION/" -i glimpse_client.spec
+sed "s/^Release:.*/Release:		$BUILDNUMBER/" -i glimpse_client.spec
+
+
+# Archlinux
+sed "s/^pkgver=.*/pkgver=$VERSION/" -i PKGBUILD
+sed "s/^pkgrel=.*/pkgrel=$BUILDNUMBER/" -i PKGBUILD
