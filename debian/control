@@ -2,7 +2,9 @@ Source: glimpse
 Section: utils
 Priority: extra
 Maintainer: Christoph Keller <gri@not-censored.com>
-Build-Depends: debhelper (>= 8.0.0)
+Build-Depends: debhelper (>= 8.0.0), libwnck-dev, qt52quickcontrols | qt53quickcontrols | qml-module-qtquick-controls,
+               qt52quickcontrols | qt53quickcontrols | qml-module-qtquick-layouts,
+               qt52quickcontrols | qt53quickcontrols | qml-module-qtquick-window2 
 Standards-Version: 3.9.2
 Homepage: http://www.measure-it.de
 Vcs-Git: git@github.com:HSAnet/glimpse_client.git
@@ -21,7 +23,7 @@ Description: The glimpse measurement platform console client
 
 Package: glimpse-gui
 Architecture: amd64 i386
-Depends: ${shlibs:Depends}, ${misc:Depends}, libglimpse (>= ${source:Version}), qt53quickcontrols
+Depends: ${shlibs:Depends}, ${misc:Depends}, libglimpse (>= ${source:Version}), qt52quickcontrols | qt53quickcontrols | qml-module-qtquick-controls
 Description: The glimpse measurement platform gui client
 
 Package: glimpse

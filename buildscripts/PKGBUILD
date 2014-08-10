@@ -1,0 +1,41 @@
+# Maintainer: Pascal Schmid <pascal.schmid@hs-augsburg.de>
+
+pkgname=glimpse_client
+
+pkgver=1
+
+pkgrel=1
+
+pkgdesc="The glimpse measurement client."
+
+arch=('i686' 'x86_64')
+
+url="https://measure-it.org"
+
+license=('Apache')
+
+depends=('qt5-quickcontrols' 'qt5-base')
+
+makedepends=('qt5-base' 'libwnck')
+
+#backup=('etc/derp.conf')
+
+# Source for the package, you can specify a folder (for git or download name to overriding the default
+# name saved useful if the upstream use tarballs named 'pinkieþæý' for example
+source=("../${pkgname}-develop.zip")
+
+sha512sums=('a0b2c3d4e5f6g7h8i9')
+
+build() {
+  cd "${srcdir}/${pkgname}-develop"
+  qmake -r
+  make -j4
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-develop"
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}
+
+# vim:set ts=2 sw=2 et:
