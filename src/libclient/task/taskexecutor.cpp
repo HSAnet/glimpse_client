@@ -68,6 +68,8 @@ public slots:
         {
             emit finished(test, QStringList(), Result());
         }
+
+        measurement.clear();
     }
 
     void measurementFinished()
