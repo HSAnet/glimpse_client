@@ -5,7 +5,6 @@
 
 #include "../webrequester.h"
 #include "../network/requests/getconfigrequest.h"
-//#include "../response.h"
 #include "../timing/periodictiming.h"
 #include "../client.h"
 
