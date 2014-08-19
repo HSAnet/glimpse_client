@@ -33,4 +33,4 @@ sed "s/^Release:.*/Release:		$BUILDNUMBER/" -i glimpse_client.spec
 
 
 # Archlinux
-sed "s/^pkgver=.*/pkgver=$VERSION/" -i PKGBUILD
+sed "s/^pkgver=.*/pkgver=$VERSION.$BUILDNUMBER/" -i PKGBUILD
