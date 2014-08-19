@@ -413,7 +413,7 @@ void Client::reverseDnslookup()
 {
     ReverseDnslookupDefinition reverseDnslookupDef("8.8.8.8");
     TimingPtr timing(new ImmediateTiming());
-    TestDefinition testDefinition(9, "reverseDnslookup", timing,
+    TestDefinition testDefinition(9, "reversednslookup", timing,
                                   reverseDnslookupDef.toVariant());
     d->scheduler.enqueue(testDefinition);
 }
