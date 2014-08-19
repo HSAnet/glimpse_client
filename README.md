@@ -2,10 +2,11 @@ glimpse_client
 ==============
 
 ### Build Status
-* Linux: <img src="http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebug)/statusIcon"/>
-* Mac: <img src="http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientDebugMac)/statusIcon"/>
-* Windows: <img src="http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientDebugWindows)/statusIcon"/>
-* Android armv7: <img src="http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebugBundledAndroidArmv7)/statusIcon"/>
+* Linux: [![Linux](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebug)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientMasterDebug)
+* Mac: [![Mac](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientDebugMac)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientDebugMac)
+* Windows: [![Windows](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientDebugWindows)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientDebugWindows) 
+* Android armv7: [![Android armv7](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebugBundledAndroidArmv7)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientMasterDebugBundledAndroidArmv7) 
+
 
 ### Build requirements
 * Mobile UI requires at least Qt 5.2.0
