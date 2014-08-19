@@ -176,6 +176,7 @@ void WebRequester::Private::requestFinished()
             if (!replyError.isEmpty())
             {
                 LOG_WARNING(QString("Error message: %1").arg(replyError));
+                errorString = replyError;
             }
 
             replyError = root.value("error").toString();
@@ -183,6 +184,7 @@ void WebRequester::Private::requestFinished()
             if (!replyError.isEmpty())
             {
                 LOG_WARNING(QString("Error message: %1").arg(replyError));
+                errorString = replyError;
             }
         }
 
