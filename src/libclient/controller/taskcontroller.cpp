@@ -9,7 +9,8 @@
 #include "../log/logger.h"
 #include "../timing/periodictiming.h"
 #include "../client.h"
-#include "../response.h"
+#include "../network/responses/getinstructionresponse.h"
+#include "../network/responses/getscheduleresponse.h"
 
 #include <QPointer>
 #include <QTimer>
@@ -37,6 +38,7 @@ public:
         connect(&scheduleRequester, SIGNAL(error()), q, SIGNAL(error()));
 
         instructionRequest.setPath(("/supervisor/api/v1/instruction/1/"));
+        scheduleRequest.setPath("/supervisor/api/v1/schedule/");
         instructionRequester.setRequest(&instructionRequest);
         instructionRequester.setResponse(&instructionResponse);
     }
@@ -109,7 +111,7 @@ void TaskController::Private::instructionFinished()
 {
     // TODO1: check which schedules we need and get new ones
 
-    scheduleRequest.setPath("/supervisor/api/v1/schedule/");
+
 
     foreach (const int id, instructionResponse.scheduleIds())
     {
@@ -120,6 +122,8 @@ void TaskController::Private::instructionFinished()
     scheduleRequester.setResponse(&scheduleResponse);
 
     scheduleRequester.start();
+
+    // TODO1: check which tasks we need and get new ones
 }
 
 void TaskController::Private::scheduleFinished()

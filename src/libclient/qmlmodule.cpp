@@ -14,7 +14,7 @@
 #include "controller/configcontroller.h"
 #include "controller/taskcontroller.h"
 #include "controller/crashcontroller.h"
-#include "response.h"
+#include "network/responses/registerdeviceresponse.h"
 #include "webrequester.h"
 #include "connectiontester.h"
 #include "settings.h"

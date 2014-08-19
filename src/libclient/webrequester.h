@@ -2,7 +2,7 @@
 #define WEBREQUESTER_H
 
 #include "network/requests/request.h"
-#include "response.h"
+#include "network/responses/response.h"
 
 #include <QObject>
 #include <QJsonObject>

@@ -2,7 +2,7 @@
 #define SETTINGS_H
 
 #include "export.h"
-#include "response.h"
+#include "network/responses/getconfigresponse.h"
 
 #include <QObject>
 #include <QUuid>

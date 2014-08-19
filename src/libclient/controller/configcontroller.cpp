@@ -5,7 +5,7 @@
 
 #include "../webrequester.h"
 #include "../network/requests/getconfigrequest.h"
-#include "../response.h"
+//#include "../response.h"
 #include "../timing/periodictiming.h"
 #include "../client.h"
 
@@ -29,7 +29,6 @@ public:
 
         request.setPath("/supervisor/api/v1/configuration/1/");
         requester.setRequest(&request);
-        //requester.setResponse(&response);
     }
 
     ConfigController *q;
@@ -40,7 +39,6 @@ public:
 
     WebRequester requester;
     GetConfigRequest request;
-    //GetConfigResponse response;
     GetConfigResponse *response;
 
     QTimer timer;

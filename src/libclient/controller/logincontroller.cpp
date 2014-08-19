@@ -7,7 +7,8 @@
 #include "../network/requests/loginrequest.h"
 #include "../network/requests/userregisterrequest.h"
 #include "../network/requests/resourcerequest.h"
-#include "../response.h"
+#include "../network/responses/loginresponse.h"
+#include "../network/responses/getinstructionresponse.h"
 #include "../client.h"
 #include "../types.h"
 
