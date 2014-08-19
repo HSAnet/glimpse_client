@@ -6,7 +6,7 @@
 
 #include "../webrequester.h"
 #include "../network/requests/request.h"
-#include "../response.h"
+#include "../network/responses/reportresponse.h"
 #include "../timing/periodictiming.h"
 #include "../client.h"
 
@@ -59,41 +59,6 @@ public:
 
 protected:
     ReportList m_reports;
-};
-
-
-class ReportResponse : public Response
-{
-    Q_OBJECT
-
-public:
-    ReportResponse(QObject *parent = 0)
-    : Response(parent)
-    {
-    }
-
-    QList<quint32> taskIds;
-
-    // Response interface
-    bool fillFromVariant(const QVariantMap &variant)
-    {
-
-        // TODO: new format
-        this->taskIds.clear();
-
-        QVariantList taskIds = variant.value("tasks").toList();
-
-        foreach (const QVariant &id, taskIds)
-        {
-            this->taskIds.append(id.toInt());
-        }
-
-        return true;
-    }
-
-    void finished()
-    {
-    }
 };
 
 

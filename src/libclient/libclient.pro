@@ -99,7 +99,6 @@ SOURCES +=  \
     networkhelper.cpp \
     settings.cpp \
     webrequester.cpp \
-    response.cpp \
     network/requests/request.cpp \
     network/requests/userregisterrequest.cpp \
     network/requests/registerdevicerequest.cpp \
@@ -168,7 +167,14 @@ SOURCES +=  \
     measurement/reverse_dnslookup/reverseDnslookup_definition.cpp \
     measurement/reverse_dnslookup/reverseDnslookup_plugin.cpp \
     channel.cpp \
-    network/requests/resourcerequest.cpp
+    network/requests/resourcerequest.cpp \
+    network/responses/response.cpp \
+    network/responses/loginresponse.cpp \
+    network/responses/registerdeviceresponse.cpp \
+    network/responses/getconfigresponse.cpp \
+    network/responses/getinstructionresponse.cpp \
+    network/responses/getscheduleresponse.cpp \
+    network/responses/reportresponse.cpp
 
 HEADERS += \
     export.h \
@@ -178,7 +184,6 @@ HEADERS += \
     networkhelper.h \
     settings.h \
     webrequester.h \
-    response.h \
     network/requests/request.h \
     network/requests/userregisterrequest.h \
     network/requests/registerdevicerequest.h \
@@ -251,7 +256,14 @@ HEADERS += \
     measurement/reverse_dnslookup/reverseDnslookup_definition.h \
     measurement/reverse_dnslookup/reverseDnslookup_plugin.h \
     channel.h \
-    network/requests/resourcerequest.h
+    network/requests/resourcerequest.h \
+    network/responses/response.h \
+    network/responses/loginresponse.h \
+    network/responses/registerdeviceresponse.h \
+    network/responses/getconfigresponse.h \
+    network/responses/getinstructionresponse.h \
+    network/responses/getscheduleresponse.h \
+    network/responses/reportresponse.h
 
 OTHER_FILES += \
     libclient.pri

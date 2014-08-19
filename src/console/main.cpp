@@ -8,6 +8,7 @@
 
 #include "webrequester.h"
 #include "network/requests/registerdevicerequest.h"
+#include "network/responses/registerdeviceresponse.h"
 #include "log/filelogger.h"
 
 #include <QTextStream>
