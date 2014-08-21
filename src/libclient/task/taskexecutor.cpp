@@ -56,16 +56,16 @@ public slots:
             LOG_ERROR(QString("Unable to create measurement: %1").arg(test.name()));
         }
 
-        LOG_INFO(QString("Finished execution of %1 (failed)").arg(test.name()));
-
         if (measurement)
         {
             // the result should at least contain the errorString, as all the other
             // fields will be empty
+            LOG_ERROR(QString("Finished execution of %1 (failed): %2").arg(test.name()).arg(measurement->errorString()));
             emit finished(test, QStringList(), Result(measurement->errorString()));
         }
         else
         {
+            LOG_ERROR(QString("Finished execution of %1 (failed)").arg(test.name()));
             emit finished(test, QStringList(), Result());
         }
 
@@ -91,7 +91,7 @@ public slots:
         measurement->disconnect(this, SLOT(measurementFinished()));
         measurement->disconnect(this, SLOT(measurementError()));
 
-        LOG_INFO(QString("Finished execution of %1 (failed): %2").arg(currentTest.name()).arg(errorMsg));
+        LOG_ERROR(QString("Finished execution of %1 (failed): %2").arg(currentTest.name()).arg(errorMsg));
 
         emit finished(currentTest, QStringList(), Result(errorMsg));
 
@@ -208,6 +208,8 @@ bool TaskExecutor::isRunning() const
 
 void TaskExecutor::execute(const TestDefinition &test, MeasurementObserver *observer)
 {
+    // TODO1: Check preconditions
+
     // Abort if we are on a mobile connection
     if (d->executor.networkManager->onMobileConnection())
     {
