@@ -196,8 +196,7 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager,
 
     if (!m_tcpSocket)
     {
-        LOG_ERROR("Preparation failed");
-        emit error("Preparation failed");
+        setErrorString("Preparation failed");
         return false;
     }
 

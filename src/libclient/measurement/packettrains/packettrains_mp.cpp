@@ -84,7 +84,7 @@ void PacketTrainsMP::readPendingDatagrams()
         }
         else
         {
-            LOG_ERROR("Something went wrong"); // TODO
+            LOG_WARNING("Something went wrong"); // TODO
         }
 
         m_timer.start();
@@ -131,7 +131,7 @@ void PacketTrainsMP::eval()
         }
         else
         {
-            LOG_ERROR("Ignoring train due to infinite rate");
+            LOG_WARNING("Ignoring train due to infinite rate");
         }
     }
 
@@ -147,8 +147,7 @@ void PacketTrainsMP::handleError(QAbstractSocket::SocketError socketError)
     }
 
     QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
-    LOG_ERROR(QString("Socket error: %1").arg(socket->errorString()));
-    emit error(socket->errorString());
+    emit error(QString("Socket error: %1").arg(socket->errorString()));
 }
 
 Measurement::Status PacketTrainsMP::status() const
@@ -164,15 +163,14 @@ bool PacketTrainsMP::prepare(NetworkManager *networkManager, const MeasurementDe
 
     if (definition.isNull())
     {
-        LOG_WARNING("Definition is empty");
+        setErrorString("Definition is empty");
     }
 
     m_udpSocket = qobject_cast<QUdpSocket *>(peerSocket());
 
     if (!m_udpSocket)
     {
-        LOG_ERROR("Preparation failed");
-        emit error("Preparation failed");
+        setErrorString("Preparation failed");
         return false;
     }
 

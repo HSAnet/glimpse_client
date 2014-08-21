@@ -120,7 +120,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 
     if (definition.isNull())
     {
-        LOG_WARNING("Definition is empty");
+        setErrorString("Definition is empty");
         return false;
     }
 
@@ -128,14 +128,14 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     {
         if (definition->payload > 1400)
         {
-            emit error("payload is too large (> 1400 bytes)");
+            setErrorString("payload is too large (> 1400 bytes)");
             return false;
         }
     }
 
     if (definition->receiveTimeout > 60000)
     {
-        emit error("receive timeout is too large (> 60 s)");
+        setErrorString("receive timeout is too large (> 60 s)");
         return false;
     }
 
@@ -153,7 +153,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     // resolve
     if (!getAddress(definition->host, &m_destAddress))
     {
-        emit error(QString("could not resolve hostname '%1'").arg(definition->host));
+        setErrorString(QString("could not resolve hostname '%1'").arg(definition->host));
         return false;
     }
 
@@ -167,7 +167,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     }
     else
     {
-        emit error(QString("unknown address family '%1'").arg(
+        setErrorString(QString("unknown address family '%1'").arg(
                        m_destAddress.sa.sa_family));
         return false;
     }
@@ -202,7 +202,7 @@ bool Ping::start()
 
     if (probe.sock < 0)
     {
-        emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+        setErrorString(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         return false;
     }
 
@@ -299,13 +299,13 @@ int Ping::initSocket()
     else
     {
         // this should never happen
-        emit error(QString("Unknown ping type '%1'").arg(definition->pingType));
+        LOG_ERROR(QString("Unknown ping type '%1'").arg(definition->pingType));
         return -1;
     }
 
     if (sock < 0)
     {
-        emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+        LOG_ERROR(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         return -1;
     }
 
@@ -316,7 +316,7 @@ int Ping::initSocket()
         //for some time (we want to do that howerver for our Paris traceroute
         if (setsockopt(sock, SOL_SOCKET, SO_LINGER, &sockLinger, sizeof(sockLinger)) < 0)
         {
-            emit error(QString("setsockopt SO_LINGER: %1").arg(
+            LOG_ERROR(QString("setsockopt SO_LINGER: %1").arg(
                            QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
@@ -328,7 +328,7 @@ int Ping::initSocket()
 
         if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0)
         {
-            emit error(QString("making TCP socket non-blocking : %1").arg(
+            LOG_ERROR(QString("making TCP socket non-blocking : %1").arg(
                            QString::fromLocal8Bit(strerror(errno))));
             //we don't go to clean-up here since the code will still function... there just might
             //be a potential longish wait
@@ -346,13 +346,13 @@ int Ping::initSocket()
 
         if (bind(sock, (struct sockaddr *) &src_addr, sizeof(src_addr.sin)) < 0)
         {
-            emit error(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            LOG_ERROR(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
 
         if (setsockopt(sock, SOL_IP, IP_RECVERR, &n, sizeof(n)) < 0)
         {
-            emit error(QString("setsockopt IP_RECVERR: %1").arg(
+            LOG_ERROR(QString("setsockopt IP_RECVERR: %1").arg(
                            QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
@@ -363,13 +363,13 @@ int Ping::initSocket()
 
         if (bind(sock, (struct sockaddr *) &src_addr, sizeof(src_addr.sin6)) < 0)
         {
-            emit error(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            LOG_ERROR(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
 
         if (setsockopt(sock, IPPROTO_IPV6, IPV6_RECVERR, &n, sizeof(n)) < 0)
         {
-            emit error(QString("setsockopt IPV6_RECVERR: %1").arg(
+            LOG_ERROR(QString("setsockopt IPV6_RECVERR: %1").arg(
                            QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
@@ -380,7 +380,7 @@ int Ping::initSocket()
 
     if (setsockopt(sock, SOL_SOCKET, SO_TIMESTAMP, &n, sizeof(n)) < 0)
     {
-        emit error(QString("setsockopt SOL_TIMESTAMP: %1").arg(
+        LOG_ERROR(QString("setsockopt SOL_TIMESTAMP: %1").arg(
                        QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
@@ -388,7 +388,7 @@ int Ping::initSocket()
     // set TTL
     if (setsockopt(sock, SOL_IP, IP_TTL, &ttl, sizeof(ttl)) < 0)
     {
-        emit error(QString("setsockopt IP_TTL: %1").arg(
+        LOG_ERROR(QString("setsockopt IP_TTL: %1").arg(
                        QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
@@ -529,7 +529,7 @@ bool Ping::sendTcpData(PingProbe *probe)
             else
             {
                 //unexpected
-                emit error(QString("getsockopt: %1").arg(QString::fromLocal8Bit(
+                LOG_WARNING(QString("getsockopt: %1").arg(QString::fromLocal8Bit(
                                                              strerror(error_num))));
                 goto tcpcleanup;
             }
@@ -537,7 +537,7 @@ bool Ping::sendTcpData(PingProbe *probe)
         else
         {
             //unexpected
-            emit error(QString("connect: %1").arg(QString::fromLocal8Bit(
+            LOG_WARNING(QString("connect: %1").arg(QString::fromLocal8Bit(
                                                       strerror(errno))));
             goto tcpcleanup;
         }
@@ -550,7 +550,7 @@ tcpcleanup:
 
     if (probe->sock < 0)
     {
-        emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+        LOG_WARNING(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
     }
 
     return false;

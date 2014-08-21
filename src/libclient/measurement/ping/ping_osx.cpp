@@ -183,14 +183,14 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     {
         if (definition->payload > 1400)
         {
-            emit error("payload is too large (> 1400 bytes)");
+            setErrorString("payload is too large (> 1400 bytes)");
             return false;
         }
     }
 
     if (definition->receiveTimeout > 60000)
     {
-        emit error("receive timeout is too large (> 60 s)");
+        setErrorString("receive timeout is too large (> 60 s)");
         return false;
     }
 
@@ -208,7 +208,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     // resolve
     if (!getAddress(definition->host, &m_destAddress))
     {
-        emit error(QString("could not resolve hostname '%1'").arg(definition->host));
+        setErrorString(QString("could not resolve hostname '%1'").arg(definition->host));
         return false;
     }
 
@@ -223,7 +223,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     else
     {
         // unreachable
-        emit error(QString("unknown address family '%1'").arg(
+        setErrorString(QString("unknown address family '%1'").arg(
                        m_destAddress.sa.sa_family));
         return false;
     }
@@ -257,7 +257,7 @@ bool Ping::start()
 
     if (probe.sock < 0)
     {
-        emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+        setErrorString(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         return false;
     }
 
@@ -266,7 +266,7 @@ bool Ping::start()
     if (probe.icmpSock < 0)
     {
         close(probe.sock);
-        emit error(QString("icmp socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+        setErrorString(QString("icmp socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         return false;
     }
 
@@ -360,13 +360,13 @@ int Ping::initSocket()
     //this should never happen
     else
     {
-        emit error(QString("init socket: unkown socket type"));
+        LOG_ERROR(QString("init socket: unkown socket type"));
         return -1;
     }
 
     if (sock < 0)
     {
-        emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+        LOG_ERROR(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         return -1;
     }
 
@@ -377,7 +377,7 @@ int Ping::initSocket()
         //for some time (we want to do that howerver for our Paris traceroute
         if (setsockopt(sock, SOL_SOCKET, SO_LINGER, &sockLinger, sizeof(sockLinger)) < 0)
         {
-            emit error(QString("setsockopt SO_LINGER: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            LOG_ERROR(QString("setsockopt SO_LINGER: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
 
@@ -388,7 +388,7 @@ int Ping::initSocket()
 
         if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0)
         {
-            emit error(QString("making TCP socket non-blocking : %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            LOG_WARNING(QString("making TCP socket non-blocking : %1").arg(QString::fromLocal8Bit(strerror(errno))));
             //we don't go to clean-up here since the code will still function... there just might
             //be a potential longish wait
         }
@@ -402,7 +402,7 @@ int Ping::initSocket()
 
         if (bind(sock, (struct sockaddr *) &src_addr, sizeof(struct sockaddr_in)) < 0)
         {
-            emit error(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            LOG_ERROR(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
     }
@@ -414,14 +414,14 @@ int Ping::initSocket()
 
         if (bind(sock, (struct sockaddr *) &src_addr, sizeof(struct sockaddr_in6)) < 0)
         {
-            emit error(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            LOG_ERROR(QString("bind: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
     }
     else
     {
         // unreachable
-        emit error(QString("init socket: unknown address family"));
+        LOG_ERROR(QString("init socket: unknown address family"));
         goto cleanup;
     }
 
@@ -429,14 +429,14 @@ int Ping::initSocket()
 
     if (setsockopt(sock, SOL_SOCKET, SO_TIMESTAMP, &n, sizeof(n)) < 0)
     {
-        emit error(QString("setsockopt SOL_TIMESTAMP: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+        LOG_ERROR(QString("setsockopt SOL_TIMESTAMP: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
 
     // set TTL
     if (setsockopt(sock, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl)) < 0)
     {
-        emit error(QString("setsockopt IP_TTL: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+        LOG_ERROR(QString("setsockopt IP_TTL: %1").arg(QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
 
@@ -462,7 +462,7 @@ bool Ping::sendUdpData(PingProbe *probe)
                    definition->payload, 0, (sockaddr *)&m_destAddress,
                    sizeof(struct sockaddr_in)) < 0)
         {
-            emit error(QString("send: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            LOG_WARNING(QString("send: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             return false;
         }
     }
@@ -472,14 +472,14 @@ bool Ping::sendUdpData(PingProbe *probe)
                    definition->payload, 0, (sockaddr *)&m_destAddress,
                    sizeof(struct sockaddr_in6)) < 0)
         {
-            emit error(QString("send v6: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            LOG_WARNING(QString("send v6: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             return false;
         }
     }
     else
     {
         //should never be reached
-        emit error(QString("sendUdpData: unkown address family"));
+        LOG_WARNING(QString("sendUdpData: unkown address family"));
         return false;
     }
 
@@ -507,7 +507,7 @@ bool Ping::sendTcpData(PingProbe *probe)
     }
     else
     {
-        emit error(QString("connect: unknown address family"));
+        LOG_WARNING(QString("connect: unknown address family"));
         return false;
     }
 
@@ -540,7 +540,7 @@ bool Ping::sendTcpData(PingProbe *probe)
             //i.e. POLLOUT.
             if ((ret = poll(&pfd, 1, definition->receiveTimeout)) < 0)
             {
-                emit error(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+                LOG_WARNING(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
                 goto tcpcleanup;
             }
 
@@ -558,7 +558,7 @@ bool Ping::sendTcpData(PingProbe *probe)
 
                 if (probe->sock < 0)
                 {
-                    emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+                    LOG_WARNING(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
                     return false;
                 }
 
@@ -573,7 +573,7 @@ bool Ping::sendTcpData(PingProbe *probe)
 
             if (getsockopt(probe->sock, SOL_SOCKET, SO_ERROR, &error_num, &len) < 0)
             {
-                emit error(QString("getsockopt: %1").arg(QString::fromLocal8Bit(strerror(error_num))));
+                LOG_WARNING(QString("getsockopt: %1").arg(QString::fromLocal8Bit(strerror(error_num))));
                 goto tcpcleanup;
             }
 
@@ -596,14 +596,14 @@ bool Ping::sendTcpData(PingProbe *probe)
             else
             {
                 //unexpected
-                emit error(QString("getsockopt: %1").arg(QString::fromLocal8Bit(strerror(error_num))));
+                LOG_WARNING(QString("getsockopt: %1").arg(QString::fromLocal8Bit(strerror(error_num))));
                 goto tcpcleanup;
             }
         }
         else
         {
             //unexpected
-            emit error(QString("connect: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            LOG_WARNING(QString("connect: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             goto tcpcleanup;
         }
     }
@@ -621,7 +621,7 @@ tcpcleanup:
 
     if (probe->sock < 0)
     {
-        emit error(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+        LOG_WARNING(QString("socket: %1").arg(QString::fromLocal8Bit(strerror(errno))));
     }
 
     //we return false to not enter receiveData() in ping()
@@ -666,7 +666,7 @@ void Ping::receiveData(PingProbe *probe)
     {
         if ((ret = poll(pfd, 2, definition->receiveTimeout)) < 0)
         {
-            emit error(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            LOG_WARNING(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             return;
         }
     }
@@ -689,7 +689,7 @@ void Ping::receiveData(PingProbe *probe)
         //socket ready to receive
         if (recvmsg(probe->icmpSock, &msg, 0) < 0)
         {
-            emit error(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            LOG_WARNING(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             return;
         }
 
@@ -700,7 +700,7 @@ void Ping::receiveData(PingProbe *probe)
 
         if (ihl < 5 || ihl > 15)
         {
-            emit error(QString("parsing icmp message failed (IHL value out of bounds)"));
+            LOG_WARNING(QString("parsing icmp message failed (IHL value out of bounds)"));
             return;
         }
 
@@ -730,7 +730,7 @@ void Ping::receiveData(PingProbe *probe)
         //listening... how interesting (should be rare)
         if (recvmsg(probe->sock, &msg, 0) < 0)
         {
-            emit error(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            LOG_WARNING(QString("recvmsg: %1").arg(QString::fromLocal8Bit(strerror(errno))));
             return;
         }
 
@@ -742,7 +742,7 @@ void Ping::receiveData(PingProbe *probe)
     else
     {
         //somthing else happened... not expected
-        emit error(QString("recvmsg failed: No socket to read data from."));
+        LOG_WARNING(QString("recvmsg failed: No socket to read data from."));
         return;
     }
 
@@ -764,7 +764,7 @@ void Ping::ping(PingProbe *probe)
     }
     else
     {
-        emit error(QString("ping: unkown socket type"));
+        LOG_WARNING(QString("ping: unkown socket type"));
     }
 
     if (ret)

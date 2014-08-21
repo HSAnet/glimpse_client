@@ -25,7 +25,7 @@ bool Dnslookup::prepare(NetworkManager *networkManager, const MeasurementDefinit
 
     if (m_definition.isNull())
     {
-        LOG_WARNING("Definition is empty");
+        setErrorString("Definition is empty");
         return false;
     }
 
@@ -62,7 +62,7 @@ void Dnslookup::handleServers()
     // Check the lookup succeeded.
     if (m_dns.error() != QDnsLookup::NoError)
     {
-        LOG_DEBUG(QString("DNS lookup failed: %1").arg(m_dns.errorString()));
+        emit error(QString("DNS lookup failed: %1").arg(m_dns.errorString()));
         m_dnsError = enumToString(QDnsLookup, Error, m_dns.error());
     }
 

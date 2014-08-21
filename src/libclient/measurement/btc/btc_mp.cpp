@@ -54,7 +54,7 @@ void BulkTransportCapacityMP::newClientConnection()
     }
     else
     {
-        LOG_ERROR("There is already a client connected, abort");
+        LOG_WARNING("There is already a client connected, abort");
         QTcpSocket *next = m_tcpServer->nextPendingConnection();
         next->abort();
         delete next;
@@ -88,7 +88,7 @@ void BulkTransportCapacityMP::handleError(QAbstractSocket::SocketError socketErr
     }
 
     QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
-    LOG_ERROR(QString("Socket Error: %1").arg(socket->errorString()));
+    emit error(QString("Socket Error: %1").arg(socket->errorString()));
 
     setEndDateTime(QDateTime::currentDateTime());
     emit error(socket->errorString());
@@ -106,7 +106,7 @@ bool BulkTransportCapacityMP::prepare(NetworkManager *networkManager,
 
     if (definition.isNull())
     {
-        LOG_WARNING("Definition is empty");
+        setErrorString("Definition is empty");
     }
 
     m_tcpSocket = 0;

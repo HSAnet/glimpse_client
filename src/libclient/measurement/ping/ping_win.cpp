@@ -538,7 +538,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 
     if (definition.isNull())
     {
-        LOG_WARNING("Definition is empty");
+        setErrorString("Definition is empty");
         return false;
     }
 
@@ -546,14 +546,14 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     {
         if (definition->payload > 1400)
         {
-            emit error("payload is too large (> 1400 bytes)");
+            setErrorString("payload is too large (> 1400 bytes)");
             return false;
         }
     }
 
     if (definition->receiveTimeout > 60000)
     {
-        emit error("receive timeout is too large (> 60 s)");
+        setErrorString("receive timeout is too large (> 60 s)");
         return false;
     }
 
@@ -571,7 +571,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     // resolve
     if (!getAddress(definition->host, &m_destAddress))
     {
-        emit error(QString("could not resolve hostname '%1'").arg(definition->host));
+        setErrorString(QString("could not resolve hostname '%1'").arg(definition->host));
         return false;
     }
 
@@ -587,20 +587,20 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     }
     else
     {
-        emit error(QString("unknown address family '%1'").arg(
+        setErrorString(QString("unknown address family '%1'").arg(
                        m_destAddress.sa.sa_family));
         return false;
     }
 
     if (pcap_createsrcstr(source, PCAP_SRC_IFLOCAL, address, NULL, NULL, errbuf) != 0)
     {
-        emit error("pcap_createsrcstr: " + QString(errbuf));
+        setErrorString("pcap_createsrcstr: " + QString(errbuf));
         return false;
     }
 
     if (pcap_findalldevs_ex(source, NULL, &alldevs, errbuf) != 0)
     {
-        emit error("pcap_findalldevs_ex: " + QString(errbuf));
+        setErrorString("pcap_findalldevs_ex: " + QString(errbuf));
         return false;
     }
 
@@ -609,7 +609,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 
     if (m_device == NULL)
     {
-        emit error("pcap: no device found");
+        setErrorString("pcap: no device found");
         return false;
     }
 
@@ -620,7 +620,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 
     if (m_capture == NULL)
     {
-        emit error("pcap_open: " + QString(errbuf));
+        setErrorString("pcap_open: " + QString(errbuf));
         return false;
     }
 
@@ -648,7 +648,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     }
     else
     {
-        emit error(QString("Unknown ping type '%1'").arg(definition->pingType));
+        setErrorString(QString("Unknown ping type '%1'").arg(definition->pingType));
         return false;
     }
 
@@ -696,7 +696,7 @@ bool Ping::start()
 
     if (probe.sock < 0)
     {
-        emit error("initSocket");
+        setErrorString("Failed to initialize socket");
         return false;
     }
 
@@ -779,7 +779,7 @@ int Ping::initSocket()
 
     if (sock == INVALID_SOCKET)
     {
-        // TODO: emit error
+        LOG_ERROR("invalid socket");
         return -1;
     }
 
@@ -790,7 +790,7 @@ int Ping::initSocket()
         //for some time (we want to do that however for our Paris traceroute)
         if (setsockopt(sock, SOL_SOCKET, SO_LINGER, (char *)&sockLinger, sizeof(sockLinger)) < 0)
         {
-            emit error(QString("setsockopt SO_LINGER: %1").arg(
+            LOG_ERROR(QString("setsockopt SO_LINGER: %1").arg(
                            QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
@@ -814,7 +814,7 @@ int Ping::initSocket()
 
     if (bind(sock, (struct sockaddr *) &src_addr, sizeof(src_addr)) != 0)
     {
-        emit error("bind: " + QString(strerror(errno)));
+        LOG_ERROR("bind: " + QString(strerror(errno)));
         goto cleanup;
     }
 
@@ -824,7 +824,7 @@ int Ping::initSocket()
         if (setsockopt(sock, IPPROTO_IP, IP_TTL, (char *) &ttl,
                        sizeof(ttl)) != 0)
         {
-            emit error("setsockopt IP_TTL: " + QString(strerror(errno)));
+            LOG_ERROR("setsockopt IP_TTL: " + QString(strerror(errno)));
             goto cleanup;
         }
     }
@@ -833,7 +833,7 @@ int Ping::initSocket()
         if (setsockopt(sock, IPPROTO_IPV6, IPV6_UNICAST_HOPS, (char *) &ttl,
                        sizeof(ttl)) != 0)
         {
-            emit error("setsockopt IPV6_UNICAST_HOPS: " +
+            LOG_ERROR("setsockopt IPV6_UNICAST_HOPS: " +
                        QString(strerror(errno)));
             goto cleanup;
         }
@@ -887,7 +887,7 @@ bool Ping::sendUdpData(PingProbe *probe)
                definition->payload, 0, (sockaddr *)&m_destAddress,
                sizeof(m_destAddress)) < 0)
     {
-        emit error("send: " + QString(strerror(errno)));
+        LOG_WARNING("send: " + QString(strerror(errno)));
         return false;
     }
 
@@ -913,7 +913,7 @@ void Ping::ping(PingProbe *probe)
         {
             if (!sendUdpData(probe))
             {
-                emit error("error while sending");
+                LOG_WARNING("error while sending");
             }
 
             QThread::usleep(definition->interval * 1000);
@@ -925,7 +925,7 @@ void Ping::ping(PingProbe *probe)
         {
             if (!sendTcpData(probe))
             {
-                emit error("error while sending");
+                LOG_WARNING("error while sending");
             }
 
             QThread::usleep(definition->interval * 1000);
@@ -937,7 +937,7 @@ void Ping::ping(PingProbe *probe)
 
     if (static_cast<quint32>(result.size()) < definition->count * 2)
     {
-        emit error("error while capturing packets");
+        LOG_WARNING("error while capturing packets");
         return;
     }
 
@@ -1012,7 +1012,7 @@ void Ping::processUdpPackets(QVector<PingProbe> *probes)
                 break;
 
             case ping::UNHANDLED_ICMP:
-                emit error("Unhandled ICMP packet (type/code): " +
+                LOG_WARNING("Unhandled ICMP packet (type/code): " +
                            QString::number(newProbe.icmpType) + "/" +
                            QString::number(newProbe.icmpCode));
                 break;
@@ -1133,7 +1133,7 @@ void Ping::processTcpPackets(QVector<PingProbe> *probes)
                     break;
 
                 case ping::UNHANDLED_ICMP:
-                    emit error("Unhandled ICMP packet (type/code): " +
+                    LOG_WARNING("Unhandled ICMP packet (type/code): " +
                                QString::number(newProbe.icmpType) + "/" +
                                QString::number(newProbe.icmpCode));
                     break;

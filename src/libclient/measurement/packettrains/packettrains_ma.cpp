@@ -96,8 +96,7 @@ void PacketTrainsMA::handleError(QAbstractSocket::SocketError socketError)
     }
 
     QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(sender());
-    LOG_ERROR(QString("Socket error: %1").arg(socket->errorString()));
-    emit error(socket->errorString());
+    emit error(QString("Socket error: %1").arg(socket->errorString()));
 }
 
 
@@ -112,7 +111,7 @@ bool PacketTrainsMA::prepare(NetworkManager *networkManager, const MeasurementDe
 
     if (definition.isNull())
     {
-        LOG_WARNING("Definition is empty");
+        setErrorString("Definition is empty");
     }
 
     QString hostname = QString("%1:%2").arg(definition->host).arg(definition->port);
@@ -122,8 +121,7 @@ bool PacketTrainsMA::prepare(NetworkManager *networkManager, const MeasurementDe
 
     if (!m_udpSocket)
     {
-        LOG_ERROR("Preparation failed");
-        emit error("Preparation failed");
+        setErrorString("Preparation failed");
         return false;
     }
 

@@ -25,7 +25,7 @@ bool ReverseDnslookup::prepare(NetworkManager *networkManager, const Measurement
 
     if (m_definition.isNull())
     {
-        LOG_WARNING("Definition is empty");
+        setErrorString("Definition is empty");
         return false;
     }
 
@@ -47,8 +47,7 @@ void ReverseDnslookup::handleServers(QHostInfo info)
     // Check the lookup succeeded.
     if (info.error() != QHostInfo::NoError)
     {
-        LOG_DEBUG(QString("IP lookup failed: %1").arg(info.errorString()));
-        setErrorString(info.errorString());
+        emit error(QString("IP lookup failed: %1").arg(info.errorString()));
     }
 
     m_reverseDnslookupOutput = info.hostName();
