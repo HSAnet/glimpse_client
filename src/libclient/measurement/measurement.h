@@ -58,6 +58,13 @@ public:
     QStringList resultHeader() const;
     void setResultHeader(const QStringList &resultHeader);
 
+    void setAvailableTraffic(quint32 traffic);
+    quint32 availableTraffic() const;
+    bool isTrafficAvailable(quint32 traffic) const;
+
+    void addUsedTraffic(quint32 traffic);
+    quint32 usedTraffic() const;
+
 signals:
     void started();
     void finished();

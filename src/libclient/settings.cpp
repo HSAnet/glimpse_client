@@ -69,6 +69,10 @@ Settings::StorageType Settings::init()
     if (newSettings)
     {
         d->config.setConfigAddress("supervisor.measure-it.net:80");
+        setAvailableTraffic(31457280);  // 30 MiB
+        setAvailableMobileTraffic(20971520);  // 20 MiB
+        setUsedTraffic(0);
+        setUsedMobileTraffic(0);
         LOG_INFO("Created new settings for this device");
 
         return NewSettings;
@@ -162,6 +166,62 @@ void Settings::setPassive(bool passive)
         d->settings.setValue("passive", passive);
         emit passiveChanged(passive);
     }
+}
+
+void Settings::setAvailableTraffic(quint32 traffic)
+{
+    if (this->availableTraffic() != traffic)
+    {
+        d->settings.setValue("available-traffic", traffic);
+        emit availableTrafficChanged(traffic);
+    }
+}
+
+quint32 Settings::availableTraffic() const
+{
+    return d->settings.value("available-traffic", 0).toUInt();
+}
+
+void Settings::setAvailableMobileTraffic(quint32 traffic)
+{
+    if (this->availableMobileTraffic() != traffic)
+    {
+        d->settings.setValue("available-mobile-traffic", traffic);
+        emit availableMobileTrafficChanged(traffic);
+    }
+}
+
+quint32 Settings::availableMobileTraffic() const
+{
+    return d->settings.value("available-mobile-traffic", 0).toUInt();
+}
+
+void Settings::setUsedTraffic(quint32 traffic)
+{
+    if (this->usedTraffic() != traffic)
+    {
+        d->settings.setValue("used-traffic", traffic);
+        emit usedTrafficChanged(traffic);
+    }
+}
+
+quint32 Settings::usedTraffic() const
+{
+    return d->settings.value("used-traffic", 0).toUInt();
+}
+
+void Settings::setUsedMobileTraffic(quint32 traffic)
+{
+    if (this->usedMobileTraffic() != traffic)
+    {
+        d->settings.setValue("used-mobile-traffic", traffic);
+        emit usedMobileTrafficChanged(traffic);
+    }
+}
+
+quint32 Settings::usedMobileTraffic() const
+{
+    return d->settings.value("used-mobile-traffic", 0).toUInt();
 }
 
 GetConfigResponse *Settings::config() const
