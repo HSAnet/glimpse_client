@@ -168,9 +168,19 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     else
     {
         setErrorString(QString("unknown address family '%1'").arg(
-                       m_destAddress.sa.sa_family));
+                           m_destAddress.sa.sa_family));
         return false;
     }
+
+    quint32 est = estimateTraffic();
+
+    if (!isTrafficAvailable(est))
+    {
+        setErrorString("not enough traffic available");
+        return false;
+    }
+
+    addUsedTraffic(est);
 
     return true;
 }
@@ -274,6 +284,86 @@ Result Ping::result() const
     return Result(startDateTime(), endDateTime(), res);
 }
 
+quint32 Ping::estimateTraffic() const
+{
+    /*
+     * Some headers appear in both the request and the response packet, hence
+     * they are added twice to the estimation.
+     */
+    quint32 est = 2 * 14;  // Ethernet header
+
+    switch (m_destAddress.sa.sa_family)
+    {
+    case AF_INET:
+        est += 2 * 20;  // IPv4 header
+        break;
+
+    case AF_INET6:
+        est += 2 * 40;  // IPv6 header
+        break;
+    }
+
+    switch (definition->pingType)
+    {
+    case ping::Udp:
+        est += 2 * (8 + definition->payload);  // UDP header + payload
+
+        switch (m_destAddress.sa.sa_family)
+        {
+        case AF_INET:
+            est += 36;  // ICMPv4 response
+            break;
+
+        case AF_INET6:
+            est += 56;  // ICMPv6 response
+            break;
+        }
+
+        break;
+
+    case ping::Tcp:
+
+        /*
+         * TCP header bytes:
+         *     SYN - RST/ACK:
+         *         40 + 20 = 60 bytes (IPv4 and IPv6)
+         *     SYN - SYN/ACK - ACK - RST/ACK:
+         *         40 + 20 + 32 + 32 = 124 bytes (IPv4)
+         *         40 + 40 + 32 + 32 = 144 bytes (IPv6)
+         * Since there are 2 additional packets (SYN/ACK and ACK) when a
+         * connect() succeeds, add
+         *     2 * (12 + 20) bytes (IPv4).
+         *     2 * (12 + 40) bytes (IPv6).
+         * average:
+         *     124 bytes (IPv4)
+         *     154 bytes (IPv6)
+         */
+        switch (m_destAddress.sa.sa_family)
+        {
+        case AF_INET:
+            est += 124;
+            break;
+
+        case AF_INET6:
+            est += 154;
+            break;
+        }
+
+        break;
+
+    case ping::System:
+        est += 64;  // ICMP header
+        break;
+
+    default:
+        break;
+    }
+
+    est *= definition->count;
+
+    return est;
+}
+
 int Ping::initSocket()
 {
     int n = 0;
@@ -317,7 +407,7 @@ int Ping::initSocket()
         if (setsockopt(sock, SOL_SOCKET, SO_LINGER, &sockLinger, sizeof(sockLinger)) < 0)
         {
             LOG_ERROR(QString("setsockopt SO_LINGER: %1").arg(
-                           QString::fromLocal8Bit(strerror(errno))));
+                          QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
 
@@ -329,7 +419,7 @@ int Ping::initSocket()
         if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0)
         {
             LOG_ERROR(QString("making TCP socket non-blocking : %1").arg(
-                           QString::fromLocal8Bit(strerror(errno))));
+                          QString::fromLocal8Bit(strerror(errno))));
             //we don't go to clean-up here since the code will still function... there just might
             //be a potential longish wait
         }
@@ -353,7 +443,7 @@ int Ping::initSocket()
         if (setsockopt(sock, SOL_IP, IP_RECVERR, &n, sizeof(n)) < 0)
         {
             LOG_ERROR(QString("setsockopt IP_RECVERR: %1").arg(
-                           QString::fromLocal8Bit(strerror(errno))));
+                          QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
     }
@@ -370,7 +460,7 @@ int Ping::initSocket()
         if (setsockopt(sock, IPPROTO_IPV6, IPV6_RECVERR, &n, sizeof(n)) < 0)
         {
             LOG_ERROR(QString("setsockopt IPV6_RECVERR: %1").arg(
-                           QString::fromLocal8Bit(strerror(errno))));
+                          QString::fromLocal8Bit(strerror(errno))));
             goto cleanup;
         }
     }
@@ -381,7 +471,7 @@ int Ping::initSocket()
     if (setsockopt(sock, SOL_SOCKET, SO_TIMESTAMP, &n, sizeof(n)) < 0)
     {
         LOG_ERROR(QString("setsockopt SOL_TIMESTAMP: %1").arg(
-                       QString::fromLocal8Bit(strerror(errno))));
+                      QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
 
@@ -389,7 +479,7 @@ int Ping::initSocket()
     if (setsockopt(sock, SOL_IP, IP_TTL, &ttl, sizeof(ttl)) < 0)
     {
         LOG_ERROR(QString("setsockopt IP_TTL: %1").arg(
-                       QString::fromLocal8Bit(strerror(errno))));
+                      QString::fromLocal8Bit(strerror(errno))));
         goto cleanup;
     }
 
@@ -530,7 +620,7 @@ bool Ping::sendTcpData(PingProbe *probe)
             {
                 //unexpected
                 LOG_WARNING(QString("getsockopt: %1").arg(QString::fromLocal8Bit(
-                                                             strerror(error_num))));
+                                                              strerror(error_num))));
                 goto tcpcleanup;
             }
         }
@@ -538,7 +628,7 @@ bool Ping::sendTcpData(PingProbe *probe)
         {
             //unexpected
             LOG_WARNING(QString("connect: %1").arg(QString::fromLocal8Bit(
-                                                      strerror(errno))));
+                                                       strerror(errno))));
             goto tcpcleanup;
         }
     }

@@ -46,6 +46,19 @@ bool Dnslookup::prepare(NetworkManager *networkManager, const MeasurementDefinit
 
 #endif
 
+    /*
+     * worst case: 512 bytes
+     * best case: 74 bytes
+     * average: 293 bytes
+     */
+    if (!isTrafficAvailable(586))
+    {
+        setErrorString("not enough traffic available");
+        return false;
+    }
+
+    addUsedTraffic(586);
+
     return true;
 }
 

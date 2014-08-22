@@ -31,6 +31,20 @@ bool ReverseDnslookup::prepare(NetworkManager *networkManager, const Measurement
 
     m_currentStatus = ReverseDnslookup::Unknown;
 
+    /*
+     * worst case: 512 bytes
+     * best case: 80 bytes
+     */
+    quint32 est = 592;
+
+    if (!isTrafficAvailable(est))
+    {
+        setErrorString("not enough traffic available");
+        return false;
+    }
+
+    addUsedTraffic(est);
+
     return true;
 }
 

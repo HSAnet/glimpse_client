@@ -131,6 +131,16 @@ bool PacketTrainsMA::prepare(NetworkManager *networkManager, const MeasurementDe
     connect(m_udpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this,
             SLOT(handleError(QAbstractSocket::SocketError)));
 
+    quint32 est = definition->iterations * definition->packetSize * definition->trainLength;
+
+    if (!isTrafficAvailable(est))
+    {
+        setErrorString("not enough traffic available");
+        return false;
+    }
+
+    addUsedTraffic(est);
+
     return true;
 }
 

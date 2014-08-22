@@ -18,7 +18,7 @@ BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
     setResultHeader(QStringList() << "kBs" << "kBs_avg" << "kBs_min"
-                                  << "kBs_max" << "kBs_stddev");
+                    << "kBs_max" << "kBs_stddev");
 }
 
 bool BulkTransportCapacityMA::start()
@@ -59,7 +59,18 @@ void BulkTransportCapacityMA::calculateResult()
         // Request high amount of data
         LOG_INFO("Sending test data size to server");
         m_preTest = false;
-        sendRequest(m_bytesExpected);
+
+        if (isTrafficAvailable(m_bytesExpected))
+        {
+            addUsedTraffic(m_bytesExpected);
+            sendRequest(m_bytesExpected);
+        }
+        else
+        {
+            LOG_ERROR("not enough traffic available");
+            emit error("not enough traffic available");
+            return;
+        }
     }
     else
     {
@@ -186,7 +197,7 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager,
 
     if (definition.isNull())
     {
-        LOG_WARNING("Definition is empty");
+        setErrorString("Definition is empty");
     }
 
     QString hostname = QString("%1:%2").arg(definition->host).arg(definition->port);
@@ -203,6 +214,16 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager,
     m_tcpSocket->setParent(this);
     m_bytesExpected = 0;
     m_preTest = true;
+
+    if (isTrafficAvailable(definition->initialDataSize))
+    {
+        addUsedTraffic(definition->initialDataSize);
+    }
+    else
+    {
+        setErrorString("not enough traffic available");
+        return false;
+    }
 
     // Signal for new data
     connect(m_tcpSocket, SIGNAL(readyRead()), this, SLOT(receiveResponse()));

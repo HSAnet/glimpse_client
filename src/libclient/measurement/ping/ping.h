@@ -112,6 +112,7 @@ public:
     float averagePingTime() const;
 
 private:
+    quint32 estimateTraffic() const;
     void setStatus(Status status);
     int initSocket();
     bool sendUdpData(PingProbe *probe);
