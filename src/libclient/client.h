@@ -88,37 +88,41 @@ public:
 public slots:
     bool init();
     bool autoLogin();
-    void btc(const QString &host = "141.82.57.241");
-    void http(const QString &url = "http://ipv4.download.thinkbroadband.com:81/10MB.zip");
+    void btc();
+    void btc(const QString &host);
+    void http();
+    void http(const QString &url);
     void upnp();
-
-    void packetTrains(const QString host = "141.82.57.241",
-                      quint16 port = 5106,
-                      quint16 packetSize = 1000,
-                      quint16 trainLength = 48,
-                      quint8 iterations = 1,
-                      quint64 rateMin =  10485760,
-                      quint64 rateMax = 262144000,
-                      quint64 delay = 200000000);
+    void packetTrains();
+    void packetTrains(const QString host,
+                      quint16 port,
+                      quint16 packetSize,
+                      quint16 trainLength,
+                      quint8 iterations,
+                      quint64 rateMin,
+                      quint64 rateMax,
+                      quint64 delay);
     void dnslookup();
     void reverseDnslookup();
-    void ping(const QString &url = "measure-it.de",
-                 const quint32 &count = 3,
-                 const quint32 &interval = 1000,
-                 const quint32 &receiveTimeout = 1000,
-                 const int &ttl = 54,
-                 const quint16 &destinationPort = 33434,
-                 const quint16 &sourcePort = 33434,
-                 const quint32 &payload = 74,
-                 const ping::PingType &pingType = ping::Udp);
-    void traceroute(const QString &url = "measure-it.de",
-                    const quint32 &count = 3,
-                    const quint32 &interval = 1000,
-                    const quint32 &receiveTimeout = 1000,
-                    const quint16 &destinationPort = 33434,
-                    const quint16 &sourcePort = 33434,
-                    const quint32 &payload = 74,
-                    const ping::PingType pingType = ping::Udp);
+    void ping();
+    void ping(const QString &url,
+                 const quint32 &count,
+                 const quint32 &interval,
+                 const quint32 &receiveTimeout,
+                 const int &ttl,
+                 const quint16 &destinationPort,
+                 const quint16 &sourcePort,
+                 const quint32 &payload,
+                 const ping::PingType &pingType);
+    void traceroute();
+    void traceroute(const QString &url,
+                    const quint32 &count,
+                    const quint32 &interval,
+                    const quint32 &receiveTimeout,
+                    const quint16 &destinationPort,
+                    const quint16 &sourcePort,
+                    const quint32 &payload,
+                    const ping::PingType pingTyp);
     void measureIt();
 
 signals:

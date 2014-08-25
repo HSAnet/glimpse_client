@@ -374,6 +374,11 @@ bool Client::autoLogin()
     return false;
 }
 
+void Client::btc()
+{
+    d->scheduler.executeOnDemandTest(2);
+}
+
 void Client::btc(const QString &host)
 {
     BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024, 10);
@@ -381,6 +386,11 @@ void Client::btc(const QString &host)
     TestDefinition testDefinition(9, "btc_ma", timing,
                                   btcDef.toVariant());
     d->scheduler.enqueue(testDefinition);
+}
+
+void Client::http()
+{
+    d->scheduler.executeOnDemandTest(7);
 }
 
 void Client::http(const QString &url)
@@ -394,28 +404,22 @@ void Client::http(const QString &url)
 
 void Client::upnp()
 {
-    TimingPtr timing(new ImmediateTiming());
-    TestDefinition testDefinition(5, "upnp", timing,
-                                  QVariant());
-    d->scheduler.enqueue(testDefinition);
+    d->scheduler.executeOnDemandTest(14);
 }
 
 void Client::dnslookup()
 {
-    DnslookupDefinition dnslookupDef("www.google.com", "8.8.8.8");
-    TimingPtr timing(new ImmediateTiming());
-    TestDefinition testDefinition(8, "dnslookup", timing,
-                                  dnslookupDef.toVariant());
-    d->scheduler.enqueue(testDefinition);
+    d->scheduler.executeOnDemandTest(6);
 }
 
 void Client::reverseDnslookup()
 {
-    ReverseDnslookupDefinition reverseDnslookupDef("8.8.8.8");
-    TimingPtr timing(new ImmediateTiming());
-    TestDefinition testDefinition(9, "reversednslookup", timing,
-                                  reverseDnslookupDef.toVariant());
-    d->scheduler.enqueue(testDefinition);
+    d->scheduler.executeOnDemandTest(9);
+}
+
+void Client::packetTrains()
+{
+    d->scheduler.executeOnDemandTest(8);
 }
 
 void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint16 trainLength, quint8 iterations,
@@ -429,6 +433,11 @@ void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint1
     d->scheduler.enqueue(testDefinition);
 }
 
+void Client::ping()
+{
+    d->scheduler.executeOnDemandTest(1);
+}
+
 void Client::ping(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
                      const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload,
                      const ping::PingType &pingType)
@@ -439,6 +448,11 @@ void Client::ping(const QString &url, const quint32 &count, const quint32 &inter
     TestDefinition testDefinition(12, "ping", timing,
                                   pingDef.toVariant());
     d->scheduler.enqueue(testDefinition);
+}
+
+void Client::traceroute()
+{
+    d->scheduler.executeOnDemandTest(10);
 }
 
 void Client::traceroute(const QString &url,
@@ -461,23 +475,20 @@ void Client::traceroute(const QString &url,
 
 void Client::measureIt()
 {
-    // Ping
+    // System Ping
     d->scheduler.executeOnDemandTest(1);
 
     // BTC
     d->scheduler.executeOnDemandTest(2);
 
     // HTTP download
-    d->scheduler.executeOnDemandTest(3);
+    d->scheduler.executeOnDemandTest(7);
 
     // PacketTrains
-    d->scheduler.executeOnDemandTest(4);
-
-    // Ping
-    d->scheduler.executeOnDemandTest(5);
+    d->scheduler.executeOnDemandTest(8);
 
     // Traceroute
-    d->scheduler.executeOnDemandTest(6);
+    d->scheduler.executeOnDemandTest(10);
 }
 
 void Client::setStatus(Client::Status status)
