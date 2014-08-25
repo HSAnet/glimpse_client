@@ -77,7 +77,7 @@ public slots:
         // TODO1: get local information (interface with ip, connection type, SNR, cpu usage, ...) and save in result or measurement
 
         measurement->disconnect(this, SLOT(measurementFinished()));
-        measurement->disconnect(this, SLOT(measurementError()));
+        measurement->disconnect(this, SLOT(measurementError(QString)));
 
         LOG_INFO(QString("Finished execution of %1 (success)").arg(currentTest.name()));
 
