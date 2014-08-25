@@ -152,7 +152,7 @@ Ping::Ping(QObject *parent)
 
 Ping::~Ping()
 {
-    if (definition->pingType == ping::System)
+    if (definition->type == ping::System)
     {
         process.kill();
         process.waitForFinished(500);
@@ -179,7 +179,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 
     definition = measurementDefinition.dynamicCast<PingDefinition>();
 
-    if (definition->pingType != ping::System)
+    if (definition->type != ping::System)
     {
         if (definition->payload > 1400)
         {
@@ -194,7 +194,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         return false;
     }
 
-    if (definition->pingType == ping::System)
+    if (definition->type == ping::System)
     {
         connect(&process, SIGNAL(started()), this, SLOT(started()));
         connect(&process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finished(int, QProcess::ExitStatus)));
@@ -238,7 +238,7 @@ bool Ping::start()
     setStartDateTime(QDateTime::currentDateTime());
     setStatus(Ping::Running);
 
-    if (definition->pingType == ping::System)
+    if (definition->type == ping::System)
     {
         QStringList args;
 
@@ -349,11 +349,11 @@ int Ping::initSocket()
     sockLinger.l_linger = 0; //will make a call to close() send a RST
     sockLinger.l_onoff = 1;
 
-    if (definition->pingType == ping::Udp)
+    if (definition->type == ping::Udp)
     {
         sock = socket(m_destAddress.sa.sa_family, SOCK_DGRAM, IPPROTO_UDP);
     }
-    else if (definition->pingType == ping::Tcp)
+    else if (definition->type == ping::Tcp)
     {
         sock = socket(m_destAddress.sa.sa_family, SOCK_STREAM, IPPROTO_TCP);
     }
@@ -370,7 +370,7 @@ int Ping::initSocket()
         return -1;
     }
 
-    if (definition->pingType == ping::Tcp)
+    if (definition->type == ping::Tcp)
     {
         //this option will make TCP send a RST on close(), this way we do not run into
         //TIME_WAIT, which would make us not to being able to reuse the 5-tuple
@@ -662,7 +662,7 @@ void Ping::receiveData(PingProbe *probe)
 
     // Don't poll on TCP sockets since the sendTcpData method already does
     // that.
-    if (definition->pingType == ping::Udp)
+    if (definition->type == ping::Udp)
     {
         if ((ret = poll(pfd, 2, definition->receiveTimeout)) < 0)
         {
@@ -754,11 +754,11 @@ void Ping::ping(PingProbe *probe)
     bool ret = true;
 
     // send
-    if (definition->pingType == ping::Udp)
+    if (definition->type == ping::Udp)
     {
         ret = sendUdpData(probe);
     }
-    else if (definition->pingType == ping::Tcp)
+    else if (definition->type == ping::Tcp)
     {
         ret = sendTcpData(probe);
     }

@@ -16,7 +16,7 @@ public:
     ~PingDefinition();
     PingDefinition(const QString &host, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
                       const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload,
-                      const ping::PingType &pingType);
+                      const ping::PingType &type);
 
     // Storage
     static PingDefinitionPtr fromVariant(const QVariant &variant);
@@ -30,7 +30,7 @@ public:
     quint16 destinationPort;
     quint16 sourcePort;
     quint32 payload;
-    ping::PingType pingType;
+    ping::PingType type;
 
     // Serializable interface
     QVariant toVariant() const;

@@ -12,7 +12,7 @@ PingDefinition::PingDefinition(const QString &host, const quint32 &count, const 
 , destinationPort(destinationPort)
 , sourcePort(sourcePort)
 , payload(payload)
-, pingType(pingType)
+, type(pingType)
 {
 
 }
@@ -34,7 +34,7 @@ PingDefinitionPtr PingDefinition::fromVariant(const QVariant &variant)
                                                       map.value("source_port", 33434).toUInt(),
                                                       map.value("payload", 74).toUInt(),
                                                       pingTypeFromString(map.value(
-                                                                             "pingType", "Udp").toString().toLatin1())));
+                                                                             "type", "Udp").toString().toLatin1())));
 }
 
 QVariant PingDefinition::toVariant() const
@@ -48,6 +48,6 @@ QVariant PingDefinition::toVariant() const
     map.insert("destination_port", destinationPort);
     map.insert("source_port", sourcePort);
     map.insert("payload", payload);
-    map.insert("pingType", pingTypeToString(pingType));
+    map.insert("type", pingTypeToString(type));
     return map;
 }
