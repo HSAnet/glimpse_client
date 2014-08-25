@@ -35,6 +35,7 @@ public:
     TestDefinitionList tests;
     TestDefinitionList onDemandTests;
     QSet<quint32> testIds;
+    QSet<quint32> onDemandTestIds;
 
     QPointer<TaskExecutor> executor;
 
@@ -175,6 +176,7 @@ void Scheduler::enqueue(const TestDefinition &testDefinition)
     else
     {
         d->onDemandTests.append(testDefinition);
+        d->onDemandTestIds.insert(testDefinition.id());
     }
 }
 
@@ -200,7 +202,30 @@ int Scheduler::executeOnDemandTest(const quint32 &id)
         }
     }
 
+    LOG_ERROR("Test definition not found.");
+
     return -1;
+}
+
+bool Scheduler::isEnqueued(const quint32 &id)
+{
+    foreach (const quint32 &testId, d->testIds)
+    {
+        if (testId == id)
+        {
+            return true;
+        }
+    }
+
+    foreach (const quint32 &testId, d->onDemandTestIds)
+    {
+        if (testId == id)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 #include "scheduler.moc"

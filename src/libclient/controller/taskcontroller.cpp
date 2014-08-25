@@ -34,13 +34,14 @@ public:
 
         connect(&scheduleRequester, SIGNAL(error()), this, SLOT(scheduleError()));
         connect(&scheduleRequester, SIGNAL(finished()), this, SLOT(scheduleFinished()));
-        connect(&scheduleRequester, SIGNAL(finished()), q, SIGNAL(finished()));
-        connect(&scheduleRequester, SIGNAL(error()), q, SIGNAL(error()));
 
         instructionRequest.setPath(("/supervisor/api/v1/instruction/1/"));
-        scheduleRequest.setPath("/supervisor/api/v1/schedule/");
         instructionRequester.setRequest(&instructionRequest);
         instructionRequester.setResponse(&instructionResponse);
+
+        scheduleRequest.setPath("/supervisor/api/v1/schedule/");
+        scheduleRequester.setRequest(&scheduleRequest);
+        scheduleRequester.setResponse(&scheduleResponse);
     }
 
     TaskController *q;
@@ -109,21 +110,20 @@ void TaskController::Private::updateTimer()
 
 void TaskController::Private::instructionFinished()
 {
-    // TODO1: check which schedules we need and get new ones
-
-
-
+    // check which schedules we need
     foreach (const int id, instructionResponse.scheduleIds())
     {
-        scheduleRequest.addResourceId(id);
+        if (!scheduler->isEnqueued(id))
+        {
+            scheduleRequest.addResourceId(id);
+        }
     }
 
-    scheduleRequester.setRequest(&scheduleRequest);
-    scheduleRequester.setResponse(&scheduleResponse);
-
-    scheduleRequester.start();
-
-    // TODO1: check which tasks we need and get new ones
+    // get new schedules
+    if(!scheduleRequest.resourceIds().isEmpty())
+    {
+        scheduleRequester.start();
+    }
 }
 
 void TaskController::Private::scheduleFinished()

@@ -18,6 +18,8 @@ public:
     void addResourceId(const int &resourceId);
     QString path() const;
 
+    QStringList resourceIds();
+
 protected:
     class Private;
     friend class Private;

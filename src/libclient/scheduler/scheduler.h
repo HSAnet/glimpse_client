@@ -22,8 +22,9 @@ public:
     void dequeue();
 
     void execute(const TestDefinition &testDefinition);
-
     int executeOnDemandTest(const quint32 &id);
+
+    bool isEnqueued(const quint32 &id);
 
 signals:
     void testAdded(const TestDefinition &test, int position);
