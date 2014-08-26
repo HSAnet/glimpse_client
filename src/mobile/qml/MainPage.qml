@@ -2,6 +2,8 @@ import QtQuick 2.0
 import "controls"
 
 Page {
+    id: root
+
     title: "glimpse."
     actionTitle: {
         if (tab.currentItem && tab.currentItem.actionTitle)
@@ -23,6 +25,10 @@ Page {
     TabView {
         id: tab
         anchors.fill: parent
+
+        onCurrentItemChanged: {
+            root.analyticsTitle = Qt.binding(function() { return currentItem.title; });
+        }
 
         Item {
             property string title: "Home"

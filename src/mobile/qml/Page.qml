@@ -3,6 +3,7 @@ import QtQuick 2.0
 Item {
     property string title: "-- no title --"
     property string subtitle
+    property string analyticsTitle: title
 
     property string actionTitle
     property bool actionEnabled: true
