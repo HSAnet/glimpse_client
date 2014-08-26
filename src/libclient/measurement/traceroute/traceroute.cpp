@@ -42,6 +42,12 @@ bool Traceroute::prepare(NetworkManager *networkManager,
     Q_UNUSED(networkManager);
     definition = measurementDefinition.dynamicCast<TracerouteDefinition>();
 
+    if (definition->pingType != ping::Udp)
+    {
+        setErrorString("Ping type not supported");
+        return false;
+    }
+
     connect(&m_ping, SIGNAL(destinationUnreachable(const PingProbe &)),
             this, SLOT(destinationUnreachable(const PingProbe &)));
 
