@@ -152,11 +152,11 @@ void Measurement::addUsedTraffic(quint32 traffic)
 {
     if (d->onMobileConnection)
     {
-        d->usedMobileTraffic = traffic;
+        d->usedMobileTraffic += traffic;
     }
     else
     {
-        d->usedTraffic = traffic;
+        d->usedTraffic += traffic;
     }
 }
 
