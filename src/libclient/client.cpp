@@ -11,6 +11,7 @@
 #include "scheduler/scheduler.h"
 #include "settings.h"
 #include "log/logger.h"
+#include "types.h"
 
 #include <QCoreApplication>
 #include <QNetworkAccessManager>
@@ -31,6 +32,7 @@
 
 // TEST INCLUDES
 #include "timing/immediatetiming.h"
+#include "timing/ondemandtiming.h"
 #include "timing/timing.h"
 #include "task/task.h"
 #include "measurement/btc/btc_definition.h"
@@ -356,6 +358,27 @@ bool Client::init()
     if (!d->settings.isPassive())
     {
         d->taskController.init(&d->networkManager, &d->scheduler, &d->settings);
+    }
+
+    // add on demand tasks
+    TestDefinitionList tests;
+    TimingPtr timing(new OnDemandTiming());
+
+    tests.append(TestDefinition(1, "ping", timing, PingDefinition("measure-it.net", 4, 200, 4000, 64, 33434, 33434, 74, ping::System).toVariant()));
+    tests.append(TestDefinition(2, "btc_ma", timing, BulkTransportCapacityDefinition("measure-it.net", 5105, 1048576, 10).toVariant()));
+    tests.append(TestDefinition(3, "btc_ma", timing, BulkTransportCapacityDefinition("measure-it.net", 5105, 1048576, 10).toVariant())); // TODO this is for btc upload which is not implemented yet
+    tests.append(TestDefinition(4, "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74, ping::Udp).toVariant()));
+    tests.append(TestDefinition(5, "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74, ping::Tcp).toVariant()));
+    tests.append(TestDefinition(6, "dnslookup", timing, DnslookupDefinition("measure-it.net").toVariant()));
+    tests.append(TestDefinition(7, "httpdownload", timing, HTTPDownloadDefinition("http://www.measure-it.net/static/measurement/1MB.zip", false, 1).toVariant()));
+    tests.append(TestDefinition(8, "packettrains_ma", timing, PacketTrainsDefinition("measure-it.net", 5105, 1000, 48, 1, 10485760, 262144000, 200000000).toVariant()));
+    tests.append(TestDefinition(9, "reversednslookup", timing, ReverseDnslookupDefinition("141.82.57.241").toVariant()));
+    tests.append(TestDefinition(10, "traceroute", timing, TracerouteDefinition("measure-it.net", 3, 1000, 1000, 33434, 33434, 74, ping::Udp).toVariant()));
+    tests.append(TestDefinition(11, "upnp", timing, QVariant()));
+
+    foreach(const TestDefinition test, tests)
+    {
+        d->scheduler.enqueue(test);
     }
 
     return true;
