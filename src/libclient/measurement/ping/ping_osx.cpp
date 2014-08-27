@@ -11,6 +11,8 @@
 
 #include "ping.h"
 #include "../../log/logger.h"
+#include "../../client.h"
+#include "../../trafficbudgetmanager.h"
 
 //#include <arpa/inet.h>
 
@@ -228,9 +230,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         return false;
     }
 
-    quint32 est = estimateTraffic();
-
-    if (!trafficBudgetManager()->addUsedTraffic(est))
+    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(estimateTraffic()))
     {
         setErrorString("not enough traffic available");
         return false;

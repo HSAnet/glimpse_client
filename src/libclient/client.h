@@ -19,6 +19,7 @@ class NetworkManager;
 class TaskExecutor;
 class Settings;
 class QNetworkAccessManager;
+class TrafficBudgetManager;
 
 ////////////////////////////////////////////////////////////
 
@@ -72,6 +73,7 @@ public:
     CrashController *crashController() const;
 
     Settings *settings() const;
+    TrafficBudgetManager *trafficBudgetManager() const;
 
     /* Versioning
      *
@@ -106,14 +108,14 @@ public slots:
     void reverseDnslookup();
     void ping();
     void ping(const QString &url,
-                 const quint32 &count,
-                 const quint32 &interval,
-                 const quint32 &receiveTimeout,
-                 const int &ttl,
-                 const quint16 &destinationPort,
-                 const quint16 &sourcePort,
-                 const quint32 &payload,
-                 const ping::PingType &pingType);
+              const quint32 &count,
+              const quint32 &interval,
+              const quint32 &receiveTimeout,
+              const int &ttl,
+              const quint16 &destinationPort,
+              const quint16 &sourcePort,
+              const quint32 &payload,
+              const ping::PingType &pingType);
     void traceroute();
     void traceroute(const QString &url,
                     const quint32 &count,

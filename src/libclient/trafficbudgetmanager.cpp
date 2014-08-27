@@ -1,6 +1,6 @@
 #include "client.h"
 #include "settings.h"
-#include "traffic_budget_manager.h"
+#include "trafficbudgetmanager.h"
 #include "network/networkmanager.h"
 
 class TrafficBudgetManager::Private

@@ -1,6 +1,8 @@
 #include "reverseDnslookup.h"
 #include "../../log/logger.h"
 #include "../../types.h"
+#include "../../client.h"
+#include "../../trafficbudgetmanager.h"
 
 #include <QHostInfo>
 
@@ -35,9 +37,7 @@ bool ReverseDnslookup::prepare(NetworkManager *networkManager, const Measurement
      * worst case: 512 bytes
      * best case: 80 bytes
      */
-    quint32 est = 592;
-
-    if (!trafficBudgetManager()->addUsedTraffic(est))
+    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(592))
     {
         setErrorString("not enough traffic available");
         return false;

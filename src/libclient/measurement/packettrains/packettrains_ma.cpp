@@ -1,6 +1,8 @@
 #include "packettrains_ma.h"
 #include "../../log/logger.h"
 #include "../../network/networkmanager.h"
+#include "../../client.h"
+#include "../../trafficbudgetmanager.h"
 #include <QUdpSocket>
 #include <QElapsedTimer>
 
@@ -112,6 +114,7 @@ bool PacketTrainsMA::prepare(NetworkManager *networkManager, const MeasurementDe
     if (definition.isNull())
     {
         setErrorString("Definition is empty");
+        return false;
     }
 
     QString hostname = QString("%1:%2").arg(definition->host).arg(definition->port);
@@ -131,9 +134,8 @@ bool PacketTrainsMA::prepare(NetworkManager *networkManager, const MeasurementDe
     connect(m_udpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this,
             SLOT(handleError(QAbstractSocket::SocketError)));
 
-    quint32 est = definition->iterations * definition->packetSize * definition->trainLength;
-
-    if (!trafficBudgetManager()->addUsedTraffic(est))
+    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(definition->iterations *
+                                                                    definition->packetSize * definition->trainLength))
     {
         setErrorString("not enough traffic available");
         return false;

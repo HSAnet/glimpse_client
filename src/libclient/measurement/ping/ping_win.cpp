@@ -1,5 +1,7 @@
 #include "ping.h"
 #include "../../log/logger.h"
+#include "../../client.h"
+#include "../../trafficbudgetmanager.h"
 
 #include <time.h>
 #include <Windows.h>
@@ -667,9 +669,7 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     // At this point, we don't need any more the device list. Free it
     pcap_freealldevs(alldevs);
 
-    quint32 est = estimateTraffic();
-
-    if (!trafficBudgetManager()->addUsedTraffic(est))
+    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(estimateTraffic()))
     {
         setErrorString("not enough traffic available");
         return false;

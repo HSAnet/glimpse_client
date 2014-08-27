@@ -1,5 +1,7 @@
 #include "dnslookup.h"
 #include "../../log/logger.h"
+#include "../../client.h"
+#include "../../trafficbudgetmanager.h"
 
 #include <QDnsLookup>
 #include <QHostAddress>
@@ -51,7 +53,7 @@ bool Dnslookup::prepare(NetworkManager *networkManager, const MeasurementDefinit
      * best case: 74 bytes
      * average: 293 bytes
      */
-    if (!trafficBudgetManager()->addUsedTraffic(586))
+    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(586))
     {
         setErrorString("not enough traffic available");
         return false;

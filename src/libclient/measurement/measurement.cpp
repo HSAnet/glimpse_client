@@ -2,7 +2,6 @@
 #include "../client.h"
 #include "../settings.h"
 #include "../network/networkmanager.h"
-#include "../traffic_budget_manager.h"
 
 #include <QPointer>
 #include <QAbstractSocket>
@@ -17,7 +16,6 @@ public:
     QDateTime endDateTime;
     QString errorString;
     QStringList resultHeader;
-    TrafficBudgetManager tbm;
 };
 
 Measurement::Measurement(QObject *parent)
@@ -98,9 +96,4 @@ void Measurement::setResultHeader(const QStringList &columnLabels)
 void Measurement::setErrorString(const QString &message)
 {
     d->errorString = message;
-}
-
-TrafficBudgetManager *Measurement::trafficBudgetManager() const
-{
-    return &d->tbm;
 }

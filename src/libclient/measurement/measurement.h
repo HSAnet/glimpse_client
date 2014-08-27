@@ -3,7 +3,6 @@
 
 #include "measurementdefinition.h"
 #include "../task/result.h"
-#include "../traffic_budget_manager.h"
 
 #include <QSharedPointer>
 
@@ -58,8 +57,6 @@ public:
 
     QStringList resultHeader() const;
     void setResultHeader(const QStringList &resultHeader);
-
-    TrafficBudgetManager *trafficBudgetManager() const;
 
 signals:
     void started();

@@ -1,6 +1,8 @@
 #include "btc_ma.h"
 #include "../../log/logger.h"
 #include "../../network/networkmanager.h"
+#include "../../client.h"
+#include "../../trafficbudgetmanager.h"
 
 #include <QDataStream>
 #include <numeric>
@@ -60,7 +62,7 @@ void BulkTransportCapacityMA::calculateResult()
         LOG_INFO("Sending test data size to server");
         m_preTest = false;
 
-        if (trafficBudgetManager()->addUsedTraffic(m_bytesExpected))
+        if (Client::instance()->trafficBudgetManager()->addUsedTraffic(m_bytesExpected))
         {
             sendRequest(m_bytesExpected);
         }
@@ -197,6 +199,7 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager,
     if (definition.isNull())
     {
         setErrorString("Definition is empty");
+        return false;
     }
 
     QString hostname = QString("%1:%2").arg(definition->host).arg(definition->port);
@@ -214,7 +217,7 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager,
     m_bytesExpected = 0;
     m_preTest = true;
 
-    if (!trafficBudgetManager()->addUsedTraffic(definition->initialDataSize))
+    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(definition->initialDataSize))
     {
         setErrorString("not enough traffic available");
         return false;

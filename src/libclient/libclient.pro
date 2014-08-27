@@ -175,7 +175,7 @@ SOURCES +=  \
     network/responses/getinstructionresponse.cpp \
     network/responses/getscheduleresponse.cpp \
     network/responses/reportresponse.cpp \
-    traffic_budget_manager.cpp
+    trafficbudgetmanager.cpp
 
 HEADERS += \
     export.h \
@@ -265,7 +265,7 @@ HEADERS += \
     network/responses/getinstructionresponse.h \
     network/responses/getscheduleresponse.h \
     network/responses/reportresponse.h \
-    traffic_budget_manager.h
+    trafficbudgetmanager.h
 
 OTHER_FILES += \
     libclient.pri
