@@ -4,3 +4,6 @@
 [submodule "src/mobile/qml/controls/charts"]
 	path = src/mobile/qml/controls/charts
 	url = git@github.com:HSAnet/glimpse_data_visualization.git
+[submodule "3rdparty/qt-google-analytics"]
+	path = 3rdparty/qt-google-analytics
+	url = git@github.com:HSAnet/qt-google-analytics.git

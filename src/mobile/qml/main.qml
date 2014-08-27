@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import mplane 1.0
+import analytics 1.0
 import "controls"
 import "."
 
@@ -28,6 +29,10 @@ Rectangle {
         }
     }
 
+    Component.onDestruction: {
+        tracker.endSession();
+    }
+
     // Implements back key navigation
     focus: true
     Keys.enabled: true
@@ -43,6 +48,11 @@ Rectangle {
                 event.accepted = true;
             } else { Qt.quit(); }
         }
+    }
+
+    Tracker {
+        id: tracker
+        trackingID: "UA-51299738-2"
     }
 
     function menuPage() {
@@ -280,6 +290,12 @@ Rectangle {
             left: parent.left
             right: parent.right
             bottom: parent.bottom
+        }
+
+        property variant analyticsTitle: currentItem.analyticsTitle
+
+        onAnalyticsTitleChanged: {
+            tracker.sendAppView(analyticsTitle);
         }
     }
 

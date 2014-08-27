@@ -28,6 +28,7 @@ include(../../dist.pri)
 include(../../3rdparty/miniupnpc.pri)
 include(../../3rdparty/breakpad.pri)
 include(../../3rdparty/winpcap.pri)
+include(../../3rdparty/qt-google-analytics/qt-google-analytics.pri)
 
 android {
     QT += androidextras

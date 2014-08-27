@@ -31,6 +31,8 @@
 #include "linuximageprovider.h"
 #endif
 
+#include <ganalytics.h>
+
 #include <QQuickImageProvider>
 #include <QQmlEngine>
 #include <QQmlContext>
@@ -65,6 +67,8 @@ protected:
 
 void QmlModule::registerTypes()
 {
+    qmlRegisterType<GAnalytics>("analytics", 1, 0, "Tracker");
+
     qmlRegisterUncreatableType<Units>(MODULE_URI, 1, 0, "Units", "Do not create units");
     qmlRegisterUncreatableType<Client>(MODULE_URI, 1, 0, "Client", "This is a singleton");
     qmlRegisterUncreatableType<LogModel>(MODULE_URI, 1, 0, "LogModel", "uncreatable type");

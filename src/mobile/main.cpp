@@ -14,12 +14,14 @@
 
 #include <QGuiApplication>
 #include <QQmlEngine>
+#include <QQmlNetworkAccessManagerFactory>
 #include <QQmlContext>
 #include <QQmlFileSelector>
 #include <QFileSelector>
 #include <QTimer>
 #include <QDir>
 #include <QFontDatabase>
+#include <QNetworkAccessManager>
 
 #ifdef Q_OS_ANDROID
 #include "statusbarhelper.h"
@@ -106,6 +108,16 @@ public slots:
     }
 };
 
+class NetworkAccessManagerFactory : public QQmlNetworkAccessManagerFactory
+{
+public:
+    // QQmlNetworkAccessManagerFactory interface
+    QNetworkAccessManager *create(QObject *parent)
+    {
+        return Client::instance()->networkAccessManager();
+    }
+};
+
 int main(int argc, char *argv[])
 {
 #ifdef HAVE_WNCK
@@ -156,7 +168,10 @@ int main(int argc, char *argv[])
     QtQuick2ApplicationViewer *view = new QtQuick2ApplicationViewer;
     QObject::connect(view, SIGNAL(closing(QQuickCloseEvent *)), &app, SLOT(quit()));
 
+    NetworkAccessManagerFactory networkAccessManagerFactory;
+
     QQmlEngine *engine = view->engine();
+    engine->setNetworkAccessManagerFactory(&networkAccessManagerFactory);
     QmlModule::initializeEngine(engine);
 
     // Allow QFileSelector to be automatically applied on qml scripting
