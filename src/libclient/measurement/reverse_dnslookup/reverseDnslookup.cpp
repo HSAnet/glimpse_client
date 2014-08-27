@@ -37,13 +37,11 @@ bool ReverseDnslookup::prepare(NetworkManager *networkManager, const Measurement
      */
     quint32 est = 592;
 
-    if (!isTrafficAvailable(est))
+    if (!trafficBudgetManager()->addUsedTraffic(est))
     {
         setErrorString("not enough traffic available");
         return false;
     }
-
-    addUsedTraffic(est);
 
     return true;
 }

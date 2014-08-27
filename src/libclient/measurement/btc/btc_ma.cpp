@@ -60,9 +60,8 @@ void BulkTransportCapacityMA::calculateResult()
         LOG_INFO("Sending test data size to server");
         m_preTest = false;
 
-        if (isTrafficAvailable(m_bytesExpected))
+        if (trafficBudgetManager()->addUsedTraffic(m_bytesExpected))
         {
-            addUsedTraffic(m_bytesExpected);
             sendRequest(m_bytesExpected);
         }
         else
@@ -215,11 +214,7 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager,
     m_bytesExpected = 0;
     m_preTest = true;
 
-    if (isTrafficAvailable(definition->initialDataSize))
-    {
-        addUsedTraffic(definition->initialDataSize);
-    }
-    else
+    if (!trafficBudgetManager()->addUsedTraffic(definition->initialDataSize))
     {
         setErrorString("not enough traffic available");
         return false;

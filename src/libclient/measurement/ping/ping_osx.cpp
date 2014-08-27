@@ -230,13 +230,11 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 
     quint32 est = estimateTraffic();
 
-    if (!isTrafficAvailable(est))
+    if (!trafficBudgetManager()->addUsedTraffic(est))
     {
         setErrorString("not enough traffic available");
         return false;
     }
-
-    addUsedTraffic(est);
 
     return true;
 }

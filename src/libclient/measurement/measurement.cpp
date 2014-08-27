@@ -2,6 +2,7 @@
 #include "../client.h"
 #include "../settings.h"
 #include "../network/networkmanager.h"
+#include "../traffic_budget_manager.h"
 
 #include <QPointer>
 #include <QAbstractSocket>
@@ -16,42 +17,17 @@ public:
     QDateTime endDateTime;
     QString errorString;
     QStringList resultHeader;
-    quint32 availableTraffic;
-    quint32 usedTraffic;
-    quint32 availableMobileTraffic;
-    quint32 usedMobileTraffic;
-    bool onMobileConnection;
+    TrafficBudgetManager tbm;
 };
 
 Measurement::Measurement(QObject *parent)
 : QObject(parent)
 , d(new Private)
 {
-    d->onMobileConnection = Client::instance()->networkManager()->onMobileConnection();
-
-    if (d->onMobileConnection)
-    {
-        setAvailableTraffic(Client::instance()->settings()->availableMobileTraffic());
-    }
-    else
-    {
-        setAvailableTraffic(Client::instance()->settings()->availableTraffic());
-    }
 }
 
 Measurement::~Measurement()
 {
-    if (d->onMobileConnection)
-    {
-        Client::instance()->settings()->setAvailableMobileTraffic(d->availableMobileTraffic);
-        Client::instance()->settings()->setUsedMobileTraffic(d->usedMobileTraffic);
-    }
-    else
-    {
-        Client::instance()->settings()->setAvailableTraffic(d->availableTraffic);
-        Client::instance()->settings()->setUsedTraffic(d->usedTraffic);
-    }
-
     delete d;
 }
 
@@ -124,43 +100,7 @@ void Measurement::setErrorString(const QString &message)
     d->errorString = message;
 }
 
-void Measurement::setAvailableTraffic(quint32 traffic)
+TrafficBudgetManager *Measurement::trafficBudgetManager() const
 {
-    if (d->onMobileConnection)
-    {
-        d->availableMobileTraffic = traffic;
-    }
-    else
-    {
-        d->availableTraffic = traffic;
-    }
-}
-
-quint32 Measurement::availableTraffic() const
-{
-    return d->onMobileConnection ? d->availableMobileTraffic :
-           d->availableTraffic;
-}
-
-bool Measurement::isTrafficAvailable(quint32 traffic) const
-{
-    return d->onMobileConnection ? d->availableMobileTraffic >= traffic :
-           d->availableTraffic >= traffic;
-}
-
-void Measurement::addUsedTraffic(quint32 traffic)
-{
-    if (d->onMobileConnection)
-    {
-        d->usedMobileTraffic += traffic;
-    }
-    else
-    {
-        d->usedTraffic += traffic;
-    }
-}
-
-quint32 Measurement::usedTraffic() const
-{
-    return d->onMobileConnection ? d->usedMobileTraffic : d->usedTraffic;
+    return &d->tbm;
 }

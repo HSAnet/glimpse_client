@@ -3,6 +3,7 @@
 
 #include "measurementdefinition.h"
 #include "../task/result.h"
+#include "../traffic_budget_manager.h"
 
 #include <QSharedPointer>
 
@@ -58,12 +59,7 @@ public:
     QStringList resultHeader() const;
     void setResultHeader(const QStringList &resultHeader);
 
-    void setAvailableTraffic(quint32 traffic);
-    quint32 availableTraffic() const;
-    bool isTrafficAvailable(quint32 traffic) const;
-
-    void addUsedTraffic(quint32 traffic);
-    quint32 usedTraffic() const;
+    TrafficBudgetManager *trafficBudgetManager() const;
 
 signals:
     void started();

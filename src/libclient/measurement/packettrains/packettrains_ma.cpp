@@ -133,13 +133,11 @@ bool PacketTrainsMA::prepare(NetworkManager *networkManager, const MeasurementDe
 
     quint32 est = definition->iterations * definition->packetSize * definition->trainLength;
 
-    if (!isTrafficAvailable(est))
+    if (!trafficBudgetManager()->addUsedTraffic(est))
     {
         setErrorString("not enough traffic available");
         return false;
     }
-
-    addUsedTraffic(est);
 
     return true;
 }
