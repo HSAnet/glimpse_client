@@ -76,19 +76,27 @@ Rectangle {
 
         property bool enabled: false
 
-        target: client.loginController
+        target: client.taskController
         onError: {
             if (enabled) {
                 enabled = false;
 
+                if (client.loginController.registeredDevice)
+                    return;
+
                 var params = {
-                    item: Qt.resolvedUrl("WelcomeLoginPage.qml")
-//                    item: Qt.resolvedUrl("MainPage.qml")
+                    item: Qt.resolvedUrl("DeviceRegistration.qml"),
+                    properties: {
+                        "isWizard": true
+                    }
                 }
 
                 pageStack.insert(0, params);
                 pageStack.pop(null);
             }
+        }
+        onFinished: {
+            enabled = false;
         }
     }
 

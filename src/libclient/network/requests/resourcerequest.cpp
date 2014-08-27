@@ -20,7 +20,9 @@ GetResourceRequest::~GetResourceRequest()
 
 QVariant GetResourceRequest::toVariant() const
 {
-    return QVariantMap();
+    QVariantMap data;
+    data.insert("device_id", deviceId());
+    return data;
 }
 
 void GetResourceRequest::addResourceId(const int &resourceId)

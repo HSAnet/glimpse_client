@@ -153,6 +153,11 @@ bool LoginController::registeredDevice() const
     return d->registeredDevice;
 }
 
+void LoginController::setRegisterdDevice(bool registeredDevice)
+{
+    d->setRegisterdDevice(registeredDevice);
+}
+
 QString LoginController::errorString() const
 {
     return d->requester.errorString();
@@ -191,7 +196,6 @@ void LoginController::login()
 
 void LoginController::checkApiKey()
 {
-
     d->requester.setRequest(&d->taskRequest);
     d->requester.setResponse(&d->taskResponse);
     d->requester.start();

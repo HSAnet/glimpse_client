@@ -18,6 +18,7 @@ public:
 
     bool isLoggedIn() const;
     bool registeredDevice() const;
+    void setRegisterdDevice(bool registeredDevice);
 
     Q_INVOKABLE void anonymousRegistration();
     Q_INVOKABLE void registration(const QString &username, const QString &password);
