@@ -784,7 +784,7 @@ quint32 Ping::estimateTraffic() const
         break;
     }
 
-    switch (definition->pingType)
+    switch (definition->type)
     {
     case ping::Udp:
         est += 2 * (8 + definition->payload);  // UDP header + payload
