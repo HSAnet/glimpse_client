@@ -1,7 +1,4 @@
 #include "measurement.h"
-#include "../client.h"
-#include "../settings.h"
-#include "../network/networkmanager.h"
 
 #include <QPointer>
 #include <QAbstractSocket>
