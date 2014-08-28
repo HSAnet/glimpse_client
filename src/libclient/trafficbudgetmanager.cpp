@@ -3,7 +3,8 @@
 #include "trafficbudgetmanager.h"
 #include "network/networkmanager.h"
 
-#include <QMutex>
+#include <QReadLocker>
+#include <QWriteLocker>
 
 class TrafficBudgetManager::Private
 {
@@ -13,7 +14,7 @@ public:
     quint32 availableMobileTraffic;
     quint32 usedMobileTraffic;
     bool onMobileConnection;
-    QMutex mutex;
+    QReadWriteLock lock;
 };
 
 TrafficBudgetManager::TrafficBudgetManager()
@@ -46,7 +47,7 @@ TrafficBudgetManager::~TrafficBudgetManager()
 
 void TrafficBudgetManager::setAvailableTraffic(quint32 traffic)
 {
-    d->mutex.lock();
+    QWriteLocker locker(&d->lock);
 
     if (d->onMobileConnection)
     {
@@ -56,26 +57,25 @@ void TrafficBudgetManager::setAvailableTraffic(quint32 traffic)
     {
         d->availableTraffic = traffic;
     }
-
-    d->mutex.unlock();
 }
 
 quint32 TrafficBudgetManager::availableTraffic() const
 {
+    QReadLocker locker(&d->lock);
+
     return d->onMobileConnection ? d->availableMobileTraffic :
            d->availableTraffic;
 }
 
 bool TrafficBudgetManager::addUsedTraffic(quint32 traffic)
 {
-    d->mutex.lock();
+    QWriteLocker locker(&d->lock);
 
     if (d->onMobileConnection)
     {
         if (d->availableMobileTraffic >= traffic)
         {
             d->usedMobileTraffic += traffic;
-            d->mutex.unlock();
             return true;
         }
     }
@@ -84,16 +84,16 @@ bool TrafficBudgetManager::addUsedTraffic(quint32 traffic)
         if (d->availableTraffic >= traffic)
         {
             d->usedTraffic += traffic;
-            d->mutex.unlock();
             return true;
         }
     }
 
-    d->mutex.unlock();
     return false;
 }
 
 quint32 TrafficBudgetManager::usedTraffic() const
 {
+    QReadLocker locker(&d->lock);
+
     return d->onMobileConnection ? d->usedMobileTraffic : d->usedTraffic;
 }
