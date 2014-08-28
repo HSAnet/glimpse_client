@@ -36,6 +36,7 @@ public:
     TestDefinitionList onDemandTests;
     QSet<quint32> testIds;
     QSet<quint32> onDemandTestIds;
+    QSet<quint32> allTestIds;
 
     QPointer<TaskExecutor> executor;
 
@@ -171,12 +172,19 @@ void Scheduler::enqueue(const TestDefinition &testDefinition)
     if (testDefinition.timing()->type() != "ondemand")
     {
         int pos = d->enqueue(testDefinition);
+
+        if (pos >= 0)
+        {
+            d->allTestIds.insert(testDefinition.id());
+        }
+
         emit testAdded(testDefinition, pos);
     }
     else
     {
         d->onDemandTests.append(testDefinition);
         d->onDemandTestIds.insert(testDefinition.id());
+        d->allTestIds.insert(testDefinition.id());
     }
 }
 
@@ -207,17 +215,9 @@ int Scheduler::executeOnDemandTest(const quint32 &id)
     return -1;
 }
 
-bool Scheduler::isEnqueued(const quint32 &id)
+bool Scheduler::knownTestId(const quint32 &id)
 {
-    foreach (const quint32 &testId, d->testIds)
-    {
-        if (testId == id)
-        {
-            return true;
-        }
-    }
-
-    foreach (const quint32 &testId, d->onDemandTestIds)
+    foreach (const quint32 &testId, d->allTestIds)
     {
         if (testId == id)
         {

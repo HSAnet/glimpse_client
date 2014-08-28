@@ -16,6 +16,7 @@ public:
     QVariant toVariant() const;
 
     void addResourceId(const int &resourceId);
+    void clearResourceIds();
     QString path() const;
 
     QStringList resourceIds();

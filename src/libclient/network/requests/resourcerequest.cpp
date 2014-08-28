@@ -30,6 +30,11 @@ void GetResourceRequest::addResourceId(const int &resourceId)
     d->resourceIds.append(QString::number(resourceId));
 }
 
+void GetResourceRequest::clearResourceIds()
+{
+    d->resourceIds.clear();
+}
+
 QString GetResourceRequest::path() const
 {
     if (d->resourceIds.isEmpty())

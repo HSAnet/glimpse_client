@@ -6,6 +6,7 @@ LOGGER(GetScheduleResponse);
 
 bool GetScheduleResponse::fillFromVariant(const QVariantMap &variant)
 {
+    m_tasks.clear();
 
     foreach (const QVariant &entry, variant.value("objects").toList())
     {

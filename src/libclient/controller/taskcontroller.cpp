@@ -110,10 +110,12 @@ void TaskController::Private::updateTimer()
 
 void TaskController::Private::instructionFinished()
 {
+    scheduleRequest.clearResourceIds();
+
     // check which schedules we need
     foreach (const int id, instructionResponse.scheduleIds())
     {
-        if (!scheduler->isEnqueued(id))
+        if (!scheduler->knownTestId(id))
         {
             scheduleRequest.addResourceId(id);
         }
