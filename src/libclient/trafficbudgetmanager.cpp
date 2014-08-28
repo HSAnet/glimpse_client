@@ -3,6 +3,8 @@
 #include "trafficbudgetmanager.h"
 #include "network/networkmanager.h"
 
+#include <QMutex>
+
 class TrafficBudgetManager::Private
 {
 public:
@@ -11,6 +13,7 @@ public:
     quint32 availableMobileTraffic;
     quint32 usedMobileTraffic;
     bool onMobileConnection;
+    QMutex mutex;
 };
 
 TrafficBudgetManager::TrafficBudgetManager()
@@ -43,6 +46,8 @@ TrafficBudgetManager::~TrafficBudgetManager()
 
 void TrafficBudgetManager::setAvailableTraffic(quint32 traffic)
 {
+    d->mutex.lock();
+
     if (d->onMobileConnection)
     {
         d->availableMobileTraffic = traffic;
@@ -51,6 +56,8 @@ void TrafficBudgetManager::setAvailableTraffic(quint32 traffic)
     {
         d->availableTraffic = traffic;
     }
+
+    d->mutex.unlock();
 }
 
 quint32 TrafficBudgetManager::availableTraffic() const
@@ -61,11 +68,14 @@ quint32 TrafficBudgetManager::availableTraffic() const
 
 bool TrafficBudgetManager::addUsedTraffic(quint32 traffic)
 {
+    d->mutex.lock();
+
     if (d->onMobileConnection)
     {
         if (d->availableMobileTraffic >= traffic)
         {
             d->usedMobileTraffic += traffic;
+            d->mutex.unlock();
             return true;
         }
     }
@@ -74,10 +84,12 @@ bool TrafficBudgetManager::addUsedTraffic(quint32 traffic)
         if (d->availableTraffic >= traffic)
         {
             d->usedTraffic += traffic;
+            d->mutex.unlock();
             return true;
         }
     }
 
+    d->mutex.unlock();
     return false;
 }
 
