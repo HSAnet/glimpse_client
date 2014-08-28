@@ -5,7 +5,7 @@ QT += network concurrent
 
 CONFIG += hide_symbols
 
-android|osx:CONFIG += staticlib
+android|mac:CONFIG += staticlib
 
 staticlib {
     DEFINES += LIBCLIENT_STATIC
@@ -44,7 +44,8 @@ android {
                androidprocessmodel.cpp \
                measurement/ping/ping_linux.cpp
 } else: ios {
-    SOURCES += log/logger_all.cpp
+    SOURCES += log/logger_all.cpp \
+               measurement/ping/ping_osx.cpp
     OBJECTIVE_SOURCES += storage/storagepaths_ios.mm \
                          deviceinfo_ios.mm
 } else {

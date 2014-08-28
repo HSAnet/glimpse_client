@@ -9,12 +9,6 @@ qmlfiles.files = $$PWD/qml $$PWD/Default-568h@2x.png
 qmlfiles.path = Contents/Resources
 #QMAKE_BUNDLE_DATA += qmlfiles
 
-ios {
-    qmlimports.files = $$[QT_INSTALL_QML]
-    qmlimports.path = imports
-    QMAKE_BUNDLE_DATA += qmlimports
-}
-
 QT += gui quick qml concurrent
 
 include(../../dist.pri)
@@ -41,10 +35,6 @@ android {
 
     RESOURCES += qmlresources.qrc
 } else: ios {
-    LIBS += $$[QT_INSTALL_QML]/QtQuick/Controls/libqtquickcontrolsplugin.a \
-            $$[QT_INSTALL_QML]/QtQuick/Window.2/libwindowplugin.a \
-            $$[QT_INSTALL_QML]/QtQuick.2/libqtquick2plugin.a
-
     LIBS += -framework AdSupport
 } else {
     QT += widgets

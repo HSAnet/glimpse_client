@@ -8,6 +8,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QList>
+#include <QVector>
 
 class HTTPDownload : public Measurement
 {

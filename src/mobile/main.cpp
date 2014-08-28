@@ -35,13 +35,6 @@
 #include "crashhandler.h"
 #endif
 
-#ifdef Q_OS_IOS
-#include <QtPlugin>
-Q_IMPORT_PLUGIN(QtQuick2Plugin)
-Q_IMPORT_PLUGIN(QtQuick2WindowPlugin)
-Q_IMPORT_PLUGIN(QtQuickControlsPlugin)
-#endif
-
 LOGGER(main)
 
 void loadFonts(const QString &path)
@@ -197,7 +190,7 @@ int main(int argc, char *argv[])
 #endif // Q_OS_ANDROID
 
 #ifdef Q_OS_IOS
-    view.addImportPath(QStringLiteral("imports/qml"));
+    view->addImportPath(QStringLiteral("imports/qml"));
 #endif
 
 #ifdef Q_OS_ANDROID

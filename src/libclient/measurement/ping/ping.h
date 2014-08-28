@@ -16,7 +16,7 @@
 #undef min
 #include<pcap.h>
 #include <cstring>
-#elif defined(Q_OS_LINUX) || defined(Q_OS_OSX)
+#elif defined(Q_OS_LINUX) || defined(Q_OS_MAC)
 #include <netinet/in.h>
 #else
 #error Platform not supported.
@@ -88,7 +88,7 @@ struct PingProbe
     }
 
 #endif
-#if defined(Q_OS_OSX)
+#if defined(Q_OS_MAC)
     int icmpSock;
 #endif
 };

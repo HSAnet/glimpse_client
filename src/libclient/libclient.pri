@@ -2,7 +2,7 @@ QT += network
 
 INCLUDEPATH += $$PWD
 
-android|osx:DEFINES += LIBCLIENT_STATIC
+android|mac:DEFINES += LIBCLIENT_STATIC
 
 win32 {
     CONFIG(release, debug|release):BUILDCONFIG = "release"
@@ -35,4 +35,4 @@ win32:LIBS += -lws2_32
 
 # If we link libclient statically, one also needs to link
 # miniupnpc statically
-android|osx:include(../../3rdparty/miniupnpc.pri)
+android|mac:include(../../3rdparty/miniupnpc.pri)

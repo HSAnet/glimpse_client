@@ -14,6 +14,10 @@
 
 //#include <arpa/inet.h>
 
+#ifdef Q_OS_IOS
+#include <unistd.h>
+#endif
+
 LOGGER(Ping);
 
 namespace
