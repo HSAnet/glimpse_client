@@ -12,6 +12,7 @@
 #include "settings.h"
 #include "log/logger.h"
 #include "types.h"
+#include "trafficbudgetmanager.h"
 
 #include <QCoreApplication>
 #include <QNetworkAccessManager>
@@ -90,6 +91,8 @@ public:
     LoginController loginController;
     ConfigController configController;
     CrashController crashController;
+
+    TrafficBudgetManager trafficBudgetManager;
 
 #ifdef Q_OS_UNIX
     static int sigintFd[2];
@@ -364,19 +367,27 @@ bool Client::init()
     TestDefinitionList tests;
     TimingPtr timing(new OnDemandTiming());
 
-    tests.append(TestDefinition(1, "ping", timing, PingDefinition("measure-it.net", 4, 200, 4000, 64, 33434, 33434, 74, ping::System).toVariant()));
-    tests.append(TestDefinition(2, "btc_ma", timing, BulkTransportCapacityDefinition("measure-it.net", 5105, 1048576, 10).toVariant()));
-    tests.append(TestDefinition(3, "btc_ma", timing, BulkTransportCapacityDefinition("measure-it.net", 5105, 1048576, 10).toVariant())); // TODO this is for btc upload which is not implemented yet
-    tests.append(TestDefinition(4, "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74, ping::Udp).toVariant()));
-    tests.append(TestDefinition(5, "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74, ping::Tcp).toVariant()));
+    tests.append(TestDefinition(1, "ping", timing, PingDefinition("measure-it.net", 4, 200, 4000, 64, 33434, 33434, 74,
+                                                                  ping::System).toVariant()));
+    tests.append(TestDefinition(2, "btc_ma", timing, BulkTransportCapacityDefinition("measure-it.net", 5105, 1048576,
+                                                                                     10).toVariant()));
+    tests.append(TestDefinition(3, "btc_ma", timing, BulkTransportCapacityDefinition("measure-it.net", 5105, 1048576,
+                                                                                     10).toVariant())); // TODO this is for btc upload which is not implemented yet
+    tests.append(TestDefinition(4, "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74,
+                                                                  ping::Udp).toVariant()));
+    tests.append(TestDefinition(5, "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74,
+                                                                  ping::Tcp).toVariant()));
     tests.append(TestDefinition(6, "dnslookup", timing, DnslookupDefinition("measure-it.net").toVariant()));
-    tests.append(TestDefinition(7, "httpdownload", timing, HTTPDownloadDefinition("http://www.measure-it.net/static/measurement/1MB.zip", false, 1).toVariant()));
-    tests.append(TestDefinition(8, "packettrains_ma", timing, PacketTrainsDefinition("measure-it.net", 5105, 1000, 48, 1, 10485760, 262144000, 200000000).toVariant()));
+    tests.append(TestDefinition(7, "httpdownload", timing,
+                                HTTPDownloadDefinition("http://www.measure-it.net/static/measurement/1MB.zip", false, 1).toVariant()));
+    tests.append(TestDefinition(8, "packettrains_ma", timing, PacketTrainsDefinition("measure-it.net", 5105, 1000, 48, 1,
+                                                                                     10485760, 262144000, 200000000).toVariant()));
     tests.append(TestDefinition(9, "reversednslookup", timing, ReverseDnslookupDefinition("141.82.57.241").toVariant()));
-    tests.append(TestDefinition(10, "traceroute", timing, TracerouteDefinition("measure-it.net", 3, 1000, 1000, 33434, 33434, 74, ping::Udp).toVariant()));
+    tests.append(TestDefinition(10, "traceroute", timing, TracerouteDefinition("measure-it.net", 3, 1000, 1000, 33434,
+                                                                               33434, 74, ping::Udp).toVariant()));
     tests.append(TestDefinition(11, "upnp", timing, QVariant()));
 
-    foreach(const TestDefinition test, tests)
+    foreach (const TestDefinition test, tests)
     {
         d->scheduler.enqueue(test);
     }
@@ -462,8 +473,8 @@ void Client::ping()
 }
 
 void Client::ping(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
-                     const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload,
-                     const ping::PingType &pingType)
+                  const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload,
+                  const ping::PingType &pingType)
 {
     PingDefinition pingDef(url, count, interval, receiveTimeout, ttl, destinationPort, sourcePort, payload, pingType);
 
@@ -588,6 +599,11 @@ CrashController *Client::crashController() const
 Settings *Client::settings() const
 {
     return &d->settings;
+}
+
+TrafficBudgetManager *Client::trafficBudgetManager() const
+{
+    return &d->trafficBudgetManager;
 }
 
 #include "client.moc"

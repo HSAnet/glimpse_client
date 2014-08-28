@@ -1,6 +1,8 @@
 #include "btc_ma.h"
 #include "../../log/logger.h"
 #include "../../network/networkmanager.h"
+#include "../../client.h"
+#include "../../trafficbudgetmanager.h"
 
 #include <QDataStream>
 #include <numeric>
@@ -18,7 +20,7 @@ BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
     setResultHeader(QStringList() << "kBs" << "kBs_avg" << "kBs_min"
-                                  << "kBs_max" << "kBs_stddev");
+                    << "kBs_max" << "kBs_stddev");
 }
 
 bool BulkTransportCapacityMA::start()
@@ -59,7 +61,17 @@ void BulkTransportCapacityMA::calculateResult()
         // Request high amount of data
         LOG_INFO("Sending test data size to server");
         m_preTest = false;
-        sendRequest(m_bytesExpected);
+
+        if (Client::instance()->trafficBudgetManager()->addUsedTraffic(m_bytesExpected))
+        {
+            sendRequest(m_bytesExpected);
+        }
+        else
+        {
+            LOG_ERROR("not enough traffic available");
+            emit error("not enough traffic available");
+            return;
+        }
     }
     else
     {
@@ -186,7 +198,8 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager,
 
     if (definition.isNull())
     {
-        LOG_WARNING("Definition is empty");
+        setErrorString("Definition is empty");
+        return false;
     }
 
     QString hostname = QString("%1:%2").arg(definition->host).arg(definition->port);
@@ -203,6 +216,12 @@ bool BulkTransportCapacityMA::prepare(NetworkManager *networkManager,
     m_tcpSocket->setParent(this);
     m_bytesExpected = 0;
     m_preTest = true;
+
+    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(definition->initialDataSize))
+    {
+        setErrorString("not enough traffic available");
+        return false;
+    }
 
     // Signal for new data
     connect(m_tcpSocket, SIGNAL(readyRead()), this, SLOT(receiveResponse()));

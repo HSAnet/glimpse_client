@@ -11,6 +11,8 @@
 
 #include "ping.h"
 #include "../../log/logger.h"
+#include "../../client.h"
+#include "../../trafficbudgetmanager.h"
 
 //#include <arpa/inet.h>
 
@@ -228,7 +230,13 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     {
         // unreachable
         setErrorString(QString("unknown address family '%1'").arg(
-                       m_destAddress.sa.sa_family));
+                           m_destAddress.sa.sa_family));
+        return false;
+    }
+
+    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(estimateTraffic()))
+    {
+        setErrorString("not enough traffic available");
         return false;
     }
 
@@ -336,6 +344,86 @@ Result Ping::result() const
     res.append(QVariant(roundTripMs));
 
     return Result(startDateTime(), endDateTime(), res);
+}
+
+quint32 Ping::estimateTraffic() const
+{
+    /*
+     * Some headers appear in both the request and the response packet, hence
+     * they are added twice to the estimation.
+     */
+    quint32 est = 2 * 14;  // Ethernet header
+
+    switch (m_destAddress.sa.sa_family)
+    {
+    case AF_INET:
+        est += 2 * 20;  // IPv4 header
+        break;
+
+    case AF_INET6:
+        est += 2 * 40;  // IPv6 header
+        break;
+    }
+
+    switch (definition->type)
+    {
+    case ping::Udp:
+        est += 2 * (8 + definition->payload);  // UDP header + payload
+
+        switch (m_destAddress.sa.sa_family)
+        {
+        case AF_INET:
+            est += 36;  // ICMPv4 response
+            break;
+
+        case AF_INET6:
+            est += 56;  // ICMPv6 response
+            break;
+        }
+
+        break;
+
+    case ping::Tcp:
+
+        /*
+         * TCP header bytes:
+         *     SYN - RST/ACK:
+         *         40 + 20 = 60 bytes (IPv4 and IPv6)
+         *     SYN - SYN/ACK - ACK - RST/ACK:
+         *         40 + 20 + 32 + 32 = 124 bytes (IPv4)
+         *         40 + 40 + 32 + 32 = 144 bytes (IPv6)
+         * Since there are 2 additional packets (SYN/ACK and ACK) when a
+         * connect() succeeds, add
+         *     2 * (12 + 20) bytes (IPv4).
+         *     2 * (12 + 40) bytes (IPv6).
+         * average:
+         *     124 bytes (IPv4)
+         *     154 bytes (IPv6)
+         */
+        switch (m_destAddress.sa.sa_family)
+        {
+        case AF_INET:
+            est += 124;
+            break;
+
+        case AF_INET6:
+            est += 154;
+            break;
+        }
+
+        break;
+
+    case ping::System:
+        est += 64;  // ICMP header
+        break;
+
+    default:
+        break;
+    }
+
+    est *= definition->count;
+
+    return est;
 }
 
 int Ping::initSocket()
