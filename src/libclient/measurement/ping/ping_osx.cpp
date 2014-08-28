@@ -330,11 +330,15 @@ Result Ping::result() const
         avg += val;
     }
 
-    avg /= pingTime.size();
-
-    // calculate standard deviation
     qreal sq_sum = std::inner_product(pingTime.begin(), pingTime.end(), pingTime.begin(), 0.0);
-    qreal stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
+    qreal stdev = 0.0;
+
+    if (pingTime.size() > 0)
+    {
+        avg /= pingTime.size();
+        // calculate standard deviation
+        stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
+    }
 
     res.append(avg);
     res.append(min);
