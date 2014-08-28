@@ -559,6 +559,12 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         return false;
     }
 
+    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(estimateTraffic()))
+    {
+        setErrorString("not enough traffic available");
+        return false;
+    }
+
     if (definition->type == ping::System)
     {
         connect(&process, SIGNAL(started()), this, SLOT(started()));
@@ -668,12 +674,6 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 
     // At this point, we don't need any more the device list. Free it
     pcap_freealldevs(alldevs);
-
-    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(estimateTraffic()))
-    {
-        setErrorString("not enough traffic available");
-        return false;
-    }
 
     return true;
 }

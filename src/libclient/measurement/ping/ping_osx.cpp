@@ -200,6 +200,12 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         return false;
     }
 
+    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(estimateTraffic()))
+    {
+        setErrorString("not enough traffic available");
+        return false;
+    }
+
     if (definition->type == ping::System)
     {
         connect(&process, SIGNAL(started()), this, SLOT(started()));
@@ -231,12 +237,6 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         // unreachable
         setErrorString(QString("unknown address family '%1'").arg(
                            m_destAddress.sa.sa_family));
-        return false;
-    }
-
-    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(estimateTraffic()))
-    {
-        setErrorString("not enough traffic available");
         return false;
     }
 
