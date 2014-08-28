@@ -7,7 +7,7 @@ TracerouteDefinition::TracerouteDefinition(const QString &host,
                                            const quint16 &destinationPort,
                                            const quint16 &sourcePort,
                                            const quint32 &payload,
-                                           const ping::PingType &pingType)
+                                           const ping::PingType &type)
 : host(host)
 , count(count)
 , interval(interval)
@@ -15,7 +15,7 @@ TracerouteDefinition::TracerouteDefinition(const QString &host,
 , destinationPort(destinationPort)
 , sourcePort(sourcePort)
 , payload(payload)
-, pingType(pingType)
+, type(type)
 {
 }
 
@@ -48,6 +48,6 @@ QVariant TracerouteDefinition::toVariant() const
     map.insert("destination_port", destinationPort);
     map.insert("source_port", sourcePort);
     map.insert("payload", payload);
-    map.insert("ping_type", pingTypeToString(pingType));
+    map.insert("ping_type", pingTypeToString(type));
     return map;
 }

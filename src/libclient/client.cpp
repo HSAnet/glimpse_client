@@ -474,9 +474,9 @@ void Client::ping()
 
 void Client::ping(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
                   const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload,
-                  const ping::PingType &pingType)
+                  const ping::PingType &type)
 {
-    PingDefinition pingDef(url, count, interval, receiveTimeout, ttl, destinationPort, sourcePort, payload, pingType);
+    PingDefinition pingDef(url, count, interval, receiveTimeout, ttl, destinationPort, sourcePort, payload, type);
 
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(12, "ping", timing,
@@ -496,10 +496,10 @@ void Client::traceroute(const QString &url,
                         const quint16 &destinationPort,
                         const quint16 &sourcePort,
                         const quint32 &payload,
-                        const ping::PingType pingType)
+                        const ping::PingType type)
 {
     TracerouteDefinition tracerouteDef(url, count, interval, receiveTimeout, destinationPort, sourcePort, payload,
-                                       pingType);
+                                       type);
 
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(13, "traceroute", timing,

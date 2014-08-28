@@ -17,7 +17,7 @@ public:
                          const quint32 &interval, const quint32 &receiveTimeout,
                          const quint16 &destinationPort,
                          const quint16 &sourcePort, const quint32 &payload,
-                         const ping::PingType &pingType);
+                         const ping::PingType &type);
     ~TracerouteDefinition();
 
     // Storage
@@ -31,7 +31,7 @@ public:
     quint16 destinationPort;
     quint16 sourcePort;
     quint32 payload;
-    ping::PingType pingType;
+    ping::PingType type;
 
     // Serializable interface
     QVariant toVariant() const;

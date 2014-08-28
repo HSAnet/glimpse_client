@@ -3,7 +3,7 @@
 PingDefinition::PingDefinition(const QString &host, const quint32 &count, const quint32 &interval,
                                      const quint32 &receiveTimeout, const int &ttl,
                                      const quint16 &destinationPort, const quint16 &sourcePort,
-                                     const quint32 &payload, const ping::PingType &pingType)
+                                     const quint32 &payload, const ping::PingType &type)
 : host(host)
 , count(count)
 , interval(interval)
@@ -12,7 +12,7 @@ PingDefinition::PingDefinition(const QString &host, const quint32 &count, const 
 , destinationPort(destinationPort)
 , sourcePort(sourcePort)
 , payload(payload)
-, type(pingType)
+, type(type)
 {
 
 }

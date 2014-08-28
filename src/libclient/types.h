@@ -45,17 +45,17 @@ namespace ping
     className::staticMetaObject.indexOfEnumerator("enumName")).keyToValue(value))
 
 
-inline QString pingTypeToString(const ping::PingType &pingType)
+inline QString pingTypeToString(const ping::PingType &type)
 {
-    if (pingType == ping::System)
+    if (type == ping::System)
     {
         return "System";
     }
-    else if (pingType == ping::Udp)
+    else if (type == ping::Udp)
     {
         return "Udp";
     }
-    else if (pingType == ping::Tcp)
+    else if (type == ping::Tcp)
     {
         return "Tcp";
     }
@@ -63,17 +63,17 @@ inline QString pingTypeToString(const ping::PingType &pingType)
     return "";
 }
 
-inline ping::PingType pingTypeFromString(const QString &pingType)
+inline ping::PingType pingTypeFromString(const QString &type)
 {
-    if (pingType == "System")
+    if (type == "System")
     {
         return ping::System;
     }
-    else if (pingType == "Udp")
+    else if (type == "Udp")
     {
         return ping::Udp;
     }
-    else if (pingType == "Tcp")
+    else if (type == "Tcp")
     {
         return ping::Tcp;
     }

@@ -42,7 +42,7 @@ bool Traceroute::prepare(NetworkManager *networkManager,
     Q_UNUSED(networkManager);
     definition = measurementDefinition.dynamicCast<TracerouteDefinition>();
 
-    if (definition->pingType != ping::Udp)
+    if (definition->type != ping::Udp)
     {
         setErrorString("Ping type not supported");
         return false;
@@ -132,7 +132,7 @@ void Traceroute::ping()
                                  definition->destinationPort,
                                  definition->sourcePort,
                                  definition->payload,
-                                 definition->pingType);
+                                 definition->type);
     m_ping.prepare(NULL, PingPlugin().createMeasurementDefinition(
                         "ping",
                         pingDef.toVariant()));
