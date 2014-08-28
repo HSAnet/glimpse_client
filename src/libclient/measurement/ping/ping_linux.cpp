@@ -672,10 +672,15 @@ void Ping::receiveData(PingProbe *probe)
     pfd.fd = probe->sock;
     pfd.events = POLLIN | POLLERR;
 
-    if (poll(&pfd, 1, definition->receiveTimeout) < 0)
+    // Don't poll on TCP sockets since the sendTcpData method already does
+    // that.
+    if (definition->type == ping::Udp)
     {
-        LOG_WARNING(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-        goto cleanup;
+        if (poll(&pfd, 1, definition->receiveTimeout) < 0)
+        {
+            LOG_WARNING(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            goto cleanup;
+        }
     }
 
     if (!pfd.revents)
