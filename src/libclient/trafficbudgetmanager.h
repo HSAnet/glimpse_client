@@ -11,7 +11,9 @@ class CLIENT_API TrafficBudgetManager : public QObject
 
 public:
     TrafficBudgetManager();
-    ~TrafficBudgetManager();
+
+    void init();
+    void saveTraffic();
 
     void setAvailableTraffic(quint32 traffic);
     quint32 availableTraffic() const;

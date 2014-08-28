@@ -357,6 +357,7 @@ bool Client::init()
     d->reportController.init(&d->reportScheduler, &d->settings);
     d->loginController.init(&d->networkManager, &d->settings);
     d->crashController.init(&d->networkManager, &d->settings);
+    d->trafficBudgetManager.init();
 
     if (!d->settings.isPassive())
     {
