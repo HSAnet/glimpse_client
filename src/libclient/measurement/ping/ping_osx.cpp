@@ -293,7 +293,7 @@ bool Ping::start()
 
     foreach (const PingProbe &probe, m_pingProbes)
     {
-        if (probe.sendTime > 0 && probe.recvTime > 0)
+        if (probe.sendTime > 0 && probe.recvTime > 0 && probe.sendTime != probe.recvTime)
         {
             pingTime.append((probe.recvTime - probe.sendTime) / 1000.);
         }
@@ -771,6 +771,8 @@ void Ping::receiveData(PingProbe *probe)
     if (ret == 0)
     {
         memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
+        // indicate a timeout by zeroing the ping duration
+        probe->recvTime = probe->sendTime;
         emit timeout(*probe);
         return;
     }
