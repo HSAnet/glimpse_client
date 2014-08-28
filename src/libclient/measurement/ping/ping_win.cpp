@@ -559,6 +559,12 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         return false;
     }
 
+    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(estimateTraffic()))
+    {
+        setErrorString("not enough traffic available");
+        return false;
+    }
+
     if (definition->type == ping::System)
     {
         connect(&process, SIGNAL(started()), this, SLOT(started()));
@@ -669,12 +675,6 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     // At this point, we don't need any more the device list. Free it
     pcap_freealldevs(alldevs);
 
-    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(estimateTraffic()))
-    {
-        setErrorString("not enough traffic available");
-        return false;
-    }
-
     return true;
 }
 
@@ -747,11 +747,15 @@ Result Ping::result() const
         avg += val;
     }
 
-    avg /= pingTime.size();
-
-    // calculate standard deviation
     qreal sq_sum = std::inner_product(pingTime.begin(), pingTime.end(), pingTime.begin(), 0.0);
-    qreal stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
+    qreal stdev = 0.0;
+
+    if (pingTime.size() > 0)
+    {
+        avg /= pingTime.size();
+        // calculate standard deviation
+        stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
+    }
 
     res.append(avg);
     res.append(min);

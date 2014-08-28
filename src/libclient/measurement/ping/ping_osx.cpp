@@ -200,6 +200,12 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         return false;
     }
 
+    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(estimateTraffic()))
+    {
+        setErrorString("not enough traffic available");
+        return false;
+    }
+
     if (definition->type == ping::System)
     {
         connect(&process, SIGNAL(started()), this, SLOT(started()));
@@ -231,12 +237,6 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         // unreachable
         setErrorString(QString("unknown address family '%1'").arg(
                            m_destAddress.sa.sa_family));
-        return false;
-    }
-
-    if (!Client::instance()->trafficBudgetManager()->addUsedTraffic(estimateTraffic()))
-    {
-        setErrorString("not enough traffic available");
         return false;
     }
 
@@ -293,7 +293,7 @@ bool Ping::start()
 
     foreach (const PingProbe &probe, m_pingProbes)
     {
-        if (probe.sendTime > 0 && probe.recvTime > 0)
+        if (probe.sendTime > 0 && probe.recvTime > 0 && probe.sendTime != probe.recvTime)
         {
             pingTime.append((probe.recvTime - probe.sendTime) / 1000.);
         }
@@ -330,11 +330,15 @@ Result Ping::result() const
         avg += val;
     }
 
-    avg /= pingTime.size();
-
-    // calculate standard deviation
     qreal sq_sum = std::inner_product(pingTime.begin(), pingTime.end(), pingTime.begin(), 0.0);
-    qreal stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
+    qreal stdev = 0.0;
+
+    if (pingTime.size() > 0)
+    {
+        avg /= pingTime.size();
+        // calculate standard deviation
+        stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
+    }
 
     res.append(avg);
     res.append(min);
@@ -771,6 +775,8 @@ void Ping::receiveData(PingProbe *probe)
     if (ret == 0)
     {
         memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
+        // indicate a timeout by zeroing the ping duration
+        probe->recvTime = probe->sendTime;
         emit timeout(*probe);
         return;
     }

@@ -224,7 +224,7 @@ bool Ping::start()
 
     foreach (const PingProbe &probe, m_pingProbes)
     {
-        if (probe.sendTime > 0 && probe.recvTime > 0)
+        if (probe.sendTime > 0 && probe.recvTime > 0 && probe.sendTime != probe.recvTime)
         {
             pingTime.append((probe.recvTime - probe.sendTime) / 1000.);
         }
@@ -266,11 +266,15 @@ Result Ping::result() const
         avg += val;
     }
 
-    avg /= pingTime.size();
-
-    // calculate standard deviation
     qreal sq_sum = std::inner_product(pingTime.begin(), pingTime.end(), pingTime.begin(), 0.0);
-    qreal stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
+    qreal stdev = 0.0;
+
+    if (pingTime.size() > 0)
+    {
+        avg /= pingTime.size();
+        // calculate standard deviation
+        stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
+    }
 
     res.append(avg);
     res.append(min);
@@ -672,14 +676,21 @@ void Ping::receiveData(PingProbe *probe)
     pfd.fd = probe->sock;
     pfd.events = POLLIN | POLLERR;
 
-    if (poll(&pfd, 1, definition->receiveTimeout) < 0)
+    // Don't poll on TCP sockets since the sendTcpData method already does
+    // that.
+    if (definition->type == ping::Udp)
     {
-        LOG_WARNING(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
-        goto cleanup;
+        if (poll(&pfd, 1, definition->receiveTimeout) < 0)
+        {
+            LOG_WARNING(QString("poll: %1").arg(QString::fromLocal8Bit(strerror(errno))));
+            goto cleanup;
+        }
     }
 
     if (!pfd.revents)
     {
+        // indicate a timeout by zeroing the ping duration
+        probe->recvTime = probe->sendTime;
         emit timeout(*probe);
 
         if (definition->type == ping::Tcp)
