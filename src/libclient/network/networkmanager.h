@@ -4,6 +4,7 @@
 #include "../task/task.h"
 
 #include <QAbstractSocket>
+#include <QNetworkConfigurationManager>
 
 class Scheduler;
 class Settings;
@@ -26,7 +27,8 @@ public:
     void setRunning(bool running);
     bool isRunning() const;
 
-    bool onMobileConnection() const;
+    bool onMobileConnection();
+    QList<QNetworkConfiguration::BearerType> connectionType();
 
     enum SocketType
     {

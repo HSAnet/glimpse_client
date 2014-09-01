@@ -83,3 +83,8 @@ qint32 DeviceInfo::wifiSNR() const
 {
     return 0;
 }
+
+quint8 DeviceInfo::batteryLevel()
+{
+    return 100;
+}

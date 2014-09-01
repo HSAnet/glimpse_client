@@ -23,7 +23,6 @@
 #include <QReadWriteLock>
 #include <QTimer>
 #include <QDebug>
-#include <QNetworkConfigurationManager>
 #include <QDnsLookup>
 
 LOGGER(NetworkManager);
@@ -309,7 +308,7 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
 
         TimingPtr timing(new ImmediateTiming);
         TestDefinition testDefinition(request.taskId, request.measurement, timing,
-                                      request.measurementDefinition);
+                                      request.measurementDefinition, Precondition());
 
         // Bypass scheduler and run directly on the executor
         scheduler->executor()->execute(testDefinition, observer);
@@ -452,7 +451,7 @@ bool NetworkManager::isRunning() const
     return d->timer.isActive();
 }
 
-bool NetworkManager::onMobileConnection() const
+bool NetworkManager::onMobileConnection()
 {
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     QList<QNetworkConfiguration> confList = d->ncm.allConfigurations(QNetworkConfiguration::Active);
@@ -471,6 +470,33 @@ bool NetworkManager::onMobileConnection() const
 #endif
 
     return false;
+}
+
+QList<QNetworkConfiguration::BearerType> NetworkManager::connectionType()
+{
+    QList<QNetworkConfiguration> confList = d->ncm.allConfigurations(QNetworkConfiguration::Active);
+    QList<QNetworkConfiguration::BearerType> typeList;
+    QStringList names;
+
+    foreach (QNetworkConfiguration conf, confList)
+    {
+        typeList.append(conf.bearerType());
+        names.append(conf.name());
+    }
+
+    if (!typeList.contains(QNetworkConfiguration::BearerWLAN))
+    {
+        foreach (QString name, names)
+        {
+            if (name.contains("wlan") || name.contains("wifi"))
+            {
+                    typeList.append(QNetworkConfiguration::BearerWLAN);
+                    break;
+            }
+        }
+    }
+
+    return typeList;
 }
 
 QAbstractSocket *NetworkManager::connection(const QString &hostname, NetworkManager::SocketType socketType) const

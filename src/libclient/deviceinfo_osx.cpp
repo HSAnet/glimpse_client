@@ -66,3 +66,8 @@ qreal DeviceInfo::cpuUsage() const
 {
     return -1.0;
 }
+
+quint8 DeviceInfo::batteryLevel()
+{
+    return 100;
+}

@@ -367,26 +367,31 @@ bool Client::init()
     // add on demand tasks
     TestDefinitionList tests;
     TimingPtr timing(new OnDemandTiming());
+    Precondition precondition;
 
     tests.append(TestDefinition(1, "ping", timing, PingDefinition("measure-it.net", 4, 200, 4000, 64, 33434, 33434, 74,
-                                                                  ping::System).toVariant()));
+                                                                  ping::System).toVariant(), precondition));
     tests.append(TestDefinition(2, "btc_ma", timing, BulkTransportCapacityDefinition("measure-it.net", 5105, 1048576,
-                                                                                     10).toVariant()));
+                                                                                     10).toVariant(), precondition));
     tests.append(TestDefinition(3, "btc_ma", timing, BulkTransportCapacityDefinition("measure-it.net", 5105, 1048576,
-                                                                                     10).toVariant())); // TODO this is for btc upload which is not implemented yet
+                                                                                     10).toVariant(), precondition)); // TODO this is for btc upload which is not implemented yet
     tests.append(TestDefinition(4, "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74,
-                                                                  ping::Udp).toVariant()));
+                                                                  ping::Udp).toVariant(), precondition));
     tests.append(TestDefinition(5, "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74,
-                                                                  ping::Tcp).toVariant()));
-    tests.append(TestDefinition(6, "dnslookup", timing, DnslookupDefinition("measure-it.net").toVariant()));
+                                                                  ping::Tcp).toVariant(), precondition));
+    tests.append(TestDefinition(6, "dnslookup", timing, DnslookupDefinition("measure-it.net").toVariant(), precondition));
     tests.append(TestDefinition(7, "httpdownload", timing,
-                                HTTPDownloadDefinition("http://www.measure-it.net/static/measurement/1MB.zip", false, 1).toVariant()));
+                                HTTPDownloadDefinition("http://www.measure-it.net/static/measurement/1MB.zip", false, 1).toVariant(),
+                                precondition));
     tests.append(TestDefinition(8, "packettrains_ma", timing, PacketTrainsDefinition("measure-it.net", 5105, 1000, 48, 1,
-                                                                                     10485760, 262144000, 200000000).toVariant()));
-    tests.append(TestDefinition(9, "reversednslookup", timing, ReverseDnslookupDefinition("141.82.57.241").toVariant()));
+                                                                                     10485760, 262144000, 200000000).toVariant(),
+                                precondition));
+    tests.append(TestDefinition(9, "reversednslookup", timing, ReverseDnslookupDefinition("141.82.57.241").toVariant(),
+                                precondition));
     tests.append(TestDefinition(10, "traceroute", timing, TracerouteDefinition("measure-it.net", 3, 1000, 1000, 33434,
-                                                                               33434, 74, ping::Udp).toVariant()));
-    tests.append(TestDefinition(11, "upnp", timing, QVariant()));
+                                                                               33434, 74, ping::Udp).toVariant(),
+                                precondition));
+    tests.append(TestDefinition(11, "upnp", timing, QVariant(), precondition));
 
     foreach (const TestDefinition test, tests)
     {
@@ -419,7 +424,7 @@ void Client::btc(const QString &host)
     BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024, 10);
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(9, "btc_ma", timing,
-                                  btcDef.toVariant());
+                                  btcDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -433,7 +438,7 @@ void Client::http(const QString &url)
     HTTPDownloadDefinition httpDef(url, false, 1);
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(3, "httpdownload", timing,
-                                  httpDef.toVariant());
+                                  httpDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -464,7 +469,7 @@ void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint1
 
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(11, "packettrains_ma", timing,
-                                  packetTrainsDef.toVariant());
+                                  packetTrainsDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -481,7 +486,7 @@ void Client::ping(const QString &url, const quint32 &count, const quint32 &inter
 
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(12, "ping", timing,
-                                  pingDef.toVariant());
+                                  pingDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -504,7 +509,7 @@ void Client::traceroute(const QString &url,
 
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(13, "traceroute", timing,
-                                  tracerouteDef.toVariant());
+                                  tracerouteDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
