@@ -125,7 +125,7 @@ QString DeviceInfo::deviceId() const
     return QString::fromLatin1(hash.result().toHex());
 }
 
-qreal DeviceInfo::cpuUsage() const
+qreal DeviceInfo::cpuUsage()
 {
     QFile file("/proc/stat");
 
@@ -158,7 +158,7 @@ qreal DeviceInfo::cpuUsage() const
     return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 }
 
-qint32 DeviceInfo::wifiSNR() const
+qint32 DeviceInfo::wifiSNR()
 {
     return 0;
 }
