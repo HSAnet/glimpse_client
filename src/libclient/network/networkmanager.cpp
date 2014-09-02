@@ -478,7 +478,7 @@ QList<QNetworkConfiguration::BearerType> NetworkManager::connectionType() const
     QList<QNetworkConfiguration::BearerType> typeList;
     QStringList names;
 
-    foreach (QNetworkConfiguration conf, confList)
+    foreach (const QNetworkConfiguration &conf, confList)
     {
         typeList.append(conf.bearerType());
         names.append(conf.name());
@@ -486,9 +486,10 @@ QList<QNetworkConfiguration::BearerType> NetworkManager::connectionType() const
 
     if (!typeList.contains(QNetworkConfiguration::BearerWLAN))
     {
-        foreach (QString name, names)
+        QRegExp regExp("w(lan|ifi|lp)");
+        foreach (const QString &name, names)
         {
-            if (name.contains("wlan") || name.contains("wifi"))
+            if (name.contains(regExp))
             {
                     typeList.append(QNetworkConfiguration::BearerWLAN);
                     break;
