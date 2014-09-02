@@ -3,6 +3,7 @@
 
 #include "../timing/timing.h"
 #include "../measurement/measurementdefinition.h"
+#include "../precondition.h"
 
 #include <QUuid>
 #include <QSharedDataPointer>
@@ -31,6 +32,7 @@ public:
     QString name;
     TimingPtr timing;
     QVariant measurementDefinition;
+    Precondition precondition;
 };
 
 
@@ -39,7 +41,7 @@ class CLIENT_API TestDefinition : public Serializable
 public:
     TestDefinition();
     TestDefinition(const TestDefinition &other);
-    TestDefinition(const quint32 &id, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition);
+    TestDefinition(const quint32 &id, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition, const Precondition &precondition);
 
     bool isNull() const;
 
@@ -54,6 +56,9 @@ public:
 
     void setMeasurementDefinition(const QVariant &measurementDefinition);
     QVariant measurementDefinition() const;
+
+    void setPrecondition(const Precondition &precondition);
+    Precondition precondition() const;
 
     // Storage
     static TestDefinition fromVariant(const QVariant &variant);

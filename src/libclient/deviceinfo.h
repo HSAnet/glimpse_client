@@ -16,7 +16,7 @@ public:
     quint32 freeMemory() const;
     quint32 freeDiskSpace() const;
     qint32 wifiSNR() const;
-
+    static quint8 batteryLevel();
 
 protected:
     class Private;

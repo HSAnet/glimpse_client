@@ -44,6 +44,7 @@ public slots:
 
             if (measurement->prepare(networkManager, definition))
             {
+                // TODO1: get local information (interface with ip, connection type, SNR, cpu usage, ...) and save in result or measurement
                 if (measurement->start())
                 {
                     this->measurement = measurement;
@@ -208,7 +209,12 @@ bool TaskExecutor::isRunning() const
 
 void TaskExecutor::execute(const TestDefinition &test, MeasurementObserver *observer)
 {
-    // TODO1: Check preconditions
+    // Check preconditions
+    if (!test.precondition().check())
+    {
+        LOG_INFO(QString("Measurement not executed, preconditions not met: %1").arg(test.name()));
+        return;
+    }
 
     // Abort if we are on a mobile connection
     if (d->executor.networkManager->onMobileConnection())

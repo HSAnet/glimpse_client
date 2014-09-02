@@ -13,7 +13,7 @@ TestDefinition::TestDefinition(const TestDefinition &other)
 }
 
 TestDefinition::TestDefinition(const quint32 &id, const QString &name, const TimingPtr &timing,
-                               const QVariant &measurementDefinition)
+                               const QVariant &measurementDefinition, const Precondition &precondition)
 : d(new TaskData)
 {
     d->id = id;
@@ -49,7 +49,8 @@ TestDefinition TestDefinition::fromVariant(const QVariant &variant)
     return TestDefinition(hash.value("id").toInt(),
                           hash.value("method").toString(),
                           TimingFactory::timingFromVariant(hash.value("timing")),
-                          hash.value("options"));
+                          hash.value("options"),
+                          Precondition::fromVariant(hash.value("precondition")));
 }
 
 quint32 TestDefinition::id() const
@@ -85,4 +86,14 @@ void TestDefinition::setMeasurementDefinition(const QVariant &measurementDefinit
 QVariant TestDefinition::measurementDefinition() const
 {
     return d->measurementDefinition;
+}
+
+void TestDefinition::setPrecondition(const Precondition &precondition)
+{
+    d->precondition = precondition;
+}
+
+Precondition TestDefinition::precondition() const
+{
+    return d->precondition;
 }
