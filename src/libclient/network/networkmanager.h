@@ -27,8 +27,8 @@ public:
     void setRunning(bool running);
     bool isRunning() const;
 
-    bool onMobileConnection();
-    QList<QNetworkConfiguration::BearerType> connectionType();
+    bool onMobileConnection() const;
+    QList<QNetworkConfiguration::BearerType> connectionType() const;
 
     enum SocketType
     {

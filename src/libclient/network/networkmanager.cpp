@@ -451,7 +451,7 @@ bool NetworkManager::isRunning() const
     return d->timer.isActive();
 }
 
-bool NetworkManager::onMobileConnection()
+bool NetworkManager::onMobileConnection() const
 {
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     QList<QNetworkConfiguration> confList = d->ncm.allConfigurations(QNetworkConfiguration::Active);
@@ -472,7 +472,7 @@ bool NetworkManager::onMobileConnection()
     return false;
 }
 
-QList<QNetworkConfiguration::BearerType> NetworkManager::connectionType()
+QList<QNetworkConfiguration::BearerType> NetworkManager::connectionType() const
 {
     QList<QNetworkConfiguration> confList = d->ncm.allConfigurations(QNetworkConfiguration::Active);
     QList<QNetworkConfiguration::BearerType> typeList;
