@@ -16,7 +16,7 @@ public:
     static quint32 freeMemory();
     static quint32 freeDiskSpace();
     static qint32 wifiSNR();
-    static quint8 batteryLevel();
+    static qint8 batteryLevel();
 
 protected:
     class Private;

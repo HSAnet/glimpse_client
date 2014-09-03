@@ -30,7 +30,7 @@ QString DeviceInfo::deviceId() const
     return QString::fromLatin1(hash.result().toHex());
 }
 
-quint8 DeviceInfo::batteryLevel()
+qint8 DeviceInfo::batteryLevel()
 {
     return 100;
 }

@@ -4,6 +4,7 @@
 #include <QCryptographicHash>
 #include <QDir>
 #include <DiskArbitration/DADisk.h>
+#include <QBatteryInfo>
 
 LOGGER(DeviceInfo);
 
@@ -67,7 +68,7 @@ qreal DeviceInfo::cpuUsage()
     return -1.0;
 }
 
-quint8 DeviceInfo::batteryLevel()
+qint8 DeviceInfo::batteryLevel()
 {
-    return 100;
+    return QBatteryInfo().level();
 }

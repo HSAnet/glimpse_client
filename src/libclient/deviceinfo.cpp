@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QTextStream>
 #include <Windows.h>
+#include <QBatteryInfo>
 
 LOGGER(DeviceInfo);
 
@@ -119,7 +120,7 @@ qint32 DeviceInfo::wifiSNR()
     return 0;
 }
 
-quint8 DeviceInfo::batteryLevel()
+qint8 DeviceInfo::batteryLevel()
 {
-    return 100;
+    return QBatteryInfo().level();
 }

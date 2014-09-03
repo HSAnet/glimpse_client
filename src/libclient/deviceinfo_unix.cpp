@@ -10,6 +10,8 @@
 
 LOGGER(DeviceInfo);
 
+Q_GLOBAL_STATIC_WITH_ARGS(const QString, BATTERY_SYSFS_PATH, (QLatin1String("/sys/class/power_supply/BAT%1/")))
+
 namespace
 {
     static const char *FSEntries[] =
@@ -163,7 +165,61 @@ qint32 DeviceInfo::wifiSNR()
     return 0;
 }
 
-quint8 DeviceInfo::batteryLevel()
+qint8 DeviceInfo::batteryLevel()
 {
-    return 100;
+    bool ok = false;
+
+    // this gives us the percentage without needing to calculate anything
+    QFile level(BATTERY_SYSFS_PATH()->arg(0) + QStringLiteral("capacity"));
+
+    if (level.open(QIODevice::ReadOnly))
+    {
+        int capacity = level.readAll().simplified().toInt(&ok);
+
+        if (ok)
+        {
+            return capacity;
+        }
+    }
+
+    QFile *remaining;
+    QFile *maximum;
+
+    QFile remainingCharge(BATTERY_SYSFS_PATH()->arg(0) + QStringLiteral("charge_now"));
+    QFile maximumCharge(BATTERY_SYSFS_PATH()->arg(0) + QStringLiteral("charge_full"));
+    // on some Linux systems different file are used for battery details
+    QFile remainingEnergy(BATTERY_SYSFS_PATH()->arg(0) + QStringLiteral("energy_now"));
+    QFile maximumEnergy(BATTERY_SYSFS_PATH()->arg(0) + QStringLiteral("energy_full"));
+
+    if (!remainingCharge.open(QIODevice::ReadOnly) || !maximumCharge.open(QIODevice::ReadOnly))
+    {
+        if (!remainingEnergy.open(QIODevice::ReadOnly) || !maximumEnergy.open(QIODevice::ReadOnly))
+        {
+            return -1;
+        }
+
+        remaining = &remainingEnergy;
+        maximum = &maximumEnergy;
+    }
+    else
+    {
+        remaining = &remainingCharge;
+        maximum = &maximumCharge;
+    }
+
+    int capacityRemaining = remaining->readAll().simplified().toInt(&ok);
+
+    if (!ok)
+    {
+        return -1;
+    }
+
+    int capacityMaximum = maximum->readAll().simplified().toInt(&ok);
+
+    if (!ok)
+    {
+        return -1;
+    }
+
+    return capacityRemaining * 100 / capacityMaximum;
 }
