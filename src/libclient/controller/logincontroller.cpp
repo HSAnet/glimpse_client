@@ -83,7 +83,7 @@ void LoginController::Private::setRegisterdDevice(bool registeredDevice)
 void LoginController::Private::updateController()
 {
     // Set the new url, we use the config address here at the moment
-    QString newUrl = QString("http://%1").arg(Client::instance()->settings()->config()->supervisorAddress());
+    QString newUrl = QString("https://%1").arg(Client::instance()->settings()->config()->supervisorAddress());
 
     if (requester.url() != newUrl)
     {

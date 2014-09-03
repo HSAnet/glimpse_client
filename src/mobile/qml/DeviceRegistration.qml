@@ -14,7 +14,7 @@ Page {
 
     WebRequester {
         id: requester
-        url: "http://%1".arg(client.settings.config.supervisorAddress)
+        url: "https://%1".arg(client.settings.config.supervisorAddress)
 
         request: RegisterDeviceRequest {
             id: request
