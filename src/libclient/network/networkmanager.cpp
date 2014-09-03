@@ -98,11 +98,11 @@ public:
 
     quint16 localPort;
 
-    QNetworkConfigurationManager ncm;
-
     RemoteHost keepaliveHost;
     QHostAddress keepaliveAddress;
     QDnsLookup keepaliveAddressLookup;
+
+    QNetworkInfo networkInfo;
 
     // Functions
     QAbstractSocket *createSocket(NetworkManager::SocketType socketType);
@@ -424,8 +424,6 @@ bool NetworkManager::init(Scheduler *scheduler, Settings *settings)
     d->settings = settings;
     d->responseChanged();
 
-    emit d->ncm.updateConfigurations();
-
     return true;
 }
 
@@ -453,51 +451,20 @@ bool NetworkManager::isRunning() const
 
 bool NetworkManager::onMobileConnection() const
 {
-#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
-    QList<QNetworkConfiguration> confList = d->ncm.allConfigurations(QNetworkConfiguration::Active);
+    QNetworkInfo::NetworkMode mode = d->networkInfo.currentNetworkMode();
 
-    foreach (QNetworkConfiguration conf, confList)
+    if (mode != QNetworkInfo::WlanMode && mode != QNetworkInfo::EthernetMode)
     {
-        QNetworkConfiguration::BearerType type = conf.bearerType();
-
-        if (type != QNetworkConfiguration::BearerEthernet && type != QNetworkConfiguration::BearerWLAN)
-        {
-            LOG_DEBUG(QString("Connection type: %1").arg(type));
-            return true;
-        }
+        LOG_DEBUG(QString("Connection type: %1").arg(mode));
+        return true;
     }
-
-#endif
 
     return false;
 }
 
-QList<QNetworkConfiguration::BearerType> NetworkManager::connectionType() const
+QNetworkInfo::NetworkMode NetworkManager::connectionMode() const
 {
-    QList<QNetworkConfiguration> confList = d->ncm.allConfigurations(QNetworkConfiguration::Active);
-    QList<QNetworkConfiguration::BearerType> typeList;
-    QStringList names;
-
-    foreach (const QNetworkConfiguration &conf, confList)
-    {
-        typeList.append(conf.bearerType());
-        names.append(conf.name());
-    }
-
-    if (!typeList.contains(QNetworkConfiguration::BearerWLAN))
-    {
-        QRegExp regExp("w(lan|ifi|lp)");
-        foreach (const QString &name, names)
-        {
-            if (name.contains(regExp))
-            {
-                    typeList.append(QNetworkConfiguration::BearerWLAN);
-                    break;
-            }
-        }
-    }
-
-    return typeList;
+    return d->networkInfo.currentNetworkMode();
 }
 
 QAbstractSocket *NetworkManager::connection(const QString &hostname, NetworkManager::SocketType socketType) const

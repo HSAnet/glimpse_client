@@ -1,7 +1,7 @@
 TEMPLATE = lib
 TARGET = client
 
-QT += network concurrent
+QT += network concurrent systeminfo
 
 CONFIG += hide_symbols
 

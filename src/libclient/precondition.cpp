@@ -70,14 +70,14 @@ bool Precondition::check()
 {
     NetworkManager nm;
     // Networking
-    QList<QNetworkConfiguration::BearerType> typeList = nm.connectionType();
+    QNetworkInfo::NetworkMode mode = nm.connectionMode();
 
-    if (!d->onWireless && typeList.contains(QNetworkConfiguration::BearerWLAN))
+    if (!d->onWireless && mode == QNetworkInfo::WlanMode)
     {
         return false;
     }
 
-    if (!d->onWire && typeList.contains(QNetworkConfiguration::BearerEthernet))
+    if (!d->onWire && mode == QNetworkInfo::EthernetMode)
     {
         return false;
     }
@@ -95,6 +95,7 @@ bool Precondition::check()
     }
 
     // Location TODO
+
 
 
     return true;
