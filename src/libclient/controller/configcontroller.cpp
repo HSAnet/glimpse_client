@@ -52,7 +52,7 @@ public slots:
 void ConfigController::Private::updateTimer()
 {
     // Set the new url
-    QString newUrl = QString("http://%1").arg(Client::instance()->settings()->config()->configAddress());
+    QString newUrl = QString("https://%1").arg(Client::instance()->settings()->config()->configAddress());
 
     if (requester.url() != newUrl)
     {
