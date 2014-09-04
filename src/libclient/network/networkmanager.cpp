@@ -24,6 +24,8 @@
 #include <QTimer>
 #include <QDebug>
 #include <QDnsLookup>
+#include <QNetworkConfiguration>
+#include <QNetworkConfigurationManager>
 
 LOGGER(NetworkManager);
 
@@ -102,6 +104,7 @@ public:
     QHostAddress keepaliveAddress;
     QDnsLookup keepaliveAddressLookup;
 
+    QNetworkConfigurationManager ncm;
     QNetworkInfo networkInfo;
 
     // Functions
@@ -424,6 +427,8 @@ bool NetworkManager::init(Scheduler *scheduler, Settings *settings)
     d->settings = settings;
     d->responseChanged();
 
+    emit d->ncm.updateConfigurations();
+
     return true;
 }
 
@@ -451,7 +456,7 @@ bool NetworkManager::isRunning() const
 
 bool NetworkManager::onMobileConnection() const
 {
-    QNetworkInfo::NetworkMode mode = d->networkInfo.currentNetworkMode();
+    QNetworkInfo::NetworkMode mode = connectionMode();
 
     if (mode != QNetworkInfo::WlanMode && mode != QNetworkInfo::EthernetMode)
     {
@@ -464,7 +469,31 @@ bool NetworkManager::onMobileConnection() const
 
 QNetworkInfo::NetworkMode NetworkManager::connectionMode() const
 {
-    return d->networkInfo.currentNetworkMode();
+    QNetworkInfo::NetworkMode mode = d->networkInfo.currentNetworkMode();
+
+    // QNetworkInfo does not check for the linux "Predictable Network Interface Names".
+    // The following code fixes this.
+    if (mode == QNetworkInfo::UnknownMode)
+    {
+        QList<QNetworkConfiguration> confList = d->ncm.allConfigurations(QNetworkConfiguration::Active);
+
+        foreach (const QNetworkConfiguration &conf, confList)
+        {
+            QString name = conf.name();
+
+            if (name.contains("enp"))
+            {
+                return QNetworkInfo::EthernetMode;
+            }
+
+            if (name.contains("wlp"))
+            {
+                return QNetworkInfo::WlanMode;
+            }
+        }
+    }
+
+    return mode;
 }
 
 QAbstractSocket *NetworkManager::connection(const QString &hostname, NetworkManager::SocketType socketType) const
