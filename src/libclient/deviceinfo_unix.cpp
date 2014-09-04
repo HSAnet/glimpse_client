@@ -1,5 +1,7 @@
 #include "deviceinfo.h"
 #include "log/logger.h"
+#include "client.h"
+#include "network/networkmanager.h"
 
 #include <QCryptographicHash>
 #include <QDir>
@@ -7,6 +9,7 @@
 #include <unistd.h>
 #include <QThread>
 #include <QNetworkConfigurationManager>
+#include <QNetworkInfo>
 
 LOGGER(DeviceInfo);
 
@@ -160,9 +163,9 @@ qreal DeviceInfo::cpuUsage()
     return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 }
 
-qint32 DeviceInfo::wifiSNR()
+qint32 DeviceInfo::signalStrength()
 {
-    return 0;
+    return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);
 }
 
 qint8 DeviceInfo::batteryLevel()

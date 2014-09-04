@@ -15,7 +15,7 @@ public:
     static qreal cpuUsage();
     static quint32 freeMemory();
     static quint32 freeDiskSpace();
-    static qint32 wifiSNR();
+    static qint32 signalStrength();
     static qint8 batteryLevel();
 
 protected:

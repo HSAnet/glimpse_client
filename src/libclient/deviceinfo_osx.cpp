@@ -1,10 +1,13 @@
 #include "deviceinfo.h"
 #include "log/logger.h"
+#include "client.h"
+#include "network/networkmanager.h"
 
 #include <QCryptographicHash>
 #include <QDir>
 #include <DiskArbitration/DADisk.h>
 #include <QBatteryInfo>
+#include <QNetworkInfo>
 
 LOGGER(DeviceInfo);
 
@@ -71,4 +74,9 @@ qreal DeviceInfo::cpuUsage()
 qint8 DeviceInfo::batteryLevel()
 {
     return QBatteryInfo().level();
+}
+
+qint32 DeviceInfo::signalStrength()
+{
+    return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);
 }

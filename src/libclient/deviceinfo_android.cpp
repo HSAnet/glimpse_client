@@ -1,5 +1,7 @@
 #include "deviceinfo.h"
 #include "log/logger.h"
+#include "client.h"
+#include "network/networkmanager.h"
 
 #include <QAndroidJniObject>
 #include <QCryptographicHash>
@@ -7,6 +9,7 @@
 #include <QNetworkConfigurationManager>
 #include <QStringList>
 #include <QThread>
+#include <QNetworkInfo>
 
 #define BATTERY_SYSFS_PATH "/sys/class/power_supply/battery/"
 
@@ -81,9 +84,9 @@ qreal DeviceInfo::cpuUsage()
     return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 }
 
-qint32 DeviceInfo::wifiSNR()
+qint32 DeviceInfo::signalStrength()
 {
-    return 0;
+    return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);
 }
 
 qint8 DeviceInfo::batteryLevel()
