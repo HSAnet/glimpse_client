@@ -9,8 +9,8 @@
 #include <unistd.h>
 #include <QThread>
 #include <QNetworkConfigurationManager>
-#include <QNetworkInfo>
-#include <QDeviceInfo>
+#include <qnetworkinfo.h>
+#include <qdeviceinfo.h>
 
 LOGGER(DeviceInfo);
 

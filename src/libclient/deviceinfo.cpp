@@ -7,9 +7,9 @@
 #include <QProcess>
 #include <QTextStream>
 #include <Windows.h>
-#include <QBatteryInfo>
-#include <QNetworkInfo>
-#include <QDeviceInfo>
+#include <qbatteryinfo.h>
+#include <qnetworkinfo.h>
+#include <qdeviceinfo.h>
 
 LOGGER(DeviceInfo);
 

@@ -9,8 +9,8 @@
 #include <QNetworkConfigurationManager>
 #include <QStringList>
 #include <QThread>
-#include <QNetworkInfo>
-#include <QDeviceInfo>
+#include <qnetworkinfo.h>
+#include <qdeviceinfo.h>
 
 #define BATTERY_SYSFS_PATH "/sys/class/power_supply/battery/"
 
