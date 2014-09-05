@@ -178,7 +178,8 @@ SOURCES +=  \
     network/responses/getscheduleresponse.cpp \
     network/responses/reportresponse.cpp \
     trafficbudgetmanager.cpp \
-    precondition.cpp
+    precondition.cpp \
+    network/requests/uploadrequest.cpp
 
 HEADERS += \
     export.h \
@@ -269,7 +270,8 @@ HEADERS += \
     network/responses/getscheduleresponse.h \
     network/responses/reportresponse.h \
     trafficbudgetmanager.h \
-    precondition.h
+    precondition.h \
+    network/requests/uploadrequest.h
 
 OTHER_FILES += \
     libclient.pri

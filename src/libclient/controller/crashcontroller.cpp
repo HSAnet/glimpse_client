@@ -1,7 +1,7 @@
 #include "crashcontroller.h"
 
 #include "../network/networkmanager.h"
-#include "../network/requests/request.h"
+#include "../network/requests/uploadrequest.h"
 #include "../settings.h"
 #include "../webrequester.h"
 #include "../storage/storagepaths.h"
@@ -10,40 +10,9 @@
 
 #include <QPointer>
 #include <QDir>
+#include <crashhandler.h>
 
 LOGGER(CrashController);
-
-class UploadRequest : public Request
-{
-    Q_OBJECT
-    Q_CLASSINFO("path", "/crashreports")
-
-public:
-    explicit UploadRequest(QObject *parent = 0)
-    : Request(parent)
-    {
-    }
-
-    // Request interface
-    QVariant toVariant() const
-    {
-        QVariantMap map;
-        QVariantList list;
-
-        foreach (QString report, m_reports)
-        {
-            list.append(report);
-        }
-
-        map.insert("crashreports", list);
-        map.insert("device_id", deviceId());
-
-        return map;
-    }
-
-protected:
-    QStringList m_reports;
-};
 
 class CrashController::Private : public QObject
 {
@@ -58,12 +27,13 @@ public:
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
 
-        //post.setPath(("/api/v1/crashreport/"));
-        //requester.setRequest(&post);
-        //requester.setResponse(&response);
+        request.setPath(("/api/v1/crashreport/"));
+        requester.setRequest(&request);
     }
 
     CrashController *q;
+
+    CrashHandler crashHandler;
 
     QPointer<NetworkManager> networkManager;
     QPointer<Settings> settings;
@@ -71,8 +41,7 @@ public:
     QStringList reportFiles;
 
     WebRequester requester;
-    UploadRequest post;
-    //ReportResponse response;
+    UploadRequest request;
 
 public slots:
     void updateResponse();
@@ -83,18 +52,26 @@ public slots:
 void CrashController::Private::updateResponse()
 {
     // Set the new url
-    QString newUrl = QString("http://%1").arg(Client::instance()->settings()->config()->reportAddress());
+    QString newUrl = QString("https://%1").arg(Client::instance()->settings()->config()->reportAddress());
 
     if (requester.url() != newUrl)
     {
-        LOG_INFO(QString("Report url set to %1").arg(newUrl));
+        LOG_INFO(QString("Crash url set to %1").arg(newUrl));
         requester.setUrl(newUrl);
     }
 }
 
 void CrashController::Private::onFinished()
 {
-    // TODO: cleanup reports
+    // remove from filesystem
+    foreach (const QString &fileName, reportFiles)
+    {
+        QFile file(StoragePaths().crashDumpDirectory().absoluteFilePath(fileName));
+        file.remove();
+    }
+
+    // clear list
+    reportFiles.clear();
 }
 
 void CrashController::Private::onError()
@@ -120,7 +97,25 @@ bool CrashController::hasCrashReports() const
 
 void CrashController::uploadReports()
 {
-    // TODO: upload crash reports
+    d->request.clearResources();
+
+    foreach (const QString &fileName, d->reportFiles)
+    {
+        QFile file(StoragePaths().crashDumpDirectory().absoluteFilePath(fileName));
+
+        if (!file.open(QIODevice::ReadOnly))
+        {
+            LOG_DEBUG(QString("Error opening %1: %2").arg(StoragePaths().crashDumpDirectory().absoluteFilePath(fileName)).arg(file.errorString()));
+            continue;
+        }
+
+        QByteArray data = file.readAll();
+        // compress data, remove the first four bytes (thich is the array length which does not belong there), convert to base64
+        d->request.addResource(qCompress(data).remove(0,4).toBase64());
+        file.close();
+    }
+
+    d->requester.start();
 }
 
 Controller::Status CrashController::status() const
@@ -135,6 +130,23 @@ QString CrashController::errorString() const
 
 bool CrashController::init(NetworkManager *networkManager, Settings *settings)
 {
+    QDir crashdumpDir = StoragePaths().crashDumpDirectory();
+
+    if (!crashdumpDir.exists())
+    {
+        if (!QDir::root().mkpath(crashdumpDir.absolutePath()))
+        {
+            LOG_ERROR(QString("Failed to create crashdump directory: %1").arg(crashdumpDir.absolutePath()));
+            return false;
+        }
+        else
+        {
+            LOG_INFO("Crashdump directory created");
+        }
+    }
+
+    d->crashHandler.init(crashdumpDir.absolutePath());
+
     d->networkManager = networkManager;
     d->settings = settings;
 
@@ -143,6 +155,8 @@ bool CrashController::init(NetworkManager *networkManager, Settings *settings)
     // fetch all crash report files
     d->reportFiles = StoragePaths().crashDumpDirectory().entryList(
             QStringList("*.dmp"), QDir::Files);
+
+    d->updateResponse();
 
     return true;
 }

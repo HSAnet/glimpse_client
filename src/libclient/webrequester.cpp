@@ -135,7 +135,11 @@ void WebRequester::Private::requestFinished()
             }
             else // empty data is okay if no network error occured (= 2xx response code)
             {
-                response->finished();
+                if (!response.isNull())
+                {
+                    response->finished();
+                }
+
                 setStatus(WebRequester::Finished);
             }
         }
@@ -412,7 +416,6 @@ void WebRequester::start()
         return;
     }
 
-    reply->ignoreSslErrors();
     connect(reply, SIGNAL(finished()), d, SLOT(requestFinished()));
 
     // Wait for timeout
