@@ -8,6 +8,7 @@
 #include <DiskArbitration/DADisk.h>
 #include <QBatteryInfo>
 #include <QNetworkInfo>
+#include <QDeviceInfo>
 
 LOGGER(DeviceInfo);
 
@@ -79,4 +80,16 @@ qint8 DeviceInfo::batteryLevel()
 qint32 DeviceInfo::signalStrength()
 {
     return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);
+}
+
+QVariantMap DeviceInfo::OSInfo()
+{
+    QVariantMap map;
+    QDeviceInfo devInfo;
+
+    map.insert("os", devInfo.operatingSystemName());
+    map.insert("os_version", devInfo.version(QDeviceInfo::Os));
+    map.insert("firmware_version", devInfo.version(QDeviceInfo::Firmware));
+
+    return map;
 }

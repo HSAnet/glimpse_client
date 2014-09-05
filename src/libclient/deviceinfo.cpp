@@ -9,6 +9,7 @@
 #include <Windows.h>
 #include <QBatteryInfo>
 #include <QNetworkInfo>
+#include <QDeviceInfo>
 
 LOGGER(DeviceInfo);
 
@@ -126,4 +127,16 @@ qint32 DeviceInfo::signalStrength()
 qint8 DeviceInfo::batteryLevel()
 {
     return QBatteryInfo().level();
+}
+
+QVariantMap DeviceInfo::OSInfo()
+{
+    QVariantMap map;
+    QDeviceInfo devInfo;
+
+    map.insert("os", devInfo.operatingSystemName());
+    map.insert("os_version", devInfo.version(QDeviceInfo::Os));
+    map.insert("firmware_version", devInfo.version(QDeviceInfo::Firmware));
+
+    return map;
 }

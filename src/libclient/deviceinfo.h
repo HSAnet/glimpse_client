@@ -2,6 +2,7 @@
 #define DEVICEINFO_H
 
 #include <QString>
+#include <QVariantMap>
 
 class DeviceInfo
 {
@@ -17,6 +18,7 @@ public:
     static quint32 freeDiskSpace();
     static qint32 signalStrength();
     static qint8 batteryLevel();
+    static QVariantMap OSInfo();
 
 protected:
     class Private;

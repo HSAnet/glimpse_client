@@ -10,6 +10,7 @@
 #include <QStringList>
 #include <QThread>
 #include <QNetworkInfo>
+#include <QDeviceInfo>
 
 #define BATTERY_SYSFS_PATH "/sys/class/power_supply/battery/"
 
@@ -146,4 +147,16 @@ qint8 DeviceInfo::batteryLevel()
     }
 
     return capacityRemaining * 100 / capacityMaximum;
+}
+
+QVariantMap DeviceInfo::OSInfo()
+{
+    QVariantMap map;
+    QDeviceInfo devInfo;
+
+    map.insert("os", devInfo.operatingSystemName());
+    map.insert("os_version", devInfo.version(QDeviceInfo::Os));
+    map.insert("firmware_version", devInfo.version(QDeviceInfo::Firmware));
+
+    return map;
 }
