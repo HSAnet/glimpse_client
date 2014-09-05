@@ -15,7 +15,21 @@ linux {
     INSTALLS += service
 }
 
-osx:LIBS += -framework CoreFoundation -framework DiskArbitration
+osx {
+    LIBS += -framework SystemConfiguration \
+            -framework Foundation \
+            -framework AppKit \
+            -framework IOKit  \
+            -framework QTKit \
+            -framework CoreWLAN \
+            -framework CoreLocation \
+            -framework CoreFoundation \
+            -framework ScreenSaver \
+            -framework IOBluetooth \
+            -framework CoreServices \
+            -framework DiskArbitration \
+            -framework ApplicationServices
+}
 
 unix:SOURCES += consoletools_unix.cpp
 win32:SOURCES += consoletools_win.cpp

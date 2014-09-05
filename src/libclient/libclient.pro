@@ -1,7 +1,7 @@
 TEMPLATE = lib
 TARGET = client
 
-QT += network concurrent systeminfo
+QT += network concurrent
 
 CONFIG += hide_symbols
 
@@ -29,6 +29,7 @@ include(../../3rdparty/miniupnpc.pri)
 include(../../3rdparty/breakpad.pri)
 include(../../3rdparty/winpcap.pri)
 include(../../3rdparty/qt-google-analytics/qt-google-analytics.pri)
+include(../../3rdparty/qtsystems.pri)
 
 android {
     QT += androidextras

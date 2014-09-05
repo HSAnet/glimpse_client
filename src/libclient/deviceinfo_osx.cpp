@@ -6,9 +6,9 @@
 #include <QCryptographicHash>
 #include <QDir>
 #include <DiskArbitration/DADisk.h>
-#include <QBatteryInfo>
-#include <QNetworkInfo>
-#include <QDeviceInfo>
+#include <qbatteryinfo.h>
+#include <qnetworkinfo.h>
+#include <qdeviceinfo.h>
 
 LOGGER(DeviceInfo);
 

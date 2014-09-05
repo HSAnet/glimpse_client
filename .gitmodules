@@ -7,3 +7,6 @@
 [submodule "3rdparty/qt-google-analytics"]
 	path = 3rdparty/qt-google-analytics
 	url = git@github.com:HSAnet/qt-google-analytics.git
+[submodule "3rdparty/qtsystems"]
+	path = 3rdparty/qtsystems
+	url = https://gitorious.org/qt/qtsystems.git

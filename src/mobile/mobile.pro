@@ -51,7 +51,20 @@ win32 {
 
 osx {
     QT += macextras
-    LIBS += -framework AppKit -framework CoreFoundation -framework DiskArbitration
+
+    LIBS += -framework SystemConfiguration \
+            -framework Foundation \
+            -framework AppKit \
+            -framework IOKit  \
+            -framework QTKit \
+            -framework CoreWLAN \
+            -framework CoreLocation \
+            -framework CoreFoundation \
+            -framework ScreenSaver \
+            -framework IOBluetooth \
+            -framework CoreServices \
+            -framework DiskArbitration \
+            -framework ApplicationServices
 }
 
 !android:linux {

@@ -4,7 +4,7 @@
 #include "../task/task.h"
 
 #include <QAbstractSocket>
-#include <QNetworkInfo>
+#include <qnetworkinfo.h>
 
 class Scheduler;
 class Settings;
