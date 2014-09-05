@@ -20,6 +20,7 @@ TestDefinition::TestDefinition(const quint32 &id, const QString &name, const Tim
     d->name = name;
     d->timing = timing;
     d->measurementDefinition = measurementDefinition;
+    d->precondition = precondition;
 }
 
 bool TestDefinition::isNull() const
