@@ -364,6 +364,11 @@ bool Client::init()
         d->taskController.init(&d->networkManager, &d->scheduler, &d->settings);
     }
 
+    if (d->crashController.hasCrashReports())
+    {
+        d->crashController.uploadReports();
+    }
+
     // add on demand tasks
     TestDefinitionList tests;
     TimingPtr timing(new OnDemandTiming());

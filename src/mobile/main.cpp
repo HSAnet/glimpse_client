@@ -30,11 +30,6 @@
 #include "desktopstatusbarhelper.h"
 #endif // Q_OS_ANDROID
 
-#define HAVE_BREAKPAD // We always have breakpad at the moment
-#ifdef HAVE_BREAKPAD
-#include "crashhandler.h"
-#endif
-
 LOGGER(main)
 
 void loadFonts(const QString &path)
@@ -136,25 +131,6 @@ int main(int argc, char *argv[])
     Logger::addAppender(new FileLogger);
 
     LOG_INFO(QString("Glimpse version %1").arg(Client::version()));
-
-#ifdef HAVE_BREAKPAD
-    QDir crashdumpDir = StoragePaths().crashDumpDirectory();
-
-    if (!crashdumpDir.exists())
-    {
-        if (!QDir::root().mkpath(crashdumpDir.absolutePath()))
-        {
-            LOG_ERROR(QString("Failed to create crashdump directory: %1").arg(crashdumpDir.absolutePath()));
-        }
-        else
-        {
-            LOG_INFO("Crashdump directory created");
-        }
-    }
-
-    CrashHandler crashHandler;
-    crashHandler.init(crashdumpDir.absolutePath());
-#endif // HAVE_BREAKPAD
 
     QmlModule::registerTypes();
 
