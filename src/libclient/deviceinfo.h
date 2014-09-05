@@ -19,6 +19,7 @@ public:
     static qint32 signalStrength();
     static qint8 batteryLevel();
     static QVariantMap OSInfo();
+    static QVariantMap HWInfo();
 
 protected:
     class Private;

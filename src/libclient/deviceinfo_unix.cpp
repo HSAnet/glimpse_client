@@ -239,3 +239,15 @@ QVariantMap DeviceInfo::OSInfo()
 
     return map;
 }
+
+QVariantMap DeviceInfo::HWInfo()
+{
+    QVariantMap map;
+    QDeviceInfo devInfo;
+
+    map.insert("board_name", devInfo.boardName());
+    map.insert("manufacturer", devInfo.manufacturer());
+    map.insert("model", devInfo.model());
+
+    return map;
+}
