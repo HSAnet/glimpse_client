@@ -1,7 +1,8 @@
 TEMPLATE = subdirs
 
-SUBDIRS += miniupnp.pro \
-           qtsystems.pro
+SUBDIRS += miniupnp.pro
+
+!win32:SUBDIRS += qtsystems.pro
 
 OTHER_FILES += miniupnpc.pri \
                breakpad.pri \
