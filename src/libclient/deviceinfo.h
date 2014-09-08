@@ -20,6 +20,7 @@ public:
     static qint8 batteryLevel();
     static QVariantMap OSInfo();
     static QVariantMap HWInfo();
+    static qlonglong availableDiskSpace();
 
 protected:
     class Private;

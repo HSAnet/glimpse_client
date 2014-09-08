@@ -11,6 +11,7 @@
 #include <QNetworkConfigurationManager>
 #include <qnetworkinfo.h>
 #include <qdeviceinfo.h>
+#include <qstorageinfo.h>
 
 LOGGER(DeviceInfo);
 
@@ -250,4 +251,28 @@ QVariantMap DeviceInfo::HWInfo()
     map.insert("model", devInfo.model());
 
     return map;
+}
+
+qlonglong DeviceInfo::availableDiskSpace()
+{
+    QStorageInfo info;
+    qlonglong diskSpace = 0;
+    /*
+     * The method allLogicalDrives() lists the device's mount points.
+     * Some might appear twice (e.g. "/"), others not at all (e.g. "/boot").
+     * The resulting disk space may therefore be slightly inaccurate.
+     */
+    QStringList drives = info.allLogicalDrives();
+
+    drives.removeDuplicates();
+
+    foreach (const QString &drive, drives)
+    {
+        if (info.driveType(drive) == QStorageInfo::InternalDrive)
+        {
+            diskSpace += info.availableDiskSpace(drive);
+        }
+    }
+
+    return diskSpace;
 }

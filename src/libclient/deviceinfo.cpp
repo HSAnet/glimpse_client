@@ -10,6 +10,7 @@
 #include <qbatteryinfo.h>
 #include <qnetworkinfo.h>
 #include <qdeviceinfo.h>
+#include <qstorageinfo.h>
 
 LOGGER(DeviceInfo);
 
@@ -151,4 +152,23 @@ QVariantMap DeviceInfo::HWInfo()
     map.insert("model", devInfo.model());
 
     return map;
+}
+
+qlonglong DeviceInfo::availableDiskSpace()
+{
+    QStorageInfo info;
+    qlonglong diskSpace = 0;
+    QStringList drives = info.allLogicalDrives();
+
+    drives.removeDuplicates();
+
+    foreach (const QString &drive, drives)
+    {
+        if (info.driveType(drive) == QStorageInfo::InternalDrive)
+        {
+            diskSpace += info.availableDiskSpace(drive);
+        }
+    }
+
+    return diskSpace;
 }
