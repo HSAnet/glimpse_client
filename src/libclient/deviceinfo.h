@@ -19,8 +19,12 @@ public:
     static quint32 freeDiskSpace();
     static qint32 signalStrength();
     static qint8 batteryLevel();
-    static QVariantMap OSInfo();
-    static QVariantMap HWInfo();
+    static QString OSName();
+    static QString OSVersion();
+    static QString firmwareVersion();
+    static QString board();
+    static QString manufacturer();
+    static QString model();
     static qlonglong availableDiskSpace();
 #else
     qreal cpuUsage() const;

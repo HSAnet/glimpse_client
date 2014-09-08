@@ -83,28 +83,34 @@ qint32 DeviceInfo::signalStrength()
     return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);
 }
 
-QVariantMap DeviceInfo::OSInfo()
+QString DeviceInfo::OSName()
 {
-    QVariantMap map;
-    QDeviceInfo devInfo;
-
-    map.insert("os", devInfo.operatingSystemName());
-    map.insert("os_version", devInfo.version(QDeviceInfo::Os));
-    map.insert("firmware_version", devInfo.version(QDeviceInfo::Firmware));
-
-    return map;
+    return QDeviceInfo().operatingSystemName();
 }
 
-QVariantMap DeviceInfo::HWInfo()
+QString DeviceInfo::OSVersion()
 {
-    QVariantMap map;
-    QDeviceInfo devInfo;
+    return QDeviceInfo().version(QDeviceInfo::Os);
+}
 
-    map.insert("board_name", devInfo.boardName());
-    map.insert("manufacturer", devInfo.manufacturer());
-    map.insert("model", devInfo.model());
+QString DeviceInfo::firmwareVersion()
+{
+    return QDeviceInfo().version(QDeviceInfo::Firmware);
+}
 
-    return map;
+QString DeviceInfo::board()
+{
+    return QDeviceInfo().boardName();
+}
+
+QString DeviceInfo::manufacturer()
+{
+    return DeviceInfo().manufacturer();
+}
+
+QString DeviceInfo::model()
+{
+    return DeviceInfo().model();
 }
 
 qlonglong DeviceInfo::availableDiskSpace()
