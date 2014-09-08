@@ -292,7 +292,12 @@ Rectangle {
             bottom: parent.bottom
         }
 
-        property variant analyticsTitle: currentItem.analyticsTitle
+        property variant analyticsTitle: {
+            if (currentItem)
+                return currentItem.analyticsTitle
+            else
+                return ""
+        }
 
         onAnalyticsTitleChanged: {
             tracker.sendAppView(analyticsTitle);
