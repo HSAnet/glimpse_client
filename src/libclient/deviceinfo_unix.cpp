@@ -132,7 +132,7 @@ QString DeviceInfo::deviceId() const
     return QString::fromLatin1(hash.result().toHex());
 }
 
-qreal DeviceInfo::cpuUsage()
+qreal DeviceInfo::cpuUsage() const
 {
     QFile file("/proc/stat");
 
@@ -165,12 +165,12 @@ qreal DeviceInfo::cpuUsage()
     return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 }
 
-qint32 DeviceInfo::signalStrength()
+qint32 DeviceInfo::signalStrength() const
 {
     return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);
 }
 
-qint8 DeviceInfo::batteryLevel()
+qint8 DeviceInfo::batteryLevel() const
 {
     bool ok = false;
 
@@ -229,37 +229,37 @@ qint8 DeviceInfo::batteryLevel()
     return capacityRemaining * 100 / capacityMaximum;
 }
 
-QString DeviceInfo::OSName()
+QString DeviceInfo::OSName() const
 {
     return QDeviceInfo().operatingSystemName();
 }
 
-QString DeviceInfo::OSVersion()
+QString DeviceInfo::OSVersion() const
 {
     return QDeviceInfo().version(QDeviceInfo::Os);
 }
 
-QString DeviceInfo::firmwareVersion()
+QString DeviceInfo::firmwareVersion() const
 {
     return QDeviceInfo().version(QDeviceInfo::Firmware);
 }
 
-QString DeviceInfo::board()
+QString DeviceInfo::board() const
 {
     return QDeviceInfo().boardName();
 }
 
-QString DeviceInfo::manufacturer()
+QString DeviceInfo::manufacturer() const
 {
     return DeviceInfo().manufacturer();
 }
 
-QString DeviceInfo::model()
+QString DeviceInfo::model() const
 {
     return DeviceInfo().model();
 }
 
-qlonglong DeviceInfo::availableDiskSpace()
+qlonglong DeviceInfo::availableDiskSpace() const
 {
     QStorageInfo info;
     qlonglong diskSpace = 0;

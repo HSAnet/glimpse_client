@@ -12,21 +12,6 @@ public:
 
     /// @returns A sha-224 hash or an empty string on error
     QString deviceId() const;
-
-#if !defined(Q_OS_ANDROID)
-    static qreal cpuUsage();
-    static quint32 freeMemory();
-    static quint32 freeDiskSpace();
-    static qint32 signalStrength();
-    static qint8 batteryLevel();
-    static QString OSName();
-    static QString OSVersion();
-    static QString firmwareVersion();
-    static QString board();
-    static QString manufacturer();
-    static QString model();
-    static qlonglong availableDiskSpace();
-#else
     qreal cpuUsage() const;
     quint32 freeMemory() const;
     quint32 freeDiskSpace() const;
@@ -39,7 +24,6 @@ public:
     QString manufacturer() const;
     QString model() const;
     qlonglong availableDiskSpace() const;
-#endif
 
 protected:
     class Private;
