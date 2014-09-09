@@ -1,6 +1,6 @@
 win32 {
     QT += systeminfo
-} else {
+} else: !android {
     INCLUDEPATH += $$PWD/qtsystems_fixes \
                    $$PWD/qtsystems_fixes/QtSystemInfo
 

@@ -4,7 +4,27 @@
 #include "../task/task.h"
 
 #include <QAbstractSocket>
+#if defined(Q_OS_ANDROID)
+// mimick QNetworkInfo
+namespace QNetworkInfo
+{
+    enum NetworkMode
+    {
+        UnknownMode,
+        GsmMode,
+        CdmaMode,
+        WcdmaMode,
+        WlanMode,
+        EthernetMode,
+        BluetoothMode,
+        WimaxMode,
+        LteMode,
+        TdscdmaMode
+    };
+}
+#else
 #include <qnetworkinfo.h>
+#endif
 
 class Scheduler;
 class Settings;
