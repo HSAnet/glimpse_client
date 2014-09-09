@@ -10,7 +10,7 @@
 #include "qmlmodule.h"
 #include "settings.h"
 
-#include "qtquick2applicationviewer.h"
+#include <QQmlApplicationEngine>
 
 #include <QGuiApplication>
 #include <QQmlEngine>
@@ -134,17 +134,14 @@ int main(int argc, char *argv[])
 
     QmlModule::registerTypes();
 
-    QtQuick2ApplicationViewer *view = new QtQuick2ApplicationViewer;
-    QObject::connect(view, SIGNAL(closing(QQuickCloseEvent *)), &app, SLOT(quit()));
-
     NetworkAccessManagerFactory networkAccessManagerFactory;
 
-    QQmlEngine *engine = view->engine();
-    engine->setNetworkAccessManagerFactory(&networkAccessManagerFactory);
-    QmlModule::initializeEngine(engine);
+    QQmlApplicationEngine *viewer = new QQmlApplicationEngine;
+    viewer->setNetworkAccessManagerFactory(&networkAccessManagerFactory);
+    QmlModule::initializeEngine(viewer);
 
     // Allow QFileSelector to be automatically applied on qml scripting
-    QQmlFileSelector *selector = new QQmlFileSelector(engine);
+    QQmlFileSelector *selector = new QQmlFileSelector(viewer);
 
 #if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS)
     QFileSelector desktopSelector;
@@ -154,7 +151,7 @@ int main(int argc, char *argv[])
 
     Client *client = Client::instance();
 
-    QQmlContext *rootContext = view->rootContext();
+    QQmlContext *rootContext = viewer->rootContext();
     rootContext->setContextProperty("client", client);
     rootContext->setContextProperty("logModel", &loggerModel);
 #ifdef Q_OS_ANDROID
@@ -162,21 +159,18 @@ int main(int argc, char *argv[])
 #elif defined(Q_OS_IOS)
     // TODO: iOS Code
 #else
-    rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(view));
+//    rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(&viewer));
 #endif // Q_OS_ANDROID
 
-#ifdef Q_OS_IOS
-    view->addImportPath(QStringLiteral("imports/qml"));
-#endif
-
+    /*
 #ifdef Q_OS_ANDROID
     loadFonts(QString("assets:/") + view->adjustPath(QStringLiteral("qml/fonts")));
 #else
     loadFonts(view->adjustPath(QStringLiteral("qml/fonts")));
 #endif
+    */
 
-    view->setMainQmlFile(QStringLiteral("qml/main.qml"));
-    view->showExpanded();
+    viewer->load(QUrl("qrc:/qml/main.qml"));
 
     int returnCode = app.exec();
 
@@ -187,7 +181,7 @@ int main(int argc, char *argv[])
 
     // Cleanly shutdown
     delete selector;
-    delete view;
+    delete viewer;
     Client::instance()->deleteLater();
     QTimer::singleShot(1, &app, SLOT(quit()));
     app.exec();

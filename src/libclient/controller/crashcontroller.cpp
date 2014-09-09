@@ -10,7 +10,10 @@
 
 #include <QPointer>
 #include <QDir>
+
+#ifdef HAVE_BREAKPAD
 #include <crashhandler.h>
+#endif // HAVE_BREAKPAD
 
 LOGGER(CrashController);
 
@@ -33,7 +36,9 @@ public:
 
     CrashController *q;
 
+#ifdef HAVE_BREAKPAD
     CrashHandler crashHandler;
+#endif // HAVE_BREAKPAD
 
     QPointer<NetworkManager> networkManager;
     QPointer<Settings> settings;
@@ -145,7 +150,9 @@ bool CrashController::init(NetworkManager *networkManager, Settings *settings)
         }
     }
 
+#ifdef HAVE_BREAKPAD
     d->crashHandler.init(crashdumpDir.absolutePath());
+#endif // HAVE_BREAKPAD
 
     d->networkManager = networkManager;
     d->settings = settings;

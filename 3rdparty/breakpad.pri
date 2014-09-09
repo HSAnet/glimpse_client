@@ -56,7 +56,7 @@ android {
     SOURCES += $$BREAKPAD_PATH/src/common/convert_UTF.c
 }
 
-mac {
+osx {
     CONFIG += breakpad-builtin
 
     ios {
