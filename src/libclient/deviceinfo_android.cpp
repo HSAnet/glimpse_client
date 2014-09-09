@@ -198,7 +198,7 @@ QString DeviceInfo::model() const
 
 qlonglong DeviceInfo::availableDiskSpace() const
 {
-    qlonglong diskSpace = d->deviceInfo.callObjectMethod<jlong>("getAvailableDiskSpace").toString().toLongLong();
+    qlonglong diskSpace = d->deviceInfo.callMethod<jlong>("getAvailableDiskSpace");
     LOG_INFO(QString("diskSpace: %1").arg(diskSpace));
     return diskSpace;
 }

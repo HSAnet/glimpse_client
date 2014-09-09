@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import android.os.Build;
 import android.os.StatFs;
+import android.os.Environment;
 import android.content.ContentResolver;
 import android.provider.Settings.Secure;
 import java.io.*;
@@ -86,7 +87,7 @@ public class DeviceInfo {
         long diskSpace = info.getAvailableBytes();
 
         // root dir
-        info.restart(Environment.getRootDirectory().getPath());
+        info.restat(Environment.getRootDirectory().getPath());
         diskSpace += info.getAvailableBytes();
 
         return diskSpace;
