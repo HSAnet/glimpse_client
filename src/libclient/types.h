@@ -45,6 +45,31 @@ namespace ping
     className::staticMetaObject.indexOfEnumerator("enumName")).keyToValue(value))
 
 
+template<bool>
+struct ToVariantImpl;
+
+template <>
+struct ToVariantImpl<0> {
+    template <typename T>
+    static T toType(const QVariant& value) {
+        return qvariant_cast<T>(value);
+    }
+};
+
+template <>
+struct ToVariantImpl<1> {
+    template <typename T>
+    static T toType(const QVariant& value) {
+        return T::fromVariant(value);
+    }
+};
+
+template <typename T>
+T variantToType(const QVariant& value)
+{
+    return ToVariantImpl<QTypeInfo<T>::isComplex>::template toType<T>(value);
+}
+
 inline QString pingTypeToString(const ping::PingType &type)
 {
     if (type == ping::System)
@@ -135,10 +160,36 @@ QList<T> listFromVariant(const QVariant &variant)
 
     foreach (const QVariant &entry, variant.toList())
     {
-        lst.append(T::fromVariant(entry));
+        lst.append(variantToType<T>(entry));
     }
 
     return lst;
+}
+
+template <typename T>
+QVariantList setToVariant(const QSet<T> &set)
+{
+    QVariantList lst;
+
+    foreach (T entry, set)
+    {
+        lst.append(QVariant::fromValue(entry));
+    }
+
+    return lst;
+}
+
+template <typename T>
+QSet<T> setFromVariant(const QVariant &variant)
+{
+    QSet<T> set;
+
+    foreach (const QVariant &entry, variant.toList())
+    {
+        set.insert(variantToType<T>(entry));
+    }
+
+    return set;
 }
 
 /// Converts a QUuid to a QString. It removes the braces
