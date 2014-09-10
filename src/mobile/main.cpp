@@ -136,12 +136,12 @@ int main(int argc, char *argv[])
 
     NetworkAccessManagerFactory networkAccessManagerFactory;
 
-    QQmlApplicationEngine *viewer = new QQmlApplicationEngine;
-    viewer->setNetworkAccessManagerFactory(&networkAccessManagerFactory);
-    QmlModule::initializeEngine(viewer);
+    QQmlApplicationEngine *engine = new QQmlApplicationEngine;
+    engine->setNetworkAccessManagerFactory(&networkAccessManagerFactory);
+    QmlModule::initializeEngine(engine);
 
     // Allow QFileSelector to be automatically applied on qml scripting
-    QQmlFileSelector *selector = new QQmlFileSelector(viewer);
+    QQmlFileSelector *selector = new QQmlFileSelector(engine);
 
 #if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS)
     QFileSelector desktopSelector;
@@ -151,15 +151,15 @@ int main(int argc, char *argv[])
 
     Client *client = Client::instance();
 
-    QQmlContext *rootContext = viewer->rootContext();
+    QQmlContext *rootContext = engine->rootContext();
     rootContext->setContextProperty("client", client);
     rootContext->setContextProperty("logModel", &loggerModel);
 #ifdef Q_OS_ANDROID
-    rootContext->setContextProperty("statusBar", new StatusBarHelper(viewer));
+    rootContext->setContextProperty("statusBar", new StatusBarHelper(engine));
 #elif defined(Q_OS_IOS)
     // TODO: iOS Code
 #else
-    rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(viewer));
+    rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(engine));
 #endif // Q_OS_ANDROID
 
     /*
@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 #endif
     */
 
-    viewer->load(QUrl("qrc:/qml/main.qml"));
+    engine->load(QUrl("qrc:/qml/main.qml"));
 
     int returnCode = app.exec();
 
@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
 
     // Cleanly shutdown
     delete selector;
-    delete viewer;
+    delete engine;
     Client::instance()->deleteLater();
     QTimer::singleShot(1, &app, SLOT(quit()));
     app.exec();
