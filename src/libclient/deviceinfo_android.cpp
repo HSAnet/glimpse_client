@@ -16,10 +16,12 @@ class DeviceInfo::Private
 public:
     Private()
     : deviceInfo("de/hsaugsburg/informatik/mplane/DeviceInfo")
+    , netInfo("de/hsaugsburg/informatik/mplane/NetInfo")
     {
     }
 
     QAndroidJniObject deviceInfo;
+    QAndroidJniObject netInfo;
 };
 
 DeviceInfo::DeviceInfo()
@@ -151,7 +153,7 @@ quint32 DeviceInfo::freeDiskSpace() const
 
 qint32 DeviceInfo::signalStrength() const
 {
-    return 0;
+    return d->netInfo.callMethod<jint>("getSignalStrength");
 }
 
 QString DeviceInfo::OSName() const
