@@ -36,12 +36,24 @@ class CLIENT_API CalendarTiming : public Timing
 {
 public:
     CalendarTiming();
+    CalendarTiming(const QDateTime &start, const QDateTime &end, const QList<quint8> &months,
+                   const QList<quint8> &daysOfWeek, const QList<quint8> &daysOfMonth,
+                   const QList<quint8> &hours, const QList<quint8> &minutes,
+                   const QList<quint8> &seconds);
     ~CalendarTiming();
 
     // Storage
     static TimingPtr fromVariant(const QVariant &variant);
 
     // Getters
+    QDateTime start() const;
+    QDateTime end() const;
+    QList<quint8> months() const;
+    QList<quint8> daysOfWeek() const;
+    QList<quint8> daysOfMonth() const;
+    QList<quint8> hours() const;
+    QList<quint8> minutes() const;
+    QList<quint8> seconds() const;
     TimingRandomness randomness() const;
 
     // Timing interface
