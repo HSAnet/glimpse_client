@@ -132,6 +132,11 @@ QString DeviceInfo::deviceId() const
     return QString::fromLatin1(hash.result().toHex());
 }
 
+qint32 DeviceInfo::signalStrength() const
+{
+    return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);
+}
+
 qreal DeviceInfo::cpuUsage() const
 {
     QFile file("/proc/stat");
