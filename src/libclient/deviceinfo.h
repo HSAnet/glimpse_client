@@ -14,7 +14,6 @@ public:
     QString deviceId() const;
     qreal cpuUsage() const;
     quint32 freeMemory() const;
-    quint32 freeDiskSpace() const;
     qint32 signalStrength() const;
     qint8 batteryLevel() const;
     QString OSName() const;
