@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 #endif
     */
 
-    engine->load(QUrl("qrc:/qml/main.qml"));
+    engine->load(QUrl("qrc:/qml/MainWindow.qml"));
 
     int returnCode = app.exec();
 
