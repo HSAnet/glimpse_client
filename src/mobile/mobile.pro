@@ -17,9 +17,21 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 ANDROID_PACKAGE = "net.measureit.glimpse"
 ANDROID_APP_NAME = "glimpse"
 
-# Only deploy qt files in resources
-system(sh $$PWD/qmlresources.sh)
-RESOURCES += qmlresources.qrc
+# Fetch files for qmlresources.qrc
+INPUT_FILES = $$files(qml/*, true)
+for(file, INPUT_FILES) {
+    OUTPUT_FILES += "    <file>$$file</file>"
+}
+
+# Prepare output lines for qmlresources.qrc
+LINES = "<RCC>" \
+        "  <qresource prefix=\"/\">" \
+        $$OUTPUT_FILES \
+        "  </qresource>" \
+        "</RCC>"
+
+# Write the qmlresources.qrc file
+write_file("qmlresources.qrc", LINES)
 
 android {
     QT += androidextras
@@ -59,6 +71,7 @@ SOURCES += \
     main.cpp
 
 RESOURCES += \
+    qmlresources.qrc \
     resources/resource.qrc
 
 # Dump symbols
