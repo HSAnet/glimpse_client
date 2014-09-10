@@ -133,7 +133,7 @@ qint8 DeviceInfo::batteryLevel() const
 
     int capacityMaximum = maximum->readAll().simplified().toInt(&ok);
 
-    if (!ok)
+    if (!ok || !capacityMaximum)
     {
         return -1;
     }
