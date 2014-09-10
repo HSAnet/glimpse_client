@@ -1,9 +1,15 @@
 #include "deviceinfo.h"
 #include "log/logger.h"
+#include "client.h"
+#include "network/networkmanager.h"
 
 #include <QCryptographicHash>
 #include <QDir>
 #include <DiskArbitration/DADisk.h>
+#include <qbatteryinfo.h>
+#include <qnetworkinfo.h>
+#include <qdeviceinfo.h>
+#include <qstorageinfo.h>
 
 LOGGER(DeviceInfo);
 
@@ -67,7 +73,61 @@ qreal DeviceInfo::cpuUsage() const
     return -1.0;
 }
 
-quint8 DeviceInfo::batteryLevel()
+qint8 DeviceInfo::batteryLevel() const
 {
-    return 100;
+    return QBatteryInfo().level();
+}
+
+qint32 DeviceInfo::signalStrength() const
+{
+    return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);
+}
+
+QString DeviceInfo::OSName() const
+{
+    return QDeviceInfo().operatingSystemName();
+}
+
+QString DeviceInfo::OSVersion() const
+{
+    return QDeviceInfo().version(QDeviceInfo::Os);
+}
+
+QString DeviceInfo::firmwareVersion() const
+{
+    return QDeviceInfo().version(QDeviceInfo::Firmware);
+}
+
+QString DeviceInfo::board() const
+{
+    return QDeviceInfo().boardName();
+}
+
+QString DeviceInfo::manufacturer() const
+{
+    return DeviceInfo().manufacturer();
+}
+
+QString DeviceInfo::model() const
+{
+    return DeviceInfo().model();
+}
+
+qlonglong DeviceInfo::availableDiskSpace() const
+{
+    QStorageInfo info;
+    qlonglong diskSpace = 0;
+    QStringList drives = info.allLogicalDrives();
+
+    drives.removeDuplicates();
+
+    foreach (const QString &drive, drives)
+    {
+        if (info.driveType(drive) == QStorageInfo::InternalDrive)
+        {
+            diskSpace += info.availableDiskSpace(drive);
+        }
+    }
+
+    return diskSpace;
 }

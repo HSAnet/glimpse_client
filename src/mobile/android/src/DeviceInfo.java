@@ -3,6 +3,8 @@ package de.hsaugsburg.informatik.mplane;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import android.os.Build;
+import android.os.StatFs;
+import android.os.Environment;
 import android.content.ContentResolver;
 import android.provider.Settings.Secure;
 import java.io.*;
@@ -53,5 +55,41 @@ public class DeviceInfo {
         }
 
         return 0;
+    }
+
+    public String getOSName() {
+        return "Android";
+    }
+
+    public String getOSVersion() {
+        return Build.VERSION.RELEASE;
+    }
+
+    public String getFirmwareVersion() {
+        return Build.VERSION.RELEASE;
+    }
+
+    public String getBoard() {
+        return Build.BOARD;
+    }
+
+    public String getManufacturer() {
+        return Build.MANUFACTURER;
+    }
+
+    public String getModel() {
+        return Build.MODEL;
+    }
+
+    public long getAvailableDiskSpace() {
+        // data dir
+        StatFs info = new StatFs(Environment.getDataDirectory().getPath());
+        long diskSpace = info.getAvailableBytes();
+
+        // root dir
+        info.restat(Environment.getRootDirectory().getPath());
+        diskSpace += info.getAvailableBytes();
+
+        return diskSpace;
     }
 }

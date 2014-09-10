@@ -1,5 +1,7 @@
 #include "deviceinfo.h"
 #include "log/logger.h"
+#include "client.h"
+#include "network/networkmanager.h"
 
 #include <QCryptographicHash>
 #include <QDir>
@@ -7,8 +9,13 @@
 #include <unistd.h>
 #include <QThread>
 #include <QNetworkConfigurationManager>
+#include <qnetworkinfo.h>
+#include <qdeviceinfo.h>
+#include <qstorageinfo.h>
 
 LOGGER(DeviceInfo);
+
+Q_GLOBAL_STATIC_WITH_ARGS(const QString, BATTERY_SYSFS_PATH, (QLatin1String("/sys/class/power_supply/BAT%1/")))
 
 namespace
 {
@@ -158,12 +165,120 @@ qreal DeviceInfo::cpuUsage() const
     return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 }
 
-qint32 DeviceInfo::wifiSNR() const
+qint32 DeviceInfo::signalStrength() const
 {
-    return 0;
+    return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);
 }
 
-quint8 DeviceInfo::batteryLevel()
+qint8 DeviceInfo::batteryLevel() const
 {
-    return 100;
+    bool ok = false;
+
+    // this gives us the percentage without needing to calculate anything
+    QFile level(BATTERY_SYSFS_PATH()->arg(0) + QStringLiteral("capacity"));
+
+    if (level.open(QIODevice::ReadOnly))
+    {
+        int capacity = level.readAll().simplified().toInt(&ok);
+
+        if (ok)
+        {
+            return capacity;
+        }
+    }
+
+    QFile *remaining;
+    QFile *maximum;
+
+    QFile remainingCharge(BATTERY_SYSFS_PATH()->arg(0) + QStringLiteral("charge_now"));
+    QFile maximumCharge(BATTERY_SYSFS_PATH()->arg(0) + QStringLiteral("charge_full"));
+    // on some Linux systems different file are used for battery details
+    QFile remainingEnergy(BATTERY_SYSFS_PATH()->arg(0) + QStringLiteral("energy_now"));
+    QFile maximumEnergy(BATTERY_SYSFS_PATH()->arg(0) + QStringLiteral("energy_full"));
+
+    if (!remainingCharge.open(QIODevice::ReadOnly) || !maximumCharge.open(QIODevice::ReadOnly))
+    {
+        if (!remainingEnergy.open(QIODevice::ReadOnly) || !maximumEnergy.open(QIODevice::ReadOnly))
+        {
+            return -1;
+        }
+
+        remaining = &remainingEnergy;
+        maximum = &maximumEnergy;
+    }
+    else
+    {
+        remaining = &remainingCharge;
+        maximum = &maximumCharge;
+    }
+
+    int capacityRemaining = remaining->readAll().simplified().toInt(&ok);
+
+    if (!ok)
+    {
+        return -1;
+    }
+
+    int capacityMaximum = maximum->readAll().simplified().toInt(&ok);
+
+    if (!ok || !capacityMaximum)
+    {
+        return -1;
+    }
+
+    return capacityRemaining * 100 / capacityMaximum;
+}
+
+QString DeviceInfo::OSName() const
+{
+    return QDeviceInfo().operatingSystemName();
+}
+
+QString DeviceInfo::OSVersion() const
+{
+    return QDeviceInfo().version(QDeviceInfo::Os);
+}
+
+QString DeviceInfo::firmwareVersion() const
+{
+    return QDeviceInfo().version(QDeviceInfo::Firmware);
+}
+
+QString DeviceInfo::board() const
+{
+    return QDeviceInfo().boardName();
+}
+
+QString DeviceInfo::manufacturer() const
+{
+    return DeviceInfo().manufacturer();
+}
+
+QString DeviceInfo::model() const
+{
+    return DeviceInfo().model();
+}
+
+qlonglong DeviceInfo::availableDiskSpace() const
+{
+    QStorageInfo info;
+    qlonglong diskSpace = 0;
+    /*
+     * The method allLogicalDrives() lists the device's mount points.
+     * Some might appear twice (e.g. "/"), others not at all (e.g. "/boot").
+     * The resulting disk space may therefore be slightly inaccurate.
+     */
+    QStringList drives = info.allLogicalDrives();
+
+    drives.removeDuplicates();
+
+    foreach (const QString &drive, drives)
+    {
+        if (info.driveType(drive) == QStorageInfo::InternalDrive)
+        {
+            diskSpace += info.availableDiskSpace(drive);
+        }
+    }
+
+    return diskSpace;
 }

@@ -70,14 +70,14 @@ bool Precondition::check()
 {
     NetworkManager nm;
     // Networking
-    QList<QNetworkConfiguration::BearerType> typeList = nm.connectionType();
+    QNetworkInfo::NetworkMode mode = nm.connectionMode();
 
-    if (!d->onWireless && typeList.contains(QNetworkConfiguration::BearerWLAN))
+    if (!d->onWireless && mode == QNetworkInfo::WlanMode)
     {
         return false;
     }
 
-    if (!d->onWire && typeList.contains(QNetworkConfiguration::BearerEthernet))
+    if (!d->onWire && mode == QNetworkInfo::EthernetMode)
     {
         return false;
     }
@@ -88,13 +88,14 @@ bool Precondition::check()
     }
 
     // Battery level
-    qint8 batteryLevel = DeviceInfo::batteryLevel();
+    qint8 batteryLevel = DeviceInfo().batteryLevel();
     if (batteryLevel <= 0 && batteryLevel < d->minCharge)
     {
         return false;
     }
 
     // Location TODO
+
 
 
     return true;

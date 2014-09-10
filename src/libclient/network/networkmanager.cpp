@@ -24,6 +24,11 @@
 #include <QTimer>
 #include <QDebug>
 #include <QDnsLookup>
+#include <QNetworkConfiguration>
+#include <QNetworkConfigurationManager>
+#if defined(Q_OS_ANDROID)
+#include <QAndroidJniObject>
+#endif
 
 LOGGER(NetworkManager);
 
@@ -75,6 +80,9 @@ class NetworkManager::Private : public QObject
 public:
     Private(NetworkManager *q)
     : q(q)
+#if defined(Q_OS_ANDROID)
+    , networkInfo("de/hsaugsburg/informatik/mplane/NetInfo")
+#endif
     {
         connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
         connect(&keepaliveAddressLookup, SIGNAL(finished()), this, SLOT(lookupFinished()));
@@ -98,11 +106,16 @@ public:
 
     quint16 localPort;
 
-    QNetworkConfigurationManager ncm;
-
     RemoteHost keepaliveHost;
     QHostAddress keepaliveAddress;
     QDnsLookup keepaliveAddressLookup;
+
+    QNetworkConfigurationManager ncm;
+#if defined(Q_OS_ANDROID)
+    QAndroidJniObject networkInfo;
+#else
+    QNetworkInfo networkInfo;
+#endif
 
     // Functions
     QAbstractSocket *createSocket(NetworkManager::SocketType socketType);
@@ -453,51 +466,53 @@ bool NetworkManager::isRunning() const
 
 bool NetworkManager::onMobileConnection() const
 {
-#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
-    QList<QNetworkConfiguration> confList = d->ncm.allConfigurations(QNetworkConfiguration::Active);
+#if defined(Q_OS_ANDROID)
+     return d->networkInfo.callMethod<jboolean>("isOnMobileConnection");
+#else
+    QNetworkInfo::NetworkMode mode = connectionMode();
 
-    foreach (QNetworkConfiguration conf, confList)
+    if (mode != QNetworkInfo::WlanMode && mode != QNetworkInfo::EthernetMode)
     {
-        QNetworkConfiguration::BearerType type = conf.bearerType();
-
-        if (type != QNetworkConfiguration::BearerEthernet && type != QNetworkConfiguration::BearerWLAN)
-        {
-            LOG_DEBUG(QString("Connection type: %1").arg(type));
-            return true;
-        }
+        LOG_DEBUG(QString("Connection type: %1").arg(mode));
+        return true;
     }
-
-#endif
 
     return false;
+#endif
 }
 
-QList<QNetworkConfiguration::BearerType> NetworkManager::connectionType() const
+QNetworkInfo::NetworkMode NetworkManager::connectionMode() const
 {
-    QList<QNetworkConfiguration> confList = d->ncm.allConfigurations(QNetworkConfiguration::Active);
-    QList<QNetworkConfiguration::BearerType> typeList;
-    QStringList names;
+    QNetworkInfo::NetworkMode mode;
 
-    foreach (const QNetworkConfiguration &conf, confList)
+#if defined(Q_OS_ANDROID)
+    mode = static_cast<QNetworkInfo::NetworkMode>(d->networkInfo.callMethod<jint>("connectionMode"));
+#else
+    mode = d->networkInfo.currentNetworkMode();
+    // QNetworkInfo does not check for the linux "Predictable Network Interface Names".
+    // The following code fixes this.
+    if (mode == QNetworkInfo::UnknownMode)
     {
-        typeList.append(conf.bearerType());
-        names.append(conf.name());
-    }
+        QList<QNetworkConfiguration> confList = d->ncm.allConfigurations(QNetworkConfiguration::Active);
 
-    if (!typeList.contains(QNetworkConfiguration::BearerWLAN))
-    {
-        QRegExp regExp("w(lan|ifi|lp)");
-        foreach (const QString &name, names)
+        foreach (const QNetworkConfiguration &conf, confList)
         {
-            if (name.contains(regExp))
+            QString name = conf.name();
+
+            if (name.contains("enp"))
             {
-                    typeList.append(QNetworkConfiguration::BearerWLAN);
-                    break;
+                return QNetworkInfo::EthernetMode;
+            }
+
+            if (name.contains("wlp"))
+            {
+                return QNetworkInfo::WlanMode;
             }
         }
     }
+#endif
 
-    return typeList;
+    return mode;
 }
 
 QAbstractSocket *NetworkManager::connection(const QString &hostname, NetworkManager::SocketType socketType) const

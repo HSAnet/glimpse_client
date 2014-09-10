@@ -32,7 +32,9 @@ bool ImmediateTiming::isValid() const
 
 QVariant ImmediateTiming::toVariant() const
 {
-    return type();
+    QVariantMap resultMap;
+    resultMap.insert(type(), QVariantMap());
+    return resultMap;
 }
 
 TimingPtr ImmediateTiming::fromVariant(const QVariant &variant)
