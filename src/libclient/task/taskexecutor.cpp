@@ -217,7 +217,7 @@ void TaskExecutor::execute(const TestDefinition &test, MeasurementObserver *obse
     }
 
     // Abort if we are on a mobile connection
-    if (d->executor.networkManager->onMobileConnection())
+    if (d->executor.networkManager->onMobileConnection() || d->executor.networkManager->allInterfacesDown())
     {
         LOG_ERROR(QString("Unable to execute measurement, we are on a mobile connection or no interface is up: %1").arg(test.name()));
         return;

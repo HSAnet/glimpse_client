@@ -658,4 +658,26 @@ QTcpServer *NetworkManager::createServerSocket()
     return server;
 }
 
+bool NetworkManager::allInterfacesDown() const
+{
+    QNetworkInterface::InterfaceFlags flags;
+
+    foreach (const QNetworkInterface &iface, QNetworkInterface::allInterfaces())
+    {
+        flags = iface.flags();
+
+        if (flags & QNetworkInterface::IsLoopBack)
+        {
+            continue;
+        }
+
+        if (flags & (QNetworkInterface::IsUp | QNetworkInterface::IsRunning))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 #include "networkmanager.moc"
