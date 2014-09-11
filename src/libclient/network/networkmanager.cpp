@@ -26,6 +26,7 @@
 #include <QDnsLookup>
 #include <QNetworkConfiguration>
 #include <QNetworkConfigurationManager>
+#include <QNetworkInterface>
 #if defined(Q_OS_ANDROID)
 #include <QAndroidJniObject>
 #endif
