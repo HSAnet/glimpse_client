@@ -3,7 +3,7 @@ win32 {
     INSTALLS *= target
 } else: osx {
     target.path = /
-    #INSTALLS *= target
+    INSTALLS *= target
 } else: ios {
 } else: android {
 } else: linux {
