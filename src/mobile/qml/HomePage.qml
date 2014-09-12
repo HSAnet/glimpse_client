@@ -82,6 +82,11 @@ FlickablePage {
             }
         }
 
+        // We need a label to set the font size on the line chart
+        Label {
+            id: invisibleLabel
+            visible: false
+        }
 
         Canvas {
             id: diagram
@@ -90,6 +95,7 @@ FlickablePage {
 
             onPaint: {
                 var chart = new Chart.LineChart();
+                chart.text_font = invisibleLabel.font.family;
                 chart.width = width;
                 chart.matrix_textPaddingLeft = 0.7;
                 chart.drawLineChart(0, 0, getContext("2d"));

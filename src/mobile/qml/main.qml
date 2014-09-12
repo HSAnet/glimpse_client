@@ -4,9 +4,6 @@ import analytics 1.0
 import "controls"
 import "."
 
-import QtQuick.Controls 1.0 as Controls
-import QtQuick.Window 2.0
-
 Rectangle {
     id: app
     width: units.gu(768)

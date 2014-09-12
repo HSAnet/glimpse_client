@@ -10,7 +10,7 @@
 #include "qmlmodule.h"
 #include "settings.h"
 
-#include "qtquick2applicationviewer.h"
+#include <QQmlApplicationEngine>
 
 #include <QGuiApplication>
 #include <QQmlEngine>
@@ -134,12 +134,9 @@ int main(int argc, char *argv[])
 
     QmlModule::registerTypes();
 
-    QtQuick2ApplicationViewer *view = new QtQuick2ApplicationViewer;
-    QObject::connect(view, SIGNAL(closing(QQuickCloseEvent *)), &app, SLOT(quit()));
-
     NetworkAccessManagerFactory networkAccessManagerFactory;
 
-    QQmlEngine *engine = view->engine();
+    QQmlApplicationEngine *engine = new QQmlApplicationEngine;
     engine->setNetworkAccessManagerFactory(&networkAccessManagerFactory);
     QmlModule::initializeEngine(engine);
 
@@ -154,29 +151,26 @@ int main(int argc, char *argv[])
 
     Client *client = Client::instance();
 
-    QQmlContext *rootContext = view->rootContext();
+    QQmlContext *rootContext = engine->rootContext();
     rootContext->setContextProperty("client", client);
     rootContext->setContextProperty("logModel", &loggerModel);
 #ifdef Q_OS_ANDROID
-    rootContext->setContextProperty("statusBar", new StatusBarHelper(view));
+    rootContext->setContextProperty("statusBar", new StatusBarHelper(engine));
 #elif defined(Q_OS_IOS)
     // TODO: iOS Code
 #else
-    rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(view));
+    rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(engine));
 #endif // Q_OS_ANDROID
 
-#ifdef Q_OS_IOS
-    view->addImportPath(QStringLiteral("imports/qml"));
-#endif
-
+    /*
 #ifdef Q_OS_ANDROID
     loadFonts(QString("assets:/") + view->adjustPath(QStringLiteral("qml/fonts")));
 #else
     loadFonts(view->adjustPath(QStringLiteral("qml/fonts")));
 #endif
+    */
 
-    view->setMainQmlFile(QStringLiteral("qml/main.qml"));
-    view->showExpanded();
+    engine->load(QUrl("qrc:/qml/MainWindow.qml"));
 
     int returnCode = app.exec();
 
@@ -187,7 +181,7 @@ int main(int argc, char *argv[])
 
     // Cleanly shutdown
     delete selector;
-    delete view;
+    delete engine;
     Client::instance()->deleteLater();
     QTimer::singleShot(1, &app, SLOT(quit()));
     app.exec();

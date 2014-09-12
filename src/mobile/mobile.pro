@@ -1,13 +1,8 @@
 TEMPLATE = app
 
-# Add more folders to ship with the application, here
-folder_01.source = qml
-folder_01.target = ""
-DEPLOYMENTFOLDERS = folder_01
-
-qmlfiles.files = $$PWD/qml $$PWD/Default-568h@2x.png
+qmlfiles.files = $$PWD/Default-568h@2x.png
 qmlfiles.path = Contents/Resources
-#QMAKE_BUNDLE_DATA += qmlfiles
+QMAKE_BUNDLE_DATA += qmlfiles
 
 QT += gui quick qml concurrent
 
@@ -16,11 +11,27 @@ include(../libclient/libclient.pri)
 
 osx:TARGET = glimpse
 osx:ICON = glimpse.icns
-QMAKE_INFO_PLIST = Info.plist
+osx:QMAKE_INFO_PLIST = Info.plist
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 ANDROID_PACKAGE = "net.measureit.glimpse"
 ANDROID_APP_NAME = "glimpse"
+
+# Fetch files for qmlresources.qrc
+INPUT_FILES = $$files(qml/*, true)
+for(file, INPUT_FILES) {
+    OUTPUT_FILES += "    <file>$$file</file>"
+}
+
+# Prepare output lines for qmlresources.qrc
+LINES = "<RCC>" \
+        "  <qresource prefix=\"/\">" \
+        $$OUTPUT_FILES \
+        "  </qresource>" \
+        "</RCC>"
+
+# Write the qmlresources.qrc file
+write_file("qmlresources.qrc", LINES)
 
 android {
     QT += androidextras
@@ -30,10 +41,6 @@ android {
 
     OTHER_FILES += $$files($$PWD/android/src/*.java) \
                    android/AndroidManifest.xml
-
-    system(sh $$PWD/qmlresources.sh)
-
-    RESOURCES += qmlresources.qrc
 } else: ios {
     LIBS += -framework AdSupport
 } else {
@@ -77,16 +84,13 @@ SOURCES += \
     main.cpp
 
 RESOURCES += \
+    qmlresources.qrc \
     resources/resource.qrc
 
 # Dump symbols
 #symdump.commands = dump_syms $$qtLibraryTarget($$TARGET) 2>/dev/null > "$${TARGET}.sym"
 #QMAKE_EXTRA_TARGETS += symdump
 #POST_TARGETDEPS += symdump
-
-# Please do not modify the following two lines. Required for deployment.
-include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
-qtcAddDeployment()
 
 OTHER_FILES += $$files(qml/*) \
                $$files(qml/controls/*) \
