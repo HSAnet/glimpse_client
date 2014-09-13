@@ -8,3 +8,6 @@ TEMPLATE = lib
     QMAKE_EXTRA_TARGETS += dynamic_link
     PRE_TARGETDEPS += $$PWD/qtsystems_fixes/QtSystemInfo
 }
+
+SOURCES += \
+    dummy.cpp

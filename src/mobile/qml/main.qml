@@ -113,14 +113,6 @@ Rectangle {
         value: client.taskExecutor.running
     }
 
-    Rectangle {
-        color: "#f7f7f8"
-        width: parent.width
-        height: title.y + 2
-        z: 1
-        visible: Qt.platform.os == "ios"
-    }
-
     transitions: [
         Transition {
             to: "settings"
@@ -155,7 +147,6 @@ Rectangle {
     Rectangle {
         id: title
         color: "#373737"
-        y: Qt.platform.os == "ios" ? 20 : 0
         width: parent.width
         height: units.gu(45*2)
         z: 1

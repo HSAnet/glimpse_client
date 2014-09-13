@@ -113,6 +113,7 @@ public:
     QNetworkConfigurationManager ncm;
 #if defined(Q_OS_ANDROID)
     QAndroidJniObject networkInfo;
+#elif defined(Q_OS_IOS)
 #else
     QNetworkInfo networkInfo;
 #endif
@@ -487,6 +488,8 @@ QNetworkInfo::NetworkMode NetworkManager::connectionMode() const
 
 #if defined(Q_OS_ANDROID)
     mode = static_cast<QNetworkInfo::NetworkMode>(d->networkInfo.callMethod<jint>("connectionMode"));
+#elif defined(Q_OS_IOS)
+    mode = QNetworkInfo::WlanMode;
 #else
     mode = d->networkInfo.currentNetworkMode();
     // QNetworkInfo does not check for the linux "Predictable Network Interface Names".

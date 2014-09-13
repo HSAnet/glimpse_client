@@ -1,9 +1,5 @@
 TEMPLATE = app
 
-qmlfiles.files = $$PWD/Default-568h@2x.png
-qmlfiles.path = Contents/Resources
-QMAKE_BUNDLE_DATA += qmlfiles
-
 QT += gui quick qml concurrent
 
 include(../../dist.pri)

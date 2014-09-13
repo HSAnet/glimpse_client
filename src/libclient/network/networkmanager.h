@@ -4,7 +4,7 @@
 #include "../task/task.h"
 
 #include <QAbstractSocket>
-#if defined(Q_OS_ANDROID)
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
 // mimick QNetworkInfo
 namespace QNetworkInfo
 {
