@@ -18,7 +18,7 @@ ANDROID_PACKAGE = "net.measureit.glimpse"
 ANDROID_APP_NAME = "glimpse"
 
 # Fetch files for qmlresources.qrc
-INPUT_FILES = $$files(qml/*, true)
+INPUT_FILES = $$files(qml/*.*, true)
 for(file, INPUT_FILES) {
     OUTPUT_FILES += "    <file>$$file</file>"
 }
