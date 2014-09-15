@@ -20,6 +20,9 @@ export DH_OPTIONS
 %:
 	dh $@ 
 
+override_dh_auto_configure:
+	qmake -r
+
 override_dh_auto_build:
 	make -j4
 
