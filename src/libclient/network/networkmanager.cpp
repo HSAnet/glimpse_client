@@ -26,6 +26,7 @@
 #include <QDnsLookup>
 #include <QNetworkConfiguration>
 #include <QNetworkConfigurationManager>
+#include <QNetworkInterface>
 #if defined(Q_OS_ANDROID)
 #include <QAndroidJniObject>
 #endif
@@ -659,6 +660,28 @@ QTcpServer *NetworkManager::createServerSocket()
     // TODO: Connect to traffic counter
     QTcpServer *server = new QTcpServer;
     return server;
+}
+
+bool NetworkManager::allInterfacesDown() const
+{
+    QNetworkInterface::InterfaceFlags flags;
+
+    foreach (const QNetworkInterface &iface, QNetworkInterface::allInterfaces())
+    {
+        flags = iface.flags();
+
+        if (flags & QNetworkInterface::IsLoopBack)
+        {
+            continue;
+        }
+
+        if (flags & (QNetworkInterface::IsUp | QNetworkInterface::IsRunning))
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 #include "networkmanager.moc"

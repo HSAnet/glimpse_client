@@ -69,6 +69,7 @@ public:
                                          NetworkManager::SocketType socketType);
 
     QTcpServer *createServerSocket();
+    bool allInterfacesDown() const;
 
 signals:
     void runningChanged();
