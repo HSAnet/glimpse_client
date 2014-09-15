@@ -11,3 +11,6 @@ qtHaveModule(quick) {
     SUBDIRS += console
     console.depends = libclient
 }
+
+SUBDIRS += tests
+tests.depends = libclient

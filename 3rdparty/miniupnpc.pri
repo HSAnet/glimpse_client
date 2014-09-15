@@ -16,9 +16,9 @@ win32 {
     CONFIG(release, debug|release):BUILDCONFIG = "release"
     else:BUILDCONFIG = "debug"
 
-    LIBS += -L../../3rdparty/$$BUILDCONFIG -lminiupnp
-    PRE_TARGETDEPS = ../../3rdparty/$$BUILDCONFIG/miniupnp.lib
+    LIBS += -L$$BUILD_DIRECTORY/3rdparty/$$BUILDCONFIG -lminiupnp
+    PRE_TARGETDEPS = $$BUILD_DIRECTORY/3rdparty/$$BUILDCONFIG/miniupnp.lib
 } else {
-    LIBS += ../../3rdparty/libminiupnp.a
-    PRE_TARGETDEPS = ../../3rdparty/libminiupnp.a
+    LIBS += $$BUILD_DIRECTORY/3rdparty/libminiupnp.a
+    PRE_TARGETDEPS = $$BUILD_DIRECTORY/3rdparty/libminiupnp.a
 }
