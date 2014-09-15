@@ -89,7 +89,7 @@ CalendarTiming::CalendarTiming()
         d->daysOfMonth<<i;
     }
 
-    for(int i=0; i<25; i++)
+    for(int i=0; i<24; i++)
     {
         d->hours<<i;
     }
@@ -138,8 +138,7 @@ bool CalendarTiming::reset()
 QDateTime CalendarTiming::nextRun() const
 {
     QDateTime nextRun;
-    const QDateTime now = QDateTime::currentDateTime().addSecs(ntp->offset());
-
+    QDateTime now = QDateTime::currentDateTime().addSecs(ntp->offset());
 
     QDate date = now.date();
     QTime time = now.time();
@@ -152,6 +151,15 @@ QDateTime CalendarTiming::nextRun() const
     QListIterator<quint8> secondIter(d->seconds);
     QDate nextRunDate;
     QTime nextRunTime;
+
+    // Check if the start time is reached
+    if (d->start > now)
+    {
+        date.setDate(d->start.date().year(), d->start.date().month(), d->start.date().day());
+        time.setHMS(d->start.time().hour(), d->start.time().minute(), d->start.time().second());
+        now.setDate(date);
+        now.setTime(time);
+    }
 
     int year = date.year();
     int month = date.month();
@@ -225,7 +233,7 @@ QDateTime CalendarTiming::nextRun() const
                                                     if (!secondIter.hasNext())
                                                     {
                                                         secondIter.toFront();
-                                                        time.setHMS(time.hour(), time.minute()+1, 0);
+                                                        time.setHMS(time.hour(), time.minute(), 0);
                                                         break;
                                                     }
                                                 }
@@ -234,7 +242,7 @@ QDateTime CalendarTiming::nextRun() const
                                             if (!minuteIter.hasNext())
                                             {
                                                 minuteIter.toFront();
-                                                time.setHMS(time.hour()+1, 0, 0);
+                                                time.setHMS(time.hour(), 0, 0);
                                                 break;
                                             }
                                         }
@@ -278,11 +286,7 @@ QDateTime CalendarTiming::nextRun() const
         }
     }
 
-    // Check if the start time is reached
-    if (d->start > now)
-    {
-        return nextRun;
-    }
+
 
     // Stop if we exceed the end time
     if (d->end.isValid() && d->end < nextRun)
