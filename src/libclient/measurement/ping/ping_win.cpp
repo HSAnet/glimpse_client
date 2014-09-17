@@ -762,7 +762,7 @@ Result Ping::result() const
     res.append(pingTime.size());
     res.append(QVariant(roundTripMs));
 
-    return Result(startDateTime(), endDateTime(), res);
+    return Result(res);
 }
 
 quint32 Ping::estimateTraffic() const

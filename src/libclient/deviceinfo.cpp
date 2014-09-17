@@ -157,12 +157,12 @@ QString DeviceInfo::board() const
 
 QString DeviceInfo::manufacturer() const
 {
-    return DeviceInfo().manufacturer();
+    return QDeviceInfo().manufacturer();
 }
 
 QString DeviceInfo::model() const
 {
-    return DeviceInfo().model();
+    return QDeviceInfo().model();
 }
 
 qlonglong DeviceInfo::availableDiskSpace() const

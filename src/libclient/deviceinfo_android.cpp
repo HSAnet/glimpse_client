@@ -82,11 +82,6 @@ qreal DeviceInfo::cpuUsage() const
     return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 }
 
-quint32 freeMemory() const
-{
-    return 0;
-}
-
 qint8 DeviceInfo::batteryLevel() const
 {
     bool ok = false;
