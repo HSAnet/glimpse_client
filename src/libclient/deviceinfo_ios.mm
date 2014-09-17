@@ -30,7 +30,57 @@ QString DeviceInfo::deviceId() const
     return QString::fromLatin1(hash.result().toHex());
 }
 
+qreal DeviceInfo::cpuUsage() const
+{
+    return -1.0;
+}
+
+quint32 DeviceInfo::freeMemory() const
+{
+    return 0;
+}
+
 qint8 DeviceInfo::batteryLevel() const
 {
     return 100;
+}
+
+qint32 DeviceInfo::signalStrength() const
+{
+    return -1;
+}
+
+QString DeviceInfo::OSName() const
+{
+    return "";
+}
+
+QString DeviceInfo::OSVersion() const
+{
+    return "";
+}
+
+QString DeviceInfo::firmwareVersion() const
+{
+    return "";
+}
+
+QString DeviceInfo::board() const
+{
+    return "";
+}
+
+QString DeviceInfo::manufacturer() const
+{
+    return "";
+}
+
+QString DeviceInfo::model() const
+{
+    return "";
+}
+
+qlonglong DeviceInfo::availableDiskSpace() const
+{
+    return -1;
 }

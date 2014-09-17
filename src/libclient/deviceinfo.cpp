@@ -120,6 +120,11 @@ qreal DeviceInfo::cpuUsage() const
     return -1.0;
 }
 
+quint32 DeviceInfo::freeMemory() const
+{
+    return 0;
+}
+
 qint32 DeviceInfo::signalStrength() const
 {
     return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);

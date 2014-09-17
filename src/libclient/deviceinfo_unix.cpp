@@ -165,6 +165,11 @@ qreal DeviceInfo::cpuUsage() const
     return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 }
 
+quint32 DeviceInfo::freeMemory() const
+{
+    return 0;
+}
+
 qint32 DeviceInfo::signalStrength() const
 {
     return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);
