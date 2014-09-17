@@ -68,7 +68,7 @@ public:
     QDateTime start;
     QDateTime end;
     QList<quint8> months; // default: 1-12
-    QList<quint8> daysOfWeek; // default: 1-7, 1= Monday, 7 = Sunday
+    QList<quint8> daysOfWeek; // default: 1-7, 1 = Monday, 7 = Sunday
     QList<quint8> daysOfMonth; // default 1-31
     QList<quint8> hours; // default: 0-23
     QList<quint8> minutes; // default: 0-59
@@ -140,17 +140,17 @@ CalendarTiming::CalendarTiming()
     d->months = QList<quint8>()<<1<<2<<3<<4<<5<<6<<7<<8<<9<<10<<11<<12;
     d->daysOfWeek = QList<quint8>()<<1<<2<<3<<4<<5<<6<<7;
 
-    for(int i=1; i<32; i++)
+    for (int i = 1; i < 32; i++)
     {
         d->daysOfMonth<<i;
     }
 
-    for(int i=0; i<24; i++)
+    for (int i = 0; i < 24; i++)
     {
         d->hours<<i;
     }
 
-    for(int i=0; i<60; i++)
+    for (int i = 0; i < 60; i++)
     {
         d->minutes<<i;
         d->seconds<<i;
@@ -237,11 +237,10 @@ QDateTime CalendarTiming::nextRun() const
                         if (d->daysOfWeek.contains(QDate(year, month, day).dayOfWeek()))
                         {
                             // check if we have a matching time for that day
-
-                            // if the next run date is not today we can take the first items
-                            // as this is the earliest allowed time on that day
                             if ((nextRunDate = QDate(year, month, day)) != now.date())
                             {
+                                // if the next run date is not today we can take the first items
+                                // as this is the earliest allowed time on that day
                                 nextRunTime = QTime(*d->hours.constBegin(), *d->minutes.constBegin(), *d->seconds.constBegin());
                                 nextRun = QDateTime(nextRunDate, nextRunTime);
                                 found = true;

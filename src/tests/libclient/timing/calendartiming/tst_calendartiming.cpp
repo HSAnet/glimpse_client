@@ -30,17 +30,17 @@ private slots:
         QList<quint8> minutes;
         QList<quint8> seconds;
 
-        for(int i=1; i<32; i++)
+        for (int i = 1; i < 32; i++)
         {
             daysOfMonth<<i;
         }
 
-        for(int i=0; i<24; i++)
+        for (int i = 0; i < 24; i++)
         {
             hours<<i;
         }
 
-        for(int i=0; i<60; i++)
+        for (int i = 0; i < 60; i++)
         {
             minutes<<i;
             seconds<<i;
