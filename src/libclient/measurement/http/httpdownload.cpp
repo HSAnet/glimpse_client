@@ -52,8 +52,6 @@ bool HTTPDownload::prepare(NetworkManager *networkManager, const MeasurementDefi
 
 bool HTTPDownload::start()
 {
-    setStartDateTime(QDateTime::currentDateTime());
-
     // start timer
     m_timer.start();
 
@@ -103,8 +101,7 @@ Result HTTPDownload::result() const
     res.append(stdev);
     res.append(QVariant(downSpeeds));
 
-    return Result(startDateTime(), endDateTime(), res,
-                  definition->measurementUuid, errorString());
+    return Result(res, definition->measurementUuid);
 }
 
 void HTTPDownload::setStatus(Status status)
@@ -160,7 +157,6 @@ void HTTPDownload::requestFinished()
     }
 
     setStatus(HTTPDownload::Finished);
-    setEndDateTime(QDateTime::currentDateTime());
     emit finished();
 }
 

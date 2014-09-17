@@ -10,9 +10,9 @@ public:
     quint32 taskId;
     QUuid measurementUuid;
     QDateTime startDateTime;
-    QDateTime endDateTime;
     QString errorString;
     QStringList resultHeader;
+    QVariantMap preInfo;
 };
 
 Measurement::Measurement(QObject *parent)
@@ -65,14 +65,14 @@ void Measurement::setStartDateTime(const QDateTime &startDateTime)
     d->startDateTime = startDateTime;
 }
 
-QDateTime Measurement::endDateTime() const
+QVariantMap Measurement::preInfo() const
 {
-    return d->endDateTime;
+    return d->preInfo;
 }
 
-void Measurement::setEndDateTime(const QDateTime &endDateTime)
+void Measurement::setPreInfo(const QVariantMap &preInfo)
 {
-    d->endDateTime = endDateTime;
+    d->preInfo = preInfo;
 }
 
 QString Measurement::errorString() const

@@ -20,7 +20,8 @@ Report::Report(const quint32 &taskId, const QDateTime &dateTime, const QString &
     d->dateTime = dateTime;
     d->appVersion = appVersion;
     d->columnLabels = QStringList() << "start_time" << "end_time" << "conflicting_tasks"
-                                    << "cross_traffic" << "duration" << "measure_uuid" << "error" << columnLabels;
+                                    << "cross_traffic" << "duration" << "measure_uuid"
+                                    << "pre_info" << "post_info" << "error" << columnLabels;
     d->results = results;
 }
 

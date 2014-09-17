@@ -247,7 +247,6 @@ bool Ping::start()
 {
     PingProbe probe;
 
-    setStartDateTime(QDateTime::currentDateTime());
     setStatus(Ping::Running);
 
     if (definition->type == ping::System)
@@ -300,7 +299,6 @@ bool Ping::start()
     }
 
     setStatus(Ping::Finished);
-    setEndDateTime(QDateTime::currentDateTime());
     emit Measurement::finished();
 
     return true;
@@ -885,7 +883,6 @@ void Ping::finished(int exitCode, QProcess::ExitStatus exitStatus)
     Q_UNUSED(exitStatus);
 
     setStatus(Ping::Finished);
-    setEndDateTime(QDateTime::currentDateTime());
     emit Measurement::finished();
 }
 

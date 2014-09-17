@@ -25,8 +25,6 @@ BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
 
 bool BulkTransportCapacityMA::start()
 {
-    setStartDateTime(QDateTime::currentDateTime());
-
     m_status = BulkTransportCapacityMA::Running;
 
     LOG_INFO("Sending initial data size to server");
@@ -124,7 +122,6 @@ void BulkTransportCapacityMA::calculateResult()
 
         m_status = BulkTransportCapacityMA::Finished;
 
-        setEndDateTime(QDateTime::currentDateTime());
         emit finished();
     }
 }
@@ -283,5 +280,5 @@ Result BulkTransportCapacityMA::result() const
     res.append(stdev);
     res.append(QVariant(downSpeeds));
 
-    return Result(startDateTime(), endDateTime(), res, definition->measurementUuid, errorString());
+    return Result(res, definition->measurementUuid);
 }

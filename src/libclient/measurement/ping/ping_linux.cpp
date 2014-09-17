@@ -187,7 +187,6 @@ bool Ping::start()
 {
     PingProbe probe;
 
-    setStartDateTime(QDateTime::currentDateTime());
     setStatus(Ping::Running);
 
     if (definition->type == ping::System)
@@ -231,7 +230,6 @@ bool Ping::start()
     }
 
     setStatus(Ping::Finished);
-    setEndDateTime(QDateTime::currentDateTime());
     emit Measurement::finished();
 
     return true;
@@ -283,7 +281,7 @@ Result Ping::result() const
     res.append(pingTime.size());
     res.append(QVariant(roundTripMs));
 
-    return Result(startDateTime(), endDateTime(), res);
+    return Result(res);
 }
 
 quint32 Ping::estimateTraffic() const
@@ -826,7 +824,6 @@ void Ping::finished(int exitCode, QProcess::ExitStatus exitStatus)
     Q_UNUSED(exitStatus);
 
     setStatus(Ping::Finished);
-    setEndDateTime(QDateTime::currentDateTime());
     emit Measurement::finished();
 }
 

@@ -48,8 +48,6 @@ bool ReverseDnslookup::prepare(NetworkManager *networkManager, const Measurement
 
 bool ReverseDnslookup::start()
 {
-    setStartDateTime(QDateTime::currentDateTime());
-
     m_lookupId = QHostInfo::lookupHost(m_definition->ip, this, SLOT(handleServers(QHostInfo)));
     return true;
 }
@@ -97,7 +95,7 @@ Result ReverseDnslookup::result() const
     res.append(m_reverseDnslookupOutput);
     res.append(listToVariant(m_reverseDnslookupAddresses));
 
-    return Result(startDateTime(), endDateTime(), res);
+    return Result(res);
 }
 
 void ReverseDnslookup::started()
@@ -110,6 +108,5 @@ void ReverseDnslookup::started()
 void ReverseDnslookup::finished()
 {
     setStatus(ReverseDnslookup::Finished);
-    setEndDateTime(QDateTime::currentDateTime());
     emit Measurement::finished();
 }

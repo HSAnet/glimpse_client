@@ -50,8 +50,8 @@ public:
     QDateTime startDateTime() const;
     void setStartDateTime(const QDateTime &startDateTime);
 
-    QDateTime endDateTime() const;
-    void setEndDateTime(const QDateTime &endDateTime);
+    QVariantMap preInfo() const;
+    void setPreInfo(const QVariantMap &preInfo);
 
     QString errorString() const;
 
