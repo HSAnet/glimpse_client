@@ -74,7 +74,63 @@ public:
     QList<quint8> minutes; // default: 0-59
     QList<quint8> seconds; // default: 0-59
     TimingRandomness randomness;
+
+    QTime findTime(QTime &referenceTime);
 };
+
+QTime CalendarTiming::Private::findTime(QTime &referenceTime)
+{
+    QListIterator<quint8> hourIter(hours);
+    QListIterator<quint8> minuteIter(minutes);
+    QListIterator<quint8> secondIter(seconds);
+
+    int hour;
+    int minute;
+    int second;
+
+    while (hourIter.hasNext()) // hours
+    {
+        hour = hourIter.next();
+        if (hour >= referenceTime.hour())
+        {
+            // hour found
+            while (minuteIter.hasNext()) // minutes
+            {
+                minute = minuteIter.next();
+                if (minute >= referenceTime.minute())
+                {
+                    // minute found
+                    while (secondIter.hasNext()) // seconds
+                    {
+                        second = secondIter.next();
+                        if (second >= referenceTime.second())
+                        {
+                            // finally, second found
+                            return QTime(hour, minute, second);
+                        }
+
+                        if (!secondIter.hasNext())
+                        {
+                            secondIter.toFront();
+                            referenceTime.setHMS(referenceTime.hour(), referenceTime.minute(), 0);
+                            break;
+                        }
+                    }
+                }
+
+                if (!minuteIter.hasNext())
+                {
+                    minuteIter.toFront();
+                    referenceTime.setHMS(referenceTime.hour(), 0, 0);
+                    break;
+                }
+            }
+        }
+    }
+
+    referenceTime.setHMS(0, 0, 0);
+    return QTime();
+}
 
 CalendarTiming::CalendarTiming()
 : d(new Private)
@@ -146,9 +202,6 @@ QDateTime CalendarTiming::nextRun() const
 
     QListIterator<quint8> monthIter(d->months);
     QListIterator<quint8> dayIter(d->daysOfMonth);
-    QListIterator<quint8> hourIter(d->hours);
-    QListIterator<quint8> minuteIter(d->minutes);
-    QListIterator<quint8> secondIter(d->seconds);
     QDate nextRunDate;
     QTime nextRunTime;
 
@@ -164,13 +217,10 @@ QDateTime CalendarTiming::nextRun() const
     int year = date.year();
     int month = date.month();
     int day = date.day();
-    int hour = time.hour();
-    int minute = time.minute();
-    int second = time.second();
 
-    while (!found)
+    while (!found) // years
     {
-        while (monthIter.hasNext() && !found)
+        while (monthIter.hasNext() && !found) // months
         {
             month = monthIter.next();
             if (QDate(year, month, 1) >= QDate(date.year(), date.month(), 1))
@@ -178,84 +228,28 @@ QDateTime CalendarTiming::nextRun() const
                 // change to first element
                 dayIter.toFront();
 
-                while (dayIter.hasNext() && !found)
+                while (dayIter.hasNext() && !found) // days
                 {
                     day = dayIter.next();
                     if (QDate(year, month, day) >= date)
                     {
-                        if (day > date.daysInMonth())
-                        {
-                            // reached end of month
-                            break;
-                        }
                         // potential day found, check if day of week is okay
                         if (d->daysOfWeek.contains(QDate(year, month, day).dayOfWeek()))
                         {
-                            // day found
-                            nextRunDate = QDate(year, month, day);
+                            // check if we have a matching time for that day
 
                             // if the next run date is not today we can take the first items
                             // as this is the earliest allowed time on that day
-                            if (nextRunDate != now.date())
+                            if ((nextRunDate = QDate(year, month, day)) != now.date())
                             {
                                 nextRunTime = QTime(*d->hours.constBegin(), *d->minutes.constBegin(), *d->seconds.constBegin());
                                 nextRun = QDateTime(nextRunDate, nextRunTime);
                                 found = true;
-                                break;
                             }
-                            else
+                            else if ((nextRunTime = d->findTime(time)).isValid())
                             {
-                                // this could be today!
-                                while (hourIter.hasNext() && !found)
-                                {
-                                    hour = hourIter.next();
-                                    if (hour >= time.hour())
-                                    {
-                                        // hour found
-                                        while (minuteIter.hasNext() && !found)
-                                        {
-                                            minute = minuteIter.next();
-                                            if (minute >= time.minute())
-                                            {
-                                                // minute found
-                                                while (secondIter.hasNext() && !found)
-                                                {
-                                                    second = secondIter.next();
-                                                    if (second >= time.second())
-                                                    {
-                                                        // finally, second found
-                                                        nextRunTime = QTime(hour, minute, second);
-                                                        nextRun = QDateTime(nextRunDate, nextRunTime);
-                                                        found = true;
-                                                        break;
-                                                    }
-
-                                                    if (!secondIter.hasNext())
-                                                    {
-                                                        secondIter.toFront();
-                                                        time.setHMS(time.hour(), time.minute(), 0);
-                                                        break;
-                                                    }
-                                                }
-                                            }
-
-                                            if (!minuteIter.hasNext())
-                                            {
-                                                minuteIter.toFront();
-                                                time.setHMS(time.hour(), 0, 0);
-                                                break;
-                                            }
-                                        }
-
-                                    }
-
-                                    if (!hourIter.hasNext())
-                                    {
-                                        hourIter.toFront();
-                                        time.setHMS(0, 0, 0);
-                                        break;
-                                    }
-                                }
+                                nextRun = QDateTime(nextRunDate, nextRunTime);
+                                found = true;
                             }
                         }
                     }
@@ -279,14 +273,12 @@ QDateTime CalendarTiming::nextRun() const
         }
 
         // for saftey reasons
-        if (year > now.date().year() + 5)
+        if (year > now.date().year() + 2)
         {
             // no next run found
             return QDateTime();
         }
     }
-
-
 
     // Stop if we exceed the end time
     if (d->end.isValid() && d->end < nextRun)
