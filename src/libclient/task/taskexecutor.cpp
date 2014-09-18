@@ -5,6 +5,7 @@
 
 #include <QThread>
 #include <QPointer>
+#include <localinformation.h>
 
 LOGGER(TaskExecutor);
 
@@ -19,6 +20,9 @@ public:
     TestDefinition currentTest;
     MeasurementPtr measurement;
 
+private:
+    LocalInformation localInformation;
+
 public slots:
     void execute(const TestDefinition &test, MeasurementObserver *observer)
     {
@@ -32,6 +36,9 @@ public slots:
 
         if (!measurement.isNull())
         {
+            // get local information
+            measurement->setPreInfo(localInformation.getVariables());
+
             connect(measurement.data(), SIGNAL(finished()), this, SLOT(measurementFinished()));
             connect(measurement.data(), SIGNAL(error(const QString &)), this, SLOT(measurementError(const QString &)));
 
@@ -52,7 +59,11 @@ public slots:
 
             if (measurement->prepare(networkManager, definition))
             {
-                // TODO1: get local information (interface with ip, connection type, SNR, cpu usage, ...) and save in result or measurement
+                // in case of no error this is the local information we want
+                // because it is right before the actual measurement
+                measurement->setPreInfo(localInformation.getVariables());
+                measurement->setStartDateTime(QDateTime::currentDateTime());
+
                 if (measurement->start())
                 {
                     this->measurement = measurement;
@@ -63,6 +74,7 @@ public slots:
         else
         {
             LOG_ERROR(QString("Unable to create measurement: %1").arg(test.name()));
+            emit finished(test, QStringList(), Result("Unable to create measurement"));
         }
 
         if (measurement)
@@ -70,27 +82,32 @@ public slots:
             // the result should at least contain the errorString, as all the other
             // fields will be empty
             LOG_ERROR(QString("Finished execution of %1 (failed): %2").arg(test.name()).arg(measurement->errorString()));
-            emit finished(test, QStringList(), Result(measurement->errorString()));
-        }
-        else
-        {
-            LOG_ERROR(QString("Finished execution of %1 (failed)").arg(test.name()));
-            emit finished(test, QStringList(), Result());
-        }
 
-        measurement.clear();
+            Result result;
+            result.setStartDateTime(measurement->startDateTime());
+            result.setEndDateTime(QDateTime::currentDateTime());
+            result.setPreInfo(measurement->preInfo());
+            result.setErrorString(measurement->errorString());
+            emit finished(test, QStringList(), result);
+
+            measurement.clear();
+        }
     }
 
     void measurementFinished()
     {
-        // TODO1: get local information (interface with ip, connection type, SNR, cpu usage, ...) and save in result or measurement
-
         measurement->disconnect(this, SLOT(measurementFinished()));
         measurement->disconnect(this, SLOT(measurementError(const QString &)));
 
         LOG_INFO(QString("Finished execution of %1 (success)").arg(currentTest.name()));
 
-        emit finished(currentTest, measurement->resultHeader(), measurement->result());
+        Result result = measurement->result();
+        result.setStartDateTime(measurement->startDateTime());
+        result.setEndDateTime(QDateTime::currentDateTime());
+        result.setPreInfo(measurement->preInfo());
+        result.setPostInfo(localInformation.getVariables());
+
+        emit finished(currentTest, measurement->resultHeader(), result);
         measurement->stop();
         measurement.clear();
     }
@@ -102,7 +119,13 @@ public slots:
 
         LOG_ERROR(QString("Finished execution of %1 (failed): %2").arg(currentTest.name()).arg(errorMsg));
 
-        emit finished(currentTest, QStringList(), Result(errorMsg));
+        Result result = measurement->result();
+        result.setStartDateTime(measurement->startDateTime());
+        result.setEndDateTime(QDateTime::currentDateTime());
+        result.setPreInfo(measurement->preInfo());
+        result.setPostInfo(localInformation.getVariables());
+        result.setErrorString(errorMsg);
+        emit finished(currentTest, QStringList(), result);
 
         measurement->stop();
         measurement.clear();

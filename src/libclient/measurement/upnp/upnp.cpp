@@ -58,8 +58,6 @@ QStringList GetValuesFromNameValueList(struct NameValueParserData *pdata,
 
 bool UPnP::start()
 {
-    setStartDateTime(QDateTime::currentDateTime());
-
     int error = 0;
     int devNumber = 0;
 
@@ -231,7 +229,6 @@ bool UPnP::start()
 
     freeUPNPDevlist(devlistBegin);
 
-    setEndDateTime(QDateTime::currentDateTime());
     emit finished();
     return true; // TODO return false if something went wrong or if there are no results
 }
@@ -271,5 +268,5 @@ Result UPnP::result() const
     }
 
     // the results need to be in a list, because multiple dict-objects are possible
-    return Result(startDateTime(), endDateTime(), QVariantList()<<QVariant(deviceResultList));
+    return Result(QVariantList()<<QVariant(deviceResultList));
 }

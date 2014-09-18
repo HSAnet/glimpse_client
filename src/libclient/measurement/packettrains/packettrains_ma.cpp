@@ -43,8 +43,6 @@ PacketTrainsMA::PacketTrainsMA()
 
 bool PacketTrainsMA::start()
 {
-    setStartDateTime(QDateTime::currentDateTime());
-
     QByteArray buffer;
     buffer.resize(definition->packetSize);
 
@@ -85,7 +83,6 @@ bool PacketTrainsMA::start()
 
     delete[] disp;
 
-    setEndDateTime(QDateTime::currentDateTime());
     emit finished();
     return true;
 }
@@ -151,6 +148,5 @@ bool PacketTrainsMA::stop()
 
 Result PacketTrainsMA::result() const
 {
-    return Result(startDateTime(), endDateTime(), QVariantList(),
-                  definition->measurementUuid, errorString());
+    return Result(QVariantList(), definition->measurementUuid);
 }

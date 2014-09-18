@@ -73,6 +73,11 @@ qreal DeviceInfo::cpuUsage() const
     return -1.0;
 }
 
+quint32 DeviceInfo::freeMemory() const
+{
+    return 0;
+}
+
 qint8 DeviceInfo::batteryLevel() const
 {
     return QBatteryInfo().level();

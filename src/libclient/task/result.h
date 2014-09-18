@@ -28,6 +28,8 @@ public:
     , crossTraffic()
     , probeResult(other.probeResult)
     , measureUuid(other.measureUuid)
+    , preInfo(other.preInfo)
+    , postInfo(other.postInfo)
     , errorString(other.errorString)
     {
     }
@@ -38,6 +40,8 @@ public:
     QVariant crossTraffic;
     QVariantList probeResult;
     QUuid measureUuid;
+    QVariantMap preInfo;
+    QVariantMap postInfo;
     QString errorString;
 };
 
@@ -48,11 +52,15 @@ public:
     Result();
     Result(const QString &errorString);
     Result(const Result &other);
+    Result(const QVariantList &probeResult,
+           const QUuid &measureUuid = QUuid());
     Result(const QDateTime &startDateTime,
            const QDateTime &endDateTime,
            const QVariantList &probeResult,
-           const QUuid &measureUuid = QUuid(),
-           const QString &errorString = QString());
+           const QUuid &measureUuid,
+           const QVariantMap &preInfo,
+           const QVariantMap &postInfo,
+           const QString &errorString);
 
     bool isNull() const;
 
@@ -64,6 +72,12 @@ public:
 
     void setProbeResult(const QVariantList& probeResult);
     QVariantList probeResult() const;
+
+    void setPreInfo(const QVariantMap& preInfo);
+    QVariantMap preInfo() const;
+
+    void setPostInfo(const QVariantMap& postInfo);
+    QVariantMap postInfo() const;
 
     void setMeasureUuid(const QUuid& measureUuid);
     QUuid measureUuid() const;

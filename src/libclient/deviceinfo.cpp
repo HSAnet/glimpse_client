@@ -120,6 +120,11 @@ qreal DeviceInfo::cpuUsage() const
     return -1.0;
 }
 
+quint32 DeviceInfo::freeMemory() const
+{
+    return 0;
+}
+
 qint32 DeviceInfo::signalStrength() const
 {
     return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);
@@ -152,12 +157,12 @@ QString DeviceInfo::board() const
 
 QString DeviceInfo::manufacturer() const
 {
-    return DeviceInfo().manufacturer();
+    return QDeviceInfo().manufacturer();
 }
 
 QString DeviceInfo::model() const
 {
-    return DeviceInfo().model();
+    return QDeviceInfo().model();
 }
 
 qlonglong DeviceInfo::availableDiskSpace() const

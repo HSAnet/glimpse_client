@@ -180,7 +180,8 @@ SOURCES +=  \
     network/responses/reportresponse.cpp \
     trafficbudgetmanager.cpp \
     precondition.cpp \
-    network/requests/uploadrequest.cpp
+    network/requests/uploadrequest.cpp \
+    localinformation.cpp
 
 HEADERS += \
     export.h \
@@ -272,7 +273,8 @@ HEADERS += \
     network/responses/reportresponse.h \
     trafficbudgetmanager.h \
     precondition.h \
-    network/requests/uploadrequest.h
+    network/requests/uploadrequest.h \
+    localinformation.h
 
 OTHER_FILES += \
     libclient.pri
