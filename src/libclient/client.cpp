@@ -441,7 +441,7 @@ void Client::http()
 
 void Client::http(const QString &url)
 {
-    HTTPDownloadDefinition httpDef(url, false, 1);
+    HTTPDownloadDefinition httpDef(url, false, 2, 10000, 3000, 1000);
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(3, "httpdownload", timing,
                                   httpDef.toVariant(), Precondition());

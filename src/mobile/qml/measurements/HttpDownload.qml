@@ -13,7 +13,7 @@ Base {
         {
             "label": "Url",
             "type": "TextField",
-            "text": "http://ipv4.download.thinkbroadband.com:80/10MB.zip"
+            "text": "http://www.measure-it.net:80/static/measurement/67108864"
         },
     ]
 }

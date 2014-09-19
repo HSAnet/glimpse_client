@@ -1,9 +1,14 @@
 #include "httpdownload_definition.h"
 
-HTTPDownloadDefinition::HTTPDownloadDefinition(const QString &url, const bool cacheTest, const int threads)
+HTTPDownloadDefinition::HTTPDownloadDefinition(const QString &url, const bool cacheTest, const int threads, \
+                                               const int targetTime, const int rampUpTime, const int slotLength)
 : url(url)
 , cacheTest(cacheTest)
 , threads(threads)
+, targetTime(targetTime)
+, rampUpTime(rampUpTime)
+, slotLength(slotLength)
+
 {
 
 }
@@ -18,7 +23,10 @@ HTTPDownloadDefinitionPtr HTTPDownloadDefinition::fromVariant(const QVariant &va
     QVariantMap map = variant.toMap();
     return HTTPDownloadDefinitionPtr(new HTTPDownloadDefinition(map.value("url", "").toString(),
                                                                 map.value("cache_test", false).toBool(),
-                                                                map.value("threads", 1).toInt()));
+                                                                map.value("threads", 1).toInt(),
+                                                                map.value("target_time", 10000).toInt(),
+                                                                map.value("ramp_up_time", 3000).toInt(),
+                                                                map.value("slot_length", 1000).toInt()));
 }
 
 QVariant HTTPDownloadDefinition::toVariant() const
@@ -27,5 +35,8 @@ QVariant HTTPDownloadDefinition::toVariant() const
     map.insert("url", url);
     map.insert("cache_test", cacheTest);
     map.insert("threads", threads);
+    map.insert("target_time", targetTime);
+    map.insert("ramp_up_time", rampUpTime);
+    map.insert("slot_length", slotLength);
     return map;
 }

@@ -11,7 +11,8 @@ typedef QList<HTTPDownloadDefinitionPtr> HTTPDownloadDefinitionList;
 class HTTPDownloadDefinition : public MeasurementDefinition
 {
 public:
-    HTTPDownloadDefinition(const QString &url, const bool cacheTest, const int threads);
+    HTTPDownloadDefinition(const QString &url, const bool cacheTest, const int threads,
+                           const int targetTime, const int rampUpTime, const int slotLength);
     ~HTTPDownloadDefinition();
 
     // Storage
@@ -21,6 +22,9 @@ public:
     QString url;
     bool cacheTest;
     int threads;
+    int targetTime;
+    int rampUpTime;
+    int slotLength;
 
     // Serializable interface
     QVariant toVariant() const;
