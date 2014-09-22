@@ -13,7 +13,7 @@ DownloadThread::DownloadThread (QUrl url, QHostInfo server, int targetTimeMs, bo
 , url(url)
 , server(server)
 , targetTime(targetTimeMs)
-, cacheTest(cacheTest)
+, avoidCaches(cacheTest)
 , socket(NULL)
 , threadStatus(inactive)
 {
@@ -22,7 +22,6 @@ DownloadThread::DownloadThread (QUrl url, QHostInfo server, int targetTimeMs, bo
 
 DownloadThread::~DownloadThread()
 {
-    LOG_INFO("Cleaning up threads");
     //socket needs to be deleted
     if (socket != NULL)
     {
@@ -68,6 +67,7 @@ void DownloadThread::startTCPConnection()
     //emit the connected signal, and only when all threads have connected
     //do the actual download (coordinated by HTTPDownload)
 
+    LOG_INFO("THREAD");
     //shouldn't happen, check anyway
     if (server.addresses().isEmpty() || (!url.isValid()))
     {
@@ -121,12 +121,9 @@ void DownloadThread::startDownload()
         return;
     }
 
-    //remove me: test code only
-    cacheTest = false;
-
     QString path = url.path();
 
-    if (!cacheTest)
+    if (avoidCaches)
     {
         path.append(QString("?timestamp=%1").arg(QDateTime::currentDateTime().toString("yy_MM_dd_HH_mm_ss_zzz")));
     }
@@ -170,6 +167,8 @@ void DownloadThread::startDownload()
     if(socket->waitForReadyRead(5000))
     {
         //TODO: check for HTTP status code and act intelligently on it
+        //currently, a 404 etc. is simply to little data
+        //to generate results, but a better checking would be great
         timeToFirstByte = measurementTimer.nsecsElapsed();
         threadStatus = downloadInProgress;
         //connect readyRead of the socket with read() for further reads
@@ -193,8 +192,6 @@ void DownloadThread::read()
 
     socket->readAll();   //we don't need the actual data but need to free space in the
                         //socket buffer
-
-    //LOG_INFO(QString("recvd [%1], total revceives [%2]").arg(bytesReceived.last()).arg(bytesReceived.length()));
 }
 
 qreal DownloadThread::averageThroughput(qint64 sTime, qint64 eTime)
@@ -207,8 +204,6 @@ qreal DownloadThread::averageThroughput(qint64 sTime, qint64 eTime)
     qint64 begin = sTime - getStartTimeInNs();
     qint64 end = eTime - getStartTimeInNs();
 
-    LOG_INFO(QString("intervals %1").arg(timeIntervals.size()));
-
     int startSlot = -1;
     int endSlot = -1;
 
@@ -220,7 +215,10 @@ qreal DownloadThread::averageThroughput(qint64 sTime, qint64 eTime)
             continue;
         }
 
-        if(startSlot < 0) startSlot = i;
+        if(startSlot < 0)
+        {
+            startSlot = i;
+        }
 
         if (timeIntervals[i] > end)
         {
@@ -232,8 +230,12 @@ qreal DownloadThread::averageThroughput(qint64 sTime, qint64 eTime)
         bytes += bytesReceived[i];
     }
 
-    LOG_INFO(QString("start slot %1, end slot %2").arg(startSlot).arg(endSlot));
-    LOG_INFO(QString("thread bytes %1 in %2s").arg(bytes).arg(((qreal)(timeIntervals[endSlot] - timeIntervals[startSlot]))/1000000000.0));
+    if(endSlot < 0 || startSlot < 0)
+    {
+        //this should only happen is we have a wrong time window
+        return 0.0;
+    }
+
     return (8.0 * (qreal)bytes)/(((qreal)(timeIntervals[endSlot] - timeIntervals[startSlot]))/1000000000.0);
 }
 
@@ -260,8 +262,6 @@ QVariantList DownloadThread::measurementSlots(int slotLength)
                 currentSlotTime = timeIntervals[i];
             }
             lastSlot = i - 1;
-            //LOG_INFO(QString("Time Interval %1 bytes in %2 ms = %3 bps").arg());
-
         }
         else
         {
@@ -302,17 +302,16 @@ HTTPDownload::HTTPDownload(QObject *parent)
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
-    setResultHeader(QStringList() << "num_threads" << "actual_measurement_time" << "bandwidth_bps" << "bps_per_Thread" << "bps_slots_per_Thread");
+    setResultHeader(QStringList() << "actual_num_threads" << "bandwidth_bps" << "bps_per_Thread" << "bps_slots_per_Thread");
 }
 
 HTTPDownload::~HTTPDownload()
 {
-    LOG_INFO("Cleaning up measurement");
     int i = 0;
 
     for (i = 0; i < workers.size(); i++)
     {
-        //delete workers[i];
+        //delete workers[i]; //not needed - done by deleteLater already
         delete threads[i];
     }
 }
@@ -326,22 +325,18 @@ Measurement::Status HTTPDownload::status() const
 bool HTTPDownload::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager)
-    definition = measurementDefinition.dynamicCast<HTTPDownloadDefinition>();
 
-    //remove me (later), testing only...
-    definition->threads = 4;
-    definition->targetTime = 10000;
+    definition = measurementDefinition.dynamicCast<HTTPDownloadDefinition>();
 
     if (definition.isNull())
     {
-        //LOG_WARNING("Definition is empty");
         setErrorString("received NULL definition");
         return false;
     }
 
     if(definition->threads > maxThreads || definition->threads < minThreads)
     {
-        setErrorString(QString("requested number threads of threads wrong"));
+        setErrorString("requested number threads of threads wrong");
         return false;
     }
 
@@ -362,6 +357,8 @@ bool HTTPDownload::prepare(NetworkManager *networkManager, const MeasurementDefi
         setErrorString("requested slot length wrong");
         return false;
     }
+
+    LOG_INFO(QString("Ramp up time %1").arg(definition->rampUpTime));
 
     //set the URL to be used by all threads
     //use a QUrl object to have its convenience functions at hand later
@@ -387,8 +384,6 @@ bool HTTPDownload::start()
     //when the lookup finishes, we want to call the startThreads() function
     //that starts the actual measurement/threads 
 
-    LOG_INFO(QString("looking up %1").arg(requestUrl.host()));
-
     QHostInfo::lookupHost(requestUrl.host(), this, SLOT(startThreads(QHostInfo)));
 
     return true;
@@ -400,7 +395,6 @@ bool HTTPDownload::startThreads(QHostInfo server)
     //check if the name resolution was actually successful
     if (server.error() != QHostInfo::NoError)
     {
-        LOG_INFO("Name resolution failed... emitting error");
         emit error("Name resolution failed");
         return false;
     }
@@ -411,13 +405,12 @@ bool HTTPDownload::startThreads(QHostInfo server)
     for(n = 0; n < definition->threads; n++)
     {
         //create a worker thread that starts an actual download
-        DownloadThread *worker = new DownloadThread(requestUrl, server, definition->targetTime, definition->cacheTest);
+        DownloadThread *worker = new DownloadThread(requestUrl, server, definition->targetTime, definition->avoidCaches);
         QThread *workerThread = new QThread();
+
         //store the references to the threads/workers
         workers.append(worker);
         threads.append(workerThread);
-
-        //worker->setID(n);
 
         //move the worker to its own thread context
         worker->moveToThread(workerThread);
@@ -496,7 +489,6 @@ void HTTPDownload::TCPConnectionTracking(bool success)
 
 void HTTPDownload::downloadStartedTracking(bool success)
 {
-    LOG_INFO("Download started");
     if(success)
     {
         downloadingThreads++;
@@ -508,7 +500,8 @@ void HTTPDownload::downloadStartedTracking(bool success)
 
     //once all threads started their download we can start the download timer
     //plus some ramp-up time for the TCP connection
-    //if(downloadingThreads + notDownloadingThreads >= connectedThreads)
+    //need to check against definition->threads, since the unconnected
+    //threads also emit firstByteReceived(false)
     if(downloadingThreads + notDownloadingThreads == definition->threads)
     {
         if(notDownloadingThreads == definition->threads)
@@ -518,21 +511,19 @@ void HTTPDownload::downloadStartedTracking(bool success)
         }
 
         downloadStartTime = QDateTime::currentDateTime().addMSecs(definition->rampUpTime);
+        //when this timer fires we stop all downloads
         downloadTimer.singleShot(definition->targetTime + definition->rampUpTime, this, SLOT(downloadFinished()));
     }
 }
 
 void HTTPDownload::downloadFinished()
 {
-    LOG_INFO("Download timed out");
-    setEndDateTime(QDateTime::currentDateTime());
     bool resultsOK = false;
 
     //stop the timer if still running (e.g. the case if all
-    //threads stop prematurely
+    //threads stop prematurely)
     if(downloadTimer.isActive())
     {
-        LOG_INFO("STOPPING Downloadtimer")
         downloadTimer.stop();
     }
 
@@ -550,16 +541,14 @@ void HTTPDownload::downloadFinished()
     //stop all threads downloading data
     for(i = 0; i < workers.size(); i++)
     {
-        //LOG_INFO(QString("Stopping download %1").arg(workers[i]->getThreadStatus()));
         workers[i]->stopDownload();
-
-        //LOG_INFO(QString("Stopping download %1").arg(workers[i]->getThreadStatus()));
-        //measurement done
     }
 
     resultsOK = calculateResults();
 
-    //clean up (threads etc.)
+    //clean up (threads etc.) before emitting finished,
+    //otherwise this thing can become deleted before the
+    //contained threads
     for (i = 0; i < threads.size(); i++)
     {
         threads[i]->quit();
@@ -580,7 +569,7 @@ void HTTPDownload::downloadFinished()
 bool HTTPDownload::resultsTrustable()
 {
     //only if all successfully finished threads have a
-    //measurement period that is 80% of the envisaged download-time
+    //measurement period that is 75% of the envisaged download-time
     //we use the results
     int i = 0;
 
@@ -594,11 +583,13 @@ bool HTTPDownload::resultsTrustable()
             continue;
         }
 
-        LOG_INFO(QString("RunTime is %1 ms").arg(workers[i]->getRunTimeInNs()/1000000))
-
-        if(workers[i]->getRunTimeInNs() < (((double)definition->targetTime * 1000000) * 0.8))
+        //if run time during the measurement period of _all_ threads is above
+        //75% of the target time, we assume the measure
+        if(workers[i]->getRunTimeInNs() - \
+                (downloadStartTime.toMSecsSinceEpoch() * 1000000 - workers[i]->getStartTimeInNs())
+                < (((double)definition->targetTime * 1000000) * 0.75))
         {
-            return false;
+           return false;
         }
     }
 
@@ -613,25 +604,21 @@ bool HTTPDownload::resultsTrustable()
 }
 
 
-//calculate the overall download speed
+//calculate the overall download speed amongst other things
 bool HTTPDownload::calculateResults()
 {
     int i = 0;
-    //QVariantList threadBWs;
-    //QVariantList threadSlots;
 
     QVariantList threadBandwidths;
-    //QList<QList<qreal>>
 
     if(!resultsTrustable())
     {
-        LOG_INFO("Results not trustable")
         return false;
     }
 
     for(i = 0; i < workers.size(); i++)
     {
-        //only consider active threads
+        //only consider threads that finished successfully
         if(workers[i]->getThreadStatus() != DownloadThread::finishedSuccess)
         {
             continue;
@@ -639,8 +626,6 @@ bool HTTPDownload::calculateResults()
 
         threadBandwidths << workers[i]->averageThroughput(downloadStartTime.toMSecsSinceEpoch() * 1000000, \
                                       downloadStartTime.toMSecsSinceEpoch() * 1000000 + ((qint64) (definition->targetTime)) * 1000000);
-
-        LOG_INFO(QString("Thread Bandwidth: %1").arg(threadBandwidths.last().toDouble()));
     }
 
     for(i = 0; i < threadBandwidths.size(); i++)
@@ -648,13 +633,11 @@ bool HTTPDownload::calculateResults()
         overallBandwidth += threadBandwidths.at(i).toDouble();
     }
 
+    results.append(threadBandwidths.size());
+
     results.append(overallBandwidth);
 
     results.append(QVariant(threadBandwidths));
-
-    results.append(threadBandwidths.size());
-
-    //resutls.append();
 
     for(i = 0; i < workers.size(); i++)
     {
@@ -664,15 +647,10 @@ bool HTTPDownload::calculateResults()
             continue;
         }
 
-        //remove me: test code
-        definition->slotLength = 1000;
-        //LOG_INFO("---");
         results.append(QVariant(workers[i]->measurementSlots(definition->slotLength)));
     }
 
     return true;
-
-    //LOG_INFO(QString("Overall BW: %1").arg(overallBandwidth));
 }
 
 bool HTTPDownload::stop()
@@ -682,10 +660,7 @@ bool HTTPDownload::stop()
 
 Result HTTPDownload::result() const
 {
-
-
-    return Result(startDateTime(), endDateTime(), results);
-                 // definition->measurementUuid, errorString());
+    return Result(results);
 }
 
 void HTTPDownload::setStatus(Status status)

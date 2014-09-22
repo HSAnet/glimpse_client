@@ -29,7 +29,7 @@ public:
         finishedError
     };
 
-    DownloadThread (QUrl url, QHostInfo server, int targetTimeMs = 10000, bool cacheTest = false, QObject *parent = 0);
+    DownloadThread (QUrl url, QHostInfo server, int targetTimeMs = 10000, bool avoidCaches = false, QObject *parent = 0);
     ~DownloadThread();
 
     //void setID(int threadID);
@@ -54,7 +54,7 @@ private:
     //the time in which the download should finish (from the definition) im ms
     int targetTime;
     //testCaches? true: don't randomize URL, false: randomize URL
-    bool cacheTest;
+    bool avoidCaches;
 
     //the socket from which to read/write, to be created after moved to thread!
     //that's why we need a pointer here

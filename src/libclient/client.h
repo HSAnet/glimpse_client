@@ -93,7 +93,8 @@ public slots:
     void btc();
     void btc(const QString &host);
     void http();
-    void http(const QString &url);
+    void http(const QString &url, bool avoidCaches, int threads, int targetTime,
+              int rampUpTime, int slotLength);
     void upnp();
     void packetTrains();
     void packetTrains(const QString host,
