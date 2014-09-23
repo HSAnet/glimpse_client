@@ -20,27 +20,24 @@ class DownloadThread : public QObject
 public:
     enum downloadThreadStatus
     {
-        inactive,
-        connectingTCP,
-        connectedTCP,
-        awaitingFirstByte,
-        downloadInProgress,
-        finishedSuccess,
-        finishedError
+        Inactive,
+        ConnectingTCP,
+        ConnectedTCP,
+        AwaitingFirstByte,
+        DownloadInProgress,
+        FinishedSuccess,
+        FinishedError
     };
 
     DownloadThread (QUrl url, QHostInfo server, int targetTimeMs = 10000, bool avoidCaches = false, QObject *parent = 0);
     ~DownloadThread();
 
-    //void setID(int threadID);
-    //int getID();
+    downloadThreadStatus threadStatus() const;
 
-    downloadThreadStatus getThreadStatus();
-
-    qint64 getTimeToFirstByteInNs();
-    qint64 getStartTimeInNs();
-    qint64 getEndTimeInNs();
-    qint64 getRunTimeInNs();
+    qint64 timeToFirstByteInNs() const;
+    qint64 startTimeInNs() const;
+    qint64 endTimeInNs() const;
+    qint64 runTimeInNs() const;
 
     qreal averageThroughput(qint64 sTime, qint64 eTime); //average througput in bps
     QVariantList measurementSlots(int slotLength); //slotLength in ms
@@ -61,7 +58,7 @@ private:
     QTcpSocket *socket;
 
     //current status...see enum above
-    downloadThreadStatus threadStatus;
+    downloadThreadStatus tStatus;
 
     //absolute start time of the download
     QDateTime startTime;
@@ -84,7 +81,8 @@ private:
 
     //some more or less magic constants used
     //TCP timeout on the 3-way handshake in ms
-    static const qint64 tcpConnectTimeout = 5000;
+    static const int tcpConnectTimeout = 5000;
+    static const int firstByteReceivedTimeout = 5000;
     static const int defaultPort = 80;
 
 public slots:
