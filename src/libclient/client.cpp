@@ -397,6 +397,7 @@ bool Client::init()
                                                                                33434, 74, ping::Udp).toVariant(),
                                 precondition));
     tests.append(TestDefinition(11, "upnp", timing, QVariant(), precondition));
+    tests.append(TestDefinition(12, "wifilookup", timing, QVariant(), precondition));
 
     foreach (const TestDefinition test, tests)
     {
@@ -516,6 +517,11 @@ void Client::traceroute(const QString &url,
     TestDefinition testDefinition(13, "traceroute", timing,
                                   tracerouteDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
+}
+
+void Client::wifiLookup()
+{
+    d->scheduler.executeOnDemandTest(12);
 }
 
 void Client::measureIt()

@@ -109,6 +109,12 @@ ListPage {
         }
 
         ListElement {
+            text: "Wifi Lookup"
+            func: "wifiLookup"
+            group: "Measurements"
+        }
+
+        ListElement {
             text: "Measure It!"
             func: "measureIt"
             group: "Measurements"

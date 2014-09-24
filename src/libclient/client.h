@@ -125,6 +125,7 @@ public slots:
                     const quint16 &sourcePort,
                     const quint32 &payload,
                     const ping::PingType type);
+    void wifiLookup();
     void measureIt();
 
 signals:
