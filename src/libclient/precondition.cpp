@@ -1,8 +1,11 @@
 #include "precondition.h"
 #include "network/networkmanager.h"
 #include "deviceinfo.h"
+#include "client.h"
 
-class Precondition::Private
+#include <QSharedData>
+
+class PreconditionData : public QSharedData
 {
 public:
     bool onWireless;
@@ -15,7 +18,7 @@ public:
 };
 
 Precondition::Precondition()
-: d(new Private)
+: d(new PreconditionData)
 {
     d->onWireless = true;
     d->onWire = true;
@@ -26,8 +29,13 @@ Precondition::Precondition()
     d->locRadius = 0;
 }
 
+Precondition::Precondition(const Precondition &rhs)
+: d(rhs.d)
+{
+}
+
 Precondition::Precondition(bool onWireless, bool onWire, bool onCellular, quint16 minCharge, double locLat, double locLong, double locRadius)
-: d(new Private)
+: d(new PreconditionData)
 {
     d->onWireless = onWireless;
     d->onWire = onWire;
@@ -36,6 +44,20 @@ Precondition::Precondition(bool onWireless, bool onWire, bool onCellular, quint1
     d->locLat = locLat;
     d->locLong = locLong;
     d->locRadius = locRadius;
+}
+
+Precondition::~Precondition()
+{
+}
+
+Precondition &Precondition::operator=(const Precondition &rhs)
+{
+    if (this != &rhs)
+    {
+        d.operator=(rhs.d);
+    }
+
+    return *this;
 }
 
 Precondition Precondition::fromVariant(const QVariant &variant)
@@ -68,9 +90,10 @@ QVariant Precondition::toVariant() const
 
 bool Precondition::check()
 {
-    NetworkManager nm;
+    const NetworkManager *nm = Client::instance()->networkManager();
+
     // Networking
-    QNetworkInfo::NetworkMode mode = nm.connectionMode();
+    QNetworkInfo::NetworkMode mode = nm->connectionMode();
 
     if (!d->onWireless && mode == QNetworkInfo::WlanMode)
     {
@@ -82,7 +105,7 @@ bool Precondition::check()
         return false;
     }
 
-    if (!d->onCellular && nm.onMobileConnection())
+    if (!d->onCellular && nm->onMobileConnection())
     {
         return false;
     }
