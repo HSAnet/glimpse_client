@@ -9,4 +9,4 @@
 	url = git@github.com:HSAnet/qt-google-analytics.git
 [submodule "3rdparty/qtsystems"]
 	path = 3rdparty/qtsystems
-	url = https://gitorious.org/qt/qtsystems.git
+	url = git@github.com:HSAnet/qtsystems.git
