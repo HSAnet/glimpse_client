@@ -35,9 +35,6 @@ private:
 
     WifiLookupDefinitionPtr definition;
     Status currentStatus;
-#ifdef Q_OS_ANDROID
-    QVector<QAndroidJniObject> accessPoints;
-#endif
 
 signals:
     void statusChanged(Status status);
