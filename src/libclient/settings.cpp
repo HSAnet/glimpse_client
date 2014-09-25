@@ -19,7 +19,12 @@ public:
 void Settings::Private::sync()
 {
     settings.setValue("config", config.toVariant());
+
+     // remove password before sync so it is not written into storage
+    QVariant tmpPassword = settings.value("password");
+    settings.remove("password");
     settings.sync();
+    settings.setValue("password", tmpPassword);
 }
 
 Settings::Settings(QObject *parent)
