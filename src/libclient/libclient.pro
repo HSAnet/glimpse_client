@@ -48,13 +48,15 @@ android {
                measurement/wifilookup/wifilookup_android.cpp
 } else: ios {
     SOURCES += log/logger_all.cpp \
-               measurement/ping/ping_osx.cpp
+               measurement/ping/ping_osx.cpp \
+               measurement/wifilookup/wifilookup.cpp
+
     OBJECTIVE_SOURCES += storage/storagepaths_ios.mm \
                          deviceinfo_ios.mm
 } else {
     SOURCES += storage/storagepaths.cpp \
                log/logger_all.cpp \
-               measurement/wifilookup/wifilookup.cpp \
+               measurement/wifilookup/wifilookup.cpp
 
     osx: SOURCES += deviceinfo_osx.cpp \
                     measurement/ping/ping_osx.cpp
