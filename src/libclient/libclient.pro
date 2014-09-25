@@ -37,21 +37,26 @@ android {
     HEADERS += androidhelper.h \
                androidimageprovider.h \
                androidprocessmodel.h
+
     SOURCES += androidhelper.cpp \
                storage/storagepaths_android.cpp \
                log/logger_android.cpp \
                deviceinfo_android.cpp \
                androidimageprovider.cpp \
                androidprocessmodel.cpp \
-               measurement/ping/ping_linux.cpp
+               measurement/ping/ping_linux.cpp \
+               measurement/wifilookup/wifilookup_android.cpp
 } else: ios {
     SOURCES += log/logger_all.cpp \
-               measurement/ping/ping_osx.cpp
+               measurement/ping/ping_osx.cpp \
+               measurement/wifilookup/wifilookup.cpp
+
     OBJECTIVE_SOURCES += storage/storagepaths_ios.mm \
                          deviceinfo_ios.mm
 } else {
     SOURCES += storage/storagepaths.cpp \
-               log/logger_all.cpp
+               log/logger_all.cpp \
+               measurement/wifilookup/wifilookup.cpp
 
     osx: SOURCES += deviceinfo_osx.cpp \
                     measurement/ping/ping_osx.cpp
@@ -181,7 +186,9 @@ SOURCES +=  \
     trafficbudgetmanager.cpp \
     precondition.cpp \
     network/requests/uploadrequest.cpp \
-    localinformation.cpp
+    localinformation.cpp \
+    measurement/wifilookup/wifilookup_definition.cpp \
+    measurement/wifilookup/wifilookup_plugin.cpp
 
 HEADERS += \
     export.h \
@@ -274,7 +281,10 @@ HEADERS += \
     trafficbudgetmanager.h \
     precondition.h \
     network/requests/uploadrequest.h \
-    localinformation.h
+    localinformation.h \
+    measurement/wifilookup/wifilookup.h \
+    measurement/wifilookup/wifilookup_definition.h \
+    measurement/wifilookup/wifilookup_plugin.h
 
 OTHER_FILES += \
     libclient.pri
