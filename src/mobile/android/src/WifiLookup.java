@@ -23,12 +23,6 @@ public class WifiLookup {
             return null;
         }
 
-        // gather scan results for 5 seconds
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-        }
-
         List<ScanResult> wifiList = wifiManager.getScanResults();
 
         for (ScanResult s: wifiList) {
