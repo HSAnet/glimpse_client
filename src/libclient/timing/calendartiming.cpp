@@ -1,5 +1,6 @@
 #include "calendartiming.h"
 #include "types.h"
+#include <algorithm>
 
 Q_GLOBAL_STATIC(Ntp, ntp)
 
@@ -157,12 +158,12 @@ CalendarTiming::CalendarTiming()
     }
 
     // make sure the lists are sorted (should already be the case)
-    qSort(d->months);
-    qSort(d->daysOfWeek);
-    qSort(d->daysOfMonth);
-    qSort(d->hours);
-    qSort(d->minutes);
-    qSort(d->seconds);
+    std::sort(d->months.begin(), d->months.end());
+    std::sort(d->daysOfWeek.begin(), d->daysOfWeek.end());
+    std::sort(d->daysOfMonth.begin(), d->daysOfMonth.end());
+    std::sort(d->hours.begin(), d->hours.end());
+    std::sort(d->minutes.begin(), d->minutes.end());
+    std::sort(d->seconds.begin(), d->seconds.end());
 }
 
 CalendarTiming::CalendarTiming(const QDateTime &start, const QDateTime &end, const QList<quint8> &months,
@@ -179,6 +180,14 @@ CalendarTiming::CalendarTiming(const QDateTime &start, const QDateTime &end, con
     d->hours = hours;
     d->minutes = minutes;
     d->seconds = seconds;
+
+    // make sure the lists are sorted
+    std::sort(d->months.begin(), d->months.end());
+    std::sort(d->daysOfWeek.begin(), d->daysOfWeek.end());
+    std::sort(d->daysOfMonth.begin(), d->daysOfMonth.end());
+    std::sort(d->hours.begin(), d->hours.end());
+    std::sort(d->minutes.begin(), d->minutes.end());
+    std::sort(d->seconds.begin(), d->seconds.end());
 }
 
 CalendarTiming::~CalendarTiming()

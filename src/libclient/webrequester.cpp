@@ -369,9 +369,7 @@ void WebRequester::start()
     if (authentication == "basic")
     {
         url.setUserName(Client::instance()->settings()->userId());
-        url.setPassword(
-            Client::instance()->settings()->password()); // TODO change this to a temporary variable after login-form
-        // which is not saved into the settings
+        url.setPassword(Client::instance()->settings()->password());
     }
     else if (authentication == "apikey")
     {
