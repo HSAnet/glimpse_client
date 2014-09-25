@@ -60,6 +60,6 @@ bool WifiLookup::stop()
 
 Result WifiLookup::result() const
 {
-    return Result(startDateTime(), endDateTime(), QVariantList());
+    return Result(QVariantList());
 }
 

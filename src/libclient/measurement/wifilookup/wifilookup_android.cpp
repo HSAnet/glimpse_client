@@ -107,5 +107,5 @@ Result WifiLookup::result() const
         res << apRes;
     }
 
-    return Result(startDateTime(), endDateTime(), res);
+    return Result(res);
 }
