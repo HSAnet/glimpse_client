@@ -156,7 +156,7 @@ void Settings::setApiKey(const QString &apiKey)
 
 QString Settings::apiKey() const
 {
-    return d->settings.value("api-key", "0").toString();
+    return d->settings.value("api-key").toString();
 }
 
 bool Settings::isPassive() const
