@@ -67,12 +67,8 @@ private:
     //relative time until the first byte was received
     qint64 timeToFirstByte;
 
-    //timer to time out the name resolution process
-    //QTimer nameResolutionTimer;
-
     //the measurement Timer for tracking the time slots
     QElapsedTimer measurementTimer;
-    //qint64 m_lasttime;
 
     //list of bytes received
     QList<qint64> bytesReceived;
@@ -89,19 +85,16 @@ public slots:
     //tells the thread to perform the 3-way handshake
     void startTCPConnection();
     void disconnectionHandling();
-    //void connectionHandling();
     void startDownload();
     void stopDownload();
     //reads data from the socket whenever there's data ready to be read
     void read();
 
 signals:
-    //void done(int numBytes, int startTime, int duration);
     void TCPConnected(bool success);
     void TCPDisconnected();
     void firstByteReceived(bool success);
     void downloadFinished(bool success);
-    //void connected(bool success);
 };
 
 
@@ -129,9 +122,7 @@ private:
     bool calculateResults();
 
     HTTPDownloadDefinitionPtr definition;
-    //QVector<qint64> m_bytesReceived;
-    //QVector<qint64> m_times;
-    //QList<qreal> m_downloadSpeeds;
+
     Status currentStatus;
     QUrl requestUrl;
 
@@ -153,8 +144,6 @@ private:
 
     int finishedThreads;    //number of threads that have finished the download
 
-    bool downloadCompleted;
-
     //some more or less magic constants
     static const int maxRampUpTime = 10000; //max ramp-up time in milli-seconds for TCP to grow the CWND
     static const int minRampUpTime = 1000;
@@ -165,7 +154,6 @@ private:
     static const int minSlotLength = 250;
 
 private slots:
-    //void requestFinished();
     bool startThreads(QHostInfo server);
     void downloadFinished();
 
