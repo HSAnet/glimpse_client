@@ -113,11 +113,11 @@ void TaskController::Private::instructionFinished()
     scheduleRequest.clearResourceIds();
 
     // check which schedules we need
-    foreach (const int id, instructionResponse.scheduleIds())
+    foreach (const TaskId &id, instructionResponse.scheduleIds())
     {
         if (!scheduler->knownTestId(id))
         {
-            scheduleRequest.addResourceId(id);
+            scheduleRequest.addResourceId(id.toInt());
         }
     }
 

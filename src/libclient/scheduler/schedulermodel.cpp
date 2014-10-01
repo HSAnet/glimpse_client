@@ -181,7 +181,7 @@ QVariant SchedulerModel::data(const QModelIndex &index, int role) const
         return testDefinition.timing()->type();
 
     case IdRole:
-        return testDefinition.id();
+        return testDefinition.id().toInt();
     }
 
     return QVariant();

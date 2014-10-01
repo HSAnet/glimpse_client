@@ -3,12 +3,12 @@
 
 LOGGER(GetInstructionResponse);
 
-QList<int> GetInstructionResponse::taskIds() const
+QList<TaskId> GetInstructionResponse::taskIds() const
 {
     return m_taskIds;
 }
 
-QList<int> GetInstructionResponse::scheduleIds() const
+QList<TaskId> GetInstructionResponse::scheduleIds() const
 {
     return m_scheduleIds;
 }
@@ -19,14 +19,14 @@ bool GetInstructionResponse::fillFromVariant(const QVariantMap &variant)
 
     foreach (const QVariant &entry, variant.value("tasks").toList())
     {
-        m_taskIds.append(entry.toInt());
+        m_taskIds.append(TaskId(entry.toInt()));
     }
 
     m_scheduleIds.clear();
 
     foreach (const QVariant &entry, variant.value("schedules").toList())
     {
-      m_scheduleIds.append(entry.toInt());
+      m_scheduleIds.append(TaskId(entry.toInt()));
     }
 
     LOG_DEBUG(QString("Received %1 tasks").arg(m_taskIds.size()));

@@ -34,9 +34,9 @@ public:
 
     TestDefinitionList tests;
     TestDefinitionList onDemandTests;
-    QSet<quint32> testIds;
-    QSet<quint32> onDemandTestIds;
-    QSet<quint32> allTestIds;
+    QSet<TaskId> testIds;
+    QSet<TaskId> onDemandTestIds;
+    QSet<TaskId> allTestIds;
 
     QPointer<TaskExecutor> executor;
 
@@ -198,7 +198,7 @@ void Scheduler::execute(const TestDefinition &testDefinition)
     d->executor->execute(testDefinition);
 }
 
-int Scheduler::executeOnDemandTest(const quint32 &id)
+int Scheduler::executeOnDemandTest(const TaskId &id)
 {
     foreach (const TestDefinition& td, d->onDemandTests)
     {
@@ -215,9 +215,9 @@ int Scheduler::executeOnDemandTest(const quint32 &id)
     return -1;
 }
 
-bool Scheduler::knownTestId(const quint32 &id)
+bool Scheduler::knownTestId(const TaskId &id)
 {
-    foreach (const quint32 &testId, d->allTestIds)
+    foreach (const TaskId &testId, d->allTestIds)
     {
         if (testId == id)
         {

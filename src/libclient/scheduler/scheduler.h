@@ -22,9 +22,9 @@ public:
     void dequeue();
 
     void execute(const TestDefinition &testDefinition);
-    int executeOnDemandTest(const quint32 &id);
+    int executeOnDemandTest(const TaskId &id);
 
-    bool knownTestId(const quint32 &id);
+    bool knownTestId(const TaskId &id);
 
 signals:
     void testAdded(const TestDefinition &test, int position);
