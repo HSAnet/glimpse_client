@@ -40,10 +40,48 @@ private:
     int m_id;
 };
 
+template <>
+class Ident<class Report>
+{
+public:
+    Ident()
+    {
+    }
+
+    explicit Ident(const QByteArray &id)
+    : m_id(id)
+    {
+    }
+
+    bool operator==(const Ident<class Report> &rhs) const
+    {
+        return rhs.m_id == m_id;
+    }
+
+    QByteArray toByteArray() const
+    {
+        return m_id;
+    }
+
+    bool isValid() const
+    {
+        return !m_id.isNull();
+    }
+
+private:
+    QByteArray m_id;
+};
+
 template <typename T>
 inline uint qHash(const Ident<T> &id)
 {
     return qHash(id.toInt());
+}
+
+template <>
+inline uint qHash(const Ident<class Report> &id)
+{
+    return qHash(id.toByteArray());
 }
 
 // Type definitions

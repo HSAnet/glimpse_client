@@ -24,7 +24,7 @@ glimpse_client
 ```
 git clone git@github.com:YOURUSERNAME/glimpse_client.git && 
 cd glimpse_client &&
-git submodule init && 
+git submodule init
 git submodule update
 ```
 3. Run QtCreator, open client.pro, add your Qt configuration and select the "mobile" project near the "Play" button

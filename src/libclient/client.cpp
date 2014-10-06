@@ -283,7 +283,7 @@ void Client::Private::taskFinished(const TestDefinition &test, const QStringList
 
     if (report.isNull() || results.size() == 1)
     {
-        report = Report(test.id(), QDateTime::currentDateTime(), Client::version(), resultHeader, results);
+        report = Report(ReportId(), test.id(), QDateTime::currentDateTime(), Client::version(), resultHeader, results);
         reportScheduler.addReport(report);
     }
     else

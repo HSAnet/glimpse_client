@@ -6,6 +6,7 @@
 class ReportData : public QSharedData
 {
 public:
+    ReportId id;
     TaskId taskId;
     QDateTime dateTime;
     QStringList columnLabels;
@@ -23,7 +24,7 @@ Report::Report(const Report &other)
 {
 }
 
-Report::Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLabels, const ResultList &results)
+Report::Report(const ReportId &id, const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLabels, const ResultList &results)
 : d(new ReportData)
 {
     d->taskId = taskId;
@@ -59,6 +60,16 @@ bool Report::isNull() const
     return !d->taskId.isValid();
 }
 
+void Report::setId(const ReportId &id)
+{
+    d->id = id;
+}
+
+ReportId Report::id() const
+{
+    return d->id;
+}
+
 void Report::setTaskId(const TaskId &id)
 {
     d->taskId = id;
@@ -68,7 +79,8 @@ Report Report::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
 
-    return Report(TaskId(map.value("task_id").toInt()),
+    return Report(ReportId(map.value("id").toByteArray()),
+                  TaskId(map.value("task_id").toInt()),
                   map.value("report_time").toDateTime(),
                   map.value("app_version").toString(),
                   map.value("column_labels").toStringList(),
@@ -123,6 +135,7 @@ ResultList Report::results() const
 QVariant Report::toVariant() const
 {
     QVariantMap map;
+    map.insert("id", id().toByteArray());
     map.insert("task_id", taskId().toInt());
     map.insert("report_time", dateTime());
     map.insert("app_version", appVersion());

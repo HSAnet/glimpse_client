@@ -12,13 +12,16 @@ class CLIENT_API Report : public Serializable
 public:
     Report();
     Report(const Report &other);
-    Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLabels, const ResultList &results);
+    Report(const ReportId &id, const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLabels, const ResultList &results);
     ~Report();
 
     Report &operator=(const Report &rhs);
     bool operator ==(const Report &other) const;
 
     bool isNull() const;
+
+    void setId(const ReportId &id);
+    ReportId id() const;
 
     // Getters
     void setTaskId(const TaskId &id);

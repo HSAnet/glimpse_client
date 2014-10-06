@@ -26,6 +26,7 @@ INCLUDEPATH += $$PWD
 
 include($$SOURCE_DIRECTORY/dist.pri)
 include($$SOURCE_DIRECTORY/3rdparty/miniupnpc.pri)
+include($$SOURCE_DIRECTORY/3rdparty/ejdb.pri)
 include($$SOURCE_DIRECTORY/3rdparty/breakpad.pri)
 include($$SOURCE_DIRECTORY/3rdparty/winpcap.pri)
 include($$SOURCE_DIRECTORY/3rdparty/qt-google-analytics/qt-google-analytics.pri)
@@ -188,7 +189,8 @@ SOURCES +=  \
     network/requests/uploadrequest.cpp \
     localinformation.cpp \
     measurement/wifilookup/wifilookup_definition.cpp \
-    measurement/wifilookup/wifilookup_plugin.cpp
+    measurement/wifilookup/wifilookup_plugin.cpp \
+    storage/jsonentitystorage.cpp
 
 HEADERS += \
     export.h \
@@ -285,7 +287,9 @@ HEADERS += \
     measurement/wifilookup/wifilookup.h \
     measurement/wifilookup/wifilookup_definition.h \
     measurement/wifilookup/wifilookup_plugin.h \
-    ident.h
+    ident.h \
+    storage/entitystorage.h \
+    storage/jsonentitystorage.h
 
 OTHER_FILES += \
     libclient.pri
