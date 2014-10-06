@@ -2,6 +2,8 @@ TEMPLATE = app
 
 QT += gui quick qml concurrent
 
+CONFIG += qtquickcompiler
+
 include($$SOURCE_DIRECTORY/dist.pri)
 include($$SOURCE_DIRECTORY/src/libclient/libclient.pri)
 
