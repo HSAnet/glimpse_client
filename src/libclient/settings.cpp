@@ -74,6 +74,7 @@ Settings::StorageType Settings::init()
     if (newSettings)
     {
         d->config.setConfigAddress("supervisor.measure-it.net");
+        d->config.setSupervisorAdress("supervisor.measure-it.net");
         setAvailableTraffic(31457280);  // 30 MiB
         setAvailableMobileTraffic(20971520);  // 20 MiB
         setUsedTraffic(0);
@@ -89,7 +90,13 @@ Settings::StorageType Settings::init()
         // Always set the controller address if we have none
         if (d->config.configAddress().isEmpty())
         {
-            LOG_WARNING("Controller address lost, setting back default one");
+            LOG_WARNING("Config controller address lost, setting back default one");
+            d->config.setConfigAddress("supervisor.measure-it.net");
+        }
+
+        if (d->config.supervisorAddress().isEmpty())
+        {
+            LOG_WARNING("Supervisor address lost, setting back default one");
             d->config.setConfigAddress("supervisor.measure-it.net");
         }
 

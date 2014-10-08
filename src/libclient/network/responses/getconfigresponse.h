@@ -15,6 +15,7 @@ public:
     QVariant toVariant() const;
     void finished();
 
+    void setSupervisorAdress(const QString &address);
     QString supervisorAddress() const;
     TimingPtr supervisorTiming() const;
     QString keepaliveAddress() const;
