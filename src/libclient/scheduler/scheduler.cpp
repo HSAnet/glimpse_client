@@ -120,6 +120,14 @@ void Scheduler::Private::timeout()
 {
     // get the test and execute it
     TestDefinition td = tests.at(0);
+
+    QDateTime t = td.timing()->lastExecution();
+    if (t.isValid() && t.msecsTo(QDateTime::currentDateTime()) < 100)
+    {
+        updateTimer();
+        return;
+    }
+
     q->execute(td);
 
     // remove it from the list

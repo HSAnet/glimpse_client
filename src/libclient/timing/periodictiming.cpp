@@ -8,8 +8,6 @@ public:
     QDateTime start;
     QDateTime end;
     int period;
-
-    QDateTime lastExecute;
 };
 
 PeriodicTiming::PeriodicTiming(int period, const QDateTime &start, const QDateTime &end)
@@ -32,9 +30,9 @@ QString PeriodicTiming::type() const
 
 bool PeriodicTiming::reset()
 {
-    d->lastExecute = QDateTime::currentDateTime();
+    m_lastExecution = QDateTime::currentDateTime();
 
-    return !nextRun().isNull();
+    return !nextRun().isValid();
 }
 
 QDateTime PeriodicTiming::nextRun() const
