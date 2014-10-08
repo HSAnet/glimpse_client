@@ -32,7 +32,7 @@ bool PeriodicTiming::reset()
 {
     m_lastExecution = QDateTime::currentDateTime();
 
-    return !nextRun().isValid();
+    return nextRun().isValid();
 }
 
 QDateTime PeriodicTiming::nextRun() const

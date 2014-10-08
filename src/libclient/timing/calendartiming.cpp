@@ -199,7 +199,7 @@ bool CalendarTiming::reset()
 {
     m_lastExecution = QDateTime::currentDateTime();
 
-    return !nextRun().isValid();
+    return nextRun().isValid();
 }
 
 QDateTime CalendarTiming::nextRun() const
