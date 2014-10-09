@@ -13,6 +13,7 @@ class CLIENT_API Timing : public Serializable
 {
 public:
     int timeLeft(const QDateTime &when = QDateTime::currentDateTime()) const;
+    QDateTime lastExecution();
 
     virtual ~Timing() {}
 
@@ -20,6 +21,9 @@ public:
     virtual bool reset() = 0; // true = reset; false = stop execute
     virtual QDateTime nextRun() const = 0;
     virtual bool isValid() const = 0;
+
+protected:
+    QDateTime m_lastExecution;
 };
 
 #endif // TIMING_H

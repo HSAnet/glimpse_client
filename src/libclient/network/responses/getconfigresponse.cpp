@@ -37,6 +37,11 @@ void GetConfigResponse::finished()
     emit responseChanged();
 }
 
+void GetConfigResponse::setSupervisorAdress(const QString &address)
+{
+    m_supervisorChannel.setTarget(address);
+}
+
 QString GetConfigResponse::supervisorAddress() const
 {
     return m_supervisorChannel.target();
