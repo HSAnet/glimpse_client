@@ -95,6 +95,7 @@ FlickablePage {
 
             onPaint: {
                 var chart = new Chart.LineChart();
+                chart.text_size = qsTr("%1pt").arg(invisibleLabel.font.pixelSize);
                 chart.text_font = invisibleLabel.font.family;
                 chart.width = width;
                 chart.matrix_textPaddingLeft = 0.7;

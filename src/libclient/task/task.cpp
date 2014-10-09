@@ -2,6 +2,16 @@
 #include "../types.h"
 #include "../timing/timingfactory.h"
 
+class TaskData : public QSharedData
+{
+public:
+    TaskId id;
+    QString name;
+    TimingPtr timing;
+    QVariant measurementDefinition;
+    Precondition precondition;
+};
+
 TestDefinition::TestDefinition()
 : d(new TaskData)
 {
@@ -12,7 +22,7 @@ TestDefinition::TestDefinition(const TestDefinition &other)
 {
 }
 
-TestDefinition::TestDefinition(const quint32 &id, const QString &name, const TimingPtr &timing,
+TestDefinition::TestDefinition(const TaskId &id, const QString &name, const TimingPtr &timing,
                                const QVariant &measurementDefinition, const Precondition &precondition)
 : d(new TaskData)
 {
@@ -23,12 +33,26 @@ TestDefinition::TestDefinition(const quint32 &id, const QString &name, const Tim
     d->precondition = precondition;
 }
 
-bool TestDefinition::isNull() const
+TestDefinition::~TestDefinition()
 {
-    return (d->id == 0);
 }
 
-void TestDefinition::setId(const quint32 &id)
+TestDefinition &TestDefinition::operator=(const TestDefinition &rhs)
+{
+    if (this != &rhs)
+    {
+        d.operator=(rhs.d);
+    }
+
+    return *this;
+}
+
+bool TestDefinition::isNull() const
+{
+    return d->id.isValid();
+}
+
+void TestDefinition::setId(const TaskId &id)
 {
     d->id = id;
 }
@@ -36,7 +60,7 @@ void TestDefinition::setId(const quint32 &id)
 QVariant TestDefinition::toVariant() const
 {
     QVariantMap hash;
-    hash.insert("id", d->id);
+    hash.insert("id", d->id.toInt());
     hash.insert("method", d->name);
     hash.insert("timing", d->timing->toVariant());
     hash.insert("options", d->measurementDefinition);
@@ -47,14 +71,14 @@ TestDefinition TestDefinition::fromVariant(const QVariant &variant)
 {
     QVariantMap hash = variant.toMap();
 
-    return TestDefinition(hash.value("id").toInt(),
+    return TestDefinition(TaskId(hash.value("id").toInt()),
                           hash.value("method").toString(),
                           TimingFactory::timingFromVariant(hash.value("timing")),
                           hash.value("options"),
                           Precondition::fromVariant(hash.value("precondition")));
 }
 
-quint32 TestDefinition::id() const
+TaskId TestDefinition::id() const
 {
     return d->id;
 }

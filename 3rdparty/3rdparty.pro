@@ -1,10 +1,12 @@
 TEMPLATE = subdirs
 
-SUBDIRS += miniupnp.pro
+SUBDIRS += miniupnp.pro \
+           ejdb.pro
 
 !win32:SUBDIRS += qtsystems.pro
 
 OTHER_FILES += miniupnpc.pri \
                breakpad.pri \
                winpcap.pri \
-               qtsystems.pri
+               qtsystems.pri \
+               ejdb.pri

@@ -41,7 +41,7 @@ public:
         QVariantMap map;
         map.insert("type", "peer_request");
         map.insert("measurementDefinition", measurementDefinition);
-        map.insert("taskId", taskId);
+        map.insert("taskId", taskId.toInt());
         map.insert("measurementUuid", measurementUuid);
         map.insert("measurement", measurement);
         map.insert("peer", peer);
@@ -56,7 +56,7 @@ public:
 
         PeerRequest request;
         request.measurementDefinition = map.value("measurementDefinition");
-        request.taskId = map.value("taskId").toInt();
+        request.taskId = TaskId(map.value("taskId").toInt());
         request.measurementUuid = map.value("measurementUuid").toUuid();
         request.measurement = map.value("measurement").toString();
         request.peer = map.value("peer").toString();
@@ -66,7 +66,7 @@ public:
     }
 
     QVariant measurementDefinition;
-    quint32 taskId;
+    TaskId taskId;
     QUuid measurementUuid;
     QString measurement;
     QString peer;
@@ -542,7 +542,7 @@ QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType soc
 }
 
 QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
-                                                     const quint32 &taskId,
+                                                     const TaskId &taskId,
                                                      const QString &measurement,
                                                      MeasurementDefinitionPtr measurementDefinition,
                                                      NetworkManager::SocketType socketType)

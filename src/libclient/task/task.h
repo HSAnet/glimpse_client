@@ -1,6 +1,7 @@
 #ifndef TASK_H
 #define TASK_H
 
+#include "../ident.h"
 #include "../timing/timing.h"
 #include "../measurement/measurementdefinition.h"
 #include "../precondition.h"
@@ -11,42 +12,20 @@
 class TestDefinition;
 typedef QList<TestDefinition> TestDefinitionList;
 
-
-class TaskData : public QSharedData
-{
-public:
-    TaskData()
-    {
-    }
-
-    TaskData(const TaskData &other)
-    : QSharedData(other)
-    , id(other.id)
-    , name(other.name)
-    , timing(other.timing)
-    , measurementDefinition(other.measurementDefinition)
-    {
-    }
-
-    quint32 id;
-    QString name;
-    TimingPtr timing;
-    QVariant measurementDefinition;
-    Precondition precondition;
-};
-
-
 class CLIENT_API TestDefinition : public Serializable
 {
 public:
     TestDefinition();
     TestDefinition(const TestDefinition &other);
-    TestDefinition(const quint32 &id, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition, const Precondition &precondition);
+    TestDefinition(const TaskId &id, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition, const Precondition &precondition);
+    ~TestDefinition();
+
+    TestDefinition &operator=(const TestDefinition &rhs);
 
     bool isNull() const;
 
-    void setId(const quint32 &id);
-    quint32 id() const;
+    void setId(const TaskId &id);
+    TaskId id() const;
 
     void setName(const QString &name);
     QString name() const;
@@ -67,7 +46,7 @@ public:
     QVariant toVariant() const;
 
 private:
-    QSharedDataPointer<TaskData> d;
+    QSharedDataPointer<class TaskData> d;
 };
 
 Q_DECLARE_METATYPE(TestDefinition)

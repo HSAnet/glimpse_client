@@ -10,3 +10,6 @@
 [submodule "3rdparty/qtsystems"]
 	path = 3rdparty/qtsystems
 	url = git@github.com:HSAnet/qtsystems.git
+[submodule "3rdparty/ejdb"]
+	path = 3rdparty/ejdb
+	url = git@github.com:Softmotions/ejdb.git

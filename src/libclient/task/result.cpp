@@ -1,6 +1,20 @@
 #include "result.h"
 #include "../types.h"
 
+class ResultData : public QSharedData
+{
+public:
+    QDateTime startDateTime;
+    QDateTime endDateTime;
+    QVariant conflictingTasks;
+    QVariant crossTraffic;
+    QVariantList probeResult;
+    QUuid measureUuid;
+    QVariantMap preInfo;
+    QVariantMap postInfo;
+    QString errorString;
+};
+
 Result::Result()
 : d(new ResultData)
 {
@@ -37,6 +51,20 @@ Result::Result(const QDateTime &startDateTime, const QDateTime &endDateTime,
     d->preInfo = preInfo;
     d->postInfo = postInfo;
     d->errorString = errorString;
+}
+
+Result::~Result()
+{
+}
+
+Result &Result::operator=(const Result &rhs)
+{
+    if (this != &rhs)
+    {
+        d.operator=(rhs.d);
+    }
+
+    return *this;
 }
 
 bool Result::isNull() const

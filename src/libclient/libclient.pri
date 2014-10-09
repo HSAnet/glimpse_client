@@ -35,4 +35,7 @@ win32:LIBS += -lws2_32
 
 # If we link libclient statically, one also needs to link
 # miniupnpc statically
-android|mac:include($$SOURCE_DIRECTORY/3rdparty/miniupnpc.pri)
+android|mac {
+    include($$SOURCE_DIRECTORY/3rdparty/miniupnpc.pri)
+    include($$SOURCE_DIRECTORY/3rdparty/ejdb.pri)
+}

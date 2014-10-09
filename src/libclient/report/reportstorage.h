@@ -2,8 +2,10 @@
 #define REPORTSTORAGE_H
 
 #include "reportscheduler.h"
+#include "../storage/jsonentitystorage.h"
 
 class CLIENT_API ReportStorage : public QObject
+                               , public JSONEntityStorage<Report, ReportId>
 {
     Q_OBJECT
 
