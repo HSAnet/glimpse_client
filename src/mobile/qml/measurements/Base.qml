@@ -45,10 +45,10 @@ Page {
 
             var child = children.length === 1 ? children[0] : children[1];
 
-            if (!child.value && !child.text)
+            if (!child.value && !child.text && !child.hasOwnProperty("checked"))
                 continue;
 
-            params.push(child.text ? child.text : child.value);
+            params.push(child.hasOwnProperty("checked") ? child.checked : (child.text ? child.text : child.value));
         }
 
         console.log(params);

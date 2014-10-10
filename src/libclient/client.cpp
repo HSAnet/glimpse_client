@@ -386,7 +386,7 @@ bool Client::init()
                                                                   ping::Tcp).toVariant(), precondition));
     tests.append(TestDefinition(6, "dnslookup", timing, DnslookupDefinition("measure-it.net").toVariant(), precondition));
     tests.append(TestDefinition(7, "httpdownload", timing,
-                                HTTPDownloadDefinition("http://www.measure-it.net/static/measurement/1MB.zip", false, 1).toVariant(),
+                                HTTPDownloadDefinition("http://www.measure-it.net:80/static/measurement/67108864", false, 1, 10000, 3000, 1000).toVariant(),
                                 precondition));
     tests.append(TestDefinition(8, "packettrains_ma", timing, PacketTrainsDefinition("measure-it.net", 5105, 1000, 48, 1,
                                                                                      10485760, 262144000, 200000000).toVariant(),
@@ -439,9 +439,10 @@ void Client::http()
     d->scheduler.executeOnDemandTest(7);
 }
 
-void Client::http(const QString &url)
+void Client::http(const QString &url, bool avoidCaches, int threads, int targetTime,
+                  int rampUpTime, int slotLength)
 {
-    HTTPDownloadDefinition httpDef(url, false, 1);
+    HTTPDownloadDefinition httpDef(url, avoidCaches, threads , targetTime, rampUpTime, slotLength);
     TimingPtr timing(new ImmediateTiming());
     TestDefinition testDefinition(3, "httpdownload", timing,
                                   httpDef.toVariant(), Precondition());
