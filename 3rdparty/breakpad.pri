@@ -24,7 +24,7 @@ win32 {
 
     LIBS += -L$$BUILD_DIRECTORY/3rdparty/$$BUILDCONFIG -lbreakpad
     PRE_TARGETDEPS = $$BUILD_DIRECTORY/3rdparty/$$BUILDCONFIG/breakpad.lib
-} else {
+} else:!ios {
     LIBS += $$BUILD_DIRECTORY/3rdparty/libbreakpad.a
     PRE_TARGETDEPS = $$BUILD_DIRECTORY/3rdparty/libbreakpad.a
 }
