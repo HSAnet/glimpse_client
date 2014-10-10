@@ -3,6 +3,8 @@ win32 {
 } else: android {
 } else: ios {
 } else {
+    linux:QT += dbus
+
     INCLUDEPATH += $$PWD/qtsystems_fixes \
                    $$PWD/qtsystems_fixes/QtSystemInfo
 
