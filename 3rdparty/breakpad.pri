@@ -3,6 +3,8 @@ BREAKPAD_PATH = $$PWD/breakpad
 INCLUDEPATH += $$BREAKPAD_PATH \
                $$BREAKPAD_PATH/src
 
+android:INCLUDEPATH += $$BREAKPAD_PATH/src/common/android/include
+
 # Breakpad does not work on ios yet (for us)
 !ios {
     CONFIG += breakpad-builtin
