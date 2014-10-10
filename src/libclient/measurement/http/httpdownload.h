@@ -18,7 +18,7 @@ class DownloadThread : public QObject
     Q_OBJECT
 
 public:
-    enum downloadThreadStatus
+    enum DownloadThreadStatus
     {
         Inactive,
         ConnectingTCP,
@@ -29,18 +29,18 @@ public:
         FinishedError
     };
 
-    DownloadThread (QUrl url, QHostInfo server, int targetTimeMs = 10000, bool avoidCaches = false, QObject *parent = 0);
+    DownloadThread (const QUrl &url, const QHostInfo &server, int targetTimeMs = 10000, bool avoidCaches = false, QObject *parent = 0);
     ~DownloadThread();
 
-    downloadThreadStatus threadStatus() const;
+    DownloadThreadStatus threadStatus() const;
 
     qint64 timeToFirstByteInNs() const;
     qint64 startTimeInNs() const;
     qint64 endTimeInNs() const;
     qint64 runTimeInNs() const;
 
-    qreal averageThroughput(qint64 sTime, qint64 eTime); //average througput in bps
-    QVariantList measurementSlots(int slotLength); //slotLength in ms
+    qreal averageThroughput(qint64 sTime, qint64 eTime) const; //average througput in bps
+    QVariantList measurementSlots(int slotLength) const; //slotLength in ms
 
 private:
 
@@ -58,7 +58,7 @@ private:
     QTcpSocket *socket;
 
     //current status...see enum above
-    downloadThreadStatus tStatus;
+    DownloadThreadStatus tStatus;
 
     //absolute start time of the download
     QDateTime startTime;
@@ -154,7 +154,7 @@ private:
     static const int minSlotLength = 250;
 
 private slots:
-    bool startThreads(QHostInfo server);
+    bool startThreads(const QHostInfo &server);
     void downloadFinished();
 
 public slots:
@@ -167,6 +167,5 @@ signals:
     void connectTCP();
     void startDownload();
 };
-
 
 #endif // HTTPGETREQUEST_H

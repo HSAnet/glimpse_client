@@ -3,8 +3,7 @@
 
 LOGGER(HTTPDownload);
 
-
-DownloadThread::DownloadThread (QUrl url, QHostInfo server, int targetTimeMs, bool cacheTest, QObject *parent)
+DownloadThread::DownloadThread (const QUrl &url, const QHostInfo &server, int targetTimeMs, bool cacheTest, QObject *parent)
 : QObject(parent)
 , url(url)
 , server(server)
@@ -13,7 +12,6 @@ DownloadThread::DownloadThread (QUrl url, QHostInfo server, int targetTimeMs, bo
 , socket(NULL)
 , tStatus(Inactive)
 {
-
 }
 
 DownloadThread::~DownloadThread()
@@ -32,7 +30,7 @@ DownloadThread::~DownloadThread()
     }
 }
 
-DownloadThread::downloadThreadStatus DownloadThread::threadStatus() const
+DownloadThread::DownloadThreadStatus DownloadThread::threadStatus() const
 {
     return tStatus;
 }
@@ -184,7 +182,7 @@ void DownloadThread::read()
                          //socket buffer
 }
 
-qreal DownloadThread::averageThroughput(qint64 sTime, qint64 eTime)
+qreal DownloadThread::averageThroughput(qint64 sTime, qint64 eTime) const
 {
     int i = 0;
 
@@ -228,7 +226,7 @@ qreal DownloadThread::averageThroughput(qint64 sTime, qint64 eTime)
     return (8.0 * (qreal)bytes)/(((qreal)(timeIntervals[endSlot] - timeIntervals[startSlot]))/1000000000.0);
 }
 
-QVariantList DownloadThread::measurementSlots(int slotLength)
+QVariantList DownloadThread::measurementSlots(int slotLength) const
 {
     int i = 0;
 
@@ -373,7 +371,7 @@ bool HTTPDownload::start()
 }
 
 //this function starts the actual measurement
-bool HTTPDownload::startThreads(QHostInfo server)
+bool HTTPDownload::startThreads(const QHostInfo &server)
 {
     //check if the name resolution was actually successful
     if (server.error() != QHostInfo::NoError)
