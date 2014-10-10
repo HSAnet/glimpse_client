@@ -102,6 +102,8 @@ public:
     // QQmlNetworkAccessManagerFactory interface
     QNetworkAccessManager *create(QObject *parent)
     {
+        Q_UNUSED(parent);
+
         return Client::instance()->networkAccessManager();
     }
 };
