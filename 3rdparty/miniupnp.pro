@@ -13,6 +13,12 @@ CONFIG -= qt
 
 DEFINES += HAVE_UPNP STATICLIB
 
+# Disable warnings
+*clang*|*g++*|*llvm* {
+    QMAKE_CFLAGS += -w
+    QMAKE_CXXFLAGS += -w
+}
+
 android:DEFINES += sun # Atleast needed for android
 else:linux:DEFINES += _GNU_SOURCE
 mac:DEFINES += _DARWIN_C_SOURCE
