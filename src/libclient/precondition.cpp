@@ -118,7 +118,7 @@ bool Precondition::check()
 
     // Battery level
     qint8 batteryLevel = DeviceInfo().batteryLevel();
-    if (batteryLevel <= 0 && batteryLevel < d->minCharge)
+    if (batteryLevel >= 0 && batteryLevel < d->minCharge)
     {
         LOG_DEBUG("batteryLevel too low");
         return false;
