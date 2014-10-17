@@ -2,8 +2,11 @@
 #include "network/networkmanager.h"
 #include "deviceinfo.h"
 #include "client.h"
+#include "log/logger.h"
 
 #include <QSharedData>
+
+LOGGER(Precondition);
 
 class PreconditionData : public QSharedData
 {
@@ -97,16 +100,19 @@ bool Precondition::check()
 
     if (!d->onWireless && mode == QNetworkInfo::WlanMode)
     {
+        LOG_DEBUG("on wireless connection");
         return false;
     }
 
     if (!d->onWire && mode == QNetworkInfo::EthernetMode)
     {
+        LOG_DEBUG("on ethernet connection");
         return false;
     }
 
     if (!d->onCellular && nm->onMobileConnection())
     {
+        LOG_DEBUG("on mobile connection");
         return false;
     }
 
@@ -114,6 +120,7 @@ bool Precondition::check()
     qint8 batteryLevel = DeviceInfo().batteryLevel();
     if (batteryLevel <= 0 && batteryLevel < d->minCharge)
     {
+        LOG_DEBUG("batteryLevel too low");
         return false;
     }
 
