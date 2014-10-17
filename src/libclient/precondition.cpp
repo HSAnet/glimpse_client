@@ -67,9 +67,9 @@ Precondition Precondition::fromVariant(const QVariant &variant)
 {
     QVariantMap hash = variant.toMap();
 
-    return Precondition(hash.value("on_wireless").toBool(),
-                        hash.value("on_wire").toBool(),
-                        hash.value("on_cellular").toBool(),
+    return Precondition(hash.value("on_wireless", true).toBool(),
+                        hash.value("on_wire", true).toBool(),
+                        hash.value("on_cellular", true).toBool(),
                         hash.value("min_charge").toUInt(),
                         hash.value("loc_lat").toDouble(),
                         hash.value("loc_long").toDouble(),
@@ -83,9 +83,9 @@ QVariant Precondition::toVariant() const
     hash.insert("on_wireless", d->onWireless);
     hash.insert("on_wire", d->onWire);
     hash.insert("on_cellular", d->onCellular);
-    hash.insert("min_charge", d->onCellular);
-    hash.insert("loc_lat", d->onCellular);
-    hash.insert("loc_long", d->onCellular);
+    hash.insert("min_charge", d->minCharge);
+    hash.insert("loc_lat", d->locLat);
+    hash.insert("loc_long", d->locLong);
     hash.insert("loc_radius", d->locRadius);
 
     return hash;
