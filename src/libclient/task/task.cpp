@@ -40,6 +40,7 @@ QVariant TestDefinition::toVariant() const
     hash.insert("method", d->name);
     hash.insert("timing", d->timing->toVariant());
     hash.insert("options", d->measurementDefinition);
+    hash.insert("precondition", d->precondition.toVariant());
     return hash;
 }
 

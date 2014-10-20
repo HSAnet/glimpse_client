@@ -2,8 +2,11 @@
 #include "network/networkmanager.h"
 #include "deviceinfo.h"
 #include "client.h"
+#include "log/logger.h"
 
 #include <QSharedData>
+
+LOGGER(Precondition);
 
 class PreconditionData : public QSharedData
 {
@@ -64,9 +67,9 @@ Precondition Precondition::fromVariant(const QVariant &variant)
 {
     QVariantMap hash = variant.toMap();
 
-    return Precondition(hash.value("on_wireless").toBool(),
-                        hash.value("on_wire").toBool(),
-                        hash.value("on_cellular").toBool(),
+    return Precondition(hash.value("on_wireless", true).toBool(),
+                        hash.value("on_wire", true).toBool(),
+                        hash.value("on_cellular", true).toBool(),
                         hash.value("min_charge").toUInt(),
                         hash.value("loc_lat").toDouble(),
                         hash.value("loc_long").toDouble(),
@@ -80,9 +83,9 @@ QVariant Precondition::toVariant() const
     hash.insert("on_wireless", d->onWireless);
     hash.insert("on_wire", d->onWire);
     hash.insert("on_cellular", d->onCellular);
-    hash.insert("min_charge", d->onCellular);
-    hash.insert("loc_lat", d->onCellular);
-    hash.insert("loc_long", d->onCellular);
+    hash.insert("min_charge", d->minCharge);
+    hash.insert("loc_lat", d->locLat);
+    hash.insert("loc_long", d->locLong);
     hash.insert("loc_radius", d->locRadius);
 
     return hash;
@@ -97,23 +100,27 @@ bool Precondition::check()
 
     if (!d->onWireless && mode == QNetworkInfo::WlanMode)
     {
+        LOG_DEBUG("on wireless connection");
         return false;
     }
 
     if (!d->onWire && mode == QNetworkInfo::EthernetMode)
     {
+        LOG_DEBUG("on ethernet connection");
         return false;
     }
 
     if (!d->onCellular && nm->onMobileConnection())
     {
+        LOG_DEBUG("on mobile connection");
         return false;
     }
 
     // Battery level
     qint8 batteryLevel = DeviceInfo().batteryLevel();
-    if (batteryLevel <= 0 && batteryLevel < d->minCharge)
+    if (batteryLevel >= 0 && batteryLevel < d->minCharge)
     {
+        LOG_DEBUG("batteryLevel too low");
         return false;
     }
 
