@@ -132,10 +132,13 @@ void Traceroute::ping()
                                  definition->sourcePort,
                                  definition->payload,
                                  definition->type);
-    m_ping.prepare(NULL, PingPlugin().createMeasurementDefinition(
-                        "ping",
-                        pingDef.toVariant()));
-    m_ping.start();
+
+    if (m_ping.prepare(NULL, PingPlugin().createMeasurementDefinition(
+                           "ping",
+                           pingDef.toVariant())))
+    {
+        m_ping.start();
+    }
 }
 
 void Traceroute::destinationUnreachable(const PingProbe &probe)
