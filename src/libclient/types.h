@@ -36,13 +36,11 @@ namespace ping
  * The macros enum{To,From}String only work for classes which have a
  * QMetaObject variable named 'staticMetaObject'. The Qt macro 'Q_OBJECT' takes
  * care of this.
+ *
+ * enumFromString removed for now, we don't use it and the old version would probably not work
  */
 #define enumToString(className, enumName, value) \
-    className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator("enumName")).valueToKey(value)
-
-#define enumFromString(className, enumName, value) \
-    static_cast<className::enumName>(className::staticMetaObject.enumerator( \
-    className::staticMetaObject.indexOfEnumerator("enumName")).keyToValue(value))
+    className::staticMetaObject.enumerator(className::staticMetaObject.indexOfEnumerator(#enumName)).key(value)
 
 
 template<bool>
