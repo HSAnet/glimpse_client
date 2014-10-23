@@ -99,7 +99,7 @@ Result Traceroute::result() const
                 break;
             }
 
-            probe.insert("reponse", hops[i + k].response);
+            probe.insert("response", hops[i + k].response);
             probe.insert("rtt", (int)(hops[i + k].probe.recvTime -
                                       hops[i + k].probe.sendTime));
             pings.append(probe);
