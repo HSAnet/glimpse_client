@@ -505,7 +505,7 @@ Ping::Ping(QObject *parent)
 
 Ping::~Ping()
 {
-    if (definition->type == ping::System)
+    if (!definition.isNull() && definition->type == ping::System)
     {
         process.kill();
         process.waitForFinished(500);

@@ -106,6 +106,7 @@ public slots:
         result.setEndDateTime(QDateTime::currentDateTime());
         result.setPreInfo(measurement->preInfo());
         result.setPostInfo(localInformation.getVariables());
+        result.setErrorString(measurement->errorString()); // should be null
 
         emit finished(currentTest, measurement->resultHeader(), result);
         measurement->stop();
@@ -119,7 +120,7 @@ public slots:
 
         LOG_ERROR(QString("Finished execution of %1 (failed): %2").arg(currentTest.name()).arg(errorMsg));
 
-        Result result = measurement->result();
+        Result result;
         result.setStartDateTime(measurement->startDateTime());
         result.setEndDateTime(QDateTime::currentDateTime());
         result.setPreInfo(measurement->preInfo());

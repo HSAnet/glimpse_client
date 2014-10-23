@@ -18,7 +18,7 @@ LOGGER(UPnP);
 UPnP::UPnP(QObject *parent)
 : Measurement(parent)
 {
-    setResultHeader(QStringList() << "results");
+    setResultHeader(QStringList() << "data");
 }
 
 UPnP::~UPnP()
@@ -77,8 +77,6 @@ bool UPnP::start()
         IGDdatas data;
         char lanaddr[64];
         UPnPHash resultHash;
-
-        LOG_DEBUG(QString("Checking device %1: %2").arg(devNumber++).arg(QString::fromLatin1(devlist->descURL)));
 
         int code = UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr));
 
@@ -245,7 +243,6 @@ Result UPnP::result() const
 
     foreach (UPnPHash resultHash, results)
     {
-        LOG_DEBUG("UPnP result:");
         QHashIterator<UPnP::DataType, QVariant> iter(resultHash);
 
         // results from one interface
@@ -254,14 +251,11 @@ Result UPnP::result() const
         while (iter.hasNext())
         {
             iter.next();
-
             QString name = enumToString(UPnP, DataType, iter.key());
             name = name.replace(QRegExp("([A-Z])"), "_\\1").toLower();
             name.remove(0, 1);
 
             deviceResult.insert(name, iter.value());
-
-            LOG_DEBUG(QString("%1: %2").arg(name).arg(iter.value().toString()));
         }
 
         deviceResultList.append(deviceResult);

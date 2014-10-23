@@ -38,7 +38,6 @@ public:
         NumberOfPortMappings,
         FirewallEnabled,
         InboundPinholeAllowed,
-
         ModelName,
         Manufacturer,
         FriendlyName

@@ -451,7 +451,7 @@ void Client::http(const QString &url, bool avoidCaches, int threads, int targetT
 
 void Client::upnp()
 {
-    d->scheduler.executeOnDemandTest(14);
+    d->scheduler.executeOnDemandTest(11);
 }
 
 void Client::dnslookup()
