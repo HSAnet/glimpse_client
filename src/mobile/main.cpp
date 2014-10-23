@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
 #elif defined(Q_OS_IOS)
     // TODO: iOS Code
 #else
-    rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(engine));
+    // rootContext->setContextProperty("statusBar", new DesktopStatusBarHelper(engine));
 #endif // Q_OS_ANDROID
 
     /*
