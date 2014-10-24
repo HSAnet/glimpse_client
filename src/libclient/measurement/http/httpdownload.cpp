@@ -603,7 +603,7 @@ bool HTTPDownload::calculateResults()
         qreal avg = workers[i]->averageThroughput(downloadStartTime.toMSecsSinceEpoch() * 1000000, \
                                                   downloadStartTime.toMSecsSinceEpoch() * 1000000 + \
                                                   ((qint64) (definition->targetTime)) * 1000000);
-        thread.insert("bps_avg", avg);
+        thread.insert("avg", avg);
         overallBandwidth += avg;
 
         QList<qreal> measurementSlots = workers[i]->measurementSlots(definition->slotLength);
@@ -611,10 +611,10 @@ bool HTTPDownload::calculateResults()
         // get max and min
         QList<qreal>::const_iterator it = std::max_element(measurementSlots.begin(), measurementSlots.end());
         qreal max = *it;
-        thread.insert("bps_max", max);
+        thread.insert("max", max);
         it = std::min_element(measurementSlots.begin(), measurementSlots.end());
         qreal min = *it;
-        thread.insert("bps_min", min);
+        thread.insert("min", min);
 
         qreal sq_sum = std::inner_product(measurementSlots.begin(), measurementSlots.end(), measurementSlots.begin(), 0.0);
         qreal stdev = 0.0;
@@ -623,10 +623,10 @@ bool HTTPDownload::calculateResults()
         {
             // calculate standard deviation
             stdev = qSqrt(sq_sum / measurementSlots.size() - avg * avg);
-            thread.insert("bps_stdev", stdev);
+            thread.insert("stdev", stdev);
         }
 
-        thread.insert("bps_slots", listToVariant(measurementSlots));
+        thread.insert("slots", listToVariant(measurementSlots));
 
         threadResults.append(thread);
     }
