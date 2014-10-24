@@ -11,7 +11,7 @@ Vcs-Browser: https://github.com/HSAnet/glimpse_client
 Package: libglimpse
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, ca-certificates
 Description: The glimpse measurement platform library
 
 Package: glimpse-console
