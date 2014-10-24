@@ -40,7 +40,7 @@ public:
     qint64 runTimeInNs() const;
 
     qreal averageThroughput(qint64 sTime, qint64 eTime) const; //average througput in bps
-    QVariantList measurementSlots(int slotLength) const; //slotLength in ms
+    QList<qreal> measurementSlots(int slotLength) const; //slotLength in ms
 
 private:
 

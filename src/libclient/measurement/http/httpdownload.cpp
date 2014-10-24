@@ -1,5 +1,9 @@
 #include "httpdownload.h"
 #include "../../log/logger.h"
+#include "types.h"
+
+#include <QtMath>
+#include <numeric>
 
 LOGGER(HTTPDownload);
 
@@ -226,11 +230,11 @@ qreal DownloadThread::averageThroughput(qint64 sTime, qint64 eTime) const
     return (8.0 * (qreal)bytes)/(((qreal)(timeIntervals[endSlot] - timeIntervals[startSlot]))/1000000000.0);
 }
 
-QVariantList DownloadThread::measurementSlots(int slotLength) const
+QList<qreal> DownloadThread::measurementSlots(int slotLength) const
 {
     int i = 0;
 
-    QVariantList slotList;
+    QList<qreal> slotList;
 
     int bytes = 0;
     qint64 currentSlotTime = slotLength * 1000000;
@@ -288,8 +292,8 @@ HTTPDownload::HTTPDownload(QObject *parent)
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
-    setResultHeader(QStringList() << "actual_num_threads" << "results_ok" << "bandwidth_bps" <<
-                    "bps_per_thread" << "bps_slots_per_thread");
+    setResultHeader(QStringList() << "actual_num_threads" << "results_ok" << "bandwidth_bps_avg" <<
+                    "bandwidth_bps_per_thread");
 }
 
 HTTPDownload::~HTTPDownload()
@@ -579,13 +583,13 @@ bool HTTPDownload::resultsTrustable()
 //calculate the overall download speed amongst other things
 bool HTTPDownload::calculateResults()
 {
-    int i = 0;
+    int num_threads = 0;
 
-    QVariantList threadBandwidths;
+    QVariantList threadResults;
 
     bool resultsOK = resultsTrustable();
 
-    for(i = 0; i < workers.size(); i++)
+    for(int i = 0; i < workers.size(); i++)
     {
         //only consider threads that finished successfully
         if(workers[i]->threadStatus() != DownloadThread::FinishedSuccess)
@@ -593,33 +597,47 @@ bool HTTPDownload::calculateResults()
             continue;
         }
 
-        threadBandwidths << workers[i]->averageThroughput(downloadStartTime.toMSecsSinceEpoch() * 1000000, \
-                                      downloadStartTime.toMSecsSinceEpoch() * 1000000 + ((qint64) (definition->targetTime)) * 1000000);
+        num_threads++;
+
+        QVariantMap thread;
+        qreal avg = workers[i]->averageThroughput(downloadStartTime.toMSecsSinceEpoch() * 1000000, \
+                                                  downloadStartTime.toMSecsSinceEpoch() * 1000000 + \
+                                                  ((qint64) (definition->targetTime)) * 1000000);
+        thread.insert("bps_avg", avg);
+        overallBandwidth += avg;
+
+        QList<qreal> measurementSlots = workers[i]->measurementSlots(definition->slotLength);
+
+        // get max and min
+        QList<qreal>::const_iterator it = std::max_element(measurementSlots.begin(), measurementSlots.end());
+        qreal max = *it;
+        thread.insert("bps_max", max);
+        it = std::min_element(measurementSlots.begin(), measurementSlots.end());
+        qreal min = *it;
+        thread.insert("bps_min", min);
+
+        qreal sq_sum = std::inner_product(measurementSlots.begin(), measurementSlots.end(), measurementSlots.begin(), 0.0);
+        qreal stdev = 0.0;
+
+        if (measurementSlots.size() > 0)
+        {
+            // calculate standard deviation
+            stdev = qSqrt(sq_sum / measurementSlots.size() - avg * avg);
+            thread.insert("bps_stdev", stdev);
+        }
+
+        thread.insert("bps_slots", listToVariant(measurementSlots));
+
+        threadResults.append(thread);
     }
 
-    for(i = 0; i < threadBandwidths.size(); i++)
-    {
-        overallBandwidth += threadBandwidths.at(i).toDouble();
-    }
-
-    results.append(threadBandwidths.size());
+    results.append(num_threads);
 
     results.append(resultsOK);
 
     results.append(overallBandwidth);
 
-    results.append(QVariant(threadBandwidths));
-
-    for(i = 0; i < workers.size(); i++)
-    {
-        //only consider active threads
-        if(workers[i]->threadStatus() != DownloadThread::FinishedSuccess)
-        {
-            continue;
-        }
-
-        results.append(QVariant(workers[i]->measurementSlots(definition->slotLength)));
-    }
+    results.append(QVariant(threadResults));
 
     return true;
 }
