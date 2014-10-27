@@ -1,6 +1,7 @@
 #ifndef RESULT_H
 #define RESULT_H
 
+#include "../ident.h"
 #include "../serializable.h"
 
 #include <QDateTime>
@@ -11,40 +12,6 @@
 
 class Result;
 typedef QList<Result> ResultList;
-
-
-class ResultData : public QSharedData
-{
-public:
-    ResultData()
-    {
-    }
-
-    ResultData(const ResultData &other)
-    : QSharedData(other)
-    , startDateTime(other.startDateTime)
-    , endDateTime(other.endDateTime)
-    , conflictingTasks()
-    , crossTraffic()
-    , probeResult(other.probeResult)
-    , measureUuid(other.measureUuid)
-    , preInfo(other.preInfo)
-    , postInfo(other.postInfo)
-    , errorString(other.errorString)
-    {
-    }
-
-    QDateTime startDateTime;
-    QDateTime endDateTime;
-    QVariant conflictingTasks;
-    QVariant crossTraffic;
-    QVariantList probeResult;
-    QUuid measureUuid;
-    QVariantMap preInfo;
-    QVariantMap postInfo;
-    QString errorString;
-};
-
 
 class CLIENT_API Result : public Serializable
 {
@@ -61,6 +28,9 @@ public:
            const QVariantMap &preInfo,
            const QVariantMap &postInfo,
            const QString &errorString);
+    ~Result();
+
+    Result &operator=(const Result &rhs);
 
     bool isNull() const;
 
@@ -92,7 +62,7 @@ public:
     QVariant toVariant() const;
 
 private:
-    QSharedDataPointer<ResultData> d;
+    QSharedDataPointer<class ResultData> d;
 };
 
 

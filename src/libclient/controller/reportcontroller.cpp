@@ -133,16 +133,16 @@ void ReportController::Private::updateTimer()
 
 void ReportController::Private::onFinished()
 {
-    QList<quint32> taskIds = response.taskIds;
+    QList<TaskId> taskIds = response.taskIds;
     LOG_INFO(QString("%1 Results successfully inserted").arg(taskIds.size()));
 
-    foreach (const quint32 &taskId, taskIds)
+    foreach (const TaskId &taskId, taskIds)
     {
         Report report = scheduler->reportByTaskId(taskId);
 
         if (report.isNull())
         {
-            LOG_ERROR(QString("No task with id %1 found.").arg(taskId));
+            LOG_ERROR(QString("No task with id %1 found.").arg(taskId.toInt()));
         }
         else
         {

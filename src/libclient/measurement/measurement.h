@@ -41,8 +41,8 @@ public:
 
     virtual Result result() const = 0;
 
-    quint32 taskId() const;
-    void setTaskId(const quint32 &taskId);
+    TaskId taskId() const;
+    void setTaskId(const TaskId &taskId);
 
     QUuid getMeasurementUuid() const;
     void setMeasurementUuid(const QUuid &measurementUuid);

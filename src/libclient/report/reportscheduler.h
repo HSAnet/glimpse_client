@@ -11,7 +11,7 @@ public:
     ReportScheduler();
     ~ReportScheduler();
 
-    Report reportByTaskId(const quint32 &taskId) const;
+    Report reportByTaskId(const TaskId &taskId) const;
 
     ReportList reports() const;
 

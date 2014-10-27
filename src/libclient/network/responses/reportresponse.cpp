@@ -2,7 +2,6 @@
 
 bool ReportResponse::fillFromVariant(const QVariantMap &variant)
 {
-
     // TODO: new format
     this->taskIds.clear();
 
@@ -10,7 +9,7 @@ bool ReportResponse::fillFromVariant(const QVariantMap &variant)
 
     foreach (const QVariant &id, taskIds)
     {
-        this->taskIds.append(id.toInt());
+        this->taskIds.append(TaskId(id.toInt()));
     }
 
     return true;

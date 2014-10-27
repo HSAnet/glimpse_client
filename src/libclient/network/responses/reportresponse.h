@@ -17,6 +17,6 @@ public:
     bool fillFromVariant(const QVariantMap &variant);
     void finished();
 
-    QList<quint32> taskIds;
+    QList<TaskId> taskIds;
 };
 #endif // REPORTRESPONSE_H

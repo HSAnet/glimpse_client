@@ -7,46 +7,22 @@
 class Report;
 typedef QList<Report> ReportList;
 
-
-class ReportData : public QSharedData
-{
-public:
-    ReportData()
-    {
-    }
-
-    ReportData(const ReportData &other)
-    : QSharedData(other)
-    , taskId(other.taskId)
-    , dateTime(other.dateTime)
-    , columnLabels(other.columnLabels)
-    , results(other.results)
-    , appVersion(other.appVersion)
-    {
-    }
-
-    quint32 taskId;
-    QDateTime dateTime;
-    QStringList columnLabels;
-    ResultList results;
-    QString appVersion;
-};
-
-
 class CLIENT_API Report : public Serializable
 {
 public:
     Report();
     Report(const Report &other);
-    Report(const quint32 &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLabels, const ResultList &results);
+    Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLabels, const ResultList &results);
+    ~Report();
 
+    Report &operator=(const Report &rhs);
     bool operator ==(const Report &other) const;
 
     bool isNull() const;
 
     // Getters
-    void setTaskId(const quint32 &id);
-    quint32 taskId() const;
+    void setTaskId(const TaskId &id);
+    TaskId taskId() const;
 
     void setDateTime(const QDateTime &dateTime);
     QDateTime dateTime() const;
@@ -67,7 +43,7 @@ public:
     QVariant toVariant() const;
 
 private:
-    QSharedDataPointer<ReportData> d;
+    QSharedDataPointer<class ReportData> d;
 };
 
 Q_DECLARE_METATYPE(Report)

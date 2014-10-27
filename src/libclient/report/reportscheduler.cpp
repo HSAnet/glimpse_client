@@ -18,7 +18,7 @@ ReportScheduler::~ReportScheduler()
     delete d;
 }
 
-Report ReportScheduler::reportByTaskId(const quint32 &taskId) const
+Report ReportScheduler::reportByTaskId(const TaskId &taskId) const
 {
     foreach (const Report &r, d->reports)
     {

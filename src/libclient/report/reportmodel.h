@@ -2,6 +2,7 @@
 #define REPORTMODEL_H
 
 #include "../export.h"
+#include "../ident.h"
 
 #include <QAbstractTableModel>
 
@@ -27,7 +28,7 @@ public:
     void setScheduler(ReportScheduler *scheduler);
     ReportScheduler *scheduler() const;
 
-    QModelIndex indexFromTaskId(const quint32 &taskId) const;
+    QModelIndex indexFromTaskId(const TaskId &taskId) const;
 
     Q_INVOKABLE void reset();
     Q_INVOKABLE QVariant get(int index) const;

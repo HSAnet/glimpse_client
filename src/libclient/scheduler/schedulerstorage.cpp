@@ -70,7 +70,7 @@ void SchedulerStorage::Private::store(const TestDefinition &test)
 
 QString SchedulerStorage::Private::fileNameForTest(const TestDefinition &test) const
 {
-    return QString::number(test.id());
+    return QString::number(test.id().toInt());
 }
 
 void SchedulerStorage::Private::testAdded(const TestDefinition &test, int position)

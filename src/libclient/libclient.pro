@@ -284,7 +284,8 @@ HEADERS += \
     localinformation.h \
     measurement/wifilookup/wifilookup.h \
     measurement/wifilookup/wifilookup_definition.h \
-    measurement/wifilookup/wifilookup_plugin.h
+    measurement/wifilookup/wifilookup_plugin.h \
+    ident.h
 
 OTHER_FILES += \
     libclient.pri
