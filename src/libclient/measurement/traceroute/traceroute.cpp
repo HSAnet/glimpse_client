@@ -6,6 +6,8 @@
 #elif defined(Q_OS_WIN)
 #include <winsock2.h>
 #endif
+#include <numeric>
+#include <QtMath>
 
 LOGGER("Traceroute");
 
@@ -16,7 +18,7 @@ Traceroute::Traceroute(QObject *parent)
 , endOfRoute(false)
 , ttl(0)
 {
-    setResultHeader(QStringList() << "results");
+    setResultHeader(QStringList() << "results" << "hop_count");
 }
 
 Traceroute::~Traceroute()
@@ -87,10 +89,12 @@ Result Traceroute::result() const
     QVariantList pings;
     QVariantMap hop;
     QVariantMap probe;
+    QList<quint64> pingTime;
 
     for (int i = 0; i < hops.size(); i += definition->count)
     {
         pings.clear();
+        pingTime.clear();
 
         for (quint32 k = 0; k < definition->count; k++)
         {
@@ -99,20 +103,57 @@ Result Traceroute::result() const
                 break;
             }
 
+            // use only successful pings for the statistics
+            if (hops[i + k].response != traceroute::TIMEOUT)
+            {
+                pingTime.append(hops[i + k].probe.recvTime - hops[i + k].probe.sendTime);
+            }
+
             probe.insert("response", hops[i + k].response);
             probe.insert("rtt", (int)(hops[i + k].probe.recvTime -
                                       hops[i + k].probe.sendTime));
             pings.append(probe);
         }
 
+        quint64 min = 0, max = 0;
+        qreal avg = 0.0, sq_sum = 0.0, stdev = 0.0;
+
+        // do statistics only when there are pings
+        if (pingTime.size() > 0)
+        {
+            // get max and min
+            QList<quint64>::const_iterator it = std::max_element(pingTime.begin(), pingTime.end());
+            max = *it;
+            it = std::min_element(pingTime.begin(), pingTime.end());
+            min = *it;
+
+            // calculate average and fill ping times
+            foreach (quint64 val, pingTime)
+            {
+                avg += val;
+            }
+
+            sq_sum = std::inner_product(pingTime.begin(), pingTime.end(), pingTime.begin(), 0.0);
+            stdev = 0.0;
+
+            avg /= pingTime.size();
+            // calculate standard deviation
+            stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
+        }
+
         hop.insert("hop", QString(inet_ntoa(hops[i].probe.source.sin.sin_addr)));
         hop.insert("pings", pings);
         hop.insert("ttl", i / 3 + 1);
+        hop.insert("rtt_min", min);
+        hop.insert("rtt_max", max);
+        hop.insert("rtt_avg", avg);
+        hop.insert("rtt_stdev", stdev);
+        hop.insert("rtt_count", pingTime.size());
 
         res << hop;
     }
 
-    return Result(QVariantList() << QVariant(res));
+    return Result(QVariantList() << QVariant(res) << static_cast<int>(hops.size() / definition->count));
 }
 
 void Traceroute::ping()
