@@ -59,7 +59,6 @@ QStringList GetValuesFromNameValueList(struct NameValueParserData *pdata,
 bool UPnP::start()
 {
     int error = 0;
-    int devNumber = 0;
 
     UPNPDev *devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
     UPNPDev *devlistBegin = devlist;

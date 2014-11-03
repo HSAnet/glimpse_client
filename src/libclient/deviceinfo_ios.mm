@@ -52,7 +52,7 @@ qint32 DeviceInfo::signalStrength() const
 
 QString DeviceInfo::OSName() const
 {
-    return "";
+    return "ios";
 }
 
 QString DeviceInfo::OSVersion() const
