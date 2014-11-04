@@ -50,9 +50,14 @@ qint32 DeviceInfo::signalStrength() const
     return -1;
 }
 
-QString DeviceInfo::OSName() const
+QString DeviceInfo::platform() const
 {
     return "ios";
+}
+
+QString DeviceInfo::OSName() const
+{
+    return "";
 }
 
 QString DeviceInfo::OSVersion() const

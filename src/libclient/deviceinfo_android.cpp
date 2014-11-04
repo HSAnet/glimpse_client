@@ -151,6 +151,11 @@ qint32 DeviceInfo::signalStrength() const
     return d->netInfo.callMethod<jint>("getSignalStrength");
 }
 
+QString DeviceInfo::platform() const
+{
+    return "android";
+}
+
 QString DeviceInfo::OSName() const
 {
     QString osName = d->deviceInfo.callObjectMethod<jstring>("getOSName").toString();

@@ -234,6 +234,11 @@ qint8 DeviceInfo::batteryLevel() const
     return capacityRemaining * 100 / capacityMaximum;
 }
 
+QString DeviceInfo::platform() const
+{
+    return "unix";
+}
+
 QString DeviceInfo::OSName() const
 {
     return QDeviceInfo().operatingSystemName();

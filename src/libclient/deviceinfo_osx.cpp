@@ -88,6 +88,11 @@ qint32 DeviceInfo::signalStrength() const
     return QNetworkInfo().networkSignalStrength(Client::instance()->networkManager()->connectionMode(), 0);
 }
 
+QString DeviceInfo::platform() const
+{
+    return "osx";
+}
+
 QString DeviceInfo::OSName() const
 {
     return QDeviceInfo().operatingSystemName();
