@@ -135,6 +135,11 @@ qint8 DeviceInfo::batteryLevel() const
     return QBatteryInfo().level();
 }
 
+QString DeviceInfo::platform() const
+{
+    return "windows";
+}
+
 QString DeviceInfo::OSName() const
 {
     return QDeviceInfo().operatingSystemName();
