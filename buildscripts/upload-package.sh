@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PACKAGESERVER="http://distributor.measure-it.net/api/upload/"
+PACKAGESERVER="https://distributor.measure-it.net/api/upload/"
 
 if [ $# -ne 2 ]; then
 	echo "Usage: $0 <branch> <distribution>"
