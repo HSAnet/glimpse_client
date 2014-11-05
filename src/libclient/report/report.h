@@ -12,7 +12,7 @@ class CLIENT_API Report : public Serializable
 public:
     Report();
     Report(const Report &other);
-    Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLabels, const ResultList &results);
+    Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results);
     ~Report();
 
     Report &operator=(const Report &rhs);

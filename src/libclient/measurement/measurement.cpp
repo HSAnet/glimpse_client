@@ -11,7 +11,6 @@ public:
     QUuid measurementUuid;
     QDateTime startDateTime;
     QString errorString;
-    QStringList resultHeader;
     QVariantMap preInfo;
 };
 
@@ -79,16 +78,6 @@ void Measurement::setPreInfo(const QVariantMap &preInfo)
 QString Measurement::errorString() const
 {
     return d->errorString;
-}
-
-QStringList Measurement::resultHeader() const
-{
-    return d->resultHeader;
-}
-
-void Measurement::setResultHeader(const QStringList &columnLabels)
-{
-    d->resultHeader = columnLabels;
 }
 
 void Measurement::setErrorString(const QString &message)

@@ -74,7 +74,7 @@ public slots:
         else
         {
             LOG_ERROR(QString("Unable to create measurement: %1").arg(test.name()));
-            emit finished(test, QStringList(), Result("Unable to create measurement"));
+            emit finished(test, Result("Unable to create measurement"));
         }
 
         if (measurement)
@@ -88,7 +88,7 @@ public slots:
             result.setEndDateTime(QDateTime::currentDateTime());
             result.setPreInfo(measurement->preInfo());
             result.setErrorString(measurement->errorString());
-            emit finished(test, QStringList(), result);
+            emit finished(test, result);
 
             measurement.clear();
         }
@@ -108,7 +108,7 @@ public slots:
         result.setPostInfo(localInformation.getVariables());
         result.setErrorString(measurement->errorString()); // should be null
 
-        emit finished(currentTest, measurement->resultHeader(), result);
+        emit finished(currentTest, result);
         measurement->stop();
         measurement.clear();
     }
@@ -126,7 +126,7 @@ public slots:
         result.setPreInfo(measurement->preInfo());
         result.setPostInfo(localInformation.getVariables());
         result.setErrorString(errorMsg);
-        emit finished(currentTest, QStringList(), result);
+        emit finished(currentTest, result);
 
         measurement->stop();
         measurement.clear();
@@ -134,7 +134,7 @@ public slots:
 
 signals:
     void started(const TestDefinition &test);
-    void finished(const TestDefinition &test, const QStringList &resultHeader, const Result &result);
+    void finished(const TestDefinition &test, const Result &result);
 };
 
 class TaskExecutor::Private : public QObject
@@ -153,10 +153,10 @@ public:
         taskThread.start();
 
         connect(&executor, SIGNAL(started(TestDefinition)), this, SLOT(onStarted()));
-        connect(&executor, SIGNAL(finished(TestDefinition, QStringList, Result)), this, SLOT(onFinished()));
+        connect(&executor, SIGNAL(finished(TestDefinition, Result)), this, SLOT(onFinished()));
 
         connect(&executor, SIGNAL(started(TestDefinition)), q, SIGNAL(started(TestDefinition)));
-        connect(&executor, SIGNAL(finished(TestDefinition, QStringList, Result)), q, SIGNAL(finished(TestDefinition, QStringList, Result)));
+        connect(&executor, SIGNAL(finished(TestDefinition, Result)), q, SIGNAL(finished(TestDefinition, Result)));
     }
 
     ~Private()
