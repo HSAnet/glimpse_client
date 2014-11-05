@@ -558,7 +558,7 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
     RemoteHost remote = NetworkHelper::remoteHost(hostname);
     RemoteHost aliveRemote = d->keepaliveHost;
 
-    if (d->keepaliveAddress.isNull())
+    if (false && d->keepaliveAddress.isNull()) // TODO deactivated for now
     {
         LOG_ERROR(QString("Invalid keepalivealive address: '%1' can't talk to alive server").arg(
                       d->keepaliveAddress.toString()));
@@ -603,7 +603,7 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
     testSocket->writeDatagram(data, QHostAddress(remote.host), d->localPort);
 
     // Step two: Send test offer to peer via alive-server
-    testSocket->writeDatagram(data, d->keepaliveAddress, aliveRemote.port);
+    //testSocket->writeDatagram(data, d->keepaliveAddress, aliveRemote.port); // TODO deactivated for now
 
     LOG_TRACE("Sent test offer to peer and alive-server");
 

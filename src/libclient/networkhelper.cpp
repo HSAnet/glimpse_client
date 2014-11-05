@@ -125,7 +125,7 @@ RemoteHost NetworkHelper::remoteHost(const QString &hostname)
     else
     {
         host.host = hostname;
-        host.port = 1337;
+        host.port = 5105;
     }
 
     return host;

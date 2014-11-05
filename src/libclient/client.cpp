@@ -374,9 +374,9 @@ bool Client::init()
 
     tests.append(TestDefinition(TaskId(1), "ping", timing, PingDefinition("measure-it.net", 4, 200, 4000, 64, 33434, 33434, 74,
                                                                   ping::System).toVariant(), precondition));
-    tests.append(TestDefinition(TaskId(2), "btc_ma", timing, BulkTransportCapacityDefinition("measure-it.net", 5105, 1048576,
+    tests.append(TestDefinition(TaskId(2), "btc_ma", timing, BulkTransportCapacityDefinition("141.82.57.241", 5106, 1048576,
                                                                                      10).toVariant(), precondition));
-    tests.append(TestDefinition(TaskId(3), "btc_ma", timing, BulkTransportCapacityDefinition("measure-it.net", 5105, 1048576,
+    tests.append(TestDefinition(TaskId(3), "btc_ma", timing, BulkTransportCapacityDefinition("141.82.57.241", 5106, 1048576,
                                                                                      10).toVariant(), precondition)); // TODO this is for btc upload which is not implemented yet
     tests.append(TestDefinition(TaskId(4), "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74,
                                                                   ping::Udp).toVariant(), precondition));
@@ -386,7 +386,7 @@ bool Client::init()
     tests.append(TestDefinition(TaskId(7), "httpdownload", timing,
                                 HTTPDownloadDefinition("http://www.measure-it.net:80/static/measurement/67108864", false, 1, 10000, 3000, 1000).toVariant(),
                                 precondition));
-    tests.append(TestDefinition(TaskId(8), "packettrains_ma", timing, PacketTrainsDefinition("measure-it.net", 5105, 1000, 48, 1,
+    tests.append(TestDefinition(TaskId(8), "packettrains_ma", timing, PacketTrainsDefinition("141.82.57.241", 5106, 1000, 48, 1,
                                                                                      10485760, 262144000, 200000000).toVariant(),
                                 precondition));
     tests.append(TestDefinition(TaskId(9), "reversednslookup", timing, ReverseDnslookupDefinition("141.82.57.241").toVariant(),
