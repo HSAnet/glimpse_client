@@ -18,6 +18,7 @@ fi
 cd `dirname $0`
 cd ..
 cd ..
+cd build || true
 
 # Upload each file to the distributor server
 for file in *.deb *.rpm *.tar.xz *.apk *.exe *.dmg; do
