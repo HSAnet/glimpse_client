@@ -496,9 +496,6 @@ Ping::Ping(QObject *parent)
 , m_destAddress()
 , stream(&process)
 {
-    setResultHeader(QStringList() << "round_trip_avg" << "round_trip_min" << "round_trip_max"
-                    << "round_trip_stdev" << "round_trip_count" << "round_trip_ms");
-
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
 }
@@ -728,7 +725,7 @@ bool Ping::stop()
 
 Result Ping::result() const
 {
-    QVariantList res;
+    QVariantMap res;
     QVariantList roundTripMs;
     float avg = 0.0;
 
@@ -755,12 +752,12 @@ Result Ping::result() const
         stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
     }
 
-    res.append(avg);
-    res.append(min);
-    res.append(max);
-    res.append(stdev);
-    res.append(pingTime.size());
-    res.append(QVariant(roundTripMs));
+    res.insert("round_trip_avg", avg);
+    res.insert("round_trip_min", min);
+    res.insert("round_trip_max", max);
+    res.insert("round_trip_stdev", stdev);
+    res.insert("round_trip_count", pingTime.size());
+    res.insert("round_trip_ms", roundTripMs);
 
     return Result(res);
 }

@@ -18,7 +18,6 @@ Traceroute::Traceroute(QObject *parent)
 , endOfRoute(false)
 , ttl(0)
 {
-    setResultHeader(QStringList() << "results" << "hop_count");
 }
 
 Traceroute::~Traceroute()
@@ -153,7 +152,11 @@ Result Traceroute::result() const
         res << hop;
     }
 
-    return Result(QVariantList() << QVariant(res) << static_cast<int>(hops.size() / definition->count));
+    QVariantMap map;
+    map.insert("results", res);
+    map.insert("hop_count", static_cast<int>(hops.size() / definition->count));
+
+    return Result(map);
 }
 
 void Traceroute::ping()

@@ -63,9 +63,7 @@ public:
         executor.setNetworkManager(&networkManager);
         scheduler.setExecutor(&executor);
 
-        connect(&executor, SIGNAL(finished(TestDefinition, QStringList, Result)), this, SLOT(taskFinished(TestDefinition,
-                                                                                                          QStringList,
-                                                                                                          Result)));
+        connect(&executor, SIGNAL(finished(TestDefinition, Result)), this, SLOT(taskFinished(TestDefinition, Result)));
         connect(&loginController, SIGNAL(finished()), this, SLOT(loginStatusChanged()));
     }
 
@@ -122,7 +120,7 @@ public slots:
     void handleSigHup();
     void handleSigTerm();
 #endif // Q_OS_UNIX
-    void taskFinished(const TestDefinition &test, const QStringList &resultHeader, const Result &result);
+    void taskFinished(const TestDefinition &test, const Result &result);
     void loginStatusChanged();
 };
 
@@ -274,7 +272,7 @@ void Client::Private::handleSigHup()
 }
 #endif // Q_OS_UNIX
 
-void Client::Private::taskFinished(const TestDefinition &test, const QStringList &resultHeader, const Result &result)
+void Client::Private::taskFinished(const TestDefinition &test, const Result &result)
 {
     Report report = reportScheduler.reportByTaskId(test.id());
 
@@ -283,7 +281,7 @@ void Client::Private::taskFinished(const TestDefinition &test, const QStringList
 
     if (report.isNull() || results.size() == 1)
     {
-        report = Report(test.id(), QDateTime::currentDateTime(), Client::version(), resultHeader, results);
+        report = Report(test.id(), QDateTime::currentDateTime(), Client::version(), results);
         reportScheduler.addReport(report);
     }
     else
@@ -451,7 +449,7 @@ void Client::http(const QString &url, bool avoidCaches, int threads, int targetT
 
 void Client::upnp()
 {
-    d->scheduler.executeOnDemandTest(TaskId(14));
+    d->scheduler.executeOnDemandTest(TaskId(11));
 }
 
 void Client::dnslookup()

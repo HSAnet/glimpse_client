@@ -148,5 +148,5 @@ bool PacketTrainsMA::stop()
 
 Result PacketTrainsMA::result() const
 {
-    return Result(QVariantList(), definition->measurementUuid);
+    return Result(QVariantMap(), definition->measurementUuid);
 }

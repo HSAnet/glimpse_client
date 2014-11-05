@@ -41,7 +41,6 @@ WifiLookup::WifiLookup(QObject *parent)
 , d(new Private)
 , currentStatus(Unknown)
 {
-    setResultHeader(QStringList() << "ap_list");
 }
 
 WifiLookup::~WifiLookup()
@@ -121,5 +120,8 @@ Result WifiLookup::result() const
         }
     }
 
-    return Result(QVariantList() << QVariant(res));
+    QVariantMap map;
+    map.insert("ap_list", res);
+
+    return Result(map);
 }

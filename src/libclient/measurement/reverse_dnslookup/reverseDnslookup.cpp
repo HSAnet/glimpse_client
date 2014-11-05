@@ -13,7 +13,6 @@ ReverseDnslookup::ReverseDnslookup(QObject *parent)
 , m_currentStatus(ReverseDnslookup::Unknown)
 , m_lookupId(0)
 {
-    setResultHeader(QStringList() << "hostname" << "address");
 }
 
 ReverseDnslookup::~ReverseDnslookup()
@@ -90,10 +89,10 @@ bool ReverseDnslookup::stop()
 
 Result ReverseDnslookup::result() const
 {
-    QVariantList res;
+    QVariantMap res;
 
-    res.append(m_reverseDnslookupOutput);
-    res.append(listToVariant(m_reverseDnslookupAddresses));
+    res.insert("hostname", m_reverseDnslookupOutput);
+    res.insert("address", listToVariant(m_reverseDnslookupAddresses));
 
     return Result(res);
 }

@@ -18,7 +18,6 @@ LOGGER(UPnP);
 UPnP::UPnP(QObject *parent)
 : Measurement(parent)
 {
-    setResultHeader(QStringList() << "data");
 }
 
 UPnP::~UPnP()
@@ -237,7 +236,7 @@ bool UPnP::stop()
 
 Result UPnP::result() const
 {
-    // List for all results
+     // List for all results
     QVariantList deviceResultList;
 
     foreach (UPnPHash resultHash, results)
@@ -260,6 +259,7 @@ Result UPnP::result() const
         deviceResultList.append(deviceResult);
     }
 
-    // the results need to be in a list, because multiple dict-objects are possible
-    return Result(QVariantList()<<QVariant(deviceResultList));
+    QVariantMap res;
+    res.insert("data", deviceResultList);
+    return Result(res);
 }
