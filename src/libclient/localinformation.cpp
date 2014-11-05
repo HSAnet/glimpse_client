@@ -1,4 +1,5 @@
 #include "localinformation.h"
+#include "client.h"
 
 LocalInformation::LocalInformation()
 {
@@ -23,12 +24,15 @@ QVariantMap LocalInformation::getConstants() const
     QVariantMap map;
 
     map.insert("device_id", deviceInfo.deviceId());
-    map.insert("os_name", deviceInfo.OSName());
+    map.insert("app_version", Client::instance()->version());
+    map.insert("platform", deviceInfo.platform());
+    map.insert("os", deviceInfo.OSName());
     map.insert("os_version", deviceInfo.OSVersion());
     map.insert("firmware_version", deviceInfo.firmwareVersion());
     map.insert("board", deviceInfo.board());
     map.insert("manufacturer", deviceInfo.manufacturer());
     map.insert("model", deviceInfo.model());
+    //map.insert("group_id", nullptr); // set for a release if needed
 
     return map;
 }

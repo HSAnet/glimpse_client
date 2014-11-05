@@ -16,6 +16,7 @@ public:
     quint32 freeMemory() const;
     qint32 signalStrength() const;
     qint8 batteryLevel() const;
+    QString platform() const;
     QString OSName() const;
     QString OSVersion() const;
     QString firmwareVersion() const;

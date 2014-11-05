@@ -1,37 +1,22 @@
 #include "registerdevicerequest.h"
 #include "types.h"
-
-// TODO: Adjust types
-#if defined(Q_OS_WIN)
-#define OS "Windows"
-#define TYPE RegisterDeviceRequest::Workstation
-#elif defined(Q_OS_ANDROID)
-#define OS "Android"
-#define TYPE RegisterDeviceRequest::Phone
-#elif defined(Q_OS_LINUX)
-#define OS "Linux"
-#define TYPE RegisterDeviceRequest::Workstation
-#elif defined(Q_OS_MAC)
-#define OS "Mac OS X"
-#define TYPE RegisterDeviceRequest::Workstation
-#endif
+#include "localinformation.h"
 
 class RegisterDeviceRequest::Private
 {
 public:
     Private()
-    : deviceType(TYPE)
-    , maxAllowedTraffic(0)
+    : maxAllowedTraffic(0)
     , dataPlanDownlink(0)
     , dataPlanUplink(0)
     {
     }
 
+    LocalInformation localInformation;
     QString dataPlanName;
     RegisterDeviceRequest::ProviderTechnology providerTechnology;
     QString deviceName;
     QString platform;
-    RegisterDeviceRequest::DeviceType deviceType;
     QString provider;
     int maxAllowedTraffic;
     int dataPlanDownlink;
@@ -107,19 +92,6 @@ void RegisterDeviceRequest::setPlatform(const QString &platform)
     }
 }
 
-RegisterDeviceRequest::DeviceType RegisterDeviceRequest::deviceType() const
-{
-    return d->deviceType;
-}
-
-void RegisterDeviceRequest::setDeviceType(DeviceType deviceType)
-{
-    if (d->deviceType != deviceType)
-    {
-        d->deviceType = deviceType;
-        emit deviceTypeChanged(deviceType);
-    }
-}
 
 QString RegisterDeviceRequest::provider() const
 {
@@ -177,24 +149,10 @@ void RegisterDeviceRequest::setDataPlanUplink(int dataPlanUplink)
     }
 }
 
-/*QUuid RegisterDeviceRequest::deviceId() const {
-  return d->deviceId;
-}*/
-
-/*void RegisterDeviceRequest::setDeviceId(const QUuid& deviceId) {
-  if (d->deviceId != deviceId) {
-    d->deviceId = deviceId;
-    emit deviceIdChanged(deviceId);
-  }
-}*/
 
 QVariant RegisterDeviceRequest::toVariant() const
 {
-    QVariantMap data;
-    data.insert("device_id", deviceId());
-    data.insert("os", platform());
-    data.insert("type", enumToString(RegisterDeviceRequest, DeviceType, deviceType()));
-    data.insert("provider", provider());
+    QVariantMap data = d->localInformation.getConstants();
 
     /*data.insert("data_plan_name", dataPlanName());
     data.insert("device_name", deviceName());
