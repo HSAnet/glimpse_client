@@ -292,8 +292,6 @@ HTTPDownload::HTTPDownload(QObject *parent)
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
-    setResultHeader(QStringList() << "actual_num_threads" << "results_ok" << "bandwidth_bps_avg" <<
-                    "bandwidth_bps_per_thread");
 }
 
 HTTPDownload::~HTTPDownload()
@@ -583,10 +581,8 @@ bool HTTPDownload::resultsTrustable()
 //calculate the overall download speed amongst other things
 bool HTTPDownload::calculateResults()
 {
-    int num_threads = 0;
-
     QVariantList threadResults;
-
+    int num_threads = 0;
     bool resultsOK = resultsTrustable();
 
     for(int i = 0; i < workers.size(); i++)
@@ -631,13 +627,10 @@ bool HTTPDownload::calculateResults()
         threadResults.append(thread);
     }
 
-    results.append(num_threads);
-
-    results.append(resultsOK);
-
-    results.append(overallBandwidth);
-
-    results.append(QVariant(threadResults));
+    results.insert("actual_num_threads", num_threads);
+    results.insert("results_ok", resultsOK);
+    results.insert("bandwidth_bps_avg", overallBandwidth);
+    results.insert("bandwidth_bps_per_thread", threadResults);
 
     return true;
 }

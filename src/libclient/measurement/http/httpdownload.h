@@ -115,7 +115,7 @@ public:
 
 private:
     //results
-    QVariantList results;
+    QVariantMap results;
 
     void setStatus(Status status);
     bool resultsTrustable();

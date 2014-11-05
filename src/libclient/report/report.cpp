@@ -8,7 +8,6 @@ class ReportData : public QSharedData
 public:
     TaskId taskId;
     QDateTime dateTime;
-    QStringList columnLabels;
     ResultList results;
     QString appVersion;
 };
@@ -23,15 +22,12 @@ Report::Report(const Report &other)
 {
 }
 
-Report::Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const QStringList columnLabels, const ResultList &results)
+Report::Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results)
 : d(new ReportData)
 {
     d->taskId = taskId;
     d->dateTime = dateTime;
     d->appVersion = appVersion;
-    d->columnLabels = QStringList() << "start_time" << "end_time" << "conflicting_tasks"
-                                    << "cross_traffic" << "duration" << "measure_uuid"
-                                    << "pre_info" << "post_info" << "error" << columnLabels;
     d->results = results;
 }
 
@@ -71,7 +67,6 @@ Report Report::fromVariant(const QVariant &variant)
     return Report(TaskId(map.value("task_id").toInt()),
                   map.value("report_time").toDateTime(),
                   map.value("app_version").toString(),
-                  map.value("column_labels").toStringList(),
                   listFromVariant<Result>(map.value("results")));
 }
 
@@ -100,16 +95,6 @@ QString Report::appVersion() const
     return d->appVersion;
 }
 
-void Report::setColumnLabels(const QStringList &columnLabels)
-{
-    d->columnLabels = columnLabels;
-}
-
-QStringList Report::columnLabels() const
-{
-    return d->columnLabels;
-}
-
 void Report::setResults(const ResultList &results)
 {
     d->results = results;
@@ -126,7 +111,6 @@ QVariant Report::toVariant() const
     map.insert("task_id", taskId().toInt());
     map.insert("report_time", dateTime());
     map.insert("app_version", appVersion());
-    map.insert("column_labels", columnLabels());
     map.insert("results", listToVariant(results()));
     return map;
 }

@@ -13,7 +13,6 @@ Dnslookup::Dnslookup(QObject *parent)
 : Measurement(parent)
 , m_currentStatus(Dnslookup::Unknown)
 {
-    setResultHeader(QStringList() << "records");
 }
 
 Dnslookup::~Dnslookup()
@@ -106,7 +105,7 @@ bool Dnslookup::stop()
 
 Result Dnslookup::result() const
 {
-    QVariantList res;
+    QVariantMap res;
 
     QVariantList records;
 
@@ -137,7 +136,7 @@ Result Dnslookup::result() const
         records << map;
     }
 
-    res.append(QVariant(records));
+    res.insert("records", records);
 
     Result result(res);
     result.setErrorString(m_dnsError);

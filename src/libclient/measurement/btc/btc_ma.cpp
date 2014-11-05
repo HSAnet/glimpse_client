@@ -19,8 +19,6 @@ BulkTransportCapacityMA::BulkTransportCapacityMA(QObject *parent)
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
-    setResultHeader(QStringList() << "kBs" << "kBs_avg" << "kBs_min"
-                    << "kBs_max" << "kBs_stddev");
 }
 
 bool BulkTransportCapacityMA::start()
@@ -251,7 +249,7 @@ bool BulkTransportCapacityMA::stop()
 
 Result BulkTransportCapacityMA::result() const
 {
-    QVariantList res;
+    QVariantMap res;
     QVariantList downSpeeds;
     float avg = 0.0;
 
@@ -274,11 +272,11 @@ Result BulkTransportCapacityMA::result() const
     qreal sq_sum = std::inner_product(m_downloadSpeeds.begin(), m_downloadSpeeds.end(), m_downloadSpeeds.begin(), 0.0);
     qreal stdev = qSqrt(sq_sum / m_downloadSpeeds.size() - avg * avg);
 
-    res.append(avg);
-    res.append(min);
-    res.append(max);
-    res.append(stdev);
-    res.append(QVariant(downSpeeds));
+    res.insert("kBs", avg);
+    res.insert("kBs_avg", min);
+    res.insert("kBs_min", max);
+    res.insert("kBs_max", stdev);
+    res.insert("kBs_stddev", downSpeeds);
 
     return Result(res, definition->measurementUuid);
 }
