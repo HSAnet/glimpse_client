@@ -272,11 +272,11 @@ Result BulkTransportCapacityMA::result() const
     qreal sq_sum = std::inner_product(m_downloadSpeeds.begin(), m_downloadSpeeds.end(), m_downloadSpeeds.begin(), 0.0);
     qreal stdev = qSqrt(sq_sum / m_downloadSpeeds.size() - avg * avg);
 
-    res.insert("kBs", avg);
-    res.insert("kBs_avg", min);
-    res.insert("kBs_min", max);
-    res.insert("kBs_max", stdev);
-    res.insert("kBs_stddev", downSpeeds);
+    res.insert("kBs_avg", avg);
+    res.insert("kBs_min", min);
+    res.insert("kBs_max", max);
+    res.insert("kBs_stddev", stdev);
+    res.insert("kBs", downSpeeds);
 
     return Result(res, definition->measurementUuid);
 }
