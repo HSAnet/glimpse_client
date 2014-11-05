@@ -129,7 +129,7 @@ Result Dnslookup::result() const
 
         QVariantMap map;
         map.insert("name", val.name());
-        map.insert("time_to_live", val.timeToLive());
+        map.insert("ttl", val.timeToLive());
         map.insert("value", val.value().toString());
         map.insert("type", type);
 
