@@ -63,7 +63,6 @@ private slots:
         // Already registered?
         if (m_controller->registeredDevice())
         {
-            Client::instance()->taskController()->fetchTasks();
             return;
         }
 
