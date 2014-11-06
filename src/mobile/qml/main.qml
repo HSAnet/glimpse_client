@@ -83,8 +83,23 @@ Rectangle {
 
         property bool enabled: false
 
-        target: client.taskController
+        target: client.loginController
         onError: {
+            if (enabled) {
+                enabled = false;
+
+                if (client.loginController.registeredDevice)
+                    return;
+
+                var params = {
+                    item: Qt.resolvedUrl("WelcomeLoginPage.qml")
+                }
+
+                pageStack.insert(0, params);
+                pageStack.pop(null);
+            }
+        }
+        onFinished: {
             if (enabled) {
                 enabled = false;
 
@@ -101,9 +116,6 @@ Rectangle {
                 pageStack.insert(0, params);
                 pageStack.pop(null);
             }
-        }
-        onFinished: {
-            enabled = false;
         }
     }
 

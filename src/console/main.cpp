@@ -63,6 +63,7 @@ private slots:
         // Already registered?
         if (m_controller->registeredDevice())
         {
+            Client::instance()->taskController()->fetchTasks();
             return;
         }
 
@@ -77,13 +78,13 @@ private slots:
         switch (status)
         {
         case WebRequester::Error:
-            LOG_ERROR(QString("Device registration failed, quitting. (%1)").arg(m_requester.errorString()));
+            LOG_DEBUG(QString("Device registration failed, quitting. (%1)").arg(m_requester.errorString()));
             qApp->quit();
             break;
 
         case WebRequester::Finished:
-            Client::instance()->taskController()->fetchTasks();
             LOG_INFO("Device successfully registered");
+            Client::instance()->taskController()->fetchTasks();
             break;
 
         default:

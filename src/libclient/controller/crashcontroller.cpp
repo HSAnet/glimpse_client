@@ -146,7 +146,7 @@ bool CrashController::init(NetworkManager *networkManager, Settings *settings)
         }
         else
         {
-            LOG_INFO("Crashdump directory created");
+            LOG_DEBUG("Crashdump directory created");
         }
     }
 

@@ -31,7 +31,7 @@ public:
         connect(&requester, SIGNAL(statusChanged(WebRequester::Status)), q, SIGNAL(statusChanged()));
         connect(&requester, SIGNAL(started()), q, SIGNAL(started()));
 
-        taskRequest.setPath(("/supervisor/api/v1/instruction/1/"));
+        apiKeyLoginRequest.setPath(("/auth/api/v1/login/1/"));
         requester.setResponse(&response);
     }
 
@@ -46,8 +46,9 @@ public:
     UserRegisterRequest registerRequest;
     LoginRequest loginRequest;
     LoginResponse response;
-    GetResourceRequest taskRequest;
-    GetInstructionResponse taskResponse;
+
+    GetResourceRequest apiKeyLoginRequest; // same as LoginRequest but uses ApiKey instead of basic auth
+    LoginResponse apiKeyLoginResponse;
 
     bool loggedIn;
     bool registeredDevice;
@@ -96,7 +97,7 @@ void LoginController::Private::onFinished()
 {
     bool isLogin = true;
 
-    LOG_INFO("Login/Registration successful");
+    LOG_DEBUG("Login/Registration successful");
 
     // After registration we save the login data
     if (requester.request() == &registerRequest)
@@ -105,8 +106,16 @@ void LoginController::Private::onFinished()
         settings->setUserId(registerRequest.userId());
         LOG_DEBUG("Wrote username to settings");
     }
+    else if (requester.request() == &apiKeyLoginRequest)
+    {
+        setRegisterdDevice(apiKeyLoginResponse.registeredDevice());
+    }
+    else
+    {
+        setRegisterdDevice(response.registeredDevice());
+    }
 
-    setRegisterdDevice(response.registeredDevice());
+
     setLoggedIn(true);
 
     emit q->finished();
@@ -196,8 +205,8 @@ void LoginController::login()
 
 void LoginController::checkApiKey()
 {
-    d->requester.setRequest(&d->taskRequest);
-    d->requester.setResponse(&d->taskResponse);
+    d->requester.setRequest(&d->apiKeyLoginRequest);
+    d->requester.setResponse(&d->apiKeyLoginResponse);
     d->requester.start();
 }
 
