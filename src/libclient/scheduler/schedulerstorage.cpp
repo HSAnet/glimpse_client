@@ -30,7 +30,7 @@ public:
             }
             else
             {
-                LOG_INFO("Scheduler storage directory created");
+                LOG_DEBUG("Scheduler storage directory created");
             }
         }
     }

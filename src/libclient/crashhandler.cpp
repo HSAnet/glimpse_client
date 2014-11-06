@@ -152,7 +152,7 @@ void CrashHandler::Private::init(const QString &dumpPath)
 
     if (AmIBeingDebugged())
     {
-        LOG_INFO("Crash handler skipped, debugger is running.");
+        LOG_DEBUG("Crash handler skipped, debugger is running.");
         return;
     }
 
@@ -168,7 +168,7 @@ void CrashHandler::Private::init(const QString &dumpPath)
     );
 #endif
 
-    LOG_INFO("Crash handler initialized.");
+    LOG_DEBUG("Crash handler initialized.");
 }
 
 CrashHandler::CrashHandler()

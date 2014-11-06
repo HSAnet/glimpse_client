@@ -76,13 +76,13 @@ void TaskController::Private::updateTimer()
 
     if (instructionRequester.url() != newUrl)
     {
-        LOG_INFO(QString("Instruction url set to %1").arg(newUrl));
+        LOG_DEBUG(QString("Instruction url set to %1").arg(newUrl));
         instructionRequester.setUrl(newUrl);
     }
 
     if (scheduleRequester.url() != newUrl)
     {
-        LOG_INFO(QString("Schedule url set to %1").arg(newUrl));
+        LOG_DEBUG(QString("Schedule url set to %1").arg(newUrl));
         scheduleRequester.setUrl(newUrl);
     }
 
@@ -101,7 +101,7 @@ void TaskController::Private::updateTimer()
 
     if (timer.interval() != period)
     {
-        LOG_INFO(QString("Tasks schedule set to %1 sec.").arg(period / 1000));
+        LOG_DEBUG(QString("Tasks schedule set to %1 sec.").arg(period / 1000));
         timer.setInterval(period);
     }
 

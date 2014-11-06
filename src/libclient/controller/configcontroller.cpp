@@ -56,26 +56,29 @@ void ConfigController::Private::updateTimer()
 
     if (requester.url() != newUrl)
     {
-        LOG_INFO(QString("Config url set to %1").arg(newUrl));
+        LOG_DEBUG(QString("Config url set to %1").arg(newUrl));
         requester.setUrl(newUrl);
     }
 
-    TimingPtr timing = settings->config()->supervisorTiming();
+    TimingPtr timing = settings->config()->configTiming();
+
+    int period = 0;
 
     if (timing.isNull())
     {
-        timer.stop();
-        return;
+        period = 60 * 1 * 1000; // backup if no timing is set
     }
+    else
+    {
+        QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
+        Q_ASSERT(periodicTiming);
 
-    QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
-    Q_ASSERT(periodicTiming);
-
-    int period = periodicTiming->interval();
+        period = periodicTiming->interval();
+    }
 
     if (timer.interval() != period)
     {
-        LOG_INFO(QString("Config schedule set to %1 sec.").arg(period / 1000));
+        LOG_DEBUG(QString("Config schedule set to %1 sec.").arg(period / 1000));
         timer.setInterval(period);
     }
 
@@ -89,6 +92,7 @@ void ConfigController::Private::onFinished()
 
 void ConfigController::Private::onError()
 {
+    LOG_ERROR(QString("Could not get config from server, trying again later"));
 }
 
 ConfigController::ConfigController(QObject *parent)

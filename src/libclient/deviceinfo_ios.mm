@@ -22,8 +22,6 @@ QString DeviceInfo::deviceId() const
     advertisingIdentifier.resize([adId length]);
     [adId getCharacters:reinterpret_cast<unichar*>(advertisingIdentifier.data()) range:NSMakeRange(0, [adId length])];
 
-    LOG_INFO(QString("Advertising Identifier: %1").arg(advertisingIdentifier));
-
     QCryptographicHash hash(QCryptographicHash::Sha224);
     hash.addData(advertisingIdentifier.toUtf8());
 

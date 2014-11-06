@@ -13,7 +13,11 @@
 #define LEVEL_ERROR 4
 #define LEVEL_NONE 5
 
+#ifdef QT_DEBUG
 #define LOG_LEVEL LEVEL_TRACE
+#else
+#define LOG_LEVEL LEVEL_INFO
+#endif
 
 class LogAppender;
 

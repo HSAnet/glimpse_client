@@ -53,8 +53,6 @@ void Ntp::readResponse()
 
         m_localTime = QDateTime::currentDateTime();
         m_networkTime = NtpTimestamp::toDateTime(packet.receiveTimestamp);
-
-        LOG_INFO("received network time");
     }
 }
 

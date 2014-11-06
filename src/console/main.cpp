@@ -77,13 +77,13 @@ private slots:
         switch (status)
         {
         case WebRequester::Error:
-            LOG_ERROR(QString("Device registration failed, quitting. (%1)").arg(m_requester.errorString()));
+            LOG_DEBUG(QString("Device registration failed, quitting. (%1)").arg(m_requester.errorString()));
             qApp->quit();
             break;
 
         case WebRequester::Finished:
-            Client::instance()->taskController()->fetchTasks();
             LOG_INFO("Device successfully registered");
+            Client::instance()->taskController()->fetchTasks();
             break;
 
         default:
@@ -115,7 +115,7 @@ private slots:
         switch (m_controller->status())
         {
         case LoginController::Error:
-            LOG_INFO("Login/Registration failed, quitting.");
+            LOG_ERROR("Login/Registration failed, quitting.");
             qApp->quit();
             break;
 
@@ -150,12 +150,12 @@ private slots:
         switch (m_client->configController()->status())
         {
         case ConfigController::Error:
-            LOG_INFO("Getting config failed, quitting.");
+            LOG_ERROR("Getting config failed, quitting.");
             qApp->quit();
             break;
 
         case ConfigController::Finished:
-            LOG_INFO("Getting config successful");
+            LOG_DEBUG("Getting config successful");
             deleteLater();
 
             if (!m_loginData.password.isEmpty())

@@ -218,14 +218,14 @@ void NetworkManager::Private::updateTimer()
 
     if (interval < 1000)
     {
-        LOG_INFO("Keepalive interval < 1 sec will not be accepted.");
+        LOG_ERROR("Keepalive interval < 1 sec will not be accepted.");
         return;
     }
     else
     {
         if (timer.interval() != interval)
         {
-            LOG_INFO(QString("Keepalive set to %1 sec.").arg(interval / 1000));
+            LOG_DEBUG(QString("Keepalive set to %1 sec.").arg(interval / 1000));
         }
     }
 
@@ -355,7 +355,7 @@ void NetworkManager::Private::timeout()
 {
     if (keepaliveAddress.isNull())
     {
-        LOG_INFO("Invalid keepalive address (normal at first app start)");
+        LOG_WARNING("Invalid keepalive address (normal at first app start)");
         return;
     }
 
@@ -363,7 +363,7 @@ void NetworkManager::Private::timeout()
 
     if (sessionId.isEmpty())
     {
-        LOG_INFO("Empty session id");
+        LOG_WARNING("Empty session id");
         return;
     }
 
@@ -400,6 +400,7 @@ void NetworkManager::Private::onDatagramReady()
 
 void NetworkManager::Private::lookupFinished()
 {
+    return; // TODO disabled for now
     // Check for errors
     if (keepaliveAddressLookup.error() != QDnsLookup::NoError)
     {

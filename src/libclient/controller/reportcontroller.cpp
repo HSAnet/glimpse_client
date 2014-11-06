@@ -105,7 +105,7 @@ void ReportController::Private::updateTimer()
 
     if (requester.url() != newUrl)
     {
-        LOG_INFO(QString("Report url set to %1").arg(newUrl));
+        LOG_DEBUG(QString("Report url set to %1").arg(newUrl));
         requester.setUrl(newUrl);
     }
 
@@ -124,7 +124,7 @@ void ReportController::Private::updateTimer()
 
     if (timer.interval() != period)
     {
-        LOG_INFO(QString("Report schedule set to %1 sec.").arg(period / 1000));
+        LOG_DEBUG(QString("Report schedule set to %1 sec.").arg(period / 1000));
         timer.setInterval(period);
     }
 
@@ -134,7 +134,7 @@ void ReportController::Private::updateTimer()
 void ReportController::Private::onFinished()
 {
     QList<TaskId> taskIds = response.taskIds;
-    LOG_INFO(QString("%1 Results successfully inserted").arg(taskIds.size()));
+    LOG_DEBUG(QString("%1 Results successfully inserted").arg(taskIds.size()));
 
     foreach (const TaskId &taskId, taskIds)
     {
@@ -142,7 +142,7 @@ void ReportController::Private::onFinished()
 
         if (report.isNull())
         {
-            LOG_ERROR(QString("No task with id %1 found.").arg(taskId.toInt()));
+            LOG_WARNING(QString("No task with id %1 found.").arg(taskId.toInt()));
         }
         else
         {
@@ -153,7 +153,7 @@ void ReportController::Private::onFinished()
 
 void ReportController::Private::onError()
 {
-    LOG_INFO(QString("Failed to send reports: %1").arg(requester.errorString()));
+    LOG_ERROR(QString("Failed to send reports: %1").arg(requester.errorString()));
 }
 
 ReportController::ReportController(QObject *parent)
@@ -194,11 +194,11 @@ void ReportController::sendReports()
 
     if (reports.isEmpty())
     {
-        LOG_INFO("No reports to send");
+        LOG_DEBUG("No reports to send");
         return;
     }
 
-    LOG_INFO(QString("Sending %1 reports").arg(reports.size()));
+    LOG_DEBUG(QString("Sending %1 reports").arg(reports.size()));
 
     d->post.setReports(reports);
     d->requester.start();

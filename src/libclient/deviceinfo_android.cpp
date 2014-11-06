@@ -39,9 +39,6 @@ QString DeviceInfo::deviceId() const
     QString androidId = d->deviceInfo.callObjectMethod<jstring>("getAndroidId").toString();
     QString buildSerial = d->deviceInfo.callObjectMethod<jstring>("getBuildSerial").toString();
 
-    LOG_INFO(QString("Android ID: %1").arg(androidId));
-    LOG_INFO(QString("Build Serial: %1").arg(buildSerial));
-
     QCryptographicHash hash(QCryptographicHash::Sha224);
     hash.addData(androidId.toUtf8());
     hash.addData(buildSerial.toUtf8());
@@ -159,48 +156,41 @@ QString DeviceInfo::platform() const
 QString DeviceInfo::OSName() const
 {
     QString osName = d->deviceInfo.callObjectMethod<jstring>("getOSName").toString();
-    LOG_INFO(QString("OS name: %1").arg(osName));
     return osName;
 }
 
 QString DeviceInfo::OSVersion() const
 {
     QString osVersion = d->deviceInfo.callObjectMethod<jstring>("getOSVersion").toString();
-    LOG_INFO(QString("OS version: %1").arg(osVersion));
     return osVersion;
 }
 
 QString DeviceInfo::firmwareVersion() const
 {
     QString firmwareVersion = d->deviceInfo.callObjectMethod<jstring>("getFirmwareVersion").toString();
-    LOG_INFO(QString("firmware version: %1").arg(firmwareVersion));
     return firmwareVersion;
 }
 
 QString DeviceInfo::board() const
 {
     QString board = d->deviceInfo.callObjectMethod<jstring>("getBoard").toString();
-    LOG_INFO(QString("board: %1").arg(board));
     return board;
 }
 
 QString DeviceInfo::manufacturer() const
 {
     QString manufacturer = d->deviceInfo.callObjectMethod<jstring>("getManufacturer").toString();
-    LOG_INFO(QString("manufacturer: %1").arg(manufacturer));
     return manufacturer;
 }
 
 QString DeviceInfo::model() const
 {
     QString model = d->deviceInfo.callObjectMethod<jstring>("getModel").toString();
-    LOG_INFO(QString("model: %1").arg(model));
     return model;
 }
 
 qlonglong DeviceInfo::availableDiskSpace() const
 {
     qlonglong diskSpace = d->deviceInfo.callMethod<jlong>("getAvailableDiskSpace");
-    LOG_INFO(QString("diskSpace: %1").arg(diskSpace));
     return diskSpace;
 }
