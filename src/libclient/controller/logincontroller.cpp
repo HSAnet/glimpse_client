@@ -87,7 +87,7 @@ void LoginController::Private::updateController()
 
     if (requester.url() != newUrl)
     {
-        LOG_INFO(QString("Login url set to %1").arg(newUrl));
+        LOG_DEBUG(QString("Login url set to %1").arg(newUrl));
         requester.setUrl(newUrl);
     }
 }
@@ -123,7 +123,7 @@ void LoginController::Private::onFinished()
 
 void LoginController::Private::onError()
 {
-    LOG_INFO(QString("Login/Registration failed: %1").arg(requester.errorString()));
+    LOG_ERROR(QString("Login/Registration failed: %1").arg(requester.errorString()));
     emit q->error();
 }
 
@@ -169,7 +169,7 @@ void LoginController::anonymousRegistration()
                                                       15)); // TODO increase username length in database
     QString password = uuidToString(QUuid::createUuid()).left(15);
 
-    LOG_INFO("Anonymous registration requested. Scrambled some data.");
+    LOG_DEBUG("Anonymous registration requested. Scrambled some data.");
 
     registration(username, password);
 }

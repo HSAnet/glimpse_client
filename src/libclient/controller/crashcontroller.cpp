@@ -61,7 +61,7 @@ void CrashController::Private::updateResponse()
 
     if (requester.url() != newUrl)
     {
-        LOG_INFO(QString("Crash url set to %1").arg(newUrl));
+        LOG_DEBUG(QString("Crash url set to %1").arg(newUrl));
         requester.setUrl(newUrl);
     }
 }
@@ -81,7 +81,7 @@ void CrashController::Private::onFinished()
 
 void CrashController::Private::onError()
 {
-    LOG_INFO(QString("Failed to send reports: %1").arg(requester.errorString()));
+    LOG_ERROR(QString("Failed to send reports: %1").arg(requester.errorString()));
 }
 
 CrashController::CrashController(QObject *parent)

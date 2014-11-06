@@ -115,7 +115,7 @@ private slots:
         switch (m_controller->status())
         {
         case LoginController::Error:
-            LOG_INFO("Login/Registration failed, quitting.");
+            LOG_ERROR("Login/Registration failed, quitting.");
             qApp->quit();
             break;
 
@@ -150,12 +150,12 @@ private slots:
         switch (m_client->configController()->status())
         {
         case ConfigController::Error:
-            LOG_INFO("Getting config failed, quitting.");
+            LOG_ERROR("Getting config failed, quitting.");
             qApp->quit();
             break;
 
         case ConfigController::Finished:
-            LOG_INFO("Getting config successful");
+            LOG_DEBUG("Getting config successful");
             deleteLater();
 
             if (!m_loginData.password.isEmpty())

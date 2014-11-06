@@ -56,7 +56,7 @@ void ConfigController::Private::updateTimer()
 
     if (requester.url() != newUrl)
     {
-        LOG_INFO(QString("Config url set to %1").arg(newUrl));
+        LOG_DEBUG(QString("Config url set to %1").arg(newUrl));
         requester.setUrl(newUrl);
     }
 
@@ -75,7 +75,7 @@ void ConfigController::Private::updateTimer()
 
     if (timer.interval() != period)
     {
-        LOG_INFO(QString("Config schedule set to %1 sec.").arg(period / 1000));
+        LOG_DEBUG(QString("Config schedule set to %1 sec.").arg(period / 1000));
         timer.setInterval(period);
     }
 
