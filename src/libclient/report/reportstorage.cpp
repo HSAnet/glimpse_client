@@ -31,7 +31,7 @@ public:
             }
             else
             {
-                LOG_INFO("Report storage directory created");
+                LOG_DEBUG("Report storage directory created");
             }
         }
     }

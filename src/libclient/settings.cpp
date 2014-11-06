@@ -79,7 +79,7 @@ Settings::StorageType Settings::init()
         setAvailableMobileTraffic(20971520);  // 20 MiB
         setUsedTraffic(0);
         setUsedMobileTraffic(0);
-        LOG_INFO("Created new settings for this device");
+        LOG_DEBUG("Created new settings for this device");
 
         return NewSettings;
     }
@@ -100,7 +100,7 @@ Settings::StorageType Settings::init()
             d->config.setConfigAddress("supervisor.measure-it.net");
         }
 
-        LOG_INFO("Loaded existing settings for this device");
+        LOG_DEBUG("Loaded existing settings for this device");
         return ExistingSettings;
     }
 }

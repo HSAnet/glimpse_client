@@ -124,8 +124,6 @@ QString DeviceInfo::deviceId() const
         return QString();
     }
 
-    LOG_INFO(QString("HDD UUID: %1").arg(QString::fromLatin1(uuid)));
-
     QCryptographicHash hash(QCryptographicHash::Sha224);
     hash.addData(uuid);
 
