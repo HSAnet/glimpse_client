@@ -79,6 +79,7 @@ Settings::StorageType Settings::init()
         setAvailableMobileTraffic(20971520);  // 20 MiB
         setUsedTraffic(0);
         setUsedMobileTraffic(0);
+        setTrafficBudgetManagerActive(false); // deactivated by default
         LOG_DEBUG("Created new settings for this device");
 
         return NewSettings;
@@ -234,6 +235,20 @@ void Settings::setUsedMobileTraffic(quint32 traffic)
 quint32 Settings::usedMobileTraffic() const
 {
     return d->settings.value("used-mobile-traffic", 0).toUInt();
+}
+
+void Settings::setTrafficBudgetManagerActive(bool active)
+{
+    if (this->trafficBudgetManagerActive() != active)
+    {
+        d->settings.setValue("traffic-budget-manager-active", active);
+        emit trafficBudgetManagerActiveChanged(active);
+    }
+}
+
+bool Settings::trafficBudgetManagerActive() const
+{
+    return d->settings.value("traffic-budget-managager-active", false).toBool();
 }
 
 GetConfigResponse *Settings::config() const

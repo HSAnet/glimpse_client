@@ -14,6 +14,7 @@ public:
     quint32 availableMobileTraffic;
     quint32 usedMobileTraffic;
     QReadWriteLock lock;
+    bool active;
 };
 
 TrafficBudgetManager::TrafficBudgetManager()
@@ -27,6 +28,7 @@ void TrafficBudgetManager::init()
     d->availableTraffic = Client::instance()->settings()->availableTraffic();
     d->usedMobileTraffic = Client::instance()->settings()->usedMobileTraffic();
     d->usedTraffic = Client::instance()->settings()->usedTraffic();
+    d->active = Client::instance()->settings()->trafficBudgetManagerActive();
 }
 
 void TrafficBudgetManager::saveTraffic()
@@ -74,7 +76,7 @@ bool TrafficBudgetManager::addUsedTraffic(quint32 traffic)
         }
     }
 
-    return false;
+    return !d->active;
 }
 
 quint32 TrafficBudgetManager::usedTraffic() const

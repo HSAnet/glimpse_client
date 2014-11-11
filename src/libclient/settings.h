@@ -25,6 +25,8 @@ class CLIENT_API Settings : public QObject
     Q_PROPERTY(quint32 availableMobileTraffic READ availableMobileTraffic WRITE setAvailableMobileTraffic NOTIFY
                availableMobileTrafficChanged)
     Q_PROPERTY(quint32 usedMobileTraffic READ usedMobileTraffic WRITE setUsedMobileTraffic NOTIFY usedMobileTrafficChanged)
+    Q_PROPERTY(bool trafficBudgetManagerActive READ trafficBudgetManagerActive WRITE setTrafficBudgetManagerActive
+               NOTIFY trafficBudgetManagerActiveChanged)
     Q_PROPERTY(GetConfigResponse *config READ config CONSTANT)
 
 public:
@@ -68,6 +70,9 @@ public:
     void setUsedMobileTraffic(quint32 traffic);
     quint32 usedMobileTraffic() const;
 
+    void setTrafficBudgetManagerActive(bool active);
+    bool trafficBudgetManagerActive() const;
+
     GetConfigResponse *config() const;
 
 public slots:
@@ -83,6 +88,7 @@ signals:
     void usedTrafficChanged(quint32 traffic);
     void availableMobileTrafficChanged(quint32 traffic);
     void usedMobileTrafficChanged(quint32 traffic);
+    void trafficBudgetManagerActiveChanged(bool active);
 
 protected:
     class Private;
