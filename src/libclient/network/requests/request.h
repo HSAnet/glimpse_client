@@ -27,7 +27,7 @@ public:
     QString sessionId() const;
 
     void setPath(const QString &path);
-    QString path() const;
+    virtual QString path() const;
 
 signals:
     void deviceIdChanged(const QUuid &deviceId);

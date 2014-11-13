@@ -43,7 +43,7 @@ QString GetResourceRequest::path() const
     }
     else
     {
-        return QString("%1set/%2").arg(Request::path()).arg(d->resourceIds.join(';'));
+        return QString("%1set/%2/").arg(Request::path()).arg(d->resourceIds.join(';'));
     }
 }
 

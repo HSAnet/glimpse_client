@@ -344,7 +344,7 @@ void NetworkManager::Private::responseChanged()
     keepaliveHost = NetworkHelper::remoteHost(settings->config()->keepaliveAddress());
 
     updateSocket();
-    updateTimer();
+    //updateTimer(); TODO: deactivated for now
 
     // Lookup the host
     keepaliveAddressLookup.setName(keepaliveHost.host);
