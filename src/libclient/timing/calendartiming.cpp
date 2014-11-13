@@ -68,12 +68,12 @@ class CalendarTiming::Private
 public:
     QDateTime start;
     QDateTime end;
-    QList<quint8> months; // default: 1-12
-    QList<quint8> daysOfWeek; // default: 1-7, 1 = Monday, 7 = Sunday
-    QList<quint8> daysOfMonth; // default 1-31
-    QList<quint8> hours; // default: 0-23
-    QList<quint8> minutes; // default: 0-59
-    QList<quint8> seconds; // default: 0-59
+    QList<int> months; // default: 1-12
+    QList<int> daysOfWeek; // default: 1-7, 1 = Monday, 7 = Sunday
+    QList<int> daysOfMonth; // default 1-31
+    QList<int> hours; // default: 0-23
+    QList<int> minutes; // default: 0-59
+    QList<int> seconds; // default: 0-59
     TimingRandomness randomness;
 
     QTime findTime(QTime &referenceTime);
@@ -81,9 +81,9 @@ public:
 
 QTime CalendarTiming::Private::findTime(QTime &referenceTime)
 {
-    QListIterator<quint8> hourIter(hours);
-    QListIterator<quint8> minuteIter(minutes);
-    QListIterator<quint8> secondIter(seconds);
+    QListIterator<int> hourIter(hours);
+    QListIterator<int> minuteIter(minutes);
+    QListIterator<int> secondIter(seconds);
 
     int hour;
     int minute;
@@ -138,8 +138,8 @@ CalendarTiming::CalendarTiming()
 {
     d->start = QDateTime::currentDateTime();
     d->end = QDateTime();
-    d->months = QList<quint8>()<<1<<2<<3<<4<<5<<6<<7<<8<<9<<10<<11<<12;
-    d->daysOfWeek = QList<quint8>()<<1<<2<<3<<4<<5<<6<<7;
+    d->months = QList<int>()<<1<<2<<3<<4<<5<<6<<7<<8<<9<<10<<11<<12;
+    d->daysOfWeek = QList<int>()<<1<<2<<3<<4<<5<<6<<7;
 
     for (int i = 1; i < 32; i++)
     {
@@ -166,10 +166,10 @@ CalendarTiming::CalendarTiming()
     std::sort(d->seconds.begin(), d->seconds.end());
 }
 
-CalendarTiming::CalendarTiming(const QDateTime &start, const QDateTime &end, const QList<quint8> &months,
-                               const QList<quint8> &daysOfWeek, const QList<quint8> &daysOfMonth,
-                               const QList<quint8> &hours, const QList<quint8> &minutes,
-                               const QList<quint8> &seconds)
+CalendarTiming::CalendarTiming(const QDateTime &start, const QDateTime &end, const QList<int> &months,
+                               const QList<int> &daysOfWeek, const QList<int> &daysOfMonth,
+                               const QList<int> &hours, const QList<int> &minutes,
+                               const QList<int> &seconds)
 : d(new Private)
 {
     d->start = start;
@@ -211,8 +211,8 @@ QDateTime CalendarTiming::nextRun() const
     QTime time = now.time();
     bool found = false;
 
-    QListIterator<quint8> monthIter(d->months);
-    QListIterator<quint8> dayIter(d->daysOfMonth);
+    QListIterator<int> monthIter(d->months);
+    QListIterator<int> dayIter(d->daysOfMonth);
     QDate nextRunDate;
     QTime nextRunTime;
 
@@ -301,7 +301,16 @@ QDateTime CalendarTiming::nextRun() const
 
 bool CalendarTiming::isValid() const
 {
-    return false; // not implemented yet
+    if (!d->start.isValid() || !d->end.isValid() || d->months.isEmpty() || d->daysOfWeek.isEmpty()
+                                                 || d->daysOfMonth.isEmpty() || d->hours.isEmpty()
+                                                 || d->minutes.isEmpty() || d->seconds.isEmpty())
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 QVariant CalendarTiming::toVariant() const
@@ -328,12 +337,12 @@ TimingPtr CalendarTiming::fromVariant(const QVariant &variant)
 
     return TimingPtr(new CalendarTiming(hash.value("start").toDateTime(),
                                         hash.value("end").toDateTime(),
-                                        listFromVariant<quint8>(hash.value("months")),
-                                        listFromVariant<quint8>(hash.value("days_of_week")),
-                                        listFromVariant<quint8>(hash.value("days_of_month")),
-                                        listFromVariant<quint8>(hash.value("hours")),
-                                        listFromVariant<quint8>(hash.value("seconds")),
-                                        listFromVariant<quint8>(hash.value("minutes"))));
+                                        listFromVariant<int>(hash.value("months")),
+                                        listFromVariant<int>(hash.value("days_of_week")),
+                                        listFromVariant<int>(hash.value("days_of_month")),
+                                        listFromVariant<int>(hash.value("hours")),
+                                        listFromVariant<int>(hash.value("seconds")),
+                                        listFromVariant<int>(hash.value("minutes"))));
 }
 
 QDateTime CalendarTiming::start() const
@@ -346,32 +355,32 @@ QDateTime CalendarTiming::end() const
     return d->end;
 }
 
-QList<quint8> CalendarTiming::months() const
+QList<int> CalendarTiming::months() const
 {
     return d->months;
 }
 
-QList<quint8> CalendarTiming::daysOfWeek() const
+QList<int> CalendarTiming::daysOfWeek() const
 {
     return d->daysOfWeek;
 }
 
-QList<quint8> CalendarTiming::daysOfMonth() const
+QList<int> CalendarTiming::daysOfMonth() const
 {
     return d->daysOfMonth;
 }
 
-QList<quint8> CalendarTiming::hours() const
+QList<int> CalendarTiming::hours() const
 {
     return d->hours;
 }
 
-QList<quint8> CalendarTiming::minutes() const
+QList<int> CalendarTiming::minutes() const
 {
     return d->minutes;
 }
 
-QList<quint8> CalendarTiming::seconds() const
+QList<int> CalendarTiming::seconds() const
 {
     return d->seconds;
 }

@@ -36,10 +36,10 @@ class CLIENT_API CalendarTiming : public Timing
 {
 public:
     CalendarTiming();
-    CalendarTiming(const QDateTime &start, const QDateTime &end, const QList<quint8> &months,
-                   const QList<quint8> &daysOfWeek, const QList<quint8> &daysOfMonth,
-                   const QList<quint8> &hours, const QList<quint8> &minutes,
-                   const QList<quint8> &seconds);
+    CalendarTiming(const QDateTime &start, const QDateTime &end, const QList<int> &months,
+                   const QList<int> &daysOfWeek, const QList<int> &daysOfMonth,
+                   const QList<int> &hours, const QList<int> &minutes,
+                   const QList<int> &seconds);
     ~CalendarTiming();
 
     // Storage
@@ -48,12 +48,12 @@ public:
     // Getters
     QDateTime start() const;
     QDateTime end() const;
-    QList<quint8> months() const;
-    QList<quint8> daysOfWeek() const;
-    QList<quint8> daysOfMonth() const;
-    QList<quint8> hours() const;
-    QList<quint8> minutes() const;
-    QList<quint8> seconds() const;
+    QList<int> months() const;
+    QList<int> daysOfWeek() const;
+    QList<int> daysOfMonth() const;
+    QList<int> hours() const;
+    QList<int> minutes() const;
+    QList<int> seconds() const;
     TimingRandomness randomness() const;
 
     // Timing interface

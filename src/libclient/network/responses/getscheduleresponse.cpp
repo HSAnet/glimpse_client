@@ -15,6 +15,9 @@ bool GetScheduleResponse::fillFromVariant(const QVariantMap &variant)
         // generate task
         TestDefinition test = TestDefinition::fromVariant(variantMap.value("task"));
 
+        // write schedule id into test FIXME this is an evil hack
+        test.setId(TaskId(variantMap.value("id").toInt()));
+
         // get timing and merge into task FIXME this is an evil hack
         TimingPtr timing = TimingFactory::timingFromVariant(variantMap.value("timing"));
         test.setTiming(timing);

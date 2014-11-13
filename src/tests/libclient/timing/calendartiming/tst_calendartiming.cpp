@@ -23,12 +23,12 @@ private slots:
 
         QDateTime start = QDateTime::currentDateTime();
         QDateTime end;
-        QList<quint8> months = QList<quint8>()<<1<<2<<3<<4<<5<<6<<7<<8<<9<<10<<11<<12;
-        QList<quint8> daysOfWeek = QList<quint8>()<<1<<2<<3<<4<<5<<6<<7;
-        QList<quint8> daysOfMonth;
-        QList<quint8> hours;
-        QList<quint8> minutes;
-        QList<quint8> seconds;
+        QList<int> months = QList<int>()<<1<<2<<3<<4<<5<<6<<7<<8<<9<<10<<11<<12;
+        QList<int> daysOfWeek = QList<int>()<<1<<2<<3<<4<<5<<6<<7;
+        QList<int> daysOfMonth;
+        QList<int> hours;
+        QList<int> minutes;
+        QList<int> seconds;
 
         for (int i = 1; i < 32; i++)
         {
@@ -62,19 +62,19 @@ private slots:
         QCOMPARE(pastTiming.nextRun(), QDateTime());
 
         // start tomorrow because hour already passed today (not true before 4 am)
-        CalendarTiming tomorrowTiming(start, end, months, daysOfWeek, daysOfMonth, QList<quint8>()<<4, minutes, seconds);
+        CalendarTiming tomorrowTiming(start, end, months, daysOfWeek, daysOfMonth, QList<int>()<<4, minutes, seconds);
         qDebug("nextRun tomorrow because hour already passed today (4 am)");
         QDateTime tomorrowTime = now.addDays(1);
         tomorrowTime.setTime(QTime(4,0,0));
         QCOMPARE(tomorrowTiming.nextRun(), tomorrowTime);
 
         // start tomorrow because hour already passed today (not true before 4 am [2])
-        CalendarTiming tomorrowTiming2(start, end, months, daysOfWeek, daysOfMonth, QList<quint8>()<<4<<5, minutes, seconds);
+        CalendarTiming tomorrowTiming2(start, end, months, daysOfWeek, daysOfMonth, QList<int>()<<4<<5, minutes, seconds);
         qDebug("nextRun tomorrow because hour already passed today (4 and 5 am)");
         QCOMPARE(tomorrowTiming2.nextRun(), tomorrowTime);
 
         // start next month because day already passed this month (not true on 1st of month)
-        CalendarTiming nextMonthTiming(start, end, months, daysOfWeek, QList<quint8>()<<1, hours, minutes, seconds);
+        CalendarTiming nextMonthTiming(start, end, months, daysOfWeek, QList<int>()<<1, hours, minutes, seconds);
         qDebug("nextRun next month because day already passed this month (1st)");
         QDateTime nextMonthTime = now.addMonths(1);
         nextMonthTime.setTime(QTime(0,0,0));
@@ -82,17 +82,17 @@ private slots:
         QCOMPARE(nextMonthTiming.nextRun(), nextMonthTime);
 
         // start next month because day already passed this month (not true on 1st or 2nd of month)
-        CalendarTiming nextMonthTiming2(start, end, months, daysOfWeek, QList<quint8>()<<1<<2, hours, minutes, seconds);
+        CalendarTiming nextMonthTiming2(start, end, months, daysOfWeek, QList<int>()<<1<<2, hours, minutes, seconds);
         qDebug("nextRun next month because day already passed this month (1st and 2nd)");
         QCOMPARE(nextMonthTiming2.nextRun(), nextMonthTime);
 
         // no nextRun because of invalid Timing (February 30th)
-        CalendarTiming februaryTiming(start, end,  QList<quint8>()<<2, daysOfWeek, QList<quint8>()<<30, hours, minutes, seconds);
+        CalendarTiming februaryTiming(start, end,  QList<int>()<<2, daysOfWeek, QList<int>()<<30, hours, minutes, seconds);
         qDebug("no nextRun because invalid Timing (30.02)");
         QCOMPARE(februaryTiming.nextRun(), QDateTime());
 
         // start next year because day already passed this year (not true on January 1st)
-        CalendarTiming yearTiming(start, end,  QList<quint8>()<<1, daysOfWeek, QList<quint8>()<<1, hours, minutes, seconds);
+        CalendarTiming yearTiming(start, end,  QList<int>()<<1, daysOfWeek, QList<int>()<<1, hours, minutes, seconds);
         qDebug("nextRun on January 1st");
         QCOMPARE(yearTiming.nextRun(), QDateTime(QDate(now.date().year()+1, 1, 1), QTime(0,0,0)));
     }
