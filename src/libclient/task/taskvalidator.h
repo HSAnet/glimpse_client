@@ -17,7 +17,7 @@ public:
         Valid // TODO: Find more texts
     };
 
-    ValidationResult validate(const TestDefinition &testDefinition);
+    ValidationResult validate(const ScheduleDefinition &testDefinition);
 
 protected:
     class Private;

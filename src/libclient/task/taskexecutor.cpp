@@ -17,14 +17,14 @@ public:
     MeasurementFactory factory;
     QPointer<NetworkManager> networkManager;
 
-    TestDefinition currentTest;
+    ScheduleDefinition currentTest;
     MeasurementPtr measurement;
 
 private:
     LocalInformation localInformation;
 
 public slots:
-    void execute(const TestDefinition &test, MeasurementObserver *observer)
+    void execute(const ScheduleDefinition &test, MeasurementObserver *observer)
     {
         LOG_INFO(QString("Starting execution of %1").arg(test.name()));
 
@@ -133,8 +133,8 @@ public slots:
     }
 
 signals:
-    void started(const TestDefinition &test);
-    void finished(const TestDefinition &test, const Result &result);
+    void started(const ScheduleDefinition &test);
+    void finished(const ScheduleDefinition &test, const Result &result);
 };
 
 class TaskExecutor::Private : public QObject
@@ -152,11 +152,11 @@ public:
         taskThread.setObjectName("TaskExecutorThread");
         taskThread.start();
 
-        connect(&executor, SIGNAL(started(TestDefinition)), this, SLOT(onStarted()));
-        connect(&executor, SIGNAL(finished(TestDefinition, Result)), this, SLOT(onFinished()));
+        connect(&executor, SIGNAL(started(ScheduleDefinition)), this, SLOT(onStarted()));
+        connect(&executor, SIGNAL(finished(ScheduleDefinition, Result)), this, SLOT(onFinished()));
 
-        connect(&executor, SIGNAL(started(TestDefinition)), q, SIGNAL(started(TestDefinition)));
-        connect(&executor, SIGNAL(finished(TestDefinition, Result)), q, SIGNAL(finished(TestDefinition, Result)));
+        connect(&executor, SIGNAL(started(ScheduleDefinition)), q, SIGNAL(started(ScheduleDefinition)));
+        connect(&executor, SIGNAL(finished(ScheduleDefinition, Result)), q, SIGNAL(finished(ScheduleDefinition, Result)));
     }
 
     ~Private()
@@ -167,7 +167,7 @@ public:
 
     struct QueueEntry
     {
-        TestDefinition definition;
+        ScheduleDefinition definition;
         MeasurementObserver *observer;
     };
 
@@ -208,7 +208,7 @@ void TaskExecutor::Private::onFinished()
     else
     {
         QueueEntry entry = queue.takeFirst();
-        QMetaObject::invokeMethod(&executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinition, entry.definition),
+        QMetaObject::invokeMethod(&executor, "execute", Qt::QueuedConnection, Q_ARG(ScheduleDefinition, entry.definition),
                                   Q_ARG(MeasurementObserver *, entry.observer));
     }
 }
@@ -239,7 +239,7 @@ bool TaskExecutor::isRunning() const
     return d->running;
 }
 
-void TaskExecutor::execute(const TestDefinition &test, MeasurementObserver *observer)
+void TaskExecutor::execute(const ScheduleDefinition &test, MeasurementObserver *observer)
 {
     // Check preconditions
     if (!test.precondition().check())
@@ -260,7 +260,7 @@ void TaskExecutor::execute(const TestDefinition &test, MeasurementObserver *obse
         d->running = true;
         emit runningChanged(d->running);
 
-        QMetaObject::invokeMethod(&d->executor, "execute", Qt::QueuedConnection, Q_ARG(TestDefinition, test),
+        QMetaObject::invokeMethod(&d->executor, "execute", Qt::QueuedConnection, Q_ARG(ScheduleDefinition, test),
                                   Q_ARG(MeasurementObserver *, observer));
     }
     else

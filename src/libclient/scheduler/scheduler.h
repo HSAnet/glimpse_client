@@ -16,20 +16,20 @@ public:
     void setExecutor(TaskExecutor *executor);
     TaskExecutor *executor() const;
 
-    TestDefinitionList tests() const;
+    ScheduleDefinitionList tests() const;
 
-    void enqueue(const TestDefinition &testDefinition);
+    void enqueue(const ScheduleDefinition &testDefinition);
     void dequeue();
 
-    void execute(const TestDefinition &testDefinition);
-    int executeOnDemandTest(const TaskId &id);
+    void execute(const ScheduleDefinition &testDefinition);
+    int executeOnDemandTest(const ScheduleId &id);
 
-    bool knownTestId(const TaskId &id);
+    bool knownTestId(const ScheduleId &id);
 
 signals:
-    void testAdded(const TestDefinition &test, int position);
-    void testRemoved(const TestDefinition &test, int position);
-    void testMoved(const TestDefinition &test, int from, int to);
+    void testAdded(const ScheduleDefinition &test, int position);
+    void testRemoved(const ScheduleDefinition &test, int position);
+    void testMoved(const ScheduleDefinition &test, int from, int to);
 
 protected:
     class Private;

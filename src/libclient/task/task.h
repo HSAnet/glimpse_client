@@ -9,23 +9,25 @@
 #include <QUuid>
 #include <QSharedDataPointer>
 
-class TestDefinition;
-typedef QList<TestDefinition> TestDefinitionList;
+class ScheduleDefinition;
+typedef QList<ScheduleDefinition> ScheduleDefinitionList;
 
-class CLIENT_API TestDefinition : public Serializable
+class CLIENT_API ScheduleDefinition : public Serializable
 {
 public:
-    TestDefinition();
-    TestDefinition(const TestDefinition &other);
-    TestDefinition(const TaskId &id, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition, const Precondition &precondition);
-    ~TestDefinition();
+    ScheduleDefinition();
+    ScheduleDefinition(const ScheduleDefinition &other);
+    ScheduleDefinition(const ScheduleId &id, const TaskId &taskId, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition, const Precondition &precondition);
+    ~ScheduleDefinition();
 
-    TestDefinition &operator=(const TestDefinition &rhs);
+    ScheduleDefinition &operator=(const ScheduleDefinition &rhs);
 
     bool isNull() const;
 
-    void setId(const TaskId &id);
-    TaskId id() const;
+    void setId(const ScheduleId &id);
+    ScheduleId id() const;
+
+    TaskId taskId() const;
 
     void setName(const QString &name);
     QString name() const;
@@ -40,7 +42,7 @@ public:
     Precondition precondition() const;
 
     // Storage
-    static TestDefinition fromVariant(const QVariant &variant);
+    static ScheduleDefinition fromVariant(const QVariant &variant);
 
     // Serializable interface
     QVariant toVariant() const;
@@ -49,8 +51,8 @@ private:
     QSharedDataPointer<class TaskData> d;
 };
 
-Q_DECLARE_METATYPE(TestDefinition)
-Q_DECLARE_TYPEINFO(TestDefinition, Q_MOVABLE_TYPE);
-Q_DECLARE_METATYPE(TestDefinitionList)
+Q_DECLARE_METATYPE(ScheduleDefinition)
+Q_DECLARE_TYPEINFO(ScheduleDefinition, Q_MOVABLE_TYPE);
+Q_DECLARE_METATYPE(ScheduleDefinitionList)
 
 #endif // TASK_H

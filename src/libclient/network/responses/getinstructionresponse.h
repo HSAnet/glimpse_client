@@ -13,13 +13,13 @@ public:
     {
     }
 
-    QList<TaskId> taskIds() const;
-    QList<TaskId> scheduleIds() const;
+    QList<ScheduleId> taskIds() const;
+    QList<ScheduleId> scheduleIds() const;
     bool fillFromVariant(const QVariantMap &variant);
 
 protected:
-    QList<TaskId> m_taskIds;
-    QList<TaskId> m_scheduleIds;
+    QList<ScheduleId> m_taskIds;
+    QList<ScheduleId> m_scheduleIds;
 };
 
 

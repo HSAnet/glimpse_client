@@ -13,22 +13,11 @@ bool GetScheduleResponse::fillFromVariant(const QVariantMap &variant)
         QVariantMap variantMap = entry.toMap();
 
         // generate task
-        TestDefinition test = TestDefinition::fromVariant(variantMap.value("task"));
+        ScheduleDefinition schedule = ScheduleDefinition::fromVariant(variantMap);
 
-        // write schedule id into test FIXME this is an evil hack
-        test.setId(TaskId(variantMap.value("id").toInt()));
-
-        // get timing and merge into task FIXME this is an evil hack
-        TimingPtr timing = TimingFactory::timingFromVariant(variantMap.value("timing"));
-        test.setTiming(timing);
-
-        // get precondition and merge into task FIXME this is an evil hack
-        Precondition precondition = Precondition::fromVariant(variantMap.value("precondition"));
-        test.setPrecondition(precondition);
-
-        if (m_validator.validate(test) == TaskValidator::Valid)
+        if (m_validator.validate(schedule) == TaskValidator::Valid)
         {
-            m_tasks.append(test);
+            m_tasks.append(schedule);
         }
         else
         {
@@ -40,7 +29,7 @@ bool GetScheduleResponse::fillFromVariant(const QVariantMap &variant)
     return true;
 }
 
-TestDefinitionList GetScheduleResponse::tasks() const
+ScheduleDefinitionList GetScheduleResponse::tasks() const
 {
     return m_tasks;
 }

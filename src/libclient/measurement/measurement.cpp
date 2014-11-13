@@ -7,7 +7,7 @@ class Measurement::Private
 {
 public:
     QPointer<QAbstractSocket> peerSocket;
-    TaskId taskId;
+    ScheduleId taskId;
     QUuid measurementUuid;
     QDateTime startDateTime;
     QString errorString;
@@ -35,12 +35,12 @@ QAbstractSocket *Measurement::peerSocket() const
     return d->peerSocket;
 }
 
-TaskId Measurement::taskId() const
+ScheduleId Measurement::taskId() const
 {
     return d->taskId;
 }
 
-void Measurement::setTaskId(const TaskId &taskId)
+void Measurement::setTaskId(const ScheduleId &taskId)
 {
     d->taskId = taskId;
 }

@@ -32,17 +32,17 @@ public:
     QDir path;
     QTimer timer;
 
-    TestDefinitionList tests;
-    TestDefinitionList onDemandTests;
-    QSet<TaskId> testIds;
-    QSet<TaskId> onDemandTestIds;
-    QSet<TaskId> allTestIds;
+    ScheduleDefinitionList tests;
+    ScheduleDefinitionList onDemandTests;
+    QSet<ScheduleId> testIds;
+    QSet<ScheduleId> onDemandTestIds;
+    QSet<ScheduleId> allTestIds;
 
     QPointer<TaskExecutor> executor;
 
     // Functions
     void updateTimer();
-    int enqueue(const TestDefinition &testDefinition);
+    int enqueue(const ScheduleDefinition &testDefinition);
 
 public slots:
     void timeout();
@@ -57,7 +57,7 @@ void Scheduler::Private::updateTimer()
     }
     else
     {
-        const TestDefinition td = tests.at(0);
+        const ScheduleDefinition td = tests.at(0);
         int ms = td.timing()->timeLeft();
 
         if (ms > 0)
@@ -75,7 +75,7 @@ void Scheduler::Private::updateTimer()
     }
 }
 
-int Scheduler::Private::enqueue(const TestDefinition &testDefinition)
+int Scheduler::Private::enqueue(const ScheduleDefinition &testDefinition)
 {
     // abort if test-id is already in scheduler or if the test has no next run time
     if (testIds.contains(testDefinition.id()) || !testDefinition.timing()->nextRun().isValid())
@@ -87,7 +87,7 @@ int Scheduler::Private::enqueue(const TestDefinition &testDefinition)
 
     for (int i = 0; i < tests.size(); i++)
     {
-        const TestDefinition &td = tests.at(i);
+        const ScheduleDefinition &td = tests.at(i);
 
         if (timeLeft < td.timing()->timeLeft())
         {
@@ -119,7 +119,7 @@ int Scheduler::Private::enqueue(const TestDefinition &testDefinition)
 void Scheduler::Private::timeout()
 {
     // get the test and execute it
-    TestDefinition td = tests.at(0);
+    ScheduleDefinition td = tests.at(0);
 
     QDateTime t = td.timing()->lastExecution();
     if (t.isValid() && t.msecsTo(QDateTime::currentDateTime()) < 100)
@@ -170,12 +170,12 @@ TaskExecutor *Scheduler::executor() const
     return d->executor;
 }
 
-TestDefinitionList Scheduler::tests() const
+ScheduleDefinitionList Scheduler::tests() const
 {
     return d->tests;
 }
 
-void Scheduler::enqueue(const TestDefinition &testDefinition)
+void Scheduler::enqueue(const ScheduleDefinition &testDefinition)
 {
     if (testDefinition.timing()->type() != "ondemand")
     {
@@ -201,14 +201,14 @@ void Scheduler::dequeue()
     // Whatever
 }
 
-void Scheduler::execute(const TestDefinition &testDefinition)
+void Scheduler::execute(const ScheduleDefinition &testDefinition)
 {
     d->executor->execute(testDefinition);
 }
 
-int Scheduler::executeOnDemandTest(const TaskId &id)
+int Scheduler::executeOnDemandTest(const ScheduleId &id)
 {
-    foreach (const TestDefinition& td, d->onDemandTests)
+    foreach (const ScheduleDefinition& td, d->onDemandTests)
     {
         if (td.id() == id)
         {
@@ -223,9 +223,9 @@ int Scheduler::executeOnDemandTest(const TaskId &id)
     return -1;
 }
 
-bool Scheduler::knownTestId(const TaskId &id)
+bool Scheduler::knownTestId(const ScheduleId &id)
 {
-    foreach (const TaskId &testId, d->allTestIds)
+    foreach (const ScheduleId &testId, d->allTestIds)
     {
         if (testId == id)
         {
