@@ -49,7 +49,7 @@ TestDefinition &TestDefinition::operator=(const TestDefinition &rhs)
 
 bool TestDefinition::isNull() const
 {
-    return d->id.isValid();
+    return !d->id.isValid();
 }
 
 void TestDefinition::setId(const TaskId &id)
