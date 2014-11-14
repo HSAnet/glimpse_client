@@ -26,7 +26,7 @@ TaskValidator::~TaskValidator()
     delete d;
 }
 
-TaskValidator::ValidationResult TaskValidator::validate(const TestDefinition &testDefinition)
+TaskValidator::ValidationResult TaskValidator::validate(const ScheduleDefinition &testDefinition)
 {
     // Simple checks
     if (testDefinition.isNull()

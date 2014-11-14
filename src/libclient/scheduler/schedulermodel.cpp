@@ -17,22 +17,22 @@ public:
     SchedulerModel *q;
 
     QPointer<Scheduler> scheduler;
-    TestDefinitionList tests;
+    ScheduleDefinitionList tests;
 
 public slots:
-    void testAdded(const TestDefinition &test, int position);
-    void testRemoved(const TestDefinition &test, int position);
-    void testMoved(const TestDefinition &test, int from, int to);
+    void testAdded(const ScheduleDefinition &test, int position);
+    void testRemoved(const ScheduleDefinition &test, int position);
+    void testMoved(const ScheduleDefinition &test, int from, int to);
 };
 
-void SchedulerModel::Private::testAdded(const TestDefinition &test, int position)
+void SchedulerModel::Private::testAdded(const ScheduleDefinition &test, int position)
 {
     q->beginInsertRows(QModelIndex(), position, position);
     tests.insert(position, test);
     q->endInsertRows();
 }
 
-void SchedulerModel::Private::testRemoved(const TestDefinition &test, int position)
+void SchedulerModel::Private::testRemoved(const ScheduleDefinition &test, int position)
 {
     Q_UNUSED(test);
 
@@ -41,7 +41,7 @@ void SchedulerModel::Private::testRemoved(const TestDefinition &test, int positi
     q->endRemoveRows();
 }
 
-void SchedulerModel::Private::testMoved(const TestDefinition &test, int from, int to)
+void SchedulerModel::Private::testMoved(const ScheduleDefinition &test, int from, int to)
 {
     Q_UNUSED(test);
 
@@ -71,10 +71,10 @@ void SchedulerModel::setScheduler(Scheduler *scheduler)
 
     if (d->scheduler)
     {
-        disconnect(d->scheduler.data(), SIGNAL(testAdded(TestDefinition, int)), d, SLOT(testAdded(TestDefinition, int)));
-        disconnect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinition, int)), d, SLOT(testRemoved(TestDefinition,
+        disconnect(d->scheduler.data(), SIGNAL(testAdded(ScheduleDefinition, int)), d, SLOT(testAdded(ScheduleDefinition, int)));
+        disconnect(d->scheduler.data(), SIGNAL(testRemoved(ScheduleDefinition, int)), d, SLOT(testRemoved(ScheduleDefinition,
                                                                                                          int)));
-        disconnect(d->scheduler.data(), SIGNAL(testMoved(TestDefinition, int, int)), d, SLOT(testMoved(TestDefinition,
+        disconnect(d->scheduler.data(), SIGNAL(testMoved(ScheduleDefinition, int, int)), d, SLOT(testMoved(ScheduleDefinition,
                                                                                                           int, int)));
     }
 
@@ -82,9 +82,9 @@ void SchedulerModel::setScheduler(Scheduler *scheduler)
 
     if (d->scheduler)
     {
-        connect(d->scheduler.data(), SIGNAL(testAdded(TestDefinition, int)), d, SLOT(testAdded(TestDefinition, int)));
-        connect(d->scheduler.data(), SIGNAL(testRemoved(TestDefinition, int)), d, SLOT(testRemoved(TestDefinition, int)));
-        connect(d->scheduler.data(), SIGNAL(testMoved(TestDefinition, int, int)), d, SLOT(testMoved(TestDefinition, int,
+        connect(d->scheduler.data(), SIGNAL(testAdded(ScheduleDefinition, int)), d, SLOT(testAdded(ScheduleDefinition, int)));
+        connect(d->scheduler.data(), SIGNAL(testRemoved(ScheduleDefinition, int)), d, SLOT(testRemoved(ScheduleDefinition, int)));
+        connect(d->scheduler.data(), SIGNAL(testMoved(ScheduleDefinition, int, int)), d, SLOT(testMoved(ScheduleDefinition, int,
                                                                                                        int)));
     }
 
@@ -159,7 +159,7 @@ int SchedulerModel::columnCount(const QModelIndex &parent) const
 
 QVariant SchedulerModel::data(const QModelIndex &index, int role) const
 {
-    const TestDefinition &testDefinition = d->tests.at(index.row());
+    const ScheduleDefinition &testDefinition = d->tests.at(index.row());
 
     if (role == Qt::DisplayRole)
     {

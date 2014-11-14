@@ -47,13 +47,16 @@ inline uint qHash(const Ident<T> &id)
 }
 
 // Type definitions
-typedef Ident<class TestDefinition> TaskId;
+typedef Ident<class TestDefinition> ScheduleId;
 typedef Ident<class Result> ResultId;
 typedef Ident<class Report> ReportId;
+typedef Ident<class Measurement> TaskId;
+
 
 // Metatype declarations
-Q_DECLARE_METATYPE(TaskId)
+Q_DECLARE_METATYPE(ScheduleId)
 Q_DECLARE_METATYPE(ResultId)
 Q_DECLARE_METATYPE(ReportId)
+Q_DECLARE_METATYPE(TaskId)
 
 #endif // IDENT_H

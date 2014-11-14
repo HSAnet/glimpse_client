@@ -113,7 +113,7 @@ void TaskController::Private::instructionFinished()
     scheduleRequest.clearResourceIds();
 
     // check which schedules we need
-    foreach (const TaskId &id, instructionResponse.scheduleIds())
+    foreach (const ScheduleId &id, instructionResponse.scheduleIds())
     {
         if (!scheduler->knownTestId(id))
         {
@@ -130,7 +130,7 @@ void TaskController::Private::instructionFinished()
 
 void TaskController::Private::scheduleFinished()
 {
-    foreach (const TestDefinition &testDefinition, scheduleResponse.tasks())
+    foreach (const ScheduleDefinition &testDefinition, scheduleResponse.tasks())
     {
         scheduler->enqueue(testDefinition);
     }

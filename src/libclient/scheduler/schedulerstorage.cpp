@@ -43,15 +43,15 @@ public:
     bool realTime;
 
     // Functions
-    void store(const TestDefinition &test);
-    QString fileNameForTest(const TestDefinition &test) const;
+    void store(const ScheduleDefinition &test);
+    QString fileNameForTest(const ScheduleDefinition &test) const;
 
 public slots:
-    void testAdded(const TestDefinition &test, int position);
-    void testRemoved(const TestDefinition &test, int position);
+    void testAdded(const ScheduleDefinition &test, int position);
+    void testRemoved(const ScheduleDefinition &test, int position);
 };
 
-void SchedulerStorage::Private::store(const TestDefinition &test)
+void SchedulerStorage::Private::store(const ScheduleDefinition &test)
 {
     QJsonDocument document = QJsonDocument::fromVariant(test.toVariant());
 
@@ -68,12 +68,12 @@ void SchedulerStorage::Private::store(const TestDefinition &test)
     }
 }
 
-QString SchedulerStorage::Private::fileNameForTest(const TestDefinition &test) const
+QString SchedulerStorage::Private::fileNameForTest(const ScheduleDefinition &test) const
 {
     return QString::number(test.id().toInt());
 }
 
-void SchedulerStorage::Private::testAdded(const TestDefinition &test, int position)
+void SchedulerStorage::Private::testAdded(const ScheduleDefinition &test, int position)
 {
     Q_UNUSED(position);
 
@@ -85,7 +85,7 @@ void SchedulerStorage::Private::testAdded(const TestDefinition &test, int positi
     store(test);
 }
 
-void SchedulerStorage::Private::testRemoved(const TestDefinition &test, int position)
+void SchedulerStorage::Private::testRemoved(const ScheduleDefinition &test, int position)
 {
     Q_UNUSED(position);
 
@@ -112,8 +112,8 @@ SchedulerStorage::SchedulerStorage(Scheduler *scheduler, QObject *parent)
 {
     d->scheduler = scheduler;
 
-    connect(scheduler, SIGNAL(testAdded(TestDefinition, int)), d, SLOT(testAdded(TestDefinition, int)));
-    connect(scheduler, SIGNAL(testRemoved(TestDefinition, int)), d, SLOT(testRemoved(TestDefinition, int)));
+    connect(scheduler, SIGNAL(testAdded(ScheduleDefinition, int)), d, SLOT(testAdded(ScheduleDefinition, int)));
+    connect(scheduler, SIGNAL(testRemoved(ScheduleDefinition, int)), d, SLOT(testRemoved(ScheduleDefinition, int)));
 }
 
 SchedulerStorage::~SchedulerStorage()
@@ -138,7 +138,7 @@ void SchedulerStorage::storeData()
         return;
     }
 
-    foreach (const TestDefinition &test, d->scheduler->tests())
+    foreach (const ScheduleDefinition &test, d->scheduler->tests())
     {
         d->store(test);
     }
@@ -163,7 +163,7 @@ void SchedulerStorage::loadData()
 
         if (error.error == QJsonParseError::NoError)
         {
-            TestDefinition test = TestDefinition::fromVariant(document.toVariant());
+            ScheduleDefinition test = ScheduleDefinition::fromVariant(document.toVariant());
 
             if (!test.isNull())
             {

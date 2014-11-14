@@ -30,13 +30,13 @@ public:
 
     bool isRunning() const;
 
-    void execute(const TestDefinition &test, MeasurementObserver *observer = NULL);
+    void execute(const ScheduleDefinition &test, MeasurementObserver *observer = NULL);
 
 signals:
     void runningChanged(bool running);
 
-    void started(const TestDefinition &test);
-    void finished(const TestDefinition &test, const Result &result);
+    void started(const ScheduleDefinition &test);
+    void finished(const ScheduleDefinition &test, const Result &result);
 
 protected:
     class Private;

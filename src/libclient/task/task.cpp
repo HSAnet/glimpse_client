@@ -5,39 +5,41 @@
 class TaskData : public QSharedData
 {
 public:
-    TaskId id;
+    ScheduleId id;
+    TaskId taskId;
     QString name;
     TimingPtr timing;
     QVariant measurementDefinition;
     Precondition precondition;
 };
 
-TestDefinition::TestDefinition()
+ScheduleDefinition::ScheduleDefinition()
 : d(new TaskData)
 {
 }
 
-TestDefinition::TestDefinition(const TestDefinition &other)
+ScheduleDefinition::ScheduleDefinition(const ScheduleDefinition &other)
 : d(other.d)
 {
 }
 
-TestDefinition::TestDefinition(const TaskId &id, const QString &name, const TimingPtr &timing,
+ScheduleDefinition::ScheduleDefinition(const ScheduleId &id, const TaskId& taskId, const QString &name, const TimingPtr &timing,
                                const QVariant &measurementDefinition, const Precondition &precondition)
 : d(new TaskData)
 {
     d->id = id;
+    d->taskId = taskId;
     d->name = name;
     d->timing = timing;
     d->measurementDefinition = measurementDefinition;
     d->precondition = precondition;
 }
 
-TestDefinition::~TestDefinition()
+ScheduleDefinition::~ScheduleDefinition()
 {
 }
 
-TestDefinition &TestDefinition::operator=(const TestDefinition &rhs)
+ScheduleDefinition &ScheduleDefinition::operator=(const ScheduleDefinition &rhs)
 {
     if (this != &rhs)
     {
@@ -47,79 +49,93 @@ TestDefinition &TestDefinition::operator=(const TestDefinition &rhs)
     return *this;
 }
 
-bool TestDefinition::isNull() const
+bool ScheduleDefinition::isNull() const
 {
     return !d->id.isValid();
 }
 
-void TestDefinition::setId(const TaskId &id)
+void ScheduleDefinition::setId(const ScheduleId &id)
 {
     d->id = id;
 }
 
-QVariant TestDefinition::toVariant() const
+QVariant ScheduleDefinition::toVariant() const
 {
-    QVariantMap hash;
-    hash.insert("id", d->id.toInt());
-    hash.insert("method", d->name);
-    hash.insert("timing", d->timing->toVariant());
-    hash.insert("options", d->measurementDefinition);
-    hash.insert("precondition", d->precondition.toVariant());
-    return hash;
+    QVariantMap map;
+    QVariantMap task;
+
+    task.insert("id", d->taskId.toInt());
+    task.insert("method", d->name);
+    task.insert("options", d->measurementDefinition);
+
+    map.insert("id", d->id.toInt());
+    map.insert("timing", d->timing->toVariant());
+    map.insert("precondition", d->precondition.toVariant());
+    map.insert("task", task);
+
+    return map;
 }
 
-TestDefinition TestDefinition::fromVariant(const QVariant &variant)
+ScheduleDefinition ScheduleDefinition::fromVariant(const QVariant &variant)
 {
-    QVariantMap hash = variant.toMap();
+    QVariantMap map = variant.toMap();
 
-    return TestDefinition(TaskId(hash.value("id").toInt()),
-                          hash.value("method").toString(),
-                          TimingFactory::timingFromVariant(hash.value("timing")),
-                          hash.value("options"),
-                          Precondition::fromVariant(hash.value("precondition")));
+    QVariantMap task = map.value("task").toMap();
+
+    return ScheduleDefinition(ScheduleId(map.value("id").toInt()),
+                              TaskId(task.value("id").toInt()),
+                              task.value("method").toString(),
+                              TimingFactory::timingFromVariant(map.value("timing")),
+                              task.value("options"),
+                              Precondition::fromVariant(map.value("precondition")));
 }
 
-TaskId TestDefinition::id() const
+ScheduleId ScheduleDefinition::id() const
 {
     return d->id;
 }
 
-void TestDefinition::setName(const QString &name)
+TaskId ScheduleDefinition::taskId() const
+{
+    return d->taskId;
+}
+
+void ScheduleDefinition::setName(const QString &name)
 {
     d->name = name;
 }
 
-QString TestDefinition::name() const
+QString ScheduleDefinition::name() const
 {
     return d->name;
 }
 
-void TestDefinition::setTiming(const TimingPtr &timing)
+void ScheduleDefinition::setTiming(const TimingPtr &timing)
 {
     d->timing = timing;
 }
 
-TimingPtr TestDefinition::timing() const
+TimingPtr ScheduleDefinition::timing() const
 {
     return d->timing;
 }
 
-void TestDefinition::setMeasurementDefinition(const QVariant &measurementDefinition)
+void ScheduleDefinition::setMeasurementDefinition(const QVariant &measurementDefinition)
 {
     d->measurementDefinition = measurementDefinition;
 }
 
-QVariant TestDefinition::measurementDefinition() const
+QVariant ScheduleDefinition::measurementDefinition() const
 {
     return d->measurementDefinition;
 }
 
-void TestDefinition::setPrecondition(const Precondition &precondition)
+void ScheduleDefinition::setPrecondition(const Precondition &precondition)
 {
     d->precondition = precondition;
 }
 
-Precondition TestDefinition::precondition() const
+Precondition ScheduleDefinition::precondition() const
 {
     return d->precondition;
 }

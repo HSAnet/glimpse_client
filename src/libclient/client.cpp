@@ -63,7 +63,7 @@ public:
         executor.setNetworkManager(&networkManager);
         scheduler.setExecutor(&executor);
 
-        connect(&executor, SIGNAL(finished(TestDefinition, Result)), this, SLOT(taskFinished(TestDefinition, Result)));
+        connect(&executor, SIGNAL(finished(ScheduleDefinition, Result)), this, SLOT(taskFinished(ScheduleDefinition, Result)));
         connect(&loginController, SIGNAL(finished()), this, SLOT(loginStatusChanged()));
     }
 
@@ -120,7 +120,7 @@ public slots:
     void handleSigHup();
     void handleSigTerm();
 #endif // Q_OS_UNIX
-    void taskFinished(const TestDefinition &test, const Result &result);
+    void taskFinished(const ScheduleDefinition &test, const Result &result);
     void loginStatusChanged();
 };
 
@@ -272,16 +272,16 @@ void Client::Private::handleSigHup()
 }
 #endif // Q_OS_UNIX
 
-void Client::Private::taskFinished(const TestDefinition &test, const Result &result)
+void Client::Private::taskFinished(const ScheduleDefinition &test, const Result &result)
 {
-    Report report = reportScheduler.reportByTaskId(test.id());
+    Report report = reportScheduler.reportByTaskId(test.taskId());
 
     ResultList results = report.isNull() ? ResultList() : report.results();
     results.append(result);
 
     if (report.isNull() || results.size() == 1)
     {
-        report = Report(test.id(), QDateTime::currentDateTime(), Client::version(), results);
+        report = Report(test.taskId(), QDateTime::currentDateTime(), Client::version(), results);
         reportScheduler.addReport(report);
     }
     else
@@ -326,7 +326,7 @@ Client *Client::instance()
 
 bool Client::init()
 {
-    qRegisterMetaType<TestDefinition>();
+    qRegisterMetaType<ScheduleDefinition>();
     qRegisterMetaType<Result>();
 
     // Get network time from ntp server
@@ -368,36 +368,36 @@ bool Client::init()
     }
 
     // add on demand tasks
-    TestDefinitionList tests;
+    ScheduleDefinitionList tests;
     TimingPtr timing(new OnDemandTiming());
     Precondition precondition;
 
-    tests.append(TestDefinition(TaskId(1), "ping", timing, PingDefinition("measure-it.net", 4, 200, 4000, 64, 33434, 33434, 74,
-                                                                  ping::System).toVariant(), precondition));
-    tests.append(TestDefinition(TaskId(2), "btc_ma", timing, BulkTransportCapacityDefinition("141.82.57.241", 5106, 1048576,
+    tests.append(ScheduleDefinition(ScheduleId(1), TaskId(1), "ping", timing, PingDefinition("measure-it.net", 4, 200, 4000, 64, 33434, 33434, 74,
+                                                                                             ping::System).toVariant(), precondition));
+    tests.append(ScheduleDefinition(ScheduleId(2), TaskId(2), "btc_ma", timing, BulkTransportCapacityDefinition("141.82.57.241", 5106, 1048576,
                                                                                      10).toVariant(), precondition));
-    tests.append(TestDefinition(TaskId(3), "btc_ma", timing, BulkTransportCapacityDefinition("141.82.57.241", 5106, 1048576,
+    tests.append(ScheduleDefinition(ScheduleId(3), TaskId(3), "btc_ma", timing, BulkTransportCapacityDefinition("141.82.57.241", 5106, 1048576,
                                                                                      10).toVariant(), precondition)); // TODO this is for btc upload which is not implemented yet
-    tests.append(TestDefinition(TaskId(4), "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74,
+    tests.append(ScheduleDefinition(ScheduleId(4), TaskId(4), "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74,
                                                                   ping::Udp).toVariant(), precondition));
-    tests.append(TestDefinition(TaskId(5), "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74,
+    tests.append(ScheduleDefinition(ScheduleId(5), TaskId(5), "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74,
                                                                   ping::Tcp).toVariant(), precondition));
-    tests.append(TestDefinition(TaskId(6), "dnslookup", timing, DnslookupDefinition("measure-it.net").toVariant(), precondition));
-    tests.append(TestDefinition(TaskId(7), "httpdownload", timing,
+    tests.append(ScheduleDefinition(ScheduleId(6), TaskId(6), "dnslookup", timing, DnslookupDefinition("measure-it.net").toVariant(), precondition));
+    tests.append(ScheduleDefinition(ScheduleId(7), TaskId(7), "httpdownload", timing,
                                 HTTPDownloadDefinition("http://www.measure-it.net:80/static/measurement/67108864", false, 1, 10000, 3000, 1000).toVariant(),
                                 precondition));
-    tests.append(TestDefinition(TaskId(8), "packettrains_ma", timing, PacketTrainsDefinition("141.82.57.241", 5106, 1000, 48, 1,
+    tests.append(ScheduleDefinition(ScheduleId(8), TaskId(8), "packettrains_ma", timing, PacketTrainsDefinition("141.82.57.241", 5106, 1000, 48, 1,
                                                                                      10485760, 262144000, 200000000).toVariant(),
                                 precondition));
-    tests.append(TestDefinition(TaskId(9), "reversednslookup", timing, ReverseDnslookupDefinition("141.82.57.241").toVariant(),
+    tests.append(ScheduleDefinition(ScheduleId(9), TaskId(9), "reversednslookup", timing, ReverseDnslookupDefinition("141.82.57.241").toVariant(),
                                 precondition));
-    tests.append(TestDefinition(TaskId(10), "traceroute", timing, TracerouteDefinition("measure-it.net", 3, 1000, 1000, 33434,
+    tests.append(ScheduleDefinition(ScheduleId(10), TaskId(10), "traceroute", timing, TracerouteDefinition("measure-it.net", 3, 1000, 1000, 33434,
                                                                                33434, 74, ping::Udp).toVariant(),
                                 precondition));
-    tests.append(TestDefinition(TaskId(11), "upnp", timing, QVariant(), precondition));
-    tests.append(TestDefinition(TaskId(12), "wifilookup", timing, QVariant(), precondition));
+    tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", timing, QVariant(), precondition));
+    tests.append(ScheduleDefinition(ScheduleId(12), TaskId(12), "wifilookup", timing, QVariant(), precondition));
 
-    foreach (const TestDefinition test, tests)
+    foreach (const ScheduleDefinition test, tests)
     {
         d->scheduler.enqueue(test);
     }
@@ -420,21 +420,21 @@ bool Client::autoLogin()
 
 void Client::btc()
 {
-    d->scheduler.executeOnDemandTest(TaskId(2));
+    d->scheduler.executeOnDemandTest(ScheduleId(2));
 }
 
 void Client::btc(const QString &host)
 {
     BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024, 10);
     TimingPtr timing(new ImmediateTiming());
-    TestDefinition testDefinition(TaskId(9), "btc_ma", timing,
+    ScheduleDefinition testDefinition(ScheduleId(9), TaskId(9), "btc_ma", timing,
                                   btcDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
 void Client::http()
 {
-    d->scheduler.executeOnDemandTest(TaskId(7));
+    d->scheduler.executeOnDemandTest(ScheduleId(7));
 }
 
 void Client::http(const QString &url, bool avoidCaches, int threads, int targetTime,
@@ -442,29 +442,29 @@ void Client::http(const QString &url, bool avoidCaches, int threads, int targetT
 {
     HTTPDownloadDefinition httpDef(url, avoidCaches, threads , targetTime, rampUpTime, slotLength);
     TimingPtr timing(new ImmediateTiming());
-    TestDefinition testDefinition(TaskId(3), "httpdownload", timing,
+    ScheduleDefinition testDefinition(ScheduleId(3), TaskId(3), "httpdownload", timing,
                                   httpDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
 void Client::upnp()
 {
-    d->scheduler.executeOnDemandTest(TaskId(11));
+    d->scheduler.executeOnDemandTest(ScheduleId(11));
 }
 
 void Client::dnslookup()
 {
-    d->scheduler.executeOnDemandTest(TaskId(6));
+    d->scheduler.executeOnDemandTest(ScheduleId(6));
 }
 
 void Client::reverseDnslookup()
 {
-    d->scheduler.executeOnDemandTest(TaskId(9));
+    d->scheduler.executeOnDemandTest(ScheduleId(9));
 }
 
 void Client::packetTrains()
 {
-    d->scheduler.executeOnDemandTest(TaskId(8));
+    d->scheduler.executeOnDemandTest(ScheduleId(8));
 }
 
 void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint16 trainLength, quint8 iterations,
@@ -473,14 +473,14 @@ void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint1
     PacketTrainsDefinition packetTrainsDef(host, port, packetSize, trainLength, iterations, rateMin, rateMax, delay);
 
     TimingPtr timing(new ImmediateTiming());
-    TestDefinition testDefinition(TaskId(11), "packettrains_ma", timing,
+    ScheduleDefinition testDefinition(ScheduleId(11), TaskId(11), "packettrains_ma", timing,
                                   packetTrainsDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
 void Client::ping()
 {
-    d->scheduler.executeOnDemandTest(TaskId(1));
+    d->scheduler.executeOnDemandTest(ScheduleId(1));
 }
 
 void Client::ping(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
@@ -490,14 +490,14 @@ void Client::ping(const QString &url, const quint32 &count, const quint32 &inter
     PingDefinition pingDef(url, count, interval, receiveTimeout, ttl, destinationPort, sourcePort, payload, type);
 
     TimingPtr timing(new ImmediateTiming());
-    TestDefinition testDefinition(TaskId(12), "ping", timing,
+    ScheduleDefinition testDefinition(ScheduleId(12), TaskId(12), "ping", timing,
                                   pingDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
 void Client::traceroute()
 {
-    d->scheduler.executeOnDemandTest(TaskId(10));
+    d->scheduler.executeOnDemandTest(ScheduleId(10));
 }
 
 void Client::traceroute(const QString &url,
@@ -513,32 +513,32 @@ void Client::traceroute(const QString &url,
                                        type);
 
     TimingPtr timing(new ImmediateTiming());
-    TestDefinition testDefinition(TaskId(13), "traceroute", timing,
+    ScheduleDefinition testDefinition(ScheduleId(13), TaskId(13), "traceroute", timing,
                                   tracerouteDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
 void Client::wifiLookup()
 {
-    d->scheduler.executeOnDemandTest(TaskId(12));
+    d->scheduler.executeOnDemandTest(ScheduleId(12));
 }
 
 void Client::measureIt()
 {
     // System Ping
-    d->scheduler.executeOnDemandTest(TaskId(1));
+    d->scheduler.executeOnDemandTest(ScheduleId(1));
 
     // BTC
-    d->scheduler.executeOnDemandTest(TaskId(2));
+    d->scheduler.executeOnDemandTest(ScheduleId(2));
 
     // HTTP download
-    d->scheduler.executeOnDemandTest(TaskId(7));
+    d->scheduler.executeOnDemandTest(ScheduleId(7));
 
     // PacketTrains
-    d->scheduler.executeOnDemandTest(TaskId(8));
+    d->scheduler.executeOnDemandTest(ScheduleId(8));
 
     // Traceroute
-    d->scheduler.executeOnDemandTest(TaskId(10));
+    d->scheduler.executeOnDemandTest(ScheduleId(10));
 }
 
 void Client::setStatus(Client::Status status)

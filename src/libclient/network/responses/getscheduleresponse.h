@@ -14,11 +14,11 @@ public:
     }
 
     bool fillFromVariant(const QVariantMap &variant);
-    TestDefinitionList tasks() const;
+    ScheduleDefinitionList tasks() const;
 
 protected:
     TaskValidator m_validator;
-    TestDefinitionList m_tasks;
+    ScheduleDefinitionList m_tasks;
 };
 
 #endif // GETSCHEDULERESPONSE_H
