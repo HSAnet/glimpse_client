@@ -76,7 +76,7 @@ QStringList MeasurementFactory::availableMeasurements() const
     return d->pluginNameHash.keys();
 }
 
-MeasurementPtr MeasurementFactory::createMeasurement(const QString &name, const ScheduleId &id)
+MeasurementPtr MeasurementFactory::createMeasurement(const QString &name, const TaskId &id)
 {
     if (MeasurementPlugin *plugin = d->pluginNameHash.value(name))
     {

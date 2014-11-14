@@ -32,7 +32,7 @@ public slots:
 
         // TODO: Check the timing (too long ago?)
         currentTest = test;
-        measurement = factory.createMeasurement(test.name(), test.id());
+        measurement = factory.createMeasurement(test.name(), test.taskId());
 
         if (!measurement.isNull())
         {

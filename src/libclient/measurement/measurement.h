@@ -41,8 +41,8 @@ public:
 
     virtual Result result() const = 0;
 
-    ScheduleId taskId() const;
-    void setTaskId(const ScheduleId &taskId);
+    TaskId taskId() const;
+    void setTaskId(const TaskId &taskId);
 
     QUuid getMeasurementUuid() const;
     void setMeasurementUuid(const QUuid &measurementUuid);

@@ -41,7 +41,7 @@ public:
         QVariantMap map;
         map.insert("type", "peer_request");
         map.insert("measurementDefinition", measurementDefinition);
-        map.insert("scheduleId", scheduleId.toInt());
+        map.insert("taskId", taskId.toInt());
         map.insert("measurementUuid", measurementUuid);
         map.insert("measurement", measurement);
         map.insert("peer", peer);
@@ -56,7 +56,7 @@ public:
 
         PeerRequest request;
         request.measurementDefinition = map.value("measurementDefinition");
-        request.scheduleId = ScheduleId(map.value("scheduleId").toInt());
+        request.taskId = TaskId(map.value("taskId").toInt());
         request.measurementUuid = map.value("measurementUuid").toUuid();
         request.measurement = map.value("measurement").toString();
         request.peer = map.value("peer").toString();
@@ -66,7 +66,7 @@ public:
     }
 
     QVariant measurementDefinition;
-    ScheduleId scheduleId;
+    TaskId taskId;
     QUuid measurementUuid;
     QString measurement;
     QString peer;
@@ -322,8 +322,8 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
         //        and we can't access.
 
         TimingPtr timing(new ImmediateTiming);
-        ScheduleDefinition testDefinition(request.scheduleId, TaskId(0), request.measurement, timing,
-                                      request.measurementDefinition, Precondition()); // TODO get correct task id
+        ScheduleDefinition testDefinition(ScheduleId(0), request.taskId, request.measurement, timing,
+                                      request.measurementDefinition, Precondition());
 
         // Bypass scheduler and run directly on the executor
         scheduler->executor()->execute(testDefinition, observer);
@@ -543,7 +543,7 @@ QAbstractSocket *NetworkManager::createConnection(NetworkManager::SocketType soc
 }
 
 QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
-                                                     const ScheduleId &taskId,
+                                                     const TaskId &taskId,
                                                      const QString &measurement,
                                                      MeasurementDefinitionPtr measurementDefinition,
                                                      NetworkManager::SocketType socketType)
@@ -571,7 +571,7 @@ QAbstractSocket *NetworkManager::establishConnection(const QString &hostname,
 
     PeerRequest request;
     request.measurement = measurement;
-    request.scheduleId = taskId;
+    request.taskId = taskId;
     request.measurementDefinition = measurementDefinition->toVariant();
     request.measurementUuid = measurementDefinition->measurementUuid;
     request.peer = remote.host;
