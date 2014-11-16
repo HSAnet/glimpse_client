@@ -12,6 +12,7 @@ class CLIENT_API SchedulerModel : public QAbstractTableModel
     Q_OBJECT
     Q_ENUMS(Roles Mode)
     Q_PROPERTY(Scheduler *scheduler READ scheduler WRITE setScheduler NOTIFY schedulerChanged)
+    Q_PROPERTY(int updateInterval READ updateInterval WRITE setUpdateInterval NOTIFY updateIntervalChanged)
 
 public:
     SchedulerModel(QObject *parent = 0);
@@ -33,6 +34,9 @@ public:
     void setScheduler(Scheduler *scheduler);
     Scheduler *scheduler() const;
 
+    void setUpdateInterval(int ms);
+    int updateInterval() const;
+
     Q_INVOKABLE void reset();
     Q_INVOKABLE QVariant get(int index) const;
 
@@ -46,6 +50,7 @@ public:
 
 signals:
     void schedulerChanged();
+    void updateIntervalChanged();
 
 protected:
     class Private;

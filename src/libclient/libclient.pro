@@ -28,21 +28,18 @@ include($$SOURCE_DIRECTORY/dist.pri)
 include($$SOURCE_DIRECTORY/3rdparty/miniupnpc.pri)
 include($$SOURCE_DIRECTORY/3rdparty/breakpad.pri)
 include($$SOURCE_DIRECTORY/3rdparty/winpcap.pri)
-include($$SOURCE_DIRECTORY/3rdparty/qt-google-analytics/qt-google-analytics.pri)
 include($$SOURCE_DIRECTORY/3rdparty/qtsystems.pri)
 
 android {
     QT += androidextras
 
     HEADERS += androidhelper.h \
-               androidimageprovider.h \
                androidprocessmodel.h
 
     SOURCES += androidhelper.cpp \
                storage/storagepaths_android.cpp \
                log/logger_android.cpp \
                deviceinfo_android.cpp \
-               androidimageprovider.cpp \
                androidprocessmodel.cpp \
                measurement/ping/ping_linux.cpp \
                measurement/wifilookup/wifilookup_android.cpp
@@ -68,14 +65,6 @@ android {
         HEADERS += linuxprocessmodel.h
         SOURCES += linuxprocessmodel.cpp \
                    measurement/ping/ping_linux.cpp
-
-        qtHaveModule(quick) {
-            CONFIG += link_pkgconfig
-            PKGCONFIG += libwnck-1.0
-
-            HEADERS += linuximageprovider.h
-            SOURCES += linuximageprovider.cpp
-        }
     }
 }
 
@@ -83,22 +72,14 @@ osx {
     QT += macextras
     LIBS += -framework AppKit -framework DiskArbitration
 
-    HEADERS += macprocessmodel.h \
-               macimageprovider.h
-    OBJECTIVE_SOURCES += macprocessmodel.mm \
-                         macimageprovider.mm
+    HEADERS += macprocessmodel.h
+    OBJECTIVE_SOURCES += macprocessmodel.mm
 }
 
 breakpad-builtin {
     HEADERS += crashhandler.h
     ios:OBJECTIVE_SOURCES += crashhandler_ios.mm
     else:SOURCES += crashhandler.cpp
-}
-
-qtHaveModule(quick) {
-    QT += qml quick
-    HEADERS += qmlmodule.h
-    SOURCES += qmlmodule.cpp
 }
 
 SOURCES +=  \
