@@ -341,8 +341,8 @@ TimingPtr CalendarTiming::fromVariant(const QVariant &variant)
                                         listFromVariant<int>(hash.value("days_of_week")),
                                         listFromVariant<int>(hash.value("days_of_month")),
                                         listFromVariant<int>(hash.value("hours")),
-                                        listFromVariant<int>(hash.value("seconds")),
-                                        listFromVariant<int>(hash.value("minutes"))));
+                                        listFromVariant<int>(hash.value("minutes")),
+                                        listFromVariant<int>(hash.value("seconds"))));
 }
 
 QDateTime CalendarTiming::start() const

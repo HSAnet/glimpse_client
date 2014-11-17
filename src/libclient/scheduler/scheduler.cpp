@@ -70,7 +70,8 @@ void Scheduler::Private::updateTimer()
             // If we would call timeout() directly, the testAdded() signal
             // would be emitted after execution.
             LOG_DEBUG(QString("Scheduling timer executes %1 now").arg(td.name()));
-            timer.start(1);
+            timer.start(100); // wait 100 ms before executing to only have 15 repeats if the measuremnet was
+                              // executed in the last 1,5s
         }
     }
 }
@@ -122,17 +123,20 @@ void Scheduler::Private::timeout()
     ScheduleDefinition td = tests.at(0);
 
     QDateTime t = td.timing()->lastExecution();
-    if (t.isValid() && t.msecsTo(QDateTime::currentDateTime()) < 100)
+
+    // don't schedule if this measurement was executed in the last 1,5s
+    if (t.isValid() && t.msecsTo(QDateTime::currentDateTime()) < 1500)
     {
+        LOG_DEBUG("Scheduler timeout to soon after last execution, skipping.")
         updateTimer();
         return;
     }
 
-    q->execute(td);
-
     // remove it from the list
     tests.removeAt(0);
     testIds.remove(td.id());
+
+    q->execute(td);
 
     // check if it needs to be enqueued again or permanentely removed
     if (!td.timing()->reset())

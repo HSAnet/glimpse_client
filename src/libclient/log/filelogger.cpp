@@ -1,5 +1,5 @@
 #include "filelogger.h"
-#include <QTime>
+#include <QDateTime>
 #include <storage/storagepaths.h>
 
 LOGGER(FileLogger);
@@ -64,5 +64,5 @@ void FileLogger::log(Logger::Level level, const QString &name, const QString &fu
         break;
     }
 
-    out << QTime::currentTime().toString() << " " << levelName << " " << funcName << " : " << message << endl;
+    out << QDateTime::currentDateTime().toString() << " " << levelName << " " << funcName << " : " << message << endl;
 }
