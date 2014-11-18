@@ -11,7 +11,7 @@ set -e
 
 case "$1" in
     configure)
-    adduser --system --group $USER_NAME
+    adduser --system --group $USER_NAME || true
 	service $SERVICE_NAME start || true
     ;;
 esac
