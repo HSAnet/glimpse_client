@@ -33,14 +33,12 @@ include($$SOURCE_DIRECTORY/3rdparty/qtsystems.pri)
 android {
     QT += androidextras
 
-    HEADERS += androidhelper.h \
-               androidprocessmodel.h
+    HEADERS += androidhelper.h
 
     SOURCES += androidhelper.cpp \
                storage/storagepaths_android.cpp \
                log/logger_android.cpp \
                deviceinfo_android.cpp \
-               androidprocessmodel.cpp \
                measurement/ping/ping_linux.cpp \
                measurement/wifilookup/wifilookup_android.cpp
 } else: ios {
@@ -62,18 +60,8 @@ android {
                      measurement/ping/ping_win.cpp
 
     linux {
-        HEADERS += linuxprocessmodel.h
-        SOURCES += linuxprocessmodel.cpp \
-                   measurement/ping/ping_linux.cpp
+        SOURCES += measurement/ping/ping_linux.cpp
     }
-}
-
-osx {
-    QT += macextras
-    LIBS += -framework AppKit -framework DiskArbitration
-
-    HEADERS += macprocessmodel.h
-    OBJECTIVE_SOURCES += macprocessmodel.mm
 }
 
 breakpad-builtin {

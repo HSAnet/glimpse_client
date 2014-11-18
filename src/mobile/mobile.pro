@@ -36,8 +36,10 @@ android {
     QT += androidextras
 
     HEADERS += statusbarhelper.h \
-               androidimageprovider.h
+               androidimageprovider.h \
+               androidprocessmodel.h
     SOURCES += statusbarhelper.cpp \
+               androidprocessmodel.cpp \
                androidimageprovider.cpp
 
     OTHER_FILES += $$files($$PWD/android/src/*.java) \
@@ -54,15 +56,20 @@ android {
         CONFIG += link_pkgconfig
         PKGCONFIG += libwnck-1.0
 
-        HEADERS += linuximageprovider.h
-        SOURCES += linuximageprovider.cpp
+        HEADERS += linuximageprovider.h \
+                   linuxprocessmodel.h
+        SOURCES += linuximageprovider.cpp \
+                   linuxprocessmodel.cpp
     }
 
     osx {
         QT += macextras
+        LIBS += -framework AppKit -framework DiskArbitration
 
-        HEADERS += macimageprovider.h
-        OBJECTIVE_SOURCES += macimageprovider.mm
+        HEADERS += macimageprovider.h \
+                   macprocessmodel.h
+        OBJECTIVE_SOURCES += macimageprovider.mm \
+                             macprocessmodel.mm
     }
 }
 
