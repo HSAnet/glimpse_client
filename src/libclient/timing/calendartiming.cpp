@@ -259,7 +259,12 @@ QDateTime CalendarTiming::nextRun() const
                             else if ((nextRunTime = d->findTime(time)).isValid())
                             {
                                 nextRun = QDateTime(nextRunDate, nextRunTime);
-                                found = true;
+
+                                // check if the calculated next run was already executed
+                                if (!m_lastExecution.isValid() || m_lastExecution.secsTo(nextRun) > 1)
+                                {
+                                    found = true;
+                                }
                             }
                         }
                     }

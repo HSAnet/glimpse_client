@@ -70,8 +70,7 @@ void Scheduler::Private::updateTimer()
             // If we would call timeout() directly, the testAdded() signal
             // would be emitted after execution.
             LOG_DEBUG(QString("Scheduling timer executes %1 now").arg(td.name()));
-            timer.start(100); // wait 100 ms before executing to only have 15 repeats if the measuremnet was
-                              // executed in the last 1,5s
+            timer.start(100); // wait 100 ms before executing
         }
     }
 }
