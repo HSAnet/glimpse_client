@@ -16,7 +16,6 @@
 #include "controller/crashcontroller.h"
 #include "network/responses/registerdeviceresponse.h"
 #include "webrequester.h"
-#include "connectiontester.h"
 #include "settings.h"
 #include "log/logmodel.h"
 
@@ -101,8 +100,6 @@ void QmlModule::registerTypes()
 
     qmlRegisterType<Settings>(MODULE_URI, 1, 0, "Settings");
     qmlRegisterType<WebRequester>(MODULE_URI, 1, 0, "WebRequester");
-    qmlRegisterType<ConnectionTester>(MODULE_URI, 1, 0, "ConnectionTester");
-    qmlRegisterType<ConnectionTesterModel>(MODULE_URI, 1, 0, "ConnectionTesterModel");
     qmlRegisterType<Time>(MODULE_URI, 1, 0, "Time");
 
 #if defined(Q_OS_ANDROID)

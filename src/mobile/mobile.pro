@@ -5,6 +5,7 @@ QT += gui quick qml concurrent
 CONFIG += qtquickcompiler
 
 include($$SOURCE_DIRECTORY/dist.pri)
+include($$SOURCE_DIRECTORY/3rdparty/qt-google-analytics/qt-google-analytics.pri)
 include($$SOURCE_DIRECTORY/src/libclient/libclient.pri)
 
 osx:TARGET = glimpse
@@ -34,8 +35,12 @@ write_file("qmlresources.qrc", LINES)
 android {
     QT += androidextras
 
-    HEADERS += statusbarhelper.h
-    SOURCES += statusbarhelper.cpp
+    HEADERS += statusbarhelper.h \
+               androidimageprovider.h \
+               androidprocessmodel.h
+    SOURCES += statusbarhelper.cpp \
+               androidprocessmodel.cpp \
+               androidimageprovider.cpp
 
     OTHER_FILES += $$files($$PWD/android/src/*.java) \
                    android/AndroidManifest.xml
@@ -46,6 +51,26 @@ android {
 
     HEADERS += desktopstatusbarhelper.h
     SOURCES += desktopstatusbarhelper.cpp
+
+    linux {
+        CONFIG += link_pkgconfig
+        PKGCONFIG += libwnck-1.0
+
+        HEADERS += linuximageprovider.h \
+                   linuxprocessmodel.h
+        SOURCES += linuximageprovider.cpp \
+                   linuxprocessmodel.cpp
+    }
+
+    osx {
+        QT += macextras
+        LIBS += -framework AppKit -framework DiskArbitration
+
+        HEADERS += macimageprovider.h \
+                   macprocessmodel.h
+        OBJECTIVE_SOURCES += macimageprovider.mm \
+                             macprocessmodel.mm
+    }
 }
 
 win32 {
@@ -76,6 +101,12 @@ osx {
     CONFIG += link_pkgconfig
     PKGCONFIG += libwnck-1.0
     DEFINES += HAVE_WNCK
+}
+
+qtHaveModule(quick) {
+    QT += qml quick
+    HEADERS += qmlmodule.h
+    SOURCES += qmlmodule.cpp
 }
 
 SOURCES += \

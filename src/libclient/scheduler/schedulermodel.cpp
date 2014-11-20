@@ -12,6 +12,7 @@ public:
     Private(SchedulerModel *q)
     : q(q)
     {
+        connect(&updateTimer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     }
 
     SchedulerModel *q;
@@ -19,10 +20,14 @@ public:
     QPointer<Scheduler> scheduler;
     ScheduleDefinitionList tests;
 
+    QTimer updateTimer;
+
 public slots:
     void testAdded(const ScheduleDefinition &test, int position);
     void testRemoved(const ScheduleDefinition &test, int position);
     void testMoved(const ScheduleDefinition &test, int from, int to);
+
+    void onTimeout();
 };
 
 void SchedulerModel::Private::testAdded(const ScheduleDefinition &test, int position)
@@ -51,10 +56,19 @@ void SchedulerModel::Private::testMoved(const ScheduleDefinition &test, int from
     q->endMoveRows();
 }
 
+void SchedulerModel::Private::onTimeout()
+{
+    QModelIndex topLeft = q->index(0,0);
+    QModelIndex bottomRight = q->index(q->rowCount(QModelIndex()), q->columnCount(QModelIndex()));
+
+    emit q->dataChanged(topLeft, bottomRight);
+}
+
 SchedulerModel::SchedulerModel(QObject *parent)
 : QAbstractTableModel(parent)
 , d(new Private(this))
 {
+    setUpdateInterval(1000);
 }
 
 SchedulerModel::~SchedulerModel()
@@ -95,6 +109,29 @@ void SchedulerModel::setScheduler(Scheduler *scheduler)
 Scheduler *SchedulerModel::scheduler() const
 {
     return d->scheduler;
+}
+
+void SchedulerModel::setUpdateInterval(int ms)
+{
+    if (ms == 0)
+    {
+        d->updateTimer.stop();
+    }
+    else
+    {
+        d->updateTimer.setInterval(ms);
+        d->updateTimer.start();
+    }
+}
+
+int SchedulerModel::updateInterval() const
+{
+    if (d->updateTimer.isActive())
+    {
+        return d->updateTimer.interval();
+    }
+
+    return 0;
 }
 
 void SchedulerModel::reset()

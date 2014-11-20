@@ -16,7 +16,7 @@ public:
     virtual void created(const MeasurementPtr &measurement) = 0;
 };
 
-class TaskExecutor : public QObject
+class CLIENT_API TaskExecutor : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool running READ isRunning NOTIFY runningChanged)
