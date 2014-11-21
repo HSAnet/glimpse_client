@@ -97,7 +97,7 @@ QString DeviceInfo::deviceId() const
     // Is it clever to check C:? Otherwise we may read a id of an usb stick
     if (::GetVolumeInformationW(L"C:\\", NULL, 0, &serialNumber, NULL, NULL, NULL, 0) == FALSE)
     {
-        LOG_WARNING("Unable to get partition serial number");
+        LOG_DEBUG("Unable to get partition serial number");
         return QString();
     }
 
