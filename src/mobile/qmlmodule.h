@@ -5,7 +5,7 @@
 
 class QQmlEngine;
 
-class CLIENT_API QmlModule
+class QmlModule
 {
 public:
     static void registerTypes();
