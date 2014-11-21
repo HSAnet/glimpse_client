@@ -58,7 +58,7 @@ QString DeviceInfo::deviceId() const
 {
     if (int ret = setfsent() != 1)
     {
-        LOG_ERROR(QString("Error opening fstab: setfsent returned %1").arg(ret));
+        LOG_WARNING(QString("Error opening fstab: setfsent returned %1").arg(ret));
         return QString();
     }
 
@@ -120,7 +120,7 @@ QString DeviceInfo::deviceId() const
 
     if (uuid.isEmpty())
     {
-        LOG_ERROR("No HDD UID found!");
+        LOG_WARNING("No HDD UID found!");
         return QString();
     }
 

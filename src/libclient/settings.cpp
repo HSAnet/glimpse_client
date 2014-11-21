@@ -45,11 +45,11 @@ Settings::StorageType Settings::init()
 
     DeviceInfo info;
 
-    QString generatedDeviceId = info.deviceId();
-
-    if (generatedDeviceId.isEmpty())
+    if (deviceId().isEmpty())
     {
-        if (deviceId().isEmpty())
+        QString generatedDeviceId = info.deviceId();
+
+        if (generatedDeviceId.isEmpty())
         {
             QCryptographicHash hash(QCryptographicHash::Sha224);
             hash.addData(QUuid::createUuid().toByteArray());
@@ -60,12 +60,8 @@ Settings::StorageType Settings::init()
         }
         else
         {
-            LOG_INFO("Took fallback device ID from config");
+            setDeviceId(generatedDeviceId);
         }
-    }
-    else
-    {
-        setDeviceId(generatedDeviceId);
     }
 
     LOG_INFO(QString("Device ID: %1").arg(deviceId()));
