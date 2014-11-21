@@ -103,14 +103,14 @@ osx {
     DEFINES += HAVE_WNCK
 }
 
-qtHaveModule(quick) {
-    QT += qml quick
-    HEADERS += qmlmodule.h
-    SOURCES += qmlmodule.cpp
-}
+HEADERS += \
+    units.h \
+    qmlmodule.h
 
 SOURCES += \
-    main.cpp
+    main.cpp \
+    units.cpp \
+    qmlmodule.cpp
 
 RESOURCES += \
     qmlresources.qrc \

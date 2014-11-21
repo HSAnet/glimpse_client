@@ -5,7 +5,7 @@
 
 #include <QObject>
 
-class CLIENT_API Units : public QObject
+class Units : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(float gridUnit READ gridUnit WRITE setGridUnit NOTIFY gridUnitChanged)

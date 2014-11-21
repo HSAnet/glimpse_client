@@ -1,6 +1,7 @@
 TEMPLATE = lib
 TARGET = client
 
+QT -= gui
 QT += network concurrent
 
 CONFIG += hide_symbols
@@ -115,7 +116,6 @@ SOURCES +=  \
     report/reportmodel.cpp \
     controller/reportcontroller.cpp \
     types.cpp \
-    units.cpp \
     controller/controller.cpp \
     log/logger.cpp \
     log/logmodel.cpp \
@@ -211,7 +211,6 @@ HEADERS += \
     storage/storagepaths.h \
     controller/reportcontroller.h \
     deviceinfo.h \
-    units.h \
     controller/controller.h \
     log/logmodel.h \
     controller/configcontroller.h \
