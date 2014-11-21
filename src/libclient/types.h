@@ -195,4 +195,7 @@ QSet<T> setFromVariant(const QVariant &variant)
 /// JSON.stringify()
 QString uuidToString(const QUuid &uuid);
 
+/// Converts the User-ID (mail address) to a 30 character hash
+QString userIdToHash(const QString &userId);
+
 #endif // TYPES_H

@@ -5,12 +5,12 @@
 #include "controller/logincontroller.h"
 #include "controller/taskcontroller.h"
 #include "controller/configcontroller.h"
+#include "types.h"
 
 #include "webrequester.h"
 #include "network/requests/registerdevicerequest.h"
 #include "network/responses/registerdeviceresponse.h"
 #include "log/filelogger.h"
-
 #include <QTextStream>
 #include <QCoreApplication>
 #include <QCommandLineParser>
@@ -265,12 +265,16 @@ int main(int argc, char *argv[])
     {
         loginData.type = LoginData::Register;
         passwordOption = &registerOption;
+
+        loginData.userId = parser.value(*passwordOption).toUtf8();
     }
 
     if (parser.isSet(loginOption))
     {
         loginData.type = LoginData::Login;
         passwordOption = &loginOption;
+
+        loginData.userId = userIdToHash(parser.value(*passwordOption));
     }
 
     if (parser.isSet(registerAnonymous))
@@ -280,8 +284,6 @@ int main(int argc, char *argv[])
 
     if (passwordOption)
     {
-        loginData.userId = parser.value(*passwordOption);
-
         ConsoleTools tools;
 
         do

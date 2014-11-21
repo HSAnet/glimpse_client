@@ -11,10 +11,11 @@ public:
 
     QString lastName;
     QLocale::Country homeCountry;
-    QString mail;
+    QString userId;
     QString firstName;
     QString password;
     int xpLevel;
+    QString eMail;
 };
 
 UserRegisterRequest::UserRegisterRequest(QObject *parent)
@@ -59,14 +60,14 @@ void UserRegisterRequest::setHomeCountry(QLocale::Country homeCountry)
 
 QString UserRegisterRequest::userId() const
 {
-    return d->mail;
+    return d->userId;
 }
 
 void UserRegisterRequest::setUserId(const QString &mail)
 {
-    if (d->mail != mail)
+    if (d->userId != mail)
     {
-        d->mail = mail;
+        d->userId = mail;
         emit mailChanged(mail);
     }
 }
@@ -104,12 +105,26 @@ int UserRegisterRequest::xpLevel() const
     return d->xpLevel;
 }
 
+QString UserRegisterRequest::eMail() const
+{
+    return d->eMail;
+}
+
 void UserRegisterRequest::setXpLevel(int xpLevel)
 {
     if (d->xpLevel != xpLevel)
     {
         d->xpLevel = xpLevel;
         emit xpLevelChanged(xpLevel);
+    }
+}
+
+void UserRegisterRequest::setEmail(const QString &eMail)
+{
+    if (d->eMail != eMail)
+    {
+        d->eMail = eMail;
+        emit eMailChanged(eMail);
     }
 }
 
@@ -122,5 +137,6 @@ QVariant UserRegisterRequest::toVariant() const
     data.insert("first_name", firstName());
     data.insert("password", password());
     data.insert("xp_level", xpLevel());
+    data.insert("email", eMail());
     return data;
 }
