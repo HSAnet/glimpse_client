@@ -174,8 +174,7 @@ QString LoginController::errorString() const
 
 void LoginController::anonymousRegistration()
 {
-    QString username = QString("%1@anon.com").arg(uuidToString(QUuid::createUuid()).left(
-                                                      15)); // TODO increase username length in database
+    QString username = QString("%1@anon.com").arg(uuidToString(QUuid::createUuid()).left(30));
     QString password = uuidToString(QUuid::createUuid()).left(15);
 
     LOG_DEBUG("Anonymous registration requested. Scrambled some data.");
@@ -185,8 +184,10 @@ void LoginController::anonymousRegistration()
 
 void LoginController::registration(const QString &username, const QString &password)
 {
-    d->registerRequest.setUserId(username);
+    // we use the hashed mailaddress as username
+    d->registerRequest.setUserId(userIdToHash(username)); // django-usernames only support 30 chars at the moment
     d->registerRequest.setPassword(password);
+    d->registerRequest.setEmail(username);
 
     d->requester.setRequest(&d->registerRequest);
     d->requester.setResponse(&d->response);

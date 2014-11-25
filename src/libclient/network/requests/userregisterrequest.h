@@ -16,6 +16,7 @@ class CLIENT_API UserRegisterRequest : public Request
     Q_PROPERTY(QString firstName READ firstName WRITE setFirstName NOTIFY firstNameChanged)
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
     Q_PROPERTY(int xpLevel READ xpLevel WRITE setXpLevel NOTIFY xpLevelChanged)
+    Q_PROPERTY(QString eMail READ eMail WRITE setEmail NOTIFY eMailChanged)
 
 public:
     UserRegisterRequest(QObject *parent = 0);
@@ -29,6 +30,7 @@ public:
     QString firstName() const;
     QString password() const;
     int xpLevel() const;
+    QString eMail() const;
 
     void setLastName(const QString &lastName);
     void setHomeCountry(QLocale::Country homeCountry);
@@ -36,6 +38,7 @@ public:
     void setFirstName(const QString &firstName);
     void setPassword(const QString &password);
     void setXpLevel(int xpLevel);
+    void setEmail(const QString &eMail);
 
 signals:
     void lastNameChanged(const QString &lastName);
@@ -44,6 +47,7 @@ signals:
     void firstNameChanged(const QString &firstName);
     void passwordChanged(const QString &password);
     void xpLevelChanged(int xpLevel);
+    void eMailChanged(const QString &eMail);
 
 protected:
     class Private;

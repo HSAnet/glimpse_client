@@ -6,6 +6,7 @@
 #include <QHostAddress>
 #include <QList>
 #include <QUuid>
+#include "export.h"
 
 // UDP request types
 enum RequestType
@@ -193,6 +194,9 @@ QSet<T> setFromVariant(const QVariant &variant)
 /// Converts a QUuid to a QString. It removes the braces
 /// and makes it readable by QML's implementation of
 /// JSON.stringify()
-QString uuidToString(const QUuid &uuid);
+CLIENT_API QString uuidToString(const QUuid &uuid);
+
+/// Converts the User-ID (mail address) to a 30 character hash
+CLIENT_API QString userIdToHash(const QString &userId);
 
 #endif // TYPES_H
