@@ -121,6 +121,15 @@ void TaskController::Private::instructionFinished()
         }
     }
 
+    // check which schedules we need to remove
+    foreach (const ScheduleId &id, instructionResponse.removeScheduleIds())
+    {
+        if (scheduler->knownTestId(id))
+        {
+            scheduler->dequeue(id);
+        }
+    }
+
     // get new schedules
     if(!scheduleRequest.resourceIds().isEmpty())
     {
