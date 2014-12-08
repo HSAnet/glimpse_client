@@ -47,6 +47,11 @@ public:
     // Serializable interface
     QVariant toVariant() const;
 
+    inline bool operator==(const ScheduleDefinition &b) const
+    {
+        return (this->id() == b.id());
+    }
+
 private:
     QSharedDataPointer<class TaskData> d;
 };

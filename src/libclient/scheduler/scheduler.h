@@ -19,7 +19,7 @@ public:
     ScheduleDefinitionList tests() const;
 
     void enqueue(const ScheduleDefinition &testDefinition);
-    void dequeue();
+    void dequeue(const ScheduleId &id);
 
     void execute(const ScheduleDefinition &testDefinition);
     int executeOnDemandTest(const ScheduleId &id);

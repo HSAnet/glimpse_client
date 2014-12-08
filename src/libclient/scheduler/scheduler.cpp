@@ -43,6 +43,7 @@ public:
     // Functions
     void updateTimer();
     int enqueue(const ScheduleDefinition &testDefinition);
+    int dequeue(const ScheduleId &id);
 
 public slots:
     void timeout();
@@ -114,6 +115,29 @@ int Scheduler::Private::enqueue(const ScheduleDefinition &testDefinition)
     }
 
     return tests.size() - 1;
+}
+
+int Scheduler::Private::dequeue(const ScheduleId &id)
+{
+    for (int i = 0; i < tests.size(); i++)
+    {
+        const ScheduleDefinition &td = tests.at(i);
+
+        if (td.id() == id)
+        {
+            tests.removeAll(td);
+            testIds.remove(id);
+            allTestIds.remove(id);
+
+            if (i == 0) // if this was the next Test to schedule update the timer
+            {
+                updateTimer();
+            }
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 void Scheduler::Private::timeout()
@@ -199,9 +223,9 @@ void Scheduler::enqueue(const ScheduleDefinition &testDefinition)
     }
 }
 
-void Scheduler::dequeue()
+void Scheduler::dequeue(const ScheduleId &id)
 {
-    // Whatever
+    d->dequeue(id);
 }
 
 void Scheduler::execute(const ScheduleDefinition &testDefinition)
