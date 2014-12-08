@@ -244,6 +244,9 @@ int main(int argc, char *argv[])
     QCommandLineOption passiveOption("passive", "Passive probe which does not receive tasks", "0/1");
     parser.addOption(passiveOption);
 
+    QCommandLineOption trafficOption("traffic", "Traffic limit per month (0 to deactivate traffic limit)", "MB");
+    parser.addOption(trafficOption);
+
     parser.process(app);
 
     if (parser.isSet(registerOption) && parser.isSet(registerAnonymous))
@@ -370,6 +373,21 @@ int main(int argc, char *argv[])
     {
         int setPassive = parser.value(passiveOption).toInt();
         client->settings()->setPassive((bool) setPassive);
+    }
+
+    if (parser.isSet(trafficOption))
+    {
+        int setTraffic = parser.value(trafficOption).toInt();
+        if (setTraffic != 0)
+        {
+            client->settings()->setAvailableTraffic(setTraffic * 1024 * 1024);
+            client->settings()->setAvailableMobileTraffic(setTraffic * 1024 * 1024);
+            client->settings()->setTrafficBudgetManagerActive(true);
+        }
+        else
+        {
+            client->settings()->setTrafficBudgetManagerActive(false);
+        }
     }
 
     if (!client->init())

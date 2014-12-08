@@ -71,11 +71,8 @@ Settings::StorageType Settings::init()
     {
         d->config.setConfigAddress("supervisor.measure-it.net");
         d->config.setSupervisorAdress("supervisor.measure-it.net");
-        setAvailableTraffic(31457280);  // 30 MiB
-        setAvailableMobileTraffic(20971520);  // 20 MiB
         setUsedTraffic(0);
         setUsedMobileTraffic(0);
-        setTrafficBudgetManagerActive(false); // deactivated by default
         LOG_DEBUG("Created new settings for this device");
 
         return NewSettings;
@@ -188,7 +185,7 @@ void Settings::setAvailableTraffic(quint32 traffic)
 
 quint32 Settings::availableTraffic() const
 {
-    return d->settings.value("available-traffic", 0).toUInt();
+    return d->settings.value("available-traffic", 31457280).toUInt(); // defaults to 30 MB
 }
 
 void Settings::setAvailableMobileTraffic(quint32 traffic)
@@ -202,7 +199,7 @@ void Settings::setAvailableMobileTraffic(quint32 traffic)
 
 quint32 Settings::availableMobileTraffic() const
 {
-    return d->settings.value("available-mobile-traffic", 0).toUInt();
+    return d->settings.value("available-mobile-traffic", 20971520).toUInt(); // defaults to 20 MB
 }
 
 void Settings::setUsedTraffic(quint32 traffic)
@@ -244,7 +241,7 @@ void Settings::setTrafficBudgetManagerActive(bool active)
 
 bool Settings::trafficBudgetManagerActive() const
 {
-    return d->settings.value("traffic-budget-managager-active", false).toBool();
+    return d->settings.value("traffic-budget-manager-active", false).toBool();
 }
 
 GetConfigResponse *Settings::config() const
