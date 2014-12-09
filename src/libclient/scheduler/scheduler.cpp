@@ -121,13 +121,15 @@ int Scheduler::Private::dequeue(const ScheduleId &id)
 {
     for (int i = 0; i < tests.size(); i++)
     {
-        const ScheduleDefinition &td = tests.at(i);
+        ScheduleDefinition td = tests.at(i);
 
         if (td.id() == id)
         {
             tests.removeAll(td);
             testIds.remove(id);
             allTestIds.remove(id);
+
+            emit q->testRemoved(td, i);
 
             if (i == 0) // if this was the next Test to schedule update the timer
             {

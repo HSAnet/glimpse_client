@@ -15,7 +15,7 @@ QList<ScheduleId> GetInstructionResponse::scheduleIds() const
 
 QList<ScheduleId> GetInstructionResponse::removeScheduleIds() const
 {
-    return m_scheduleIds;
+    return m_removeScheduleIds;
 }
 
 bool GetInstructionResponse::fillFromVariant(const QVariantMap &variant)
@@ -36,7 +36,7 @@ bool GetInstructionResponse::fillFromVariant(const QVariantMap &variant)
 
     m_removeScheduleIds.clear();
 
-    foreach (const QVariant &entry, variant.value("remove-schedules").toList())
+    foreach (const QVariant &entry, variant.value("remove_schedules").toList())
     {
       m_removeScheduleIds.append(ScheduleId(entry.toInt()));
     }
