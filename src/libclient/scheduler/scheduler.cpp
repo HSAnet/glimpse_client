@@ -119,27 +119,22 @@ int Scheduler::Private::enqueue(const ScheduleDefinition &testDefinition)
 
 int Scheduler::Private::dequeue(const ScheduleId &id)
 {
-    for (int i = 0; i < tests.size(); i++)
+    ScheduleDefinition td;
+    td.setId(id);
+
+    int position = tests.indexOf(td);
+    tests.removeAt(position);
+    testIds.remove(id);
+    allTestIds.remove(id);
+
+    emit q->testRemoved(td, position);
+
+    if (position == 0) // if this was the next Test to schedule update the timer
     {
-        ScheduleDefinition td = tests.at(i);
-
-        if (td.id() == id)
-        {
-            tests.removeAll(td);
-            testIds.remove(id);
-            allTestIds.remove(id);
-
-            emit q->testRemoved(td, i);
-
-            if (i == 0) // if this was the next Test to schedule update the timer
-            {
-                updateTimer();
-            }
-            return i;
-        }
+        updateTimer();
     }
 
-    return -1;
+    return position;
 }
 
 void Scheduler::Private::timeout()
