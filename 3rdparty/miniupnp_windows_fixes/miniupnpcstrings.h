@@ -4,7 +4,7 @@
  * Author: Thomas Bernard
  * Copyright (c) 2005-2011 Thomas Bernard
  * This software is subjects to the conditions detailed
- * in the LICENCE file provided within this distribution */
+ * in the LICENCE file provided within miniupnp */
 #ifndef MINIUPNPCSTRINGS_H_INCLUDED
 #define MINIUPNPCSTRINGS_H_INCLUDED
 

@@ -28,7 +28,7 @@ QDir StoragePaths::cacheDirectory() const
 
 QDir StoragePaths::logDirectory() const
 {
-    return QDir(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
+    return QDir(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/logs");
 }
 
 QDir StoragePaths::crashDumpDirectory() const

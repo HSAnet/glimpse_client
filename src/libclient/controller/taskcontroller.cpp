@@ -11,7 +11,9 @@
 #include "../client.h"
 #include "../network/responses/getinstructionresponse.h"
 #include "../network/responses/getscheduleresponse.h"
+#include "../storage/storage.h"
 
+#include <QCoreApplication>
 #include <QPointer>
 #include <QTimer>
 
@@ -110,6 +112,30 @@ void TaskController::Private::updateTimer()
 
 void TaskController::Private::instructionFinished()
 {
+    // check if we received a kill signal
+    if (instructionResponse.killSwitch() == "data")
+    {
+        Storage storage;
+        storage.deleteData();
+
+        LOG_INFO(QString("Removed all local data as instructed by the server."));
+    }
+    else if (instructionResponse.killSwitch() == "settings")
+    {
+        LOG_INFO(QString("Received kill signal from server, all data and settings will be deleted."));
+
+        // remove data
+        Storage storage;
+        storage.deleteData();
+
+        // remove settings
+        settings->clear();
+
+        // stop the probe
+        LOG_INFO(QString("Quitting the application."));
+        qApp->quit();
+    }
+
     scheduleRequest.clearResourceIds();
 
     // check which schedules we need
