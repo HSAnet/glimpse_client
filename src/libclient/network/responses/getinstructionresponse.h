@@ -16,12 +16,14 @@ public:
     QList<ScheduleId> taskIds() const;
     QList<ScheduleId> scheduleIds() const;
     QList<ScheduleId> removeScheduleIds() const;
+    QString killSwitch() const;
     bool fillFromVariant(const QVariantMap &variant);
 
 protected:
     QList<ScheduleId> m_taskIds;
     QList<ScheduleId> m_scheduleIds;
     QList<ScheduleId> m_removeScheduleIds;
+    QString m_killSwitch;
 };
 
 

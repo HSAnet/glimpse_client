@@ -157,7 +157,8 @@ SOURCES +=  \
     network/requests/uploadrequest.cpp \
     localinformation.cpp \
     measurement/wifilookup/wifilookup_definition.cpp \
-    measurement/wifilookup/wifilookup_plugin.cpp
+    measurement/wifilookup/wifilookup_plugin.cpp \
+    storage/storage.cpp
 
 HEADERS += \
     export.h \
@@ -253,7 +254,8 @@ HEADERS += \
     measurement/wifilookup/wifilookup.h \
     measurement/wifilookup/wifilookup_definition.h \
     measurement/wifilookup/wifilookup_plugin.h \
-    ident.h
+    ident.h \
+    storage/storage.h
 
 OTHER_FILES += \
     libclient.pri

@@ -249,6 +249,12 @@ GetConfigResponse *Settings::config() const
     return &d->config;
 }
 
+void Settings::clear()
+{
+    d->settings.clear();
+    d->settings.sync();
+}
+
 void Settings::sync()
 {
     d->sync();

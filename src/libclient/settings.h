@@ -75,6 +75,8 @@ public:
 
     GetConfigResponse *config() const;
 
+    void clear();
+
 public slots:
     void sync();
 

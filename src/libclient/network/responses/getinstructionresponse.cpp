@@ -18,8 +18,15 @@ QList<ScheduleId> GetInstructionResponse::removeScheduleIds() const
     return m_removeScheduleIds;
 }
 
+QString GetInstructionResponse::killSwitch() const
+{
+    return m_killSwitch;
+}
+
 bool GetInstructionResponse::fillFromVariant(const QVariantMap &variant)
 {
+    m_killSwitch= variant.value("kill_switch").toString();
+
     m_taskIds.clear();
 
     foreach (const QVariant &entry, variant.value("tasks").toList())
