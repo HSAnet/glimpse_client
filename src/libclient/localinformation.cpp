@@ -9,6 +9,7 @@ LocalInformation::LocalInformation()
 QVariantMap LocalInformation::getVariables() const
 {
     QVariantMap map;
+    Settings* settings = Client::instance()->settings();
 
     map.insert("cpu_usage", deviceInfo.cpuUsage());
     map.insert("free_memory", deviceInfo.freeMemory());
@@ -16,6 +17,11 @@ QVariantMap LocalInformation::getVariables() const
     map.insert("battery_level", deviceInfo.batteryLevel());
     map.insert("available_disk_space", deviceInfo.availableDiskSpace());
     map.insert("connection_mode", networkMangager.connectionMode());
+    map.insert("tbm_active", settings->trafficBudgetManagerActive());
+    map.insert("available_traffic", settings->availableTraffic());
+    map.insert("available_mobile_traffic", settings->availableMobileTraffic());
+    map.insert("used_traffic", settings->usedTraffic());
+    map.insert("used_mobile_traffic", settings->usedMobileTraffic());
 
     return map;
 }
@@ -23,8 +29,9 @@ QVariantMap LocalInformation::getVariables() const
 QVariantMap LocalInformation::getConstants() const
 {
     QVariantMap map;
+    Settings* settings = Client::instance()->settings();
 
-    map.insert("device_id", Client::instance()->settings()->deviceId());
+    map.insert("device_id", settings->deviceId());
     map.insert("app_version", Client::instance()->version());
     map.insert("platform", deviceInfo.platform());
     map.insert("os", deviceInfo.OSName());
