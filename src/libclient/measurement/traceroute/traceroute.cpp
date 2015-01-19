@@ -79,6 +79,7 @@ bool Traceroute::start()
 
 bool Traceroute::stop()
 {
+    disconnect(&m_ping);
     return true;
 }
 
@@ -161,7 +162,7 @@ Result Traceroute::result() const
 
 void Traceroute::ping()
 {
-    if (++ttl == 30)
+    if (++ttl == 20)
     {
         emit finished();
         return;
