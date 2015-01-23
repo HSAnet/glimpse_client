@@ -184,6 +184,10 @@ void Traceroute::ping()
     {
         m_ping.start();
     }
+    else
+    {
+        emit error("ping preparation failed");
+    }
 }
 
 void Traceroute::destinationUnreachable(const PingProbe &probe)
