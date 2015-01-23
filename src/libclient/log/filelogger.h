@@ -22,6 +22,8 @@ private:
     QDir dir;
     QFile outFile;
     QTextStream out;
+
+    bool rotate(quint32 backlog = 5);
 };
 
 #endif // FILELOGGER_H

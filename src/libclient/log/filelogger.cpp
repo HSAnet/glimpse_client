@@ -1,5 +1,6 @@
 #include "filelogger.h"
 #include <QDateTime>
+#include <QFileInfo>
 #include <storage/storagepaths.h>
 
 LOGGER(FileLogger);
@@ -64,5 +65,42 @@ void FileLogger::log(Logger::Level level, const QString &name, const QString &fu
         break;
     }
 
-    out << QDateTime::currentDateTime().toString() << " " << levelName << " " << funcName << " : " << message << endl;
+    if (rotate())
+    {
+        out << QDateTime::currentDateTime().toString() << " " << levelName << " " << funcName << " : " << message << endl;
+        out.flush();
+    }
+}
+
+bool FileLogger::rotate(quint32 backlog)
+{
+    QFileInfo info(outFile);
+    QDir dir(info.absoluteDir());
+
+    if (info.exists() && info.lastModified().date() < QDateTime::currentDateTime().date())
+    {
+        outFile.close();
+
+        for (quint32 i = backlog - 1; i > 0; i--)
+        {
+            QString oldName(QString("glimpse.log.%1").arg(QString::number(i)));
+            QString newName(QString("glimpse.log.%1").arg(QString::number(i + 1)));
+
+            if (dir.exists(oldName))
+            {
+                dir.remove(newName);
+                dir.rename(oldName, newName);
+            }
+        }
+
+        QString newName(QString("glimpse.log.%1").arg(QString::number(1)));
+        dir.rename("glimpse.log", newName);
+
+        if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
