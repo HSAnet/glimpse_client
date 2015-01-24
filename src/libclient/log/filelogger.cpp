@@ -23,8 +23,9 @@ FileLogger::FileLogger()
     }
 
     outFile.setFileName(dir.absoluteFilePath(("glimpse.log")));
+    rotate();
 
-    if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+    if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         return;
     }
@@ -93,10 +94,9 @@ bool FileLogger::rotate(quint32 backlog)
             }
         }
 
-        QString newName(QString("glimpse.log.%1").arg(QString::number(1)));
-        dir.rename("glimpse.log", newName);
+        dir.rename("glimpse.log", "glimpse.log.1");
 
-        if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+        if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
         {
             return false;
         }
