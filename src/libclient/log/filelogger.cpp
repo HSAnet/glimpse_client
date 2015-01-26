@@ -23,9 +23,8 @@ FileLogger::FileLogger()
     }
 
     outFile.setFileName(dir.absoluteFilePath(("glimpse.log")));
-    rotate();
 
-    if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    if (!rotate() || (!outFile.isOpen() && !outFile.open(QIODevice::WriteOnly | QIODevice::Text)))
     {
         return;
     }
