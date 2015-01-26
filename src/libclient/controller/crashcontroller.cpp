@@ -114,9 +114,8 @@ void CrashController::uploadReports()
             continue;
         }
 
-        QByteArray data = file.readAll();
-        // compress data, remove the first four bytes (thich is the array length which does not belong there), convert to base64
-        d->request.addResource(qCompress(data).remove(0,4).toBase64());
+        // convert to base64
+        d->request.addResource(file.readAll().toBase64());
         file.close();
     }
 

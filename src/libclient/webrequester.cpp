@@ -404,7 +404,11 @@ void WebRequester::start()
     {
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
         request.setUrl(url);
-        reply = Client::instance()->networkAccessManager()->post(request, QJsonDocument::fromVariant(data).toJson());
+
+        // compress data, remove the first four bytes (thich is the array length which does not belong there), convert to base64
+        QVariantMap map;
+        map.insert("data", qCompress(QJsonDocument::fromVariant(data).toJson(QJsonDocument::Compact)).remove(0,4).toBase64());
+        reply = Client::instance()->networkAccessManager()->post(request, QJsonDocument::fromVariant(map).toJson());
     }
     else
     {
