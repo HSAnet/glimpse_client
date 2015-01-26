@@ -57,7 +57,7 @@ public slots:
 void CrashController::Private::updateResponse()
 {
     // Set the new url
-    QString newUrl = QString("http://%1").arg(Client::instance()->settings()->config()->reportAddress());
+    QString newUrl = QString("https://%1").arg(Client::instance()->settings()->config()->reportAddress());
 
     if (requester.url() != newUrl)
     {
