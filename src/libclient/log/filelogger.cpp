@@ -5,9 +5,10 @@
 
 LOGGER(FileLogger);
 
-FileLogger::FileLogger()
+FileLogger::FileLogger(quint32 backlog)
 : dir(StoragePaths().logDirectory())
 , out(&outFile)
+, m_backlog(backlog)
 {
     if (!dir.exists())
     {
@@ -72,16 +73,21 @@ void FileLogger::log(Logger::Level level, const QString &name, const QString &fu
     }
 }
 
-bool FileLogger::rotate(quint32 backlog)
+bool FileLogger::rotate()
 {
     QFileInfo info(outFile);
     QDir dir(info.absoluteDir());
+
+    if (m_backlog == 0)
+    {
+        return true;
+    }
 
     if (info.exists() && info.lastModified().date() < QDateTime::currentDateTime().date())
     {
         outFile.close();
 
-        for (quint32 i = backlog - 1; i > 0; i--)
+        for (quint32 i = m_backlog - 1; i > 0; i--)
         {
             QString oldName(QString("glimpse.log.%1").arg(QString::number(i)));
             QString newName(QString("glimpse.log.%1").arg(QString::number(i + 1)));
