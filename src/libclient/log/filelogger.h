@@ -11,7 +11,7 @@
 class CLIENT_API FileLogger : public LogAppender
 {
 public:
-    FileLogger();
+    FileLogger(quint32 backlog = 5);
     ~FileLogger();
 
     // LogAppender interface
@@ -22,6 +22,9 @@ private:
     QDir dir;
     QFile outFile;
     QTextStream out;
+    quint32 m_backlog;
+
+    bool rotate();
 };
 
 #endif // FILELOGGER_H
