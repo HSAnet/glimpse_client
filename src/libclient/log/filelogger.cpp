@@ -24,7 +24,7 @@ FileLogger::FileLogger()
 
     outFile.setFileName(dir.absoluteFilePath(("glimpse.log")));
 
-    if (!rotate() || (!outFile.isOpen() && !outFile.open(QIODevice::WriteOnly | QIODevice::Text)))
+    if (!rotate() || (!outFile.isOpen() && !outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append)))
     {
         return;
     }
@@ -95,7 +95,7 @@ bool FileLogger::rotate(quint32 backlog)
 
         dir.rename("glimpse.log", "glimpse.log.1");
 
-        if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
+        if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
         {
             return false;
         }
