@@ -4,8 +4,6 @@ CONFIG += console
 CONFIG -= app_bundle
 QT -= gui network
 
-TARGET = mplane
-
 include($$SOURCE_DIRECTORY/dist.pri)
 include($$SOURCE_DIRECTORY/src/libclient/libclient.pri)
 
