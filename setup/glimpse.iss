@@ -2,10 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "glimpse"
-#define MyAppVersion "0.1"
+#define MyAppVersion "2.0.2"
 #define MyAppPublisher "Hochschule Augsburg"
-#define MyAppURL "http://www.measure-it.de"
-#define MyAppExeName "mobile.exe"
+#define MyAppURL "http://www.measure-it.net"
+#define MyAppExeName "glimpse-gui.exe"
 
 #define QtDir         "C:\Qt\5.3\msvc2013_64"
 #define ThirdPartyDir "C:\glimpse_3rdparty"
@@ -56,10 +56,10 @@ Source: "{#ThirdPartyDir}\WinPcap_4_1_3.exe"; DestDir: {tmp}; Flags: deleteafter
 Source: "{#BuildDir}\build-install\client.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Commandline
-Source: "{#BuildDir}\build-install\mplane.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BuildDir}\build-install\glimpse-console.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Mobile Ui
-Source: "{#BuildDir}\build-install\mobile.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BuildDir}\build-install\glimpse-gui.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BuildDir}\src\mobile\qml\*"; DestDir: "{app}\qml"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "{#BuildDir}\build-install\qt.conf"; DestDir: "{app}"; Flags: ignoreversion
 

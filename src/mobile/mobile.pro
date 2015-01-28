@@ -1,4 +1,5 @@
 TEMPLATE = app
+TARGET = glimpse-gui
 
 QT += gui quick qml concurrent
 

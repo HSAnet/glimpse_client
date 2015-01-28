@@ -1,4 +1,5 @@
 TEMPLATE = app
+TARGET = glimpse-console
 CONFIG += console
 CONFIG -= app_bundle
 QT -= gui network
