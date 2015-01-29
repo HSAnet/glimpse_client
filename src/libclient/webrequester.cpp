@@ -26,7 +26,7 @@ public:
         connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
 
         timer.setSingleShot(true);
-        timer.setInterval(5000);
+        timer.setInterval(5*60*1000); // five minutes for sending and getting a reply
     }
 
     WebRequester *q;
@@ -161,37 +161,34 @@ void WebRequester::Private::requestFinished()
             {
                 errorString = reply->errorString();
             }
-        }
 
-        LOG_WARNING(QString("Network error: %1").arg(errorString));
+            QJsonParseError jsonError;
+            QByteArray data = reply->readAll();
 
-        QJsonParseError jsonError;
-        QByteArray data = reply->readAll();
+            QJsonDocument document = QJsonDocument::fromJson(data, &jsonError);
 
-        QJsonDocument document = QJsonDocument::fromJson(data, &jsonError);
-
-        if (jsonError.error == QJsonParseError::NoError)
-        {
-            QJsonObject root = document.object();
-
-            QString replyError =
-                root.value("error_message").toString(); // in some django replys its error, in some its error_message
-
-            if (!replyError.isEmpty())
+            if (jsonError.error == QJsonParseError::NoError)
             {
-                LOG_WARNING(QString("Error message: %1").arg(replyError));
-                errorString = replyError;
-            }
+                QJsonObject root = document.object();
 
-            replyError = root.value("error").toString();
+                QString replyError =
+                    root.value("error_message").toString(); // in some django replys its error, in some its error_message
 
-            if (!replyError.isEmpty())
-            {
-                LOG_WARNING(QString("Error message: %1").arg(replyError));
-                errorString = replyError;
+                if (!replyError.isEmpty())
+                {
+                    LOG_WARNING(QString("Error message: %1").arg(replyError));
+                    errorString = replyError;
+                }
+
+                replyError = root.value("error").toString();
+
+                if (!replyError.isEmpty())
+                {
+                    LOG_WARNING(QString("Error message: %1").arg(replyError));
+                    errorString = replyError;
+                }
             }
         }
-
         setStatus(WebRequester::Error);
     }
 
@@ -405,7 +402,7 @@ void WebRequester::start()
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
         request.setUrl(url);
 
-        // compress data, remove the first four bytes (thich is the array length which does not belong there), convert to base64
+        // compress data, remove the first four bytes (which is the array length which does not belong there), convert to base64
         QVariantMap map;
         map.insert("data", qCompress(QJsonDocument::fromVariant(data).toJson(QJsonDocument::Compact)).remove(0,4).toBase64());
         reply = Client::instance()->networkAccessManager()->post(request, QJsonDocument::fromVariant(map).toJson());
