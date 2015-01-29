@@ -1,0 +1,12 @@
+[Unit]
+Description=Glimpse measurement client for %i
+After=network.target
+
+[Service]
+User=%i
+ExecStart=/opt/glimpse/glimpse-console
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
