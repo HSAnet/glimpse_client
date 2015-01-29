@@ -1,15 +1,24 @@
-#!/bin/sh
+#!/bin/bash
+
+cd `dirname $0`
+cd ..
+
+function getVersion {
+	local major=$(sed -nE 's/versionMajor = ([0-9]+);/\1/p' src/libclient/client.h | awk '{print $4}')
+	local minor=$(sed -nE 's/versionMinor = ([0-9]+);/\1/p' src/libclient/client.h | awk '{print $4}')
+	local patch=$(sed -nE 's/versionPatch = ([0-9]+);/\1/p' src/libclient/client.h | awk '{print $4}')
+	
+	echo "$major.$minor.$patch"
+}
 
 MAINTAINER="Christoph Keller <gri@not-censored.com>"
-VERSION="0.1alpha1"
+VERSION=$(getVersion)
 TIMESTAMP=$(date -R)
 
 BUILDNUMBER=$1
 
 
 # Debian/Ubuntu/Mint
-cd `dirname $0`
-cd ..
 cd debian
 
 if [ "$BUILDNUMBER" = "" ]; then
