@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
     QCoreApplication::setOrganizationName("HS-Augsburg");
-    QCoreApplication::setApplicationName("mPlaneClient");
+    QCoreApplication::setApplicationName("GLIMPSE console client");
     QCoreApplication::setApplicationVersion(Client::version());
 
     QCoreApplication app(argc, argv);
@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
     QTextStream out(stdout);
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("glimpse commandline version");
+    parser.setApplicationDescription("GLIMPSE console client\r\nWebsite: http://www.measure-it.net\r\nCopyright: Revised BSD License");
     parser.addHelpOption();
     parser.addVersionOption();
 
