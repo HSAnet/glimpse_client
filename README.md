@@ -16,7 +16,9 @@ Packages for various Linux distributions are available here: http://distributor.
 See http://beta.measure-it.net for more information.
 
 #### Windows
-No installer at the moment.
+The installer is available at http://distributor.measure-it.net/packages/windows/ and installs the graphical- (glimpse-gui.exe) and the console-version (glimpse-console.exe). 
+
+Note that these packages are not signed and not automatically updated at the moment. Please use only for a quick preview, we did not test this version yet.
 
 #### Mac
 No installer at the moment.
