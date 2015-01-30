@@ -377,7 +377,7 @@ bool Client::init()
     tests.append(ScheduleDefinition(ScheduleId(2), TaskId(2), "btc_ma", timing, BulkTransportCapacityDefinition("141.82.57.241", 5106, 1048576,
                                                                                      10).toVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(3), TaskId(3), "btc_ma", timing, BulkTransportCapacityDefinition("141.82.57.241", 5106, 1048576,
-                                                                                     10).toVariant(), precondition)); // TODO this is for btc upload which is not implemented yet
+                                                                                     10).toVariant(), precondition)); // this is for btc upload which is not implemented yet
     tests.append(ScheduleDefinition(ScheduleId(4), TaskId(4), "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74,
                                                                   ping::Udp).toVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(5), TaskId(5), "ping", timing, PingDefinition("measure-it.net", 4, 200, 1000, 64, 33434, 33434, 74,

@@ -31,7 +31,7 @@ class Settings;
 class QUdpSocket;
 class QTcpServer;
 
-// FIXME: This class has to be thread safe!
+// TODO: This class has to be thread safe!
 class CLIENT_API NetworkManager : public QObject
 {
     Q_OBJECT

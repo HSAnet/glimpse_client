@@ -151,7 +151,7 @@ void ReportStorage::loadData()
         QFile file(d->dir.absoluteFilePath(fileName));
         file.open(QIODevice::ReadOnly);
 
-        // TODO: Error checking
+        // Error checking
         QJsonParseError error;
         QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
 

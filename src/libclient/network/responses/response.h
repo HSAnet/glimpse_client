@@ -9,7 +9,6 @@
 #include "task/task.h"
 #include "task/taskvalidator.h"
 
-// TODO: Remove QObject base if we don't use it anymore in DeviceRegistration.qml
 
 class CLIENT_API Response : public QObject
 {

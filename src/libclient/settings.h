@@ -10,7 +10,6 @@
 /**
  * The Settings class
  *
- * TODO: Currently we store plain passwords, this has to be changed!
  */
 class CLIENT_API Settings : public QObject
 {

@@ -124,9 +124,5 @@ bool Precondition::check()
         return false;
     }
 
-    // Location TODO
-
-
-
     return true;
 }

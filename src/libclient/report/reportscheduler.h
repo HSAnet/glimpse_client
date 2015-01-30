@@ -16,7 +16,7 @@ public:
     ReportList reports() const;
 
     void addReport(const Report &report);
-    void modifyReport(const Report &report); // FIXME: This should not belong here
+    void modifyReport(const Report &report); // TODO: This should not belong here
     void removeReport(const Report &report);
 
 signals:

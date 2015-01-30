@@ -116,7 +116,7 @@ bool ConfigController::init(NetworkManager *networkManager, Settings *settings)
     d->networkManager = networkManager;
     d->settings = settings;
 
-    // FIXME: This is a evil hack
+    // TODO: This is a evil hack
     d->response = settings->config();
     d->requester.setResponse(d->response);
     connect(d->response, SIGNAL(responseChanged()), d, SLOT(updateTimer()));

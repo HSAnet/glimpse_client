@@ -184,7 +184,7 @@ QVariant ReportModel::data(const QModelIndex &index, int role) const
 
     case DateTimeRole:
         return report.dateTime();
-        //case ResultsRole: return report->results(); // FIXME: Scripting can't do anything with that
+        //case ResultsRole: return report->results(); // TODO: Scripting can't do anything with that
     }
 
     return QVariant();

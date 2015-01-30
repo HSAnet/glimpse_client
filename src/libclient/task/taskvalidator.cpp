@@ -57,7 +57,5 @@ TaskValidator::ValidationResult TaskValidator::validate(const ScheduleDefinition
         return Invalid;
     }
 
-    // TODO: Signature checks etc.
-
     return Valid;
 }

@@ -17,13 +17,15 @@ LinuxImageProvider::~LinuxImageProvider()
 
 QImage LinuxImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
+    Q_UNUSED(size)
+    Q_UNUSED(requestedSize)
     WnckScreen *screen;
     GList *window_l;
 
     screen = wnck_screen_get_default();
     wnck_screen_force_update(screen);
 
-    // FIXME: Is there a way to get window icon without iterating?
+    // TODO: Is there a way to get window icon without iterating?
     for (window_l = wnck_screen_get_windows(screen); window_l != NULL; window_l = window_l->next)
     {
         WnckWindow *window = WNCK_WINDOW(window_l->data);

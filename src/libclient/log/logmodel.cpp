@@ -36,6 +36,8 @@ public:
 
 void LogModel::Private::log(Logger::Level level, const QString &name, const QString &funcName, const QString &message)
 {
+    Q_UNUSED(funcName)
+
     LogMessage msg;
     msg.level = level;
     msg.name = name;

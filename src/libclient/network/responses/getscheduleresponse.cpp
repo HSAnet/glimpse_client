@@ -21,7 +21,6 @@ bool GetScheduleResponse::fillFromVariant(const QVariantMap &variant)
         }
         else
         {
-            // TODO: Get more information
             LOG_DEBUG(QString("Received invalid task, ignoring."));
         }
     }

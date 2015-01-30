@@ -5,6 +5,8 @@
 
 void Logger::real_log(Logger::Level level, const QString &name, const QString &funcName, const QString &message)
 {
+    Q_UNUSED(name)
+
     QString levelName;
 
     switch (level)

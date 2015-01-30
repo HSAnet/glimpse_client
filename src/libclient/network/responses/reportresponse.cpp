@@ -2,7 +2,6 @@
 
 bool ReportResponse::fillFromVariant(const QVariantMap &variant)
 {
-    // TODO: new format
     this->taskIds.clear();
 
     QVariantList taskIds = variant.value("tasks").toList();

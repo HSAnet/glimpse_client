@@ -30,7 +30,6 @@ public slots:
 
         emit started(test);
 
-        // TODO: Check the timing (too long ago?)
         currentTest = test;
         measurement = factory.createMeasurement(test.name(), test.taskId());
 

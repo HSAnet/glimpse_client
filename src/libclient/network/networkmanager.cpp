@@ -310,7 +310,7 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
             NetworkManagerMeasurementObserver *tempObs = new NetworkManagerMeasurementObserver;
             tempObs->networkManager = q;
             tempObs->socketType = request.protocol;
-            tempObs->localPort = 5106; // FIXME: Don't hardcode this here
+            tempObs->localPort = 5106; // TODO: Don't hardcode this here
             tempObs->host = host; //request.peer;
             tempObs->port = port;
             tempObs->measurementUuid = request.measurementUuid;
@@ -318,7 +318,7 @@ void NetworkManager::Private::processDatagram(const QByteArray &datagram, const 
             observer = tempObs;
         }
 
-        // FIXME: We can't assign the Peer socket to Measurement since this is created in a separate thread
+        // TODO: We can't assign the Peer socket to Measurement since this is created in a separate thread
         //        and we can't access.
 
         TimingPtr timing(new ImmediateTiming);
