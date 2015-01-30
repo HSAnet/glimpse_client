@@ -43,3 +43,7 @@ sed "s/^Release:.*/Release:		$BUILDNUMBER/" -i glimpse_client.spec
 
 # Archlinux
 sed "s/^pkgver=.*/pkgver=$VERSION.$BUILDNUMBER/" -i PKGBUILD
+
+
+# Windows
+sed -E "s/(#define MyAppVersion) \"(.*)\"/\1 \"$VERSION-$BUILDNUMBER\"/" -i setup/glimpse.iss
