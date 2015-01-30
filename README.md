@@ -7,6 +7,29 @@ glimpse_client
 * Windows: [![Windows](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientDebugWindows)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientDebugWindows) 
 * Android armv7: [![Android armv7](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebugBundledAndroidArmv7)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientMasterDebugBundledAndroidArmv7) 
 
+### Building
+Here are the steps how to compile GLIMPSE yourself. You can find pre-build packages at the end of this document.
+
+1. Download and install the latest Qt version for your platform from http://download.qt-project.org/
+2. Clone this repository or fork it first if you're going to contribute
+```
+git clone git@github.com:YOURUSERNAME/glimpse_client.git && 
+cd glimpse_client &&
+git submodule init && 
+git submodule update
+```
+3. Run QtCreator, open client.pro, add your Qt configuration and select the "mobile" or "console" project near the "Play" button
+
+#### Build requirements
+* Mobile UI requires at least Qt 5.2.0
+* Console version may also work with Qt 5.0.0
+* **Linux**: libwnck (Arch & Gentoo), libwnck-dev (Debian & Ubuntu based), libwnck-devel (for RPM), pkg-config, make
+* **Android**: Android SDK and NDK
+
+#### Running requirements
+* **Linux**: openssl
+* **Windows**: [OpenSSL](http://slproweb.com/products/Win32OpenSSL.html), [WinPcap](http://www.winpcap.org/install/default.htm)
+* 
 ### Pre-Build version
 You don't need to compile GLIMPSE yourself to use it, pre-build packages can be found here.
 
@@ -27,24 +50,3 @@ No installer at the moment.
 After the release the Android version can be found here: https://play.google.com/store/apps/details?id=net.measureit.glimpse
 
 Contact us at info@measure-it.net if you want Alpha access for the Android-version.
-
-### Build requirements
-* Mobile UI requires at least Qt 5.2.0
-* Console version may also work with Qt 5.0.0
-* **Linux**: libwnck (Arch & Gentoo), libwnck-dev (Debian & Ubuntu based), libwnck-devel (for RPM), pkg-config, make
-* **Android**: Android SDK and NDK
-
-### Running requirements
-* **Linux**: openssl
-* **Windows**: [OpenSSL](http://slproweb.com/products/Win32OpenSSL.html), [WinPcap](http://www.winpcap.org/install/default.htm)
-
-### Building
-1. Download and install the latest Qt version for your platform from http://download.qt-project.org/
-2. Clone this repository or fork it first if you're going to contribute
-```
-git clone git@github.com:YOURUSERNAME/glimpse_client.git && 
-cd glimpse_client &&
-git submodule init && 
-git submodule update
-```
-3. Run QtCreator, open client.pro, add your Qt configuration and select the "mobile" or "console" project near the "Play" button
