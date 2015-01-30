@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setOrganizationDomain("de.hsaugsburg.informatik");
     QCoreApplication::setOrganizationName("HS-Augsburg");
-    QCoreApplication::setApplicationName("GLIMPSE console client");
+    QCoreApplication::setApplicationName("mPlaneClient");
     QCoreApplication::setApplicationVersion(Client::version());
 
     QCoreApplication app(argc, argv);
