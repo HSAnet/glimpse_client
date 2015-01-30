@@ -8,26 +8,26 @@ win32 {
     CONFIG(release, debug|release):BUILDCONFIG = "release"
     else:BUILDCONFIG = "debug"
 
-    LIBS += -L$$BUILD_DIRECTORY/src/libclient/$$BUILDCONFIG -lclient
-    PRE_TARGETDEPS = $$BUILD_DIRECTORY/src/libclient/$$BUILDCONFIG/client.lib
+    LIBS += -L$$BUILD_DIRECTORY/src/libclient/$$BUILDCONFIG -lglimpse
+    PRE_TARGETDEPS = $$BUILD_DIRECTORY/src/libclient/$$BUILDCONFIG/glimpse.lib
 
     # For upnp
     LIBS += -lIphlpapi
 } else: mac {
     contains(DEFINES, LIBCLIENT_STATIC) {
-        LIBS += $$BUILD_DIRECTORY/src/libclient/libclient.a
-        PRE_TARGETDEPS = $$BUILD_DIRECTORY/src/libclient/libclient.a
+        LIBS += $$BUILD_DIRECTORY/src/libclient/libglimpse.a
+        PRE_TARGETDEPS = $$BUILD_DIRECTORY/src/libclient/libglimpse.a
     } else {
-        LIBS += -L$$BUILD_DIRECTORY/src/libclient -lclient
-        PRE_TARGETDEPS = $$BUILD_DIRECTORY/src/libclient/libclient.dylib
+        LIBS += -L$$BUILD_DIRECTORY/src/libclient -lglimpse
+        PRE_TARGETDEPS = $$BUILD_DIRECTORY/src/libclient/libglimpse.dylib
     }
 } else {
     contains(DEFINES, LIBCLIENT_STATIC) {
-        LIBS += $$BUILD_DIRECTORY/src/libclient/libclient.a
-        PRE_TARGETDEPS = $$BUILD_DIRECTORY/src/libclient/libclient.a
+        LIBS += $$BUILD_DIRECTORY/src/libclient/libglimpse.a
+        PRE_TARGETDEPS = $$BUILD_DIRECTORY/src/libclient/libcglimpse.a
     } else {
-        LIBS += -L$$BUILD_DIRECTORY/src/libclient -lclient
-        PRE_TARGETDEPS = $$BUILD_DIRECTORY/src/libclient/libclient.so
+        LIBS += -L$$BUILD_DIRECTORY/src/libclient -lglimpse
+        PRE_TARGETDEPS = $$BUILD_DIRECTORY/src/libclient/libglimpse.so
     }
 }
 

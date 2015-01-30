@@ -7,7 +7,9 @@ win32 {
 } else: ios {
 } else: android {
 } else: linux {
-    target.path = /opt/glimpse
+    equals(TEMPLATE, lib): target.path = /usr/lib
+    equals(TEMPLATE, app): target.path = /usr/bin
+
     INSTALLS *= target
 } else {
     error(No distribution for this platform defined)

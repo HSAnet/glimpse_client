@@ -1,5 +1,5 @@
 TEMPLATE = lib
-TARGET = client
+TARGET = glimpse
 
 QT -= gui
 QT += network concurrent
@@ -14,13 +14,6 @@ staticlib {
     DEFINES += LIBCLIENT_BUILD
 
     win32:LIBS += -lws2_32 -lCrypt32 -lPdh -lntdll
-}
-
-# Add the ld.so.conf.d/glimpse.conf file
-linux:!android {
-    ldconfig.files = glimpse.conf
-    ldconfig.path = /etc/ld.so.conf.d/
-    INSTALLS += ldconfig
 }
 
 INCLUDEPATH += $$PWD

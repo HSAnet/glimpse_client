@@ -53,7 +53,7 @@ Source: "{#ThirdPartyDir}\WinPcap_4_1_3.exe"; DestDir: {tmp}; Flags: deleteafter
 ; Glimpse Files
 
 ; Libclient
-Source: "{#BuildDir}\build-install\client.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BuildDir}\build-install\glimpse.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Commandline
 Source: "{#BuildDir}\build-install\glimpse-console.exe"; DestDir: "{app}"; Flags: ignoreversion
