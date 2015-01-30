@@ -17,13 +17,26 @@ fi
 
 cd `dirname $0`
 cd ..
-cd ..
-cd build || true
 
-# Upload each file to the distributor server
-for file in *.deb *.rpm *.tar.xz *.apk *.exe *.dmg; do
-	if [ -e $file ]; then
+if [ "$OS" == "Windows_NT" ]; then
+	cd setup
+	cd Output
+	
+	for file in *.exe; do
+		echo "Uploading $file"
+		
 		curl --form package=@$file --form channel=$DISTRO $PACKAGESERVER
-	fi
-done
+	done
+else
+	cd ..
+	cd build || true
 
+	# Upload each file to the distributor server
+	for file in *.deb *.rpm *.tar.xz *.apk *.exe *.dmg; do
+		if [ -e $file ]; then
+			echo "Uploading $file"
+			
+			curl --form package=@$file --form channel=$DISTRO $PACKAGESERVER
+		fi
+	done
+fi
