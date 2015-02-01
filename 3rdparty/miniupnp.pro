@@ -11,7 +11,7 @@ CONFIG -= qt
     PRE_TARGETDEPS += miniupnp/miniupnpc/miniupnpcstrings.h
 }
 
-DEFINES += HAVE_UPNP STATICLIB
+DEFINES += HAVE_UPNP MINIUPNP_STATICLIB
 
 # Disable warnings
 *clang*|*g++*|*llvm* {

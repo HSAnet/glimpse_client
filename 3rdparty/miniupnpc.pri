@@ -1,4 +1,4 @@
-DEFINES += HAVE_UPNP STATICLIB
+DEFINES += HAVE_UPNP MINIUPNP_STATICLIB
 
 android:DEFINES += sun # Atleast needed for android
 else:linux:DEFINES += _GNU_SOURCE

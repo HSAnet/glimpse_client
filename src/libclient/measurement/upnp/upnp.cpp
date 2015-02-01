@@ -42,9 +42,9 @@ QStringList GetValuesFromNameValueList(struct NameValueParserData *pdata,
     QStringList ret;
     struct NameValue *nv;
 
-    for (nv = pdata->head.lh_first;
+    for (nv = pdata->l_head;
          (nv != NULL);
-         nv = nv->entries.le_next)
+         nv = nv->l_next)
     {
         if (strcmp(nv->name, Name) == 0)
         {
