@@ -13,6 +13,7 @@ case "$1" in
     configure)
     adduser --system --group --quiet $USER_NAME || true
 	service $SERVICE_NAME start || true
+	systemctl start $SERVICE_NAME || true
     ;;
 esac
 

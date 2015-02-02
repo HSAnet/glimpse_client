@@ -11,6 +11,7 @@ set -e
 case "$1" in
     upgrade)
 	service $SERVICE_NAME stop || true
+	systemctl stop $SERVICE_NAME || true
     ;;
 esac
 
