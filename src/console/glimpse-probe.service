@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 User=glimpse
-ExecStart=/opt/glimpse/glimpse-console
+ExecStart=/usr/bin/glimpse-console
 
 [Install]
 WantedBy=multi-user.target
