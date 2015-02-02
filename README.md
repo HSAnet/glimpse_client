@@ -50,3 +50,7 @@ No installer at the moment.
 After the release the Android version can be found here: https://play.google.com/store/apps/details?id=net.measureit.glimpse
 
 Contact us at info@measure-it.net if you want Alpha access for the Android-version.
+
+## License
+Copyright (c) 2014-2015, University of Applied Sciences Augsburg.
+All rights reserved. Distributed under the terms and conditions of the BSD License. See separate LICENSE.txt.
