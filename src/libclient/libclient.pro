@@ -16,6 +16,27 @@ staticlib {
     win32:LIBS += -lws2_32 -lCrypt32 -lPdh -lntdll
 }
 
+defineReplace(getVersionEntry) {
+    major = $$find($$1, $$2)
+    major ~= "s/;//"
+    major = $$split(major, " ")
+
+    return ($$last(major))
+}
+
+# Update the version
+defineReplace(getVersion) {
+    file = $$cat(client.h, "lines")
+
+    major = $$getVersionEntry(file, "versionMajor")
+    minor = $$getVersionEntry(file, "versionMinor")
+    patch = $$getVersionEntry(file, "versionPatch")
+
+    return ("$${major}.$${minor}.$${patch}")
+}
+
+!win32:VERSION = $$getVersion()
+
 INCLUDEPATH += $$PWD
 
 include($$SOURCE_DIRECTORY/dist.pri)
