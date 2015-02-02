@@ -1,0 +1,10 @@
+[Unit]
+Description=Glimpse measurement client
+After=network.target
+
+[Service]
+User=glimpse
+ExecStart=/usr/bin/glimpse-console
+
+[Install]
+WantedBy=multi-user.target

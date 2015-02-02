@@ -1,2 +1,3 @@
 usr/bin/glimpse-console
 etc/init/
+usr/lib/systemd/system/glimpse-probe.service
