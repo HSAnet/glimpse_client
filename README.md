@@ -29,7 +29,7 @@ git submodule update
 #### Running requirements
 * **Linux**: openssl
 * **Windows**: [OpenSSL](http://slproweb.com/products/Win32OpenSSL.html), [WinPcap](http://www.winpcap.org/install/default.htm)
-* 
+
 ### Pre-Build version
 You don't need to compile GLIMPSE yourself to use it, pre-build packages can be found here.
 
