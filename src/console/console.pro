@@ -11,7 +11,7 @@ include($$SOURCE_DIRECTORY/src/libclient/libclient.pri)
 linux {
     service.files = glimpse-probe.conf
     service.path = /etc/init
-    systemd_service.files = glimpse.service
+    systemd_service.files = glimpse-probe.service
     systemd_service.path = /usr/lib/systemd/system
     INSTALLS += service \
                 systemd_service
