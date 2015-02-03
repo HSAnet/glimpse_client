@@ -78,7 +78,7 @@ private slots:
 
         if (now.date().day() > 1)
         {
-            // start next month because day already passed this month (not true on 1st of month)
+            // start next month because day already passed this month (not true on 1st of the month)
             CalendarTiming nextMonthTiming(start, end, months, daysOfWeek, QList<int>()<<1, hours, minutes, seconds);
             qDebug("nextRun next month because day already passed this month (1st)");
             QDateTime nextMonthTime = now.addMonths(1);
@@ -87,10 +87,12 @@ private slots:
             QCOMPARE(nextMonthTiming.nextRun(), nextMonthTime);
         }
 
-        // start next month because day already passed this month (not true on 1st or 2nd of month)
+        // start next month because day already passed this month (not true on 1st or 2nd of the month)
         if (now.date().day() > 2)
         {
             QDateTime nextMonthTime = now.addMonths(1);
+            nextMonthTime.setTime(QTime(0,0,0));
+            nextMonthTime.setDate(QDate(nextMonthTime.date().year(), nextMonthTime.date().month(), 1));
             CalendarTiming nextMonthTiming2(start, end, months, daysOfWeek, QList<int>()<<1<<2, hours, minutes, seconds);
             qDebug("nextRun next month because day already passed this month (1st and 2nd)");
             QCOMPARE(nextMonthTiming2.nextRun(), nextMonthTime);
