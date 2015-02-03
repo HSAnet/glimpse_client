@@ -47,3 +47,8 @@ sed "s/^pkgver=.*/pkgver=$VERSION.$BUILDNUMBER/" -i PKGBUILD
 
 # Windows
 sed -E "s/(#define MyAppVersion) \"(.*)\"/\1 \"$VERSION-$BUILDNUMBER\"/" -i setup/glimpse.iss
+
+
+# Android
+sed -E "s/versionName=\"[^\"]+\"/versionName=\"$VERSION\"/" -i src/mobile/android/AndroidManifest.xml
+sed -E "s/versionCode=\"[^\"]+\"/versionCode=\"$BUILDNUMBER\"/" -i src/mobile/android/AndroidManifest.xml
