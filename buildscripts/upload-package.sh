@@ -10,13 +10,15 @@ fi
 BRANCH=$1
 DISTRO=$2
 
-if [ "$BRANCH" != "develop" ]; then
-	echo "Nothing to upload for branch $BRANCH"
-	exit 0
-fi
-
 cd `dirname $0`
 cd ..
+
+# Check whether the distributor wants this upload or not
+HTTP_CODE=$(curl -s -o /dev/null -w \"%{http_code}\" $PACKAGESERVER?branch=$BRANCH&channel=$DISTRO)
+if [ "$HTTP_CODE" != "\"200\"" ]; then
+	echo "Branch $BRANCH not wanted by the server: $HTTP_CODE"
+	exit 0
+fi
 
 if [ "$OS" == "Windows_NT" ]; then
 	cd setup
@@ -25,7 +27,7 @@ if [ "$OS" == "Windows_NT" ]; then
 	for file in *.exe; do
 		echo "Uploading $file"
 		
-		curl --form package=@$file --form channel=$DISTRO $PACKAGESERVER
+		curl --form package=@$file --form channel=$DISTRO --form branch=$BRANCH $PACKAGESERVER
 	done
 else
 	cd ..
@@ -36,7 +38,7 @@ else
 		if [ -e $file ]; then
 			echo "Uploading $file"
 			
-			curl --form package=@$file --form channel=$DISTRO $PACKAGESERVER
+			curl --form package=@$file --form channel=$DISTRO --form branch=$BRANCH $PACKAGESERVER
 		fi
 	done
 fi
