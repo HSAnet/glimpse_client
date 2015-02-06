@@ -45,6 +45,15 @@ private slots:
         PeriodicTiming tenMinutesOutOfRange(60*1000*10, now.addSecs(-60*10), now.addSecs(-10), 0);
         qDebug("endtime already reached, do not start");
         QCOMPARE(tenMinutesOutOfRange.nextRun(now), QDateTime());
+
+        // test of randomness
+        PeriodicTiming tenMinutesRand(60*1000*10, QDateTime(), QDateTime(), 10*1000);
+        qDebug("nextRun in 10 minutes (+10 seconds randomness)");
+        QDateTime nextRun = tenMinutesRand.nextRun(now);
+        if (nextRun < now.addSecs(60*10) || nextRun > now.addSecs(60*10+10))
+        {
+            QFAIL("Expected nextRun to be in 10 minutens +10 seconds randomness, but it was not");
+        }
     }
 };
 

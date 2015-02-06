@@ -22,6 +22,7 @@ PeriodicTiming::PeriodicTiming(int period, const QDateTime &start, const QDateTi
 
     if (d->randomSpread)
     {
+        qsrand(QDateTime::currentMSecsSinceEpoch());
         d->_random = qrand() % (d->randomSpread);
     }
     else
