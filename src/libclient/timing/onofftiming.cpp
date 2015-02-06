@@ -29,7 +29,7 @@ bool OnOffTiming::reset()
     return false;
 }
 
-QDateTime OnOffTiming::nextRun() const
+QDateTime OnOffTiming::nextRun(const QDateTime &tzero) const
 {
     return d->dateTime.addSecs(ntp->offset());
 }

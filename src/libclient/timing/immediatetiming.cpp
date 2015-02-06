@@ -20,7 +20,7 @@ bool ImmediateTiming::reset()
     return false;
 }
 
-QDateTime ImmediateTiming::nextRun() const
+QDateTime ImmediateTiming::nextRun(const QDateTime &tzero) const
 {
     return QDateTime::currentDateTime();
 }
