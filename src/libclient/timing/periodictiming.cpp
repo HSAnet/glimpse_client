@@ -9,7 +9,7 @@ public:
     QDateTime end;
     int period;
     int randomSpread;
-    int _random;
+    int randomDelay;
 };
 
 PeriodicTiming::PeriodicTiming(int period, const QDateTime &start, const QDateTime &end, int randomSpread)
@@ -23,11 +23,11 @@ PeriodicTiming::PeriodicTiming(int period, const QDateTime &start, const QDateTi
     if (d->randomSpread)
     {
         qsrand(QDateTime::currentMSecsSinceEpoch());
-        d->_random = qrand() % (d->randomSpread);
+        d->randomDelay = qrand() % (d->randomSpread);
     }
     else
     {
-        d->_random = 0;
+        d->randomDelay = 0;
     }
 }
 
@@ -85,7 +85,7 @@ QDateTime PeriodicTiming::nextRun(const QDateTime &tzero) const
     }
 
     // add random delay
-    return nextRun.addMSecs(d->_random);
+    return nextRun.addMSecs(d->randomDelay);
 }
 
 bool PeriodicTiming::isValid() const
