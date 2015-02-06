@@ -18,7 +18,7 @@ public:
     // Timing interface
     QString type() const;
     bool reset();
-    QDateTime nextRun() const;
+    QDateTime nextRun(const QDateTime &tzero = QDateTime()) const;
     bool isValid() const;
 
     // Serializable interface

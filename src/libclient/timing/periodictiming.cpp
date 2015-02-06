@@ -8,14 +8,26 @@ public:
     QDateTime start;
     QDateTime end;
     int period;
+    int randomSpread;
+    int _random;
 };
 
-PeriodicTiming::PeriodicTiming(int period, const QDateTime &start, const QDateTime &end)
+PeriodicTiming::PeriodicTiming(int period, const QDateTime &start, const QDateTime &end, int randomSpread)
 : d(new Private)
 {
     d->period = period;
     d->start = start;
     d->end = end;
+    d->randomSpread = randomSpread;
+
+    if (d->randomSpread)
+    {
+        d->_random = qrand() % (d->randomSpread);
+    }
+    else
+    {
+        d->_random = 0;
+    }
 }
 
 PeriodicTiming::~PeriodicTiming()
@@ -35,15 +47,29 @@ bool PeriodicTiming::reset()
     return nextRun().isValid();
 }
 
-QDateTime PeriodicTiming::nextRun() const
+QDateTime PeriodicTiming::nextRun(const QDateTime &tzero) const
 {
     QDateTime nextRun;
-    const QDateTime now = QDateTime::currentDateTime().addSecs(ntp->offset());
+    QDateTime now;
+
+    if (tzero.isValid())
+    {
+        now = tzero;
+    }
+    else
+    {
+        now = QDateTime::currentDateTime().addSecs(ntp->offset());
+    }
 
     // Check if the start time is reached
     if (d->start > now)
     {
         return d->start;
+    }
+
+    if (!d->start.isValid())
+    {
+        d->start = now;
     }
 
     // Calculate number of completed periods
@@ -57,7 +83,8 @@ QDateTime PeriodicTiming::nextRun() const
         return QDateTime();
     }
 
-    return nextRun;
+    // add random delay
+    return nextRun.addMSecs(d->_random);
 }
 
 bool PeriodicTiming::isValid() const
@@ -78,6 +105,7 @@ QVariant PeriodicTiming::toVariant() const
     hash.insert("start", d->start);
     hash.insert("end", d->end);
     hash.insert("interval", d->period);
+    hash.insert("randomSpread", d->randomSpread);
 
     QVariantMap resultMap;
     resultMap.insert(type(), hash);
@@ -89,8 +117,9 @@ TimingPtr PeriodicTiming::fromVariant(const QVariant &variant)
     QVariantMap hash = variant.toMap();
 
     return TimingPtr(new PeriodicTiming(hash.value("interval").toInt(),
-                                        hash.value("start").toDateTime(),
-                                        hash.value("end").toDateTime()));
+                                        hash.value("start", QDateTime()).toDateTime(),
+                                        hash.value("end", QDateTime()).toDateTime(),
+                                        hash.value("randomSpread", 0).toInt()));
 }
 
 QDateTime PeriodicTiming::start() const
@@ -106,4 +135,9 @@ QDateTime PeriodicTiming::end() const
 int PeriodicTiming::interval() const
 {
     return d->period;
+}
+
+int PeriodicTiming::randomSpread() const
+{
+    return d->randomSpread;
 }
