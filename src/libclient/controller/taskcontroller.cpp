@@ -12,10 +12,10 @@
 #include "../network/responses/getinstructionresponse.h"
 #include "../network/responses/getscheduleresponse.h"
 #include "../storage/storage.h"
+#include "../timing/timer.h"
 
 #include <QCoreApplication>
 #include <QPointer>
-#include <QTimer>
 
 LOGGER(TaskController);
 
@@ -29,6 +29,7 @@ public:
     : q(q)
     {
         connect(&timer, SIGNAL(timeout()), q, SLOT(fetchTasks()));
+        connect(&timer, SIGNAL(timingChanged()), this, SLOT(timingChanged()));
         connect(&instructionRequester, SIGNAL(error()), this, SLOT(instructionError()));
         connect(&instructionRequester, SIGNAL(finished()), this, SLOT(instructionFinished()));
         connect(&instructionRequester, SIGNAL(started()), q, SIGNAL(started()));
@@ -61,7 +62,7 @@ public:
     GetResourceRequest scheduleRequest;
     GetScheduleResponse scheduleResponse;
 
-    QTimer timer;
+    Timer timer;
 
 public slots:
     void updateTimer();
@@ -69,6 +70,7 @@ public slots:
     void scheduleFinished();
     void instructionError();
     void scheduleError();
+    void timingChanged();
 };
 
 void TaskController::Private::updateTimer()
@@ -96,17 +98,7 @@ void TaskController::Private::updateTimer()
         return;
     }
 
-    QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
-    Q_ASSERT(periodicTiming);
-
-    int period = periodicTiming->interval();
-
-    if (timer.interval() != period)
-    {
-        LOG_DEBUG(QString("Tasks schedule set to %1 sec.").arg(period / 1000));
-        timer.setInterval(period);
-    }
-
+    timer.setTiming(timing);
     timer.start();
 }
 
@@ -179,6 +171,13 @@ void TaskController::Private::instructionError()
 void TaskController::Private::scheduleError()
 {
     LOG_ERROR(QString("Error fetching schedules: %1").arg(scheduleRequester.errorString()));
+}
+
+void TaskController::Private::timingChanged()
+{
+    LOG_DEBUG(QString("Task schedule changed, type: %1, nextRun in %2 seconds.")
+              .arg(timer.timing()->type())
+              .arg(timer.timing()->timeLeft() / 1000));
 }
 
 TaskController::TaskController(QObject *parent)

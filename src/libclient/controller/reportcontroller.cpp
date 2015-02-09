@@ -9,6 +9,7 @@
 #include "../network/responses/reportresponse.h"
 #include "../timing/periodictiming.h"
 #include "../client.h"
+#include "../timing/timer.h"
 
 #include <QPointer>
 #include <QStringList>
@@ -71,6 +72,7 @@ public:
     : q(q)
     {
         connect(&timer, SIGNAL(timeout()), q, SLOT(sendReports()));
+        connect(&timer, SIGNAL(timingChanged()), this, SLOT(onTimingChanged()));
         connect(&requester, SIGNAL(statusChanged(WebRequester::Status)), q, SIGNAL(statusChanged()));
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
@@ -90,12 +92,16 @@ public:
     ReportPost post;
     ReportResponse response;
 
-    QTimer timer;
+    Timer timer;
+
+    bool isImmediate;
 
 public slots:
     void updateTimer();
     void onFinished();
     void onError();
+    void onReportAdded();
+    void onTimingChanged();
 };
 
 void ReportController::Private::updateTimer()
@@ -117,18 +123,13 @@ void ReportController::Private::updateTimer()
         return;
     }
 
-    QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
-    Q_ASSERT(periodicTiming);
+    isImmediate = (timing->type() == "immediate");
 
-    int period = periodicTiming->interval();
-
-    if (timer.interval() != period)
+    if (!isImmediate)
     {
-        LOG_DEBUG(QString("Report schedule set to %1 sec.").arg(period / 1000));
-        timer.setInterval(period);
+        timer.setTiming(timing);
+        timer.start();
     }
-
-    timer.start();
 }
 
 void ReportController::Private::onFinished()
@@ -156,6 +157,21 @@ void ReportController::Private::onError()
     LOG_ERROR(QString("Failed to send reports: %1").arg(requester.errorString()));
 }
 
+void ReportController::Private::onReportAdded()
+{
+    if (isImmediate)
+    {
+        q->sendReports();
+    }
+}
+
+void ReportController::Private::onTimingChanged()
+{
+    LOG_DEBUG(QString("Report schedule changed, type: %1, nextRun in %2 seconds.")
+              .arg(timer.timing()->type())
+              .arg(timer.timing()->timeLeft() / 1000));
+}
+
 ReportController::ReportController(QObject *parent)
 : Controller(parent)
 , d(new Private(this))
@@ -178,7 +194,8 @@ bool ReportController::init(ReportScheduler *scheduler, Settings *settings)
     d->settings = settings;
 
     connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(updateTimer()));
-    //d->updateTimer();
+    connect(d->scheduler, SIGNAL(reportAdded(Report)), d, SLOT(onReportAdded()));
+    connect(d->scheduler, SIGNAL(reportModified(Report)), d, SLOT(onReportAdded()));
 
     return true;
 }
