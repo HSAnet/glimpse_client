@@ -5,7 +5,7 @@
 
 #include <QObject>
 
-class Timer : public QObject
+class CLIENT_API Timer : public QObject
 {
     Q_OBJECT
 public:
