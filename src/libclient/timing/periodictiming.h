@@ -8,7 +8,8 @@ class CLIENT_API PeriodicTiming : public Timing
 public:
     PeriodicTiming(int interval,
                    const QDateTime &start = QDateTime(),
-                   const QDateTime &end = QDateTime());
+                   const QDateTime &end = QDateTime(),
+                   int randomSpread = 0);
     ~PeriodicTiming();
 
     // Storage
@@ -18,11 +19,12 @@ public:
     QDateTime start() const;
     QDateTime end() const;
     int interval() const;
+    int randomSpread() const;
 
     // Timing interface
     QString type() const;
     bool reset();
-    QDateTime nextRun() const;
+    QDateTime nextRun(const QDateTime &tzero = QDateTime()) const;
     bool isValid() const;
 
     // Serializable interface

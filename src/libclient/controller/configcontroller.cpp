@@ -7,9 +7,9 @@
 #include "../network/requests/getconfigrequest.h"
 #include "../timing/periodictiming.h"
 #include "../client.h"
+#include "../timing/timer.h"
 
 #include <QPointer>
-#include <QTimer>
 
 LOGGER(ConfigController);
 
@@ -22,6 +22,7 @@ public:
     : q(q)
     {
         connect(&timer, SIGNAL(timeout()), q, SLOT(update()));
+        connect(&timer, SIGNAL(timingChanged()), this, SLOT(onTimingChanged()));
         connect(&requester, SIGNAL(statusChanged(WebRequester::Status)), q, SIGNAL(statusChanged()));
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
@@ -40,13 +41,14 @@ public:
     GetConfigRequest request;
     GetConfigResponse *response;
 
-    QTimer timer;
+    Timer timer;
 
     // Functions
 public slots:
     void updateTimer();
     void onFinished();
     void onError();
+    void onTimingChanged();
 };
 
 void ConfigController::Private::updateTimer()
@@ -62,26 +64,12 @@ void ConfigController::Private::updateTimer()
 
     TimingPtr timing = settings->config()->configTiming();
 
-    int period = 0;
-
     if (timing.isNull())
     {
-        period = 60 * 1 * 1000; // backup if no timing is set
-    }
-    else
-    {
-        QSharedPointer<PeriodicTiming> periodicTiming = timing.dynamicCast<PeriodicTiming>();
-        Q_ASSERT(periodicTiming);
-
-        period = periodicTiming->interval();
+        timing = TimingPtr(new PeriodicTiming(10*60*1000, QDateTime(), QDateTime(), 30*1000));
     }
 
-    if (timer.interval() != period)
-    {
-        LOG_DEBUG(QString("Config schedule set to %1 sec.").arg(period / 1000));
-        timer.setInterval(period);
-    }
-
+    timer.setTiming(timing);
     timer.start();
 }
 
@@ -93,6 +81,13 @@ void ConfigController::Private::onFinished()
 void ConfigController::Private::onError()
 {
     LOG_ERROR(QString("Could not get config from server, trying again later"));
+}
+
+void ConfigController::Private::onTimingChanged()
+{
+    LOG_DEBUG(QString("Config schedule changed, type: %1, nextRun in %2 seconds.")
+              .arg(timer.timing()->type())
+              .arg(timer.timing()->timeLeft() / 1000));
 }
 
 ConfigController::ConfigController(QObject *parent)

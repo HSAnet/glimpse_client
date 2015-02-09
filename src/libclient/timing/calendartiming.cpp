@@ -202,10 +202,19 @@ bool CalendarTiming::reset()
     return nextRun().isValid();
 }
 
-QDateTime CalendarTiming::nextRun() const
+QDateTime CalendarTiming::nextRun(const QDateTime &tzero) const
 {
     QDateTime nextRun;
-    QDateTime now = QDateTime::currentDateTime().addSecs(ntp->offset());
+    QDateTime now;
+
+    if (tzero.isValid())
+    {
+        now = tzero;
+    }
+    else
+    {
+        now = QDateTime::currentDateTime().addSecs(ntp->offset());
+    }
 
     QDate date = now.date();
     QTime time = now.time();
