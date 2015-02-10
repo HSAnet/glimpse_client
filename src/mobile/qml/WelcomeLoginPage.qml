@@ -17,7 +17,7 @@ Page {
            right: parent.right
        }
 
-       Image{
+       Image {
            id: flap
            anchors.right: parent.right
            anchors.top: parent.top
@@ -25,7 +25,7 @@ Page {
            height: units.gu(150)
            fillMode: Image.PreserveAspectFit
 
-           MouseArea {
+           /*MouseArea {
                anchors.fill: parent
                onClicked: {
                    if (app.state == "")
@@ -34,7 +34,7 @@ Page {
                        app.state = "";
                }
 
-           }
+           }*/
        }
 
        Label {
