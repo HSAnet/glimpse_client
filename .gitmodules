@@ -3,10 +3,10 @@
 	url = https://github.com/miniupnp/miniupnp.git
 [submodule "src/mobile/qml/controls/charts"]
 	path = src/mobile/qml/controls/charts
-	url = git@github.com:HSAnet/glimpse_data_visualization.git
+	url = https://github.com/HSAnet/glimpse_data_visualization.git
 [submodule "3rdparty/qt-google-analytics"]
 	path = 3rdparty/qt-google-analytics
-	url = git@github.com:HSAnet/qt-google-analytics.git
+	url = https://github.com/HSAnet/qt-google-analytics.git
 [submodule "3rdparty/qtsystems"]
 	path = 3rdparty/qtsystems
-	url = git@github.com:HSAnet/qtsystems.git
+	url = https://github.com/HSAnet/qtsystems.git
