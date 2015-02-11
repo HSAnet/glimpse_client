@@ -328,7 +328,8 @@ void WebRequester::start()
         return;
     }
 
-    int methodIdx = d->request->metaObject()->indexOfClassInfo("http_request_method");
+    const QMetaObject *metaObject = d->request->metaObject();
+    int methodIdx = metaObject->indexOfClassInfo("http_request_method");
 
     if (methodIdx == -1)
     {
@@ -338,21 +339,23 @@ void WebRequester::start()
         return;
     }
 
-    QString httpMethod = d->request->metaObject()->classInfo(methodIdx).value();
+    QString httpMethod = metaObject->classInfo(methodIdx).value();
 
-    int authenticationIdx = d->request->metaObject()->indexOfClassInfo("authentication_method");
+    int authenticationIdx = metaObject->indexOfClassInfo("authentication_method");
     QString authentication = "none";
 
     if (authenticationIdx != -1)
     {
-        authentication = d->request->metaObject()->classInfo(authenticationIdx).value();
+        authentication = metaObject->classInfo(authenticationIdx).value();
     }
 
     d->setStatus(Running);
 
+    const Settings *settings = Client::instance()->settings();
+
     // Fill remaining request data
-    d->request->setDeviceId(Client::instance()->settings()->deviceId());
-    d->request->setSessionId(Client::instance()->settings()->apiKey());
+    d->request->setDeviceId(settings->deviceId());
+    d->request->setSessionId(settings->apiKey());
 
 
     QVariantMap data = d->request->toVariant().toMap();
@@ -365,14 +368,14 @@ void WebRequester::start()
 
     if (authentication == "basic")
     {
-        url.setUserName(Client::instance()->settings()->userId());
-        url.setPassword(Client::instance()->settings()->password());
+        url.setUserName(settings->userId());
+        url.setPassword(settings->password());
     }
     else if (authentication == "apikey")
     {
         request.setRawHeader("Authorization",
-                             QString("ApiKey %1:%2").arg(Client::instance()->settings()->userId().left(30)).arg(
-                                 Client::instance()->settings()->apiKey()).toUtf8());
+                             QString("ApiKey %1:%2").arg(settings->userId().left(30)).arg(
+                                 settings->apiKey()).toUtf8());
     }
     else if (authentication == "none")
     {

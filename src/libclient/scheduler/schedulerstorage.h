@@ -15,9 +15,6 @@ public:
     SchedulerStorage(Scheduler *scheduler, QObject *parent = 0);
     ~SchedulerStorage();
 
-    void setRealTime(bool realTime);
-    bool isRealtime() const;
-
     void storeData();
     void loadData();
 

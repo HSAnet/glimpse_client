@@ -10,7 +10,8 @@ class CLIENT_API TrafficBudgetManager : public QObject
     Q_OBJECT
 
 public:
-    TrafficBudgetManager();
+    explicit TrafficBudgetManager(QObject *parent = 0);
+    ~TrafficBudgetManager();
 
     void init();
     void saveTraffic();
