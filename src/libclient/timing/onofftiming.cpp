@@ -31,6 +31,7 @@ bool OnOffTiming::reset()
 
 QDateTime OnOffTiming::nextRun(const QDateTime &tzero) const
 {
+    Q_UNUSED(tzero)
     return d->dateTime.addSecs(ntp->offset());
 }
 

@@ -21,9 +21,15 @@ public:
     bool active;
 };
 
-TrafficBudgetManager::TrafficBudgetManager()
-: d(new Private)
+TrafficBudgetManager::TrafficBudgetManager(QObject *parent)
+: QObject(parent)
+, d(new Private)
 {
+}
+
+TrafficBudgetManager::~TrafficBudgetManager()
+{
+    delete d;
 }
 
 void TrafficBudgetManager::init()

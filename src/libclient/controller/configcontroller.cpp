@@ -54,7 +54,7 @@ public slots:
 void ConfigController::Private::updateTimer()
 {
     // Set the new url
-    QString newUrl = QString("https://%1").arg(Client::instance()->settings()->config()->configAddress());
+    QString newUrl = QString("https://%1").arg(settings->config()->configAddress());
 
     if (requester.url() != newUrl)
     {
@@ -111,12 +111,15 @@ bool ConfigController::init(NetworkManager *networkManager, Settings *settings)
     d->networkManager = networkManager;
     d->settings = settings;
 
-    // TODO: This is a evil hack
+    // TODO: This is an evil hack
     d->response = settings->config();
     d->requester.setResponse(d->response);
     connect(d->response, SIGNAL(responseChanged()), d, SLOT(updateTimer()));
 
+    // sets the url into the requester and starts the timer
     d->updateTimer();
+
+    // get new config now
     update();
 
     return true;

@@ -31,7 +31,6 @@
 #include <stdio.h>
 #endif // Q_OS_WIN
 
-// TEST INCLUDES
 #include "timing/immediatetiming.h"
 #include "timing/ondemandtiming.h"
 #include "timing/timing.h"
@@ -397,7 +396,7 @@ bool Client::init()
     tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", timing, QVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(12), TaskId(12), "wifilookup", timing, QVariant(), precondition));
 
-    foreach (const ScheduleDefinition test, tests)
+    foreach (const ScheduleDefinition &test, tests)
     {
         d->scheduler.enqueue(test);
     }
