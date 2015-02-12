@@ -50,7 +50,8 @@ QString GetResourceRequest::path() const
 void GetResourceRequest::addData(const QVariantMap &data)
 {
     QMapIterator<QString, QVariant> i(data);
-    while (i.hasNext()) {
+    while (i.hasNext())
+    {
         i.next();
         d->data.insert(i.key(), i.value());
     }
