@@ -84,7 +84,7 @@ public:
      * Source: http://semver.org
      */
     static const quint32 versionMajor = 2;
-    static const quint32 versionMinor = 2;
+    static const quint32 versionMinor = 3;
     static const quint32 versionPatch = 0;
 
 public slots:
