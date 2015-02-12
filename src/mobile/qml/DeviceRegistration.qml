@@ -69,7 +69,7 @@ Page {
             horizontalAlignment: Text.AlignHCenter
             color: "#727277"
             wrapMode: Text.WordWrap
-            text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dia."
+            text: "Let us know how much data volume per month you would like to donate to the GLIMPSE project."
             font {
                 pixelSize: units.gu(30)
             }
@@ -94,7 +94,7 @@ Page {
             columns: 2
 
             Label {
-                text: qsTr("monthly traffic \nusage: %1mb").arg(trafficSlider.value)
+                text: qsTr("Max. monthly traffic\nvolume: %1MB").arg(trafficSlider.value)
                 wrapMode: Text.Wrap
                 font {
                     pixelSize: units.gu(30)
@@ -104,17 +104,17 @@ Page {
 
             Slider {
                 id: trafficSlider
-                maximumValue: 250.0
-                minimumValue: 25.0
+                maximumValue: 1000.0
+                minimumValue: 50.0
                 value: 25.0
-                stepSize: 1
+                stepSize: 10
                 Layout.fillWidth: true
             }
 
 
 
             Label {
-                text: qsTr("monthly traffic usage \n(mobile): %1mb").arg(trafficMobileSlider.value)
+                text: qsTr("Max. monthly traffic volume\n(mobile/cellular): %1MB").arg(trafficMobileSlider.value)
                 font {
                     pixelSize: units.gu(30)
                 }
@@ -123,14 +123,14 @@ Page {
 
             Slider {
                 id: trafficMobileSlider
-                maximumValue: 250.0
-                minimumValue: 0.5
-                value: 0.5
-                stepSize: 0.5
+                maximumValue: 500.0
+                minimumValue: 5.0
+                value: 1.0
+                stepSize: 1
                 Layout.fillWidth: true
             }
 
-            Label {
+            /*Label {
                 text: "Country"
                 font {
                     pixelSize: units.gu(30)
@@ -141,10 +141,10 @@ Page {
             ComboBox {
                 model: [ "Hirblingen", "Batzenhofen", "Teiting", "Aichach"]
                 Layout.fillWidth: true
-            }
+            }*/
 
             Label {
-                text: "allow mobile \nmeasurements"
+                text: "Allow mobile/cellular\nmeasurements"
                 font {
                     pixelSize: units.gu(30)
                 }
@@ -158,7 +158,7 @@ Page {
         }
 
         BigButton {
-            text: qsTr("Register Device")
+            text: qsTr("Register device")
             anchors.horizontalCenter: parent.horizontalCenter
 
             onClicked: {

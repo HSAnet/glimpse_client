@@ -5,11 +5,11 @@ import "controls"
 Page {
     id: root
 
-    title: qsTr("registration")
+    title: qsTr("Registration")
 
-    function registerAnonymous() {
+    /*function registerAnonymous() {
         client.loginController.anonymousRegistration();
-    }
+    }*/
 
     Rectangle {
        color: "#f8c580"
@@ -29,7 +29,7 @@ Page {
            height: units.gu(150)
            fillMode: Image.PreserveAspectFit
 
-           MouseArea {
+           /*MouseArea {
                anchors.fill: parent
                onClicked: {
                    if (app.state == "")
@@ -37,8 +37,7 @@ Page {
                    else
                        app.state = "";
                }
-
-           }
+           }*/
        }
 
        Label {

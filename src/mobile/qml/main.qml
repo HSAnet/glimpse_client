@@ -125,7 +125,7 @@ Rectangle {
         value: client.taskExecutor.running
     }
 
-    transitions: [
+    /*transitions: [
         Transition {
             to: "settings"
 
@@ -145,16 +145,16 @@ Rectangle {
                 }
             }
         }
-    ]
+    ]*/
 
-    states: State {
+    /*states: State {
         name: "settings"
 
         PropertyChanges {
             target: app
             x: -app.width + units.gu(50)
         }
-    }
+    }*/
 
     Rectangle {
         id: title
@@ -213,7 +213,7 @@ Rectangle {
             }
         }
 
-        Button {
+        /*Button {
             id: actionTitle
             color: "white"
 
@@ -251,7 +251,7 @@ Rectangle {
 
             opacity: text.length ? 1 : 0
             onClicked: pageStack.currentItem.actionClicked()
-        }
+        }*/
 
         ActivityIndicator {
             id: indicator
@@ -304,7 +304,7 @@ Rectangle {
         }
     }
 
-    Rectangle {
+    /*Rectangle {
         id: settingsPanel
         parent: app
         width: app.width
@@ -503,6 +503,6 @@ Rectangle {
             section.delegate: sectionHeading
         }
 
-    }
+    }*/
 
 }

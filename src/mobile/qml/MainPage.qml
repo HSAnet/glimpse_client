@@ -5,14 +5,14 @@ Page {
     id: root
 
     title: "glimpse."
-    actionTitle: {
+    /*actionTitle: {
         if (tab.currentItem && tab.currentItem.actionTitle)
             return tab.currentItem.actionTitle;
 
         return "settings";
-    }
+    }*/
 
-    function actionClicked() {
+    /*function actionClicked() {
         if (tab.currentItem && tab.currentItem.actionTitle)
             return tab.currentItem.actionClicked();
 
@@ -20,7 +20,7 @@ Page {
             app.state = "settings";
         else
             app.state = "";
-    }
+    }*/
 
     TabView {
         id: tab
@@ -39,6 +39,20 @@ Page {
         }
 
         Item {
+            property string title: "Reports"
+            /*property alias actionTitle: reports.actionTitle
+
+            function actionClicked() {
+                return reports.actionClicked();
+            }*/
+
+            Reports {
+                id: reports
+                anchors.fill: parent
+            }
+        }
+
+        Item {
             property string title: "Toolbox"
 
             ToolBoxPage {
@@ -51,23 +65,9 @@ Page {
 //        }
 
         Item {
-            property string title: "Scheduler"
+            property string title: "Schedules"
 
             Scheduler {
-                anchors.fill: parent
-            }
-        }
-
-        Item {
-            property string title: "Reports"
-            property alias actionTitle: reports.actionTitle
-
-            function actionClicked() {
-                return reports.actionClicked();
-            }
-
-            Reports {
-                id: reports
                 anchors.fill: parent
             }
         }
@@ -76,12 +76,12 @@ Page {
 //            property string title: "Campaigns"
 //        }
 
-        Item {
+        /*Item {
             property string title: "Hauptmenü"
 
             MenuPage {
                 anchors.fill: parent
             }
-        }
+        }*/
     }
 }
