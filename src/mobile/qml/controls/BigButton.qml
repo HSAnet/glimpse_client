@@ -22,7 +22,7 @@ Rectangle {
         font.family: "Roboto Light"
         font.pixelSize: units.gu(40)
         color: "white"
-        text: "login"
+        text: qsTr("login")
     }
 
     transitions: Transition {

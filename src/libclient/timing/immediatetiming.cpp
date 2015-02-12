@@ -22,6 +22,7 @@ bool ImmediateTiming::reset()
 
 QDateTime ImmediateTiming::nextRun(const QDateTime &tzero) const
 {
+    Q_UNUSED(tzero)
     return QDateTime::currentDateTime();
 }
 

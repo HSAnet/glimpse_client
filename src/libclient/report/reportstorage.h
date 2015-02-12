@@ -11,9 +11,6 @@ public:
     ReportStorage(ReportScheduler *scheduler, QObject *parent = 0);
     ~ReportStorage();
 
-    void setRealTime(bool realTime);
-    bool isRealTime() const;
-
     void storeData();
     void loadData();
 

@@ -5,6 +5,9 @@
 #include <QSettings>
 #include <QCryptographicHash>
 
+static QLatin1String CONFIG_SERVER("supervisor.measure-it.net");
+static QLatin1String SUPERVISOR_SERVER("supervisor.measure-it.net");
+
 LOGGER(Settings);
 
 class Settings::Private
@@ -69,8 +72,8 @@ Settings::StorageType Settings::init()
     // Create new settings
     if (newSettings)
     {
-        d->config.setConfigAddress("supervisor.measure-it.net");
-        d->config.setSupervisorAdress("supervisor.measure-it.net");
+        d->config.setConfigAddress(CONFIG_SERVER);
+        d->config.setSupervisorAdress(SUPERVISOR_SERVER);
         setUsedTraffic(0);
         setUsedMobileTraffic(0);
         LOG_DEBUG("Created new settings for this device");
@@ -85,13 +88,13 @@ Settings::StorageType Settings::init()
         if (d->config.configAddress().isEmpty())
         {
             LOG_WARNING("Config controller address lost, setting back default one");
-            d->config.setConfigAddress("supervisor.measure-it.net");
+            d->config.setConfigAddress(SUPERVISOR_SERVER);
         }
 
         if (d->config.supervisorAddress().isEmpty())
         {
             LOG_WARNING("Supervisor address lost, setting back default one");
-            d->config.setConfigAddress("supervisor.measure-it.net");
+            d->config.setConfigAddress(CONFIG_SERVER);
         }
 
         LOG_DEBUG("Loaded existing settings for this device");

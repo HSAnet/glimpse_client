@@ -11,6 +11,7 @@
 #include "../network/responses/getinstructionresponse.h"
 #include "../client.h"
 #include "../types.h"
+#include "../localinformation.h"
 
 #include <QPointer>
 
@@ -53,6 +54,8 @@ public:
     bool loggedIn;
     bool registeredDevice;
 
+    LocalInformation localInformation;
+
     // Functions
     void setLoggedIn(bool loggedIn);
     void setRegisterdDevice(bool registeredDevice);
@@ -84,7 +87,7 @@ void LoginController::Private::setRegisterdDevice(bool registeredDevice)
 void LoginController::Private::updateController()
 {
     // Set the new url, we use the config address here at the moment
-    QString newUrl = QString("https://%1").arg(Client::instance()->settings()->config()->supervisorAddress());
+    QString newUrl = QString("https://%1").arg(settings->config()->supervisorAddress());
 
     if (requester.url() != newUrl)
     {
@@ -206,6 +209,7 @@ void LoginController::login()
 
 void LoginController::checkApiKey()
 {
+    d->apiKeyLoginRequest.addData(d->localInformation.getConstants());
     d->requester.setRequest(&d->apiKeyLoginRequest);
     d->requester.setResponse(&d->apiKeyLoginResponse);
     d->requester.start();

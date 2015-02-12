@@ -95,7 +95,7 @@ Page {
                 id: mailField
                 style: TextFieldStyleTop{}
 //                text: root.loginMode ? client.settings.userId : ""
-                placeholderText: "Email"
+                placeholderText: qsTr("Email")
                 validator: RegExpValidator {
                     regExp: /.+@.+\..+/
                 }
@@ -110,7 +110,7 @@ Page {
                 id: passwordField
                 style: TextFieldStyleBottom{}
 //                text: root.loginMode ? client.settings.password : ""
-                placeholderText: "Password"
+                placeholderText: qsTr("Password")
                 echoMode: TextInput.Password
                 onAccepted: {
                     if (root.loginMode)

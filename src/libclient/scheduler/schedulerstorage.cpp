@@ -20,7 +20,6 @@ public:
     Private()
     : loading(false)
     , dir(StoragePaths().schedulerDirectory())
-    , realTime(true)
     {
         if (!dir.exists())
         {
@@ -36,11 +35,10 @@ public:
     }
 
     // Properties
-    bool loading;
+    bool loading; // to prevent storing while loading
 
     QPointer<Scheduler> scheduler;
     QDir dir;
-    bool realTime;
 
     // Functions
     void store(const ScheduleDefinition &test);
@@ -77,7 +75,7 @@ void SchedulerStorage::Private::testAdded(const ScheduleDefinition &test, int po
 {
     Q_UNUSED(position);
 
-    if (!realTime || loading)
+    if (loading)
     {
         return;
     }
@@ -88,11 +86,6 @@ void SchedulerStorage::Private::testAdded(const ScheduleDefinition &test, int po
 void SchedulerStorage::Private::testRemoved(const ScheduleDefinition &test, int position)
 {
     Q_UNUSED(position);
-
-    if (!realTime)
-    {
-        return;
-    }
 
     QString fileName = fileNameForTest(test);
 
@@ -121,23 +114,8 @@ SchedulerStorage::~SchedulerStorage()
     delete d;
 }
 
-void SchedulerStorage::setRealTime(bool realTime)
-{
-    d->realTime = realTime;
-}
-
-bool SchedulerStorage::isRealtime() const
-{
-    return d->realTime;
-}
-
 void SchedulerStorage::storeData()
 {
-    if (d->realTime)
-    {
-        return;
-    }
-
     foreach (const ScheduleDefinition &test, d->scheduler->tests())
     {
         d->store(test);

@@ -6,8 +6,8 @@ ListPage {
     title: qsTr("Internet is slow")
     actionTitle: qsTr("Skip")
 
-    function actionClicked() {
-    }
+    /*function actionClicked() {
+    }*/
 
     header: Label {
         text: qsTr("Which app is slow?")

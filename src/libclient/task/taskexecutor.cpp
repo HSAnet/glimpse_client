@@ -65,19 +65,10 @@ public slots:
 
                 if (measurement->start())
                 {
-                    this->measurement = measurement;
                     return;
                 }
             }
-        }
-        else
-        {
-            LOG_ERROR(QString("Unable to create measurement: %1").arg(test.name()));
-            emit finished(test, Result("Unable to create measurement"));
-        }
 
-        if (measurement)
-        {
             // the result should at least contain the errorString, as all the other
             // fields will be empty
             LOG_ERROR(QString("Finished execution of %1 (failed): %2").arg(test.name()).arg(measurement->errorString()));
@@ -90,6 +81,11 @@ public slots:
             emit finished(test, result);
 
             measurement.clear();
+        }
+        else
+        {
+            LOG_ERROR(QString("Unable to create measurement: %1").arg(test.name()));
+            emit finished(test, Result("Unable to create measurement"));
         }
     }
 

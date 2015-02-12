@@ -19,9 +19,12 @@ public:
     void setTiming(const TimingPtr &timing);
     TimingPtr timing() const;
 
+    bool isActive() const;
+
 signals:
     void timeout();
     void timingChanged();
+    void activeChanged();
 
 public slots:
     void start();

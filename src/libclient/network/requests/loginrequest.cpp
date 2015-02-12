@@ -1,10 +1,12 @@
 #include "loginrequest.h"
+#include "localinformation.h"
 
 class LoginRequest::Private
 {
 public:
     QString password;
     QString userId;
+    LocalInformation localInformation;
 };
 
 LoginRequest::LoginRequest(QObject *parent)
@@ -49,7 +51,6 @@ void LoginRequest::setUserId(const QString &userId)
 
 QVariant LoginRequest::toVariant() const
 {
-    QVariantMap data;
-    data.insert("device_id", deviceId());
+    QVariantMap data = d->localInformation.getConstants();
     return data;
 }

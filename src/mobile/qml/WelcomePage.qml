@@ -6,7 +6,7 @@ FlickablePage {
 
     readonly property bool isWizard: true
 
-    title: qsTr("Welcome to glimpse")
+    title: qsTr("Welcome to GLIMPSE")
 
     contentHeight: column.height
 
@@ -19,12 +19,20 @@ FlickablePage {
             margins: units.gu(40)
         }
 
-        Item { width: 1; height: units.gu(100) }
+        Item { width: 1; height: units.gu(50) }
 
         Label {
             width: parent.width
             wrapMode: Text.Wrap
-            text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+            font.pixelSize: units.gu(35)
+            text: qsTr("<img src=\"images/logo.png\"/> <br/>
+Thank you for installing the app. You can use <i>GLIMPSE</i> anonymously or as a registered user:<br/><br/>
+<b>1)</b> As a <b>registered user</b> you can view the measurement results of all your <i>GLIMPSE</i> installations
+through a web-based dashboard at www.measure-it.net.<br/>
+<b>2)</b> As an <b>anonymous user</b> you won't get a dashboard, but other than that, the app works exactly the
+same way.<br/>
+For more information on the app, please visit us at www.measure-it.net<br/><br/>
+Thanks again for installing GLIMPSE!")
         }
 
         Item { width: 1; height: units.gu(50) }

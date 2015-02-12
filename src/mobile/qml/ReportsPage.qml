@@ -7,13 +7,13 @@ ListPage {
 
     title: qsTr("Reports")
     subtitle: qsTr("see what happened recently")
-    actionTitle: qsTr("Upload")
+    //actionTitle: qsTr("Upload")
     activity: client.reportController.status == ReportController.Running
     emptyText: qsTr("You don't have any reports")
 
-    function actionClicked() {
+    /*function actionClicked() {
         client.reportController.sendReports();
-    }
+    }*/
 
     function showReport(report) {
         var params = {

@@ -21,7 +21,6 @@ public:
     Private()
     : loading(false)
     , dir(StoragePaths().reportDirectory())
-    , realTime(true)
     {
         if (!dir.exists())
         {
@@ -40,7 +39,6 @@ public:
     bool loading;
 
     QDir dir;
-    bool realTime;
     QPointer<ReportScheduler> scheduler;
 
     // Functions
@@ -77,7 +75,7 @@ QString ReportStorage::Private::fileNameForReport(const Report &report) const
 
 void ReportStorage::Private::reportAdded(const Report &report)
 {
-    if (!realTime || loading)
+    if (loading)
     {
         return;
     }
@@ -93,11 +91,6 @@ void ReportStorage::Private::reportModified(const Report &report)
 
 void ReportStorage::Private::reportRemoved(const Report &report)
 {
-    if (!realTime)
-    {
-        return;
-    }
-
     dir.remove(fileNameForReport(report));
 }
 
@@ -117,25 +110,8 @@ ReportStorage::~ReportStorage()
     delete d;
 }
 
-void ReportStorage::setRealTime(bool realTime)
-{
-    d->realTime = realTime;
-}
-
-bool ReportStorage::isRealTime() const
-{
-    return d->realTime;
-}
-
 void ReportStorage::storeData()
 {
-    // If realtime was enabled, the files are already on disk so we don't
-    // have to modify them again.
-    if (d->realTime)
-    {
-        return;
-    }
-
     foreach (const Report &report, d->scheduler->reports())
     {
         d->store(report);
