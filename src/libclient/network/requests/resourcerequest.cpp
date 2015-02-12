@@ -5,6 +5,7 @@ class GetResourceRequest::Private
 {
 public:
     QStringList resourceIds;
+    QVariantMap data;
 };
 
 GetResourceRequest::GetResourceRequest(QObject *parent)
@@ -20,9 +21,8 @@ GetResourceRequest::~GetResourceRequest()
 
 QVariant GetResourceRequest::toVariant() const
 {
-    QVariantMap data;
-    data.insert("device_id", deviceId());
-    return data;
+    d->data.insert("device_id", deviceId());
+    return d->data;
 }
 
 void GetResourceRequest::addResourceId(const int &resourceId)
@@ -44,6 +44,16 @@ QString GetResourceRequest::path() const
     else
     {
         return QString("%1set/%2/").arg(Request::path()).arg(d->resourceIds.join(';'));
+    }
+}
+
+void GetResourceRequest::addData(const QVariantMap &data)
+{
+    QMapIterator<QString, QVariant> i(data);
+    while (i.hasNext())
+    {
+        i.next();
+        d->data.insert(i.key(), i.value());
     }
 }
 

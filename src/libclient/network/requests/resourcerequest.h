@@ -18,6 +18,7 @@ public:
     void addResourceId(const int &resourceId);
     void clearResourceIds();
     QString path() const;
+    void addData(const QVariantMap &data);
 
     QStringList resourceIds();
 
