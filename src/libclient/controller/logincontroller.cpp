@@ -11,6 +11,7 @@
 #include "../network/responses/getinstructionresponse.h"
 #include "../client.h"
 #include "../types.h"
+#include "../localinformation.h"
 
 #include <QPointer>
 
@@ -52,6 +53,8 @@ public:
 
     bool loggedIn;
     bool registeredDevice;
+
+    LocalInformation localInformation;
 
     // Functions
     void setLoggedIn(bool loggedIn);
@@ -206,6 +209,7 @@ void LoginController::login()
 
 void LoginController::checkApiKey()
 {
+    d->apiKeyLoginRequest.addData(d->localInformation.getConstants());
     d->requester.setRequest(&d->apiKeyLoginRequest);
     d->requester.setResponse(&d->apiKeyLoginResponse);
     d->requester.start();
