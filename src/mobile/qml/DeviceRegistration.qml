@@ -59,7 +59,7 @@ Page {
         Label {
             id: headline
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Configure your device"
+            text: qsTr("Configure your device")
             color: "#727277"
         }
 
@@ -69,7 +69,7 @@ Page {
             horizontalAlignment: Text.AlignHCenter
             color: "#727277"
             wrapMode: Text.WordWrap
-            text: "Let us know how much data volume per month you would like to donate to the GLIMPSE project."
+            text: qsTr("Let us know how much data volume per month you would like to donate to the GLIMPSE project.")
             font {
                 pixelSize: units.gu(30)
             }
@@ -131,7 +131,7 @@ Page {
             }
 
             /*Label {
-                text: "Country"
+                text: qsTr("Country")
                 font {
                     pixelSize: units.gu(30)
                 }
@@ -144,7 +144,7 @@ Page {
             }*/
 
             Label {
-                text: "Allow mobile/cellular\nmeasurements"
+                text: qsTr("Allow mobile/cellular\nmeasurements")
                 font {
                     pixelSize: units.gu(30)
                 }

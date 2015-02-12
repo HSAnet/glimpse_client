@@ -78,7 +78,7 @@ Page {
        Text {
            id: agree_text
            anchors.top: divider.bottom
-           text: "By signing up, I agree to glimpse's"
+           text: qsTr("By signing up, I agree to glimpse's")
            anchors.horizontalCenter: parent.horizontalCenter
            color: "#333333"
        }
@@ -87,7 +87,7 @@ Page {
            id: agree_link
            anchors.top: agree_text.bottom
            anchors.topMargin: units.gu(10)
-           text: "Terms of Service"
+           text: qsTr("Terms of Service")
            anchors.horizontalCenter: parent.horizontalCenter
            color: "#3680ab"
        }
