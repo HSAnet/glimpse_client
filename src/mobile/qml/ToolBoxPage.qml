@@ -3,14 +3,14 @@ import mplane 1.0
 import "controls"
 
 ListPage {
-    title: qsTr("toolbox")
+    title: qsTr("Toolbox")
     subtitle: qsTr("see what's coming next")
     emptyText: qsTr("Your toolbox is empty")
 
     model: ListModel {
         ListElement {
-            title: "UPnP"
-            group: "Simple measurements"
+            title: "UPnP request"
+            group: "Local measurements"
             measurement: "Upnp"
             description: "Get information from local UPnP devices"
         }
@@ -19,35 +19,35 @@ ListPage {
             title: "Ping"
             group: "Public peer measurements"
             measurement: "Ping"
-            description: "Latency measurement"
+            description: "Latency/Availability measurement"
         }
 
         ListElement {
             title: "Traceroute"
             group: "Public peer measurements"
             measurement: "Traceroute"
-            description: "Measures the path to a certain host with UDP"
+            description: "Discovers the path to a certain host (using UDP probes)"
         }
 
         ListElement {
             title: "HTTP download"
             group: "Public peer measurements"
             measurement: "HttpDownload"
-            description: "Download something from a public website"
+            description: "Download something from a public website (speedtest)"
         }
 
         ListElement {
-            title: "Btc"
+            title: "Bulk Transfer Capacity"
             group: "Glimpse peer measurements"
             measurement: "Btc"
-            description: "Bulk transfer capacity measurement (TCP)"
+            description: "Bulk transfer capacity measurement (over a single TCP connection)"
         }
 
         ListElement {
             title: "Packet Trains"
-            group: "Glimpse peer measurements"
+            group: "GLIMPSE peer measurements"
             measurement: "Packettrains"
-            description: "Trains of packet pairs measurement"
+            description: "Trains of packet pairs measurement (experimental)"
         }
     }
 

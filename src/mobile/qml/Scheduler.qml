@@ -21,7 +21,7 @@ ListPage {
         showBorder: true
 
         headline: model.name
-        text: "NextRun: " + model.nextRun
+        text: qsTr("NextRun: ") + model.nextRun
         imageSource: "../images/info.png"
     }
 }

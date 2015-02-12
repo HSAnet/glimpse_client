@@ -34,7 +34,7 @@ Item {
 
         Label {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: qsTr("measure-it.de")
+            text: qsTr("measure-it.net")
         }
     }
 }

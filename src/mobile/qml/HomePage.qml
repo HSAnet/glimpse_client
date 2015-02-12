@@ -4,7 +4,7 @@ import "controls"
 import "controls/charts/linechart.js" as Chart
 
 FlickablePage {
-    contentHeight: campaignsPanel.y + campaignsPanel.height
+    contentHeight: historyPanel.y + historyPanel.height
 
     Canvas {
         x: notificationPanel.width - units.gu(100)
@@ -41,13 +41,98 @@ FlickablePage {
     }
 
     Rectangle {
+        id: buttonPanel
+        width: app.width
+        height: units.gu(180)
+        color: "#f8c580"
+
+        anchors {
+            top: notificationPanel.bottom
+            topMargin: units.gu(18)
+        }
+
+        Button {
+            id: button1
+            width: app.width / 3
+            height: parent.height
+
+            Text {
+                text: qsTr("Speedtest")
+                color: "white"
+                width: parent.width
+                height: parent.height
+                font {
+                    weight: Font.Bold
+                    family: "Helvetica Neue"
+                    pixelSize: units.gu(25)
+                }
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
+
+        }
+
+        Button {
+            id: button2
+            width: app.width / 3
+            height: parent.height
+
+            anchors {
+                left: button1.right
+            }
+
+            Text {
+                text: qsTr("Internet down")
+                color: "white"
+                width: parent.width
+                height: parent.height
+                font {
+                    weight: Font.Bold
+                    family: "Helvetica Neue"
+                    pixelSize: units.gu(25)
+                }
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+
+        Button {
+            id: button3
+            width: app.width / 3
+            height: parent.height
+
+            anchors {
+                left: button2.right
+            }
+
+            Text {
+                text: qsTr("Poor network quality")
+                color: "white"
+                width: parent.width
+                height: parent.height
+                font {
+                    weight: Font.Bold
+                    family: "Helvetica Neue"
+                    pixelSize: units.gu(25)
+                }
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+    }
+
+    Rectangle {
         id: historyPanel
         color: "white"
         width: app.width
         height: diagram.height + units.gu(100)
 
         anchors {
-            top: notificationPanel.bottom
+            top: buttonPanel.bottom
             topMargin: units.gu(20)
         }
 
@@ -110,99 +195,16 @@ FlickablePage {
         }
     }
 
-    Rectangle {
-        id: buttonPanel
-        width: app.width
-        height: units.gu(180)
-        color: "#f8c580"
-
-        anchors {
-            top: historyPanel.bottom
-            topMargin: units.gu(18)
-        }
-
-        Button {
-            id: button1
-            width: app.width / 3
-            height: parent.height
-
-            Text {
-                text: qsTr("SPEEDTEST")
-                color: "white"
-                width: parent.width
-                height: parent.height
-                font {
-                    weight: Font.Bold
-                    family: "Helvetica Neue"
-                    pixelSize: units.gu(25)
-                }
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
 
 
-        }
-
-        Button {
-            id: button2
-            width: app.width / 3
-            height: parent.height
-
-            anchors {
-                left: button1.right
-            }
-
-            Text {
-                text: qsTr("MY NET IS NOT WORKING")
-                color: "white"
-                width: parent.width
-                height: parent.height
-                font {
-                    weight: Font.Bold
-                    family: "Helvetica Neue"
-                    pixelSize: units.gu(25)
-                }
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
-
-        Button {
-            id: button3
-            width: app.width / 3
-            height: parent.height
-
-            anchors {
-                left: button2.right
-            }
-
-            Text {
-                text: qsTr("MY NET IS POOR")
-                color: "white"
-                width: parent.width
-                height: parent.height
-                font {
-                    weight: Font.Bold
-                    family: "Helvetica Neue"
-                    pixelSize: units.gu(25)
-                }
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
-    }
-
-    Rectangle {
+    /*Rectangle {
         id: campaignsPanel
         color: "white"
         width: app.width
         height: units.gu(300)
 
         anchors {
-            top: buttonPanel.bottom
+            top: historyPanel.bottom
             topMargin: units.gu(20)
         }
 
@@ -300,5 +302,5 @@ FlickablePage {
                 }
             }
         }
-    }
+    }*/
 }

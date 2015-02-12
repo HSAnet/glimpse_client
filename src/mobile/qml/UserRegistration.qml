@@ -5,11 +5,11 @@ import "controls"
 Page {
     id: root
 
-    title: qsTr("registration")
+    title: qsTr("Registration")
 
-    function registerAnonymous() {
+    /*function registerAnonymous() {
         client.loginController.anonymousRegistration();
-    }
+    }*/
 
     Rectangle {
        color: "#f8c580"
@@ -29,7 +29,7 @@ Page {
            height: units.gu(150)
            fillMode: Image.PreserveAspectFit
 
-           MouseArea {
+           /*MouseArea {
                anchors.fill: parent
                onClicked: {
                    if (app.state == "")
@@ -37,8 +37,7 @@ Page {
                    else
                        app.state = "";
                }
-
-           }
+           }*/
        }
 
        Label {
@@ -79,7 +78,7 @@ Page {
        Text {
            id: agree_text
            anchors.top: divider.bottom
-           text: "By signing up, I agree to glimpse's"
+           text: qsTr("By signing up, I agree to glimpse's")
            anchors.horizontalCenter: parent.horizontalCenter
            color: "#333333"
        }
@@ -88,7 +87,7 @@ Page {
            id: agree_link
            anchors.top: agree_text.bottom
            anchors.topMargin: units.gu(10)
-           text: "Terms of Service"
+           text: qsTr("Terms of Service")
            anchors.horizontalCenter: parent.horizontalCenter
            color: "#3680ab"
        }

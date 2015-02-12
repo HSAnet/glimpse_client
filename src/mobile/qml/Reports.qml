@@ -3,9 +3,9 @@ import mplane 1.0
 import "controls"
 
 ListPage {
-    function actionClicked() {
+    /*function actionClicked() {
         client.reportController.sendReports();
-    }
+    }*/
 
     function showReport(report) {
         var params = {
@@ -22,7 +22,7 @@ ListPage {
 
     title: qsTr("reports")
     subtitle: qsTr("see what happened recently")
-    actionTitle: qsTr("upload")
+    //actionTitle: qsTr("upload")
     activity: client.reportController.status == ReportController.Running
     emptyText: qsTr("You don't have any reports")
 

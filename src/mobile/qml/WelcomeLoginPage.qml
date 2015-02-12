@@ -65,7 +65,7 @@ Page {
        Label {
            id: divider
            color: "#979696"
-           text: "or"
+           text: qsTr("or")
            anchors.horizontalCenter: parent.horizontalCenter
            anchors.top: loginPage.bottom
            anchors.topMargin: units.gu(20)
