@@ -16,7 +16,7 @@ public:
     {
         qtimer.setSingleShot(true);
         qtimer.setTimerType(Qt::PreciseTimer);
-        connect(&qtimer, SIGNAL(timeout()), this, SIGNAL(onTimeout()));
+        connect(&qtimer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     }
 
     Timer *q;
@@ -112,9 +112,17 @@ void Timer::start()
 {
     if (d->timing)
     {
-        d->setActive(true);
+        int ms = d->timing->timeLeft();
 
-        d->qtimer.start(d->timing->timeLeft());
+        // In case timeleft is invalid, do not start the timer!
+        if (ms == 0)
+        {
+            d->setActive(false);
+            return;
+        }
+
+        d->setActive(true);
+        d->qtimer.start(ms);
     }
     else
     {
