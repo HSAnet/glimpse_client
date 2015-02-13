@@ -137,7 +137,15 @@ qint8 DeviceInfo::batteryLevel() const
 
 QString DeviceInfo::platform() const
 {
+#if defined(Q_OS_MSDOS)
+    return "msdos"; // Hope this never happens :)
+#elif defined(Q_OS_WINCE)
+    return "windows_ce";
+#elif defined(Q_OS_WINRT)
+    return "windows_rt";
+#else
     return "windows";
+#endif
 }
 
 QString DeviceInfo::OSName() const
