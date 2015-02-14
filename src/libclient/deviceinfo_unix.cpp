@@ -234,7 +234,61 @@ qint8 DeviceInfo::batteryLevel() const
 
 QString DeviceInfo::platform() const
 {
+#if defined(Q_OS_MAC)
+    return "mac";
+#elif defined(Q_OS_DARWIN)
+    return "darwin";
+#elif defined(Q_OS_OS2)
+    return "os2";
+#elif defined(Q_OS_OS2EMX)
+    return "os2emx";
+#elif defined(Q_OS_CYGWIN)
+    return "cygwin";
+#elif defined(Q_OS_SOLARIS)
+    return "solaris";
+#elif defined(Q_OS_HPUX)
+    return "hpux";
+#elif defined(Q_OS_ULTRIX)
+    return "ultrix";
+#elif defined(Q_OS_LINUX)
+    return "linux";
+#elif defined(Q_OS_FREEBSD)
+    return "freebsd";
+#elif defined(Q_OS_NETBSD)
+    return "netbsd";
+#elif defined(Q_OS_OPENBSD)
+    return "openbsd";
+#elif defined(Q_OS_BSDI)
+    return "bsdi";
+#elif defined(Q_OS_IRIX)
+    return "irix";
+#elif defined(Q_OS_OSF)
+    return "osf";
+#elif defined(Q_OS_SCO)
+    return "sco";
+#elif defined(Q_OS_UNIXWARE)
+    return "unixware";
+#elif defined(Q_OS_AIX)
+    return "aix";
+#elif defined(Q_OS_HURD)
+    return "hurd";
+#elif defined(Q_OS_DGUX)
+    return "dgux";
+#elif defined(Q_OS_RELIANT)
+    return "reliant";
+#elif defined(Q_OS_DYNIX)
+    return "dynix";
+#elif defined(Q_OS_QNX)
+    return "qnx";
+#elif defined(Q_OS_QNX6)
+    return "qnx6";
+#elif defined(Q_OS_LYNX)
+    return "lynx";
+#elif defined(Q_OS_BSD4)
+    return "bsd4";
+#elif defined(Q_OS_UNIX)
     return "unix";
+#endif
 }
 
 QString DeviceInfo::OSName() const
