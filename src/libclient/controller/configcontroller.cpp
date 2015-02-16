@@ -64,7 +64,7 @@ void ConfigController::Private::updateTimer()
 
     TimingPtr timing = settings->config()->configTiming();
 
-    if (timing.isNull())
+    if (timing.isNull() || !timing->nextRun().isValid())
     {
         timing = TimingPtr(new PeriodicTiming(10*60*1000, QDateTime(), QDateTime(), 30*1000));
     }
