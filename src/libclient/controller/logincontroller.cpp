@@ -188,7 +188,7 @@ void LoginController::registration(const QString &username, const QString &passw
     // save username to settings
     d->settings->setUserId(username);
 
-    d->registerRequest.setUserId(d->settings->userId()); // get it from the settings because it is hashed there
+    d->registerRequest.setUserId(d->settings->hashedUserId()); // get it from the settings because it is hashed there
     d->registerRequest.setPassword(password);
     d->registerRequest.setEmail(username);
 
@@ -199,7 +199,7 @@ void LoginController::registration(const QString &username, const QString &passw
 
 void LoginController::login()
 {
-    d->loginRequest.setUserId(d->settings->userId());
+    d->loginRequest.setUserId(d->settings->hashedUserId());
     d->loginRequest.setPassword(d->settings->password());
 
     d->requester.setRequest(&d->loginRequest);

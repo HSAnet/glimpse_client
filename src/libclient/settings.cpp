@@ -124,17 +124,24 @@ QString Settings::deviceId() const
 
 void Settings::setUserId(const QString &userId)
 {
-    QString hash = userIdToHash(userId);
-    if (this->userId() != hash)
+    if (this->userId() != userId)
     {
-        d->settings.setValue("user-id", hash);
-        emit userIdChanged(hash);
+        d->settings.setValue("user-id", userId);
+        QString hash = userIdToHash(userId);
+        d->settings.setValue("hashed-user-id", hash);
+        emit userIdChanged(userId);
+        emit hashedUserIdChanged(hash);
     }
 }
 
 QString Settings::userId() const
 {
     return d->settings.value("user-id").toString();
+}
+
+QString Settings::hashedUserId() const
+{
+    return d->settings.value("hashed-user-id").toString();
 }
 
 void Settings::setPassword(const QString &password)

@@ -368,12 +368,12 @@ void WebRequester::start()
 
     if (authentication == "basic")
     {
-        url.setUserName(settings->userId());
+        url.setUserName(settings->hashedUserId());
         url.setPassword(settings->password());
     }
     else if (authentication == "apikey")
     {
-        request.setRawHeader("Authorization", QString("ApiKey %1:%2").arg(settings->userId()).arg(
+        request.setRawHeader("Authorization", QString("ApiKey %1:%2").arg(settings->hashedUserId()).arg(
                                  settings->apiKey()).toUtf8());
     }
     else if (authentication == "none")
