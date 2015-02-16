@@ -277,7 +277,7 @@ int main(int argc, char *argv[])
         loginData.type = LoginData::Login;
         passwordOption = &loginOption;
 
-        loginData.userId = userIdToHash(parser.value(*passwordOption));
+        loginData.userId = parser.value(*passwordOption).toUtf8();
     }
 
     if (parser.isSet(registerAnonymous))

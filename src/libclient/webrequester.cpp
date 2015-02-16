@@ -373,8 +373,7 @@ void WebRequester::start()
     }
     else if (authentication == "apikey")
     {
-        request.setRawHeader("Authorization",
-                             QString("ApiKey %1:%2").arg(settings->userId().left(30)).arg(
+        request.setRawHeader("Authorization", QString("ApiKey %1:%2").arg(settings->userId()).arg(
                                  settings->apiKey()).toUtf8());
     }
     else if (authentication == "none")

@@ -106,8 +106,6 @@ void LoginController::Private::onFinished()
     if (requester.request() == &registerRequest)
     {
         isLogin = false;
-        settings->setUserId(registerRequest.userId());
-        LOG_DEBUG("Wrote username to settings");
     }
     else if (requester.request() == &apiKeyLoginRequest)
     {
@@ -187,8 +185,10 @@ void LoginController::anonymousRegistration()
 
 void LoginController::registration(const QString &username, const QString &password)
 {
-    // we use the hashed mailaddress as username
-    d->registerRequest.setUserId(userIdToHash(username)); // django-usernames only support 30 chars at the moment
+    // save username to settings
+    d->settings->setUserId(username);
+
+    d->registerRequest.setUserId(d->settings->userId()); // get it from the settings because it is hashed there
     d->registerRequest.setPassword(password);
     d->registerRequest.setEmail(username);
 
