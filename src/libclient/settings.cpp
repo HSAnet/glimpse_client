@@ -24,7 +24,7 @@ void Settings::Private::sync()
 {
     settings.setValue("config", config.toVariant());
 
-     // remove password before sync so it is not written into storage
+    // remove password before sync so it is not written into storage
     QVariant tmpPassword = settings.value("password");
     settings.remove("password");
     settings.sync();
@@ -69,6 +69,15 @@ Settings::StorageType Settings::init()
     }
 
     LOG_INFO(QString("Device ID: %1").arg(deviceId()));
+
+    // this is an emergency fix, we can remove this later
+    if (!userId().isEmpty())
+    {
+        if (!d->settings.contains("hashed-user-id"))
+        {
+            d->settings.setValue("hashed-user-id", userIdToHash(userId()));
+        }
+    }
 
     // Create new settings
     if (newSettings)
