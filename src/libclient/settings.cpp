@@ -1,6 +1,7 @@
 #include "settings.h"
 #include "deviceinfo.h"
 #include "log/logger.h"
+#include "types.h"
 
 #include <QSettings>
 #include <QCryptographicHash>
@@ -126,13 +127,21 @@ void Settings::setUserId(const QString &userId)
     if (this->userId() != userId)
     {
         d->settings.setValue("user-id", userId);
+        QString hash = userIdToHash(userId);
+        d->settings.setValue("hashed-user-id", hash);
         emit userIdChanged(userId);
+        emit hashedUserIdChanged(hash);
     }
 }
 
 QString Settings::userId() const
 {
     return d->settings.value("user-id").toString();
+}
+
+QString Settings::hashedUserId() const
+{
+    return d->settings.value("hashed-user-id").toString();
 }
 
 void Settings::setPassword(const QString &password)

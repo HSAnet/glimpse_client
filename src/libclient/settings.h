@@ -17,6 +17,7 @@ class CLIENT_API Settings : public QObject
     Q_ENUMS(StorageType)
     Q_PROPERTY(QString deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
     Q_PROPERTY(QString userId READ userId WRITE setUserId NOTIFY userIdChanged)
+    Q_PROPERTY(QString hashedUserId READ hashedUserId NOTIFY hashedUserIdChanged)
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
     Q_PROPERTY(QString apiKey READ apiKey WRITE setApiKey NOTIFY apiKeyChanged)
     Q_PROPERTY(quint32 availableTraffic READ availableTraffic WRITE setAvailableTraffic NOTIFY availableTrafficChanged)
@@ -47,6 +48,7 @@ public:
 
     void setUserId(const QString &userId);
     QString userId() const;
+    QString hashedUserId() const;
 
     void setPassword(const QString &password);
     QString password() const;
@@ -82,6 +84,7 @@ public slots:
 signals:
     void deviceIdChanged(const QString &deviceId);
     void userIdChanged(const QString &userId);
+    void hashedUserIdChanged(const QString &hashedUserId);
     void passwordChanged(const QString &password);
     void apiKeyChanged(const QString &apiKey);
     void passiveChanged(bool passive);
