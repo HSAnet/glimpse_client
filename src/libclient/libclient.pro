@@ -103,7 +103,6 @@ SOURCES +=  \
     timing/onofftiming.cpp \
     timing/immediatetiming.cpp \
     timing/calendartiming.cpp \
-    timing/ntp.cpp \
     scheduler/schedulerstorage.cpp \
     scheduler/schedulermodel.cpp \
     scheduler/scheduler.cpp \
@@ -197,7 +196,6 @@ HEADERS += \
     timing/onofftiming.h \
     timing/immediatetiming.h \
     timing/calendartiming.h \
-    timing/ntp.h \
     scheduler/schedulerstorage.h \
     scheduler/schedulermodel.h \
     scheduler/scheduler.h \

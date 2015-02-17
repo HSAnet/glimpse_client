@@ -2,7 +2,6 @@
 #define TIMING_H
 
 #include "../serializable.h"
-#include "ntp.h"
 #include <QDateTime>
 #include <QSharedPointer>
 
