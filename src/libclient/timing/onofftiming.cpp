@@ -1,6 +1,6 @@
 #include "onofftiming.h"
-
-Q_GLOBAL_STATIC(Ntp, ntp)
+#include "client.h"
+#include "../controller/ntpcontroller.h"
 
 class OnOffTiming::Private
 {
@@ -32,7 +32,7 @@ bool OnOffTiming::reset()
 QDateTime OnOffTiming::nextRun(const QDateTime &tzero) const
 {
     Q_UNUSED(tzero)
-    return d->dateTime.addSecs(ntp->offset());
+    return d->dateTime.addSecs(Client::instance()->ntpController()->offset());
 }
 
 bool OnOffTiming::isValid() const

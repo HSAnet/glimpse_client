@@ -1,6 +1,8 @@
 #ifndef NTP_H
 #define NTP_H
 
+#include "../export.h"
+
 #include <QtEndian>
 #include <QDateTime>
 #include <QObject>
@@ -57,7 +59,7 @@ struct NtpPacket
     NtpTimestamp transmitTimestamp;
 };
 
-class Ntp : public QObject
+class CLIENT_API Ntp : public QObject
 {
     Q_OBJECT;
 

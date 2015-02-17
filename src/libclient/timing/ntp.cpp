@@ -41,8 +41,6 @@ void Ntp::readResponse()
     NtpPacket packet;
     QHostAddress address;
     quint16 port;
-    QDateTime localTime;
-    QDateTime networkTime;
 
     memset(&packet, 0, sizeof(packet));
 
