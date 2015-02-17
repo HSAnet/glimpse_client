@@ -141,6 +141,12 @@ QString Settings::userId() const
 
 QString Settings::hashedUserId() const
 {
+    // this is an emergency fix, we can remove this later
+    if (!d->settings.contains("hashed-user-id"))
+    {
+        d->settings.setValue("hashed-user-id", userIdToHash(userId()));
+    }
+
     return d->settings.value("hashed-user-id").toString();
 }
 
