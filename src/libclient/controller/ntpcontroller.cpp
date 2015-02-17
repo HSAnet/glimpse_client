@@ -7,6 +7,8 @@
 
 LOGGER(NtpController);
 
+static const int interval = 3600000;
+
 class NtpController::Private : public QObject
 {
     Q_OBJECT
@@ -16,7 +18,7 @@ public:
     : q(q)
     {
         connect(&timer, SIGNAL(timeout()), q, SLOT(update()));
-        timer.start(3600000);
+        timer.start(interval);
     }
 
     NtpController *q;
