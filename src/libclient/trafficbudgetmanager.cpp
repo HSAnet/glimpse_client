@@ -6,24 +6,74 @@
 
 #include <QReadLocker>
 #include <QWriteLocker>
+#include <QTimer>
 
 LOGGER(TrafficBudgetManager);
 
 
-class TrafficBudgetManager::Private
+class TrafficBudgetManager::Private : public QObject
 {
+    Q_OBJECT
+
 public:
+    Private(TrafficBudgetManager *q)
+        : q(q)
+    {
+        connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
+        timer.setSingleShot(true);
+    }
+
+    TrafficBudgetManager *q;
     quint32 availableTraffic;
     quint32 usedTraffic;
     quint32 availableMobileTraffic;
     quint32 usedMobileTraffic;
     QReadWriteLock lock;
     bool active;
+    QTimer timer;
+
+    void startResetTimer();
+
+public slots:
+    void timeout();
 };
+
+void TrafficBudgetManager::Private::startResetTimer()
+{
+    QDate today = QDateTime::currentDateTime().date();
+    QDateTime nextRun;
+    nextRun.setTime(QTime(0,1,0));
+
+    // take december into account
+    if (today.month() == 12)
+    {
+        nextRun.setDate(QDate(today.year()+1, 1, 1));
+    }
+    else
+    {
+        nextRun.setDate(QDate(today.year(), today.month() + 1, 1));
+    }
+
+    timer.start(QDateTime::currentDateTime().msecsTo(nextRun));
+}
+
+void TrafficBudgetManager::Private::timeout()
+{
+    if (active)
+    {
+        LOG_INFO("Reset traffic budget for new month");
+        LOG_INFO(QString("Traffic: Used %1 of %2 MB").arg(usedTraffic/(1024*1024)).arg(availableTraffic/(1024*1024)));
+        LOG_INFO(QString("Traffic (mobile): Used %1 of %2 MB").arg(usedMobileTraffic/(1024*1024)).arg(availableMobileTraffic/(1024*1024)));
+    }
+
+    q->reset();
+
+    startResetTimer();
+}
 
 TrafficBudgetManager::TrafficBudgetManager(QObject *parent)
 : QObject(parent)
-, d(new Private)
+, d(new Private(this))
 {
 }
 
@@ -94,6 +144,9 @@ bool TrafficBudgetManager::addUsedTraffic(quint32 traffic)
         }
     }
 
+    // start timer to reset the used traffic on the first of each month
+    d->startResetTimer();
+
     return !d->active;
 }
 
@@ -103,3 +156,11 @@ quint32 TrafficBudgetManager::usedTraffic() const
 
     return Client::instance()->networkManager()->onMobileConnection() ? d->usedMobileTraffic : d->usedTraffic;
 }
+
+void TrafficBudgetManager::reset()
+{
+    d->usedMobileTraffic = 0;
+    d->usedTraffic = 0;
+}
+
+#include "trafficbudgetmanager.moc"
