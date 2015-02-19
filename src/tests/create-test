@@ -1,0 +1,42 @@
+#!/bin/bash
+
+FILE_COUNT=`ls -1 | wc -l`
+if [ $FILE_COUNT -ne "0" ]; then
+	echo "Please execute this command in an empty directory"
+	exit 1
+fi
+
+# Determine the class name
+CLASS=$(basename $PWD)
+
+# Write the .pro file
+cat << EOF > "$CLASS.pro"
+CONFIG += testcase
+CONFIG -= app_bundle
+QT += testlib
+
+TARGET = tst_$CLASS
+SOURCES = tst_$CLASS.cpp
+
+include(\$\$SOURCE_DIRECTORY/src/libclient/libclient.pri)
+EOF
+
+# Write the .cpp file
+cat << EOF > "$CLASS.cpp"
+#include <QtTest>
+
+#include <...>
+
+class TestYourClass : public QObject
+{
+    Q_OBJECT
+
+private slots:
+};
+
+QTEST_MAIN(TestYourClass)
+
+#include "tst_$CLASS.moc"
+EOF
+
+echo "Unittest skeleton for $CLASS created"
