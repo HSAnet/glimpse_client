@@ -7,13 +7,6 @@ class TestCalendarTiming : public QObject
     Q_OBJECT
 
 private slots:
-    void constructors()
-    {
-        CalendarTiming timing;
-
-        QCOMPARE(timing.type(), QLatin1String("calendar"));
-    }
-
     void nextRuns()
     {
         QTime time = QTime::currentTime();
@@ -23,8 +16,8 @@ private slots:
 
         QDateTime start = QDateTime::currentDateTime();
         QDateTime end;
-        QList<int> months = QList<int>()<<1<<2<<3<<4<<5<<6<<7<<8<<9<<10<<11<<12;
-        QList<int> daysOfWeek = QList<int>()<<1<<2<<3<<4<<5<<6<<7;
+        QList<int> months = CalendarTiming::AllMonths;
+        QList<int> daysOfWeek =  CalendarTiming::AllDaysOfWeek;
         QList<int> daysOfMonth;
         QList<int> hours;
         QList<int> minutes;
@@ -48,6 +41,7 @@ private slots:
 
         // start now
         CalendarTiming nowTiming(start, end, months, daysOfWeek, daysOfMonth, hours, minutes, seconds);
+        QCOMPARE(nowTiming.type(), QLatin1String("calendar"));
         qDebug("start time now");
         QCOMPARE(nowTiming.nextRun(), now);
 
