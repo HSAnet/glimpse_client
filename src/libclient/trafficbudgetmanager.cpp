@@ -3,10 +3,11 @@
 #include "trafficbudgetmanager.h"
 #include "network/networkmanager.h"
 #include "log/logger.h"
+#include "timing/calendartiming.h"
+#include "timing/timer.h"
 
 #include <QReadLocker>
 #include <QWriteLocker>
-#include <QTimer>
 
 LOGGER(TrafficBudgetManager);
 
@@ -18,44 +19,26 @@ class TrafficBudgetManager::Private : public QObject
 public:
     Private(TrafficBudgetManager *q)
         : q(q)
+        , resetTiming(new CalendarTiming(QDateTime(), QDateTime(), CalendarTiming::AllMonths, CalendarTiming::AllDaysOfWeek, QList<int>()<<1, QList<int>()<<0, QList<int>()<<1, QList<int>()<<0))
+        , timer(resetTiming)
     {
         connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
-        timer.setSingleShot(true);
     }
 
     TrafficBudgetManager *q;
+    Settings *settings;
     quint32 availableTraffic;
     quint32 usedTraffic;
     quint32 availableMobileTraffic;
     quint32 usedMobileTraffic;
     QReadWriteLock lock;
     bool active;
-    QTimer timer;
-
-    void startResetTimer();
+    QSharedPointer<CalendarTiming> resetTiming;
+    Timer timer;
 
 public slots:
     void timeout();
 };
-
-void TrafficBudgetManager::Private::startResetTimer()
-{
-    QDate today = QDateTime::currentDateTime().date();
-    QDateTime nextRun;
-    nextRun.setTime(QTime(0,1,0));
-
-    // take december into account
-    if (today.month() == 12)
-    {
-        nextRun.setDate(QDate(today.year()+1, 1, 1));
-    }
-    else
-    {
-        nextRun.setDate(QDate(today.year(), today.month() + 1, 1));
-    }
-
-    timer.start(QDateTime::currentDateTime().msecsTo(nextRun));
-}
 
 void TrafficBudgetManager::Private::timeout()
 {
@@ -67,8 +50,6 @@ void TrafficBudgetManager::Private::timeout()
     }
 
     q->reset();
-
-    startResetTimer();
 }
 
 TrafficBudgetManager::TrafficBudgetManager(QObject *parent)
@@ -84,11 +65,12 @@ TrafficBudgetManager::~TrafficBudgetManager()
 
 void TrafficBudgetManager::init()
 {
-    d->availableMobileTraffic = Client::instance()->settings()->availableMobileTraffic();
-    d->availableTraffic = Client::instance()->settings()->availableTraffic();
-    d->usedMobileTraffic = Client::instance()->settings()->usedMobileTraffic();
-    d->usedTraffic = Client::instance()->settings()->usedTraffic();
-    d->active = Client::instance()->settings()->trafficBudgetManagerActive();
+    d->settings = Client::instance()->settings();
+    d->availableMobileTraffic = d->settings->availableMobileTraffic();
+    d->availableTraffic = d->settings->availableTraffic();
+    d->usedMobileTraffic = d->settings->usedMobileTraffic();
+    d->usedTraffic = d->settings->usedTraffic();
+    d->active = d->settings->trafficBudgetManagerActive();
 
     LOG_INFO(QString("Traffic budget manager is %1").arg(d->active ? "enabled" : "disabled"));
 
@@ -97,19 +79,21 @@ void TrafficBudgetManager::init()
         LOG_INFO(QString("Traffic: Used %1 of %2 MB").arg(d->usedTraffic/(1024*1024)).arg(d->availableTraffic/(1024*1024)));
         LOG_INFO(QString("Traffic (mobile): Used %1 of %2 MB").arg(d->usedMobileTraffic/(1024*1024)).arg(d->availableMobileTraffic/(1024*1024)));
     }
+
+    d->timer.start();
 }
 
 void TrafficBudgetManager::saveTraffic()
 {
     if (Client::instance()->networkManager()->onMobileConnection())
     {
-        Client::instance()->settings()->setAvailableMobileTraffic(d->availableMobileTraffic);
-        Client::instance()->settings()->setUsedMobileTraffic(d->usedMobileTraffic);
+        d->settings->setAvailableMobileTraffic(d->availableMobileTraffic);
+        d->settings->setUsedMobileTraffic(d->usedMobileTraffic);
     }
     else
     {
-        Client::instance()->settings()->setAvailableTraffic(d->availableTraffic);
-        Client::instance()->settings()->setUsedTraffic(d->usedTraffic);
+        d->settings->setAvailableTraffic(d->availableTraffic);
+        d->settings->setUsedTraffic(d->usedTraffic);
     }
 }
 
@@ -143,9 +127,6 @@ bool TrafficBudgetManager::addUsedTraffic(quint32 traffic)
             return true;
         }
     }
-
-    // start timer to reset the used traffic on the first of each month
-    d->startResetTimer();
 
     return !d->active;
 }
