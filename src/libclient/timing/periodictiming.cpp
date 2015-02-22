@@ -43,7 +43,7 @@ QString PeriodicTiming::type() const
 
 bool PeriodicTiming::reset()
 {
-    m_lastExecution = QDateTime::currentDateTime();
+    m_lastExecution = Client::instance()->ntpController()->currentDateTime();
 
     return nextRun().isValid();
 }

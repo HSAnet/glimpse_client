@@ -120,7 +120,7 @@ CalendarTiming::~CalendarTiming()
 
 bool CalendarTiming::reset()
 {
-    m_lastExecution = QDateTime::currentDateTime();
+    m_lastExecution = Client::instance()->ntpController()->currentDateTime();
 
     return nextRun().isValid();
 }

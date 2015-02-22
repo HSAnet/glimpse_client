@@ -280,7 +280,7 @@ void Client::Private::taskFinished(const ScheduleDefinition &test, const Result 
 
     if (report.isNull() || results.size() == 1)
     {
-        report = Report(test.taskId(), QDateTime::currentDateTime(), Client::version(), results);
+        report = Report(test.taskId(), Client::instance()->ntpController()->currentDateTime(), Client::version(), results);
         reportScheduler.addReport(report);
     }
     else

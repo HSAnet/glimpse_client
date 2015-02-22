@@ -116,6 +116,11 @@ QDateTime NtpController::networkTime() const
     return m_networkTime;
 }
 
+QDateTime NtpController::currentDateTime() const
+{
+    return QDateTime::currentDateTime().addSecs(this->offset());
+}
+
 quint64 NtpController::offset() const
 {
     if (!m_localTime.isValid() || !m_networkTime.isValid())

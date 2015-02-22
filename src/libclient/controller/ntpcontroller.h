@@ -75,6 +75,7 @@ public:
     bool sync(QHostAddress &host);
     QDateTime localTime() const;
     QDateTime networkTime() const;
+    QDateTime currentDateTime() const;
     quint64 offset() const;
 
 signals:

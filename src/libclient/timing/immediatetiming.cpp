@@ -1,4 +1,6 @@
 #include "immediatetiming.h"
+#include "client.h"
+#include "controller/ntpcontroller.h"
 
 class ImmediateTiming::Private
 {
@@ -23,7 +25,7 @@ bool ImmediateTiming::reset()
 QDateTime ImmediateTiming::nextRun(const QDateTime &tzero) const
 {
     Q_UNUSED(tzero)
-    return QDateTime::currentDateTime();
+    return Client::instance()->ntpController()->currentDateTime();
 }
 
 bool ImmediateTiming::isValid() const

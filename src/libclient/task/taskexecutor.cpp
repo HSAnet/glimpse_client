@@ -2,6 +2,8 @@
 #include "../log/logger.h"
 #include "../measurement/measurementfactory.h"
 #include "../network/networkmanager.h"
+#include "client.h"
+#include "controller/ntpcontroller.h"
 
 #include <QThread>
 #include <QPointer>
@@ -61,7 +63,7 @@ public slots:
                 // in case of no error this is the local information we want
                 // because it is right before the actual measurement
                 measurement->setPreInfo(localInformation.getVariables());
-                measurement->setStartDateTime(QDateTime::currentDateTime());
+                measurement->setStartDateTime(Client::instance()->ntpController()->currentDateTime());
 
                 if (measurement->start())
                 {
@@ -75,7 +77,7 @@ public slots:
 
             Result result;
             result.setStartDateTime(measurement->startDateTime());
-            result.setEndDateTime(QDateTime::currentDateTime());
+            result.setEndDateTime(Client::instance()->ntpController()->currentDateTime());
             result.setPreInfo(measurement->preInfo());
             result.setErrorString(measurement->errorString());
             emit finished(test, result);
@@ -98,7 +100,7 @@ public slots:
 
         Result result = measurement->result();
         result.setStartDateTime(measurement->startDateTime());
-        result.setEndDateTime(QDateTime::currentDateTime());
+        result.setEndDateTime(Client::instance()->ntpController()->currentDateTime());
         result.setPreInfo(measurement->preInfo());
         result.setPostInfo(localInformation.getVariables());
         result.setErrorString(measurement->errorString()); // should be null
@@ -117,7 +119,7 @@ public slots:
 
         Result result;
         result.setStartDateTime(measurement->startDateTime());
-        result.setEndDateTime(QDateTime::currentDateTime());
+        result.setEndDateTime(Client::instance()->ntpController()->currentDateTime());
         result.setPreInfo(measurement->preInfo());
         result.setPostInfo(localInformation.getVariables());
         result.setErrorString(errorMsg);
