@@ -96,7 +96,7 @@ void NtpController::readResponse()
 
     memset(&packet, 0, sizeof(packet));
 
-    if (m_socket->hasPendingDatagrams())
+    while (m_socket->hasPendingDatagrams())
     {
         m_socket->readDatagram((char *)&packet, sizeof(packet), &address,
                                &port);
