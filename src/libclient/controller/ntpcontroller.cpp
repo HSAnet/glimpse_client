@@ -94,16 +94,21 @@ void NtpController::readResponse()
     NtpPacket packet;
     QHostAddress address;
     quint16 port;
+    qint64 bytes;
 
     memset(&packet, 0, sizeof(packet));
 
     while (m_socket->hasPendingDatagrams())
     {
-        m_socket->readDatagram((char *)&packet, sizeof(packet), &address,
+        bytes = m_socket->readDatagram((char *)&packet, sizeof(packet), &address,
                                &port);
 
         m_localTime = QDateTime::currentDateTime();
-        m_networkTime = NtpTimestamp::toDateTime(packet.receiveTimestamp);
+
+        if (bytes == 48 && packet.receiveTimestamp.seconds > 0)
+        {
+            m_networkTime = NtpTimestamp::toDateTime(packet.receiveTimestamp);
+        }
     }
 
     m_socket->close();
