@@ -28,8 +28,6 @@ NtpController::NtpController(QObject *parent)
 : Controller(parent)
 , d(new Private(this))
 {
-    m_socket = new QUdpSocket(this);
-    connect(m_socket, SIGNAL(readyRead()), this, SLOT(readResponse()));
 }
 
 NtpController::~NtpController()
@@ -79,6 +77,9 @@ bool NtpController::sync(QHostAddress &host)
     packet.transmitTimestamp = NtpTimestamp::fromDateTime(
                                    QDateTime::currentDateTimeUtc());
 
+    m_socket = new QUdpSocket(this);
+    connect(m_socket, SIGNAL(readyRead()), this, SLOT(readResponse()));
+
     if (m_socket->writeDatagram((char *)&packet, sizeof(packet), host, 123) < 0)
     {
         emit error("writeDatagram");
@@ -104,6 +105,9 @@ void NtpController::readResponse()
         m_localTime = QDateTime::currentDateTime();
         m_networkTime = NtpTimestamp::toDateTime(packet.receiveTimestamp);
     }
+
+    m_socket->close();
+    delete m_socket;
 }
 
 QDateTime NtpController::localTime() const
