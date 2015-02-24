@@ -3,65 +3,21 @@
 #include <algorithm>
 
 Q_GLOBAL_STATIC(Ntp, ntp)
-
-class TimingRandomness::Private
-{
-public:
-    QString otherDistribution; // Filled with other values
-    TimingRandomness::DistributionType distribution;
-    int upperCut;
-    int lowerCut;
-    int spread;
-};
-
-TimingRandomness::TimingRandomness()
-: d(new Private)
-{
-}
-
-TimingRandomness::~TimingRandomness()
-{
-    delete d;
-}
-
-QString TimingRandomness::otherDistribution() const
-{
-    return d->otherDistribution;
-}
-
-TimingRandomness::DistributionType TimingRandomness::distribution() const
-{
-    return d->distribution;
-}
-
-int TimingRandomness::upperCut() const
-{
-    return d->upperCut;
-}
-
-int TimingRandomness::lowerCut() const
-{
-    return d->lowerCut;
-}
-
-int TimingRandomness::spread() const
-{
-    return d->spread;
-}
-
-QVariant TimingRandomness::toVariant() const
-{
-    QVariantMap map;
-    map.insert("distribution", ""); // TODO: Fill
-    map.insert("upperCut", d->upperCut);
-    map.insert("lowerCut", d->lowerCut);
-    map.insert("spread", d->spread);
-
-    QVariantMap resultMap;
-    resultMap.insert("calendar", map);
-    return resultMap;
-}
-
+const QList<int> CalendarTiming::AllMonths = QList<int>()<<1<<2<<3<<4<<5<<6<<7<<8<<9<<10<<11<<12;
+const QList<int> CalendarTiming::AllDaysOfWeek = QList<int>()<<1<<2<<3<<4<<5<<6<<7;
+const QList<int> CalendarTiming::AllDaysOfMonth = QList<int>()<< 1<< 2<< 3<< 4<< 5<< 6<< 7<< 8<< 9<<10
+                                                              <<11<<12<<13<<14<<15<<16<<17<<18<<19<<20
+                                                              <<21<<22<<23<<24<<25<<26<<27<<28<<29<<30<<31;
+const QList<int> CalendarTiming::AllHours = QList<int>()<< 0<< 1<< 2<< 3<< 4<< 5<< 6<< 7<< 8<< 9<<10
+                                                            <<11<<12<<13<<14<<15<<16<<17<<18<<19<<20
+                                                            <<21<<22<<23;
+const QList<int> CalendarTiming::AllMinutes = QList<int>()<< 0<< 1<< 2<< 3<< 4<< 5<< 6<< 7<< 8<< 9<<10
+                                                              <<11<<12<<13<<14<<15<<16<<17<<18<<19<<20
+                                                              <<21<<22<<23<<24<<25<<26<<27<<28<<29<<30
+                                                              <<31<<32<<33<<34<<35<<36<<37<<38<<39<<40
+                                                              <<41<<42<<43<<44<<45<<46<<47<<48<<49<<50
+                                                              <<51<<52<<53<<54<<55<<56<<57<<58<<59;
+const QList<int> CalendarTiming::AllSeconds = CalendarTiming::AllMinutes;
 
 class CalendarTiming::Private
 {
@@ -74,7 +30,6 @@ public:
     QList<int> hours; // default: 0-23
     QList<int> minutes; // default: 0-59
     QList<int> seconds; // default: 0-59
-    TimingRandomness randomness;
 
     QTime findTime(QTime &referenceTime);
 };
@@ -131,39 +86,6 @@ QTime CalendarTiming::Private::findTime(QTime &referenceTime)
 
     referenceTime.setHMS(0, 0, 0);
     return QTime();
-}
-
-CalendarTiming::CalendarTiming()
-: d(new Private)
-{
-    d->start = QDateTime::currentDateTime();
-    d->end = QDateTime();
-    d->months = QList<int>()<<1<<2<<3<<4<<5<<6<<7<<8<<9<<10<<11<<12;
-    d->daysOfWeek = QList<int>()<<1<<2<<3<<4<<5<<6<<7;
-
-    for (int i = 1; i < 32; i++)
-    {
-        d->daysOfMonth<<i;
-    }
-
-    for (int i = 0; i < 24; i++)
-    {
-        d->hours<<i;
-    }
-
-    for (int i = 0; i < 60; i++)
-    {
-        d->minutes<<i;
-        d->seconds<<i;
-    }
-
-    // make sure the lists are sorted (should already be the case)
-    std::sort(d->months.begin(), d->months.end());
-    std::sort(d->daysOfWeek.begin(), d->daysOfWeek.end());
-    std::sort(d->daysOfMonth.begin(), d->daysOfMonth.end());
-    std::sort(d->hours.begin(), d->hours.end());
-    std::sort(d->minutes.begin(), d->minutes.end());
-    std::sort(d->seconds.begin(), d->seconds.end());
 }
 
 CalendarTiming::CalendarTiming(const QDateTime &start, const QDateTime &end, const QList<int> &months,
@@ -226,7 +148,7 @@ QDateTime CalendarTiming::nextRun(const QDateTime &tzero) const
     QTime nextRunTime;
 
     // Check if the start time is reached
-    if (d->start > now)
+    if (d->start.isValid() && d->start > now)
     {
         date.setDate(d->start.date().year(), d->start.date().month(), d->start.date().day());
         time.setHMS(d->start.time().hour(), d->start.time().minute(), d->start.time().second());
@@ -338,7 +260,6 @@ QVariant CalendarTiming::toVariant() const
     hash.insert("hours", listToVariant(d->hours));
     hash.insert("minutes", listToVariant(d->minutes));
     hash.insert("seconds", listToVariant(d->seconds));
-    //hash.insert("randomness", d->randomness.toVariant());
 
     QVariantMap resultMap;
     resultMap.insert(type(), hash);
@@ -398,12 +319,6 @@ QList<int> CalendarTiming::seconds() const
 {
     return d->seconds;
 }
-
-TimingRandomness CalendarTiming::randomness() const
-{
-    return d->randomness;
-}
-
 QString CalendarTiming::type() const
 {
     return "calendar";

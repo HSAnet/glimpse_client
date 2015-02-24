@@ -22,6 +22,8 @@ public:
     bool addUsedTraffic(quint32 traffic);
     quint32 usedTraffic() const;
 
+    void reset();
+
 protected:
     class Private;
     Private *d;
