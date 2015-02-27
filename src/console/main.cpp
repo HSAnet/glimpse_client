@@ -83,7 +83,7 @@ private slots:
 
         case WebRequester::Finished:
             LOG_INFO("Device successfully registered");
-            Client::instance()->taskController()->fetchTasks();
+            qApp->quit();
             break;
 
         default:
