@@ -13,6 +13,7 @@ class LoginController;
 class ReportController;
 class TaskController;
 class CrashController;
+class NtpController;
 class Scheduler;
 class ReportScheduler;
 class NetworkManager;
@@ -38,6 +39,7 @@ class CLIENT_API Client : public QObject
     Q_PROPERTY(LoginController *loginController READ loginController CONSTANT)
     Q_PROPERTY(TaskController *taskController READ taskController CONSTANT)
     Q_PROPERTY(CrashController *crashController READ crashController CONSTANT)
+    Q_PROPERTY(NtpController *ntpController READ ntpController CONSTANT)
 
     explicit Client(QObject *parent = 0);
     ~Client();
@@ -71,6 +73,7 @@ public:
     ReportController *reportController() const;
     TaskController *taskController() const;
     CrashController *crashController() const;
+    NtpController *ntpController() const;
 
     Settings *settings() const;
     TrafficBudgetManager *trafficBudgetManager() const;

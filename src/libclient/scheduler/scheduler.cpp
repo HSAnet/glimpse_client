@@ -2,6 +2,8 @@
 #include "../task/taskexecutor.h"
 #include "../log/logger.h"
 #include "../timing/ondemandtiming.h"
+#include "client.h"
+#include "controller/ntpcontroller.h"
 
 #include <QDir>
 #include <QTimer>
@@ -145,7 +147,7 @@ void Scheduler::Private::timeout()
     QDateTime t = td.timing()->lastExecution();
 
     // don't schedule if this measurement was executed in the last 1,5s
-    if (t.isValid() && t.msecsTo(QDateTime::currentDateTime()) < 1500)
+    if (t.isValid() && t.msecsTo(Client::instance()->ntpController()->currentDateTime()) < 1500)
     {
         LOG_DEBUG("Scheduler timeout to soon after last execution, skipping.")
         updateTimer();

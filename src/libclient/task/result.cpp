@@ -1,5 +1,7 @@
 #include "result.h"
 #include "../types.h"
+#include "client.h"
+#include "controller/ntpcontroller.h"
 
 class ResultData : public QSharedData
 {
@@ -23,7 +25,7 @@ Result::Result()
 Result::Result(const QString &errorString)
 : d(new ResultData)
 {
-    setStartDateTime(QDateTime::currentDateTime());
+    setStartDateTime(Client::instance()->ntpController()->currentDateTime());
     d->errorString = errorString;
 }
 

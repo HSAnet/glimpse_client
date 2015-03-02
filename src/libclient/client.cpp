@@ -4,6 +4,7 @@
 #include "controller/logincontroller.h"
 #include "controller/configcontroller.h"
 #include "controller/crashcontroller.h"
+#include "controller/ntpcontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
 #include "scheduler/schedulerstorage.h"
@@ -44,8 +45,6 @@
 #include "measurement/traceroute/traceroute_definition.h"
 
 LOGGER(Client);
-
-Q_GLOBAL_STATIC(Ntp, ntp)
 
 class Client::Private : public QObject
 {
@@ -88,6 +87,7 @@ public:
     LoginController loginController;
     ConfigController configController;
     CrashController crashController;
+    NtpController ntpController;
 
     TrafficBudgetManager trafficBudgetManager;
 
@@ -280,7 +280,7 @@ void Client::Private::taskFinished(const ScheduleDefinition &test, const Result 
 
     if (report.isNull() || results.size() == 1)
     {
-        report = Report(test.taskId(), QDateTime::currentDateTime(), Client::version(), results);
+        report = Report(test.taskId(), Client::instance()->ntpController()->currentDateTime(), Client::version(), results);
         reportScheduler.addReport(report);
     }
     else
@@ -328,19 +328,6 @@ bool Client::init()
     qRegisterMetaType<ScheduleDefinition>();
     qRegisterMetaType<Result>();
 
-    // Get network time from ntp server
-    QHostInfo hostInfo = QHostInfo::fromName("ptbtime1.ptb.de");
-
-    if (!hostInfo.addresses().isEmpty())
-    {
-        QHostAddress ntpServer = hostInfo.addresses().first();
-        ntp->sync(ntpServer);
-    }
-    else
-    {
-        LOG_WARNING("could not resolve ntp server");
-    }
-
     d->setupUnixSignalHandlers();
     d->settings.init();
 
@@ -354,6 +341,7 @@ bool Client::init()
     d->reportController.init(&d->reportScheduler, &d->settings);
     d->loginController.init(&d->networkManager, &d->settings);
     d->crashController.init(&d->networkManager, &d->settings);
+    d->ntpController.init();
     d->trafficBudgetManager.init();
 
     if (!d->settings.isPassive())
@@ -609,6 +597,11 @@ TaskController *Client::taskController() const
 CrashController *Client::crashController() const
 {
     return &d->crashController;
+}
+
+NtpController *Client::ntpController() const
+{
+    return &d->ntpController;
 }
 
 Settings *Client::settings() const

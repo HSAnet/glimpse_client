@@ -1,8 +1,9 @@
 #include "calendartiming.h"
 #include "types.h"
 #include <algorithm>
+#include "client.h"
+#include "controller/ntpcontroller.h"
 
-Q_GLOBAL_STATIC(Ntp, ntp)
 const QList<int> CalendarTiming::AllMonths = QList<int>()<<1<<2<<3<<4<<5<<6<<7<<8<<9<<10<<11<<12;
 const QList<int> CalendarTiming::AllDaysOfWeek = QList<int>()<<1<<2<<3<<4<<5<<6<<7;
 const QList<int> CalendarTiming::AllDaysOfMonth = QList<int>()<< 1<< 2<< 3<< 4<< 5<< 6<< 7<< 8<< 9<<10
@@ -119,7 +120,7 @@ CalendarTiming::~CalendarTiming()
 
 bool CalendarTiming::reset()
 {
-    m_lastExecution = QDateTime::currentDateTime();
+    m_lastExecution = Client::instance()->ntpController()->currentDateTime();
 
     return nextRun().isValid();
 }
@@ -135,7 +136,7 @@ QDateTime CalendarTiming::nextRun(const QDateTime &tzero) const
     }
     else
     {
-        now = QDateTime::currentDateTime().addSecs(ntp->offset());
+        now = Client::instance()->ntpController()->currentDateTime();
     }
 
     QDate date = now.date();

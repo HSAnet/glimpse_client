@@ -1,6 +1,6 @@
 #include "periodictiming.h"
-
-Q_GLOBAL_STATIC(Ntp, ntp)
+#include "client.h"
+#include "../controller/ntpcontroller.h"
 
 class PeriodicTiming::Private
 {
@@ -43,7 +43,7 @@ QString PeriodicTiming::type() const
 
 bool PeriodicTiming::reset()
 {
-    m_lastExecution = QDateTime::currentDateTime();
+    m_lastExecution = Client::instance()->ntpController()->currentDateTime();
 
     return nextRun().isValid();
 }
@@ -59,7 +59,7 @@ QDateTime PeriodicTiming::nextRun(const QDateTime &tzero) const
     }
     else
     {
-        now = QDateTime::currentDateTime().addSecs(ntp->offset());
+        now = QDateTime::currentDateTime().addSecs(Client::instance()->ntpController()->offset());
     }
 
     // Check if the start time is reached

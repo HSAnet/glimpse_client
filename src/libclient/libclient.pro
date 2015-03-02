@@ -103,7 +103,6 @@ SOURCES +=  \
     timing/onofftiming.cpp \
     timing/immediatetiming.cpp \
     timing/calendartiming.cpp \
-    timing/ntp.cpp \
     scheduler/schedulerstorage.cpp \
     scheduler/schedulermodel.cpp \
     scheduler/scheduler.cpp \
@@ -173,7 +172,8 @@ SOURCES +=  \
     measurement/wifilookup/wifilookup_definition.cpp \
     measurement/wifilookup/wifilookup_plugin.cpp \
     storage/storage.cpp \
-    timing/timer.cpp
+    timing/timer.cpp \
+    controller/ntpcontroller.cpp
 
 HEADERS += \
     export.h \
@@ -196,7 +196,6 @@ HEADERS += \
     timing/onofftiming.h \
     timing/immediatetiming.h \
     timing/calendartiming.h \
-    timing/ntp.h \
     scheduler/schedulerstorage.h \
     scheduler/schedulermodel.h \
     scheduler/scheduler.h \
@@ -271,7 +270,8 @@ HEADERS += \
     measurement/wifilookup/wifilookup_plugin.h \
     ident.h \
     storage/storage.h \
-    timing/timer.h
+    timing/timer.h \
+    controller/ntpcontroller.h
 
 OTHER_FILES += \
     libclient.pri
