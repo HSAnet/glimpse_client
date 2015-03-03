@@ -59,7 +59,7 @@ QDateTime PeriodicTiming::nextRun(const QDateTime &tzero) const
     }
     else
     {
-        now = QDateTime::currentDateTime().addSecs(Client::instance()->ntpController()->offset());
+        now = Client::instance()->ntpController()->currentDateTime();
     }
 
     // Check if the start time is reached

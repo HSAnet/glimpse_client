@@ -77,7 +77,7 @@ private slots:
         switch (status)
         {
         case WebRequester::Error:
-            LOG_DEBUG(QString("Device registration failed, quitting. (%1)").arg(m_requester.errorString()));
+            LOG_ERROR(QString("Device registration failed, quitting. (%1)").arg(m_requester.errorString()));
             qApp->quit();
             break;
 
@@ -214,8 +214,6 @@ int main(int argc, char *argv[])
 
     QCommandLineParser parser;
     parser.setApplicationDescription("GLIMPSE console client\r\n\r\n"
-                                     "Note that the probe itself does not start if the options --register(-anonymous) "
-                                     "and/or --login are present.\r\n\r\n"
                                      "Website: http://www.measure-it.net\r\nCopyright: Revised BSD License");
     parser.addHelpOption();
     parser.addVersionOption();
