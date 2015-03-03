@@ -63,7 +63,7 @@ private slots:
         // Already registered?
         if (m_controller->registeredDevice())
         {
-            return;
+            qApp->quit();
         }
 
         LOG_INFO("Automatically registering device");
@@ -83,7 +83,7 @@ private slots:
 
         case WebRequester::Finished:
             LOG_INFO("Device successfully registered");
-            Client::instance()->taskController()->fetchTasks();
+            qApp->quit();
             break;
 
         default:
@@ -213,7 +213,10 @@ int main(int argc, char *argv[])
     QTextStream out(stdout);
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("GLIMPSE console client\r\nWebsite: http://www.measure-it.net\r\nCopyright: Revised BSD License");
+    parser.setApplicationDescription("GLIMPSE console client\r\n\r\n"
+                                     "Note that the probe itself does not start if the options --register(-anonymous) "
+                                     "and/or --login are present.\r\n\r\n"
+                                     "Website: http://www.measure-it.net\r\nCopyright: Revised BSD License");
     parser.addHelpOption();
     parser.addVersionOption();
 
@@ -232,13 +235,13 @@ int main(int argc, char *argv[])
 
 #endif // Q_OS_UNIX
 
-    QCommandLineOption registerAnonymous("register-anonymous", "Register anonymous on server");
+    QCommandLineOption registerAnonymous("register-anonymous", "Register anonymous on server and exit application");
     parser.addOption(registerAnonymous);
 
-    QCommandLineOption registerOption("register", "Register on server", "mail");
+    QCommandLineOption registerOption("register", "Register on server and exit application", "mail");
     parser.addOption(registerOption);
 
-    QCommandLineOption loginOption("login", "Login on server", "mail");
+    QCommandLineOption loginOption("login", "Login on server and exit application", "mail");
     parser.addOption(loginOption);
 
     QCommandLineOption passiveOption("passive", "Passive probe which does not receive tasks", "0/1");
