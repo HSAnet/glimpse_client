@@ -63,7 +63,7 @@ private slots:
         // Already registered?
         if (m_controller->registeredDevice())
         {
-            return;
+            qApp->quit();
         }
 
         LOG_INFO("Automatically registering device");
