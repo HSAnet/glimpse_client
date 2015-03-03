@@ -12,8 +12,14 @@ set -e
 case "$1" in
     configure)
     adduser --system --group --quiet $USER_NAME || true
-	service $SERVICE_NAME start || true
-	systemctl start $SERVICE_NAME || true
+
+    if which service &>/dev/null; then
+        service $SERVICE_NAME start || true
+    fi
+
+    if which systemctl &>/dev/null; then
+        systemctl start $SERVICE_NAME || true
+    fi
     ;;
 esac
 
