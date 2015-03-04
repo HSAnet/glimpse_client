@@ -47,8 +47,9 @@ class DeviceRegistrationWatcher : public QObject
     Q_OBJECT
 
 public:
-    DeviceRegistrationWatcher(LoginController *controller)
+    DeviceRegistrationWatcher(LoginController *controller, bool quit)
     : m_controller(controller)
+    , m_quit(quit)
     {
         connect(controller, SIGNAL(finished()), this, SLOT(onLoginOrRegistrationFinished()));
         connect(&m_requester, SIGNAL(statusChanged(WebRequester::Status)), this, SLOT(onStatusChanged(WebRequester::Status)));
@@ -63,7 +64,11 @@ private slots:
         // Already registered?
         if (m_controller->registeredDevice())
         {
-            qApp->quit();
+            if (m_quit)
+            {
+                qApp->quit();
+            }
+            return;
         }
 
         LOG_INFO("Automatically registering device");
@@ -83,7 +88,10 @@ private slots:
 
         case WebRequester::Finished:
             LOG_INFO("Device successfully registered");
-            qApp->quit();
+            if (m_quit)
+            {
+                qApp->quit();
+            }
             break;
 
         default:
@@ -97,6 +105,7 @@ protected:
     WebRequester m_requester;
     RegisterDeviceRequest m_request;
     RegisterDeviceResponse m_response;
+    bool m_quit; // quit after registration
 };
 
 class LoginWatcher : public QObject
@@ -264,11 +273,13 @@ int main(int argc, char *argv[])
 
     QCommandLineOption *passwordOption = NULL;
     LoginData loginData;
+    bool quit = false; // set true if app should exit after login/registration
 
     if (parser.isSet(registerOption))
     {
         loginData.type = LoginData::Register;
         passwordOption = &registerOption;
+        quit = true;
 
         loginData.userId = parser.value(*passwordOption).toUtf8();
     }
@@ -277,6 +288,7 @@ int main(int argc, char *argv[])
     {
         loginData.type = LoginData::Login;
         passwordOption = &loginOption;
+        quit = true;
 
         loginData.userId = parser.value(*passwordOption).toUtf8();
     }
@@ -284,6 +296,7 @@ int main(int argc, char *argv[])
     if (parser.isSet(registerAnonymous))
     {
         loginData.type = LoginData::AnonymousRegister;
+        quit = true;
     }
 
     if (passwordOption)
@@ -398,7 +411,7 @@ int main(int argc, char *argv[])
     }
 
     new LoginWatcher(client->loginController());
-    new DeviceRegistrationWatcher(client->loginController());
+    new DeviceRegistrationWatcher(client->loginController(), quit);
     new ConfigWatcher(client, loginData);
 
     int value = app.exec();

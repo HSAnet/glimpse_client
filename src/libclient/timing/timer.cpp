@@ -1,6 +1,7 @@
 #include "timer.h"
 #include "../log/logger.h"
 
+#include <limits>
 #include <QTimer>
 
 LOGGER(Timer)
@@ -24,11 +25,13 @@ public:
     // Properties
     QTimer qtimer;
     TimingPtr timing;
+    qint64 timeLeft;
 
     bool active;
 
     // Functions
     void setActive(const bool active);
+    void start(qint64 ms);
 
 public slots:
     void onTimeout();
@@ -43,8 +46,32 @@ void Timer::Private::setActive(const bool active)
     }
 }
 
+void Timer::Private::start(qint64 ms)
+{
+    // If the time is bigger than maxInt start a timer with int
+    int maxInt = std::numeric_limits<int>::max();
+
+    if (ms > maxInt)
+    {
+        timeLeft = ms - maxInt;
+        qtimer.start(maxInt);
+    }
+    else
+    {
+        timeLeft = 0;
+        qtimer.start(ms);
+    }
+}
+
 void Timer::Private::onTimeout()
 {
+    // If the timeout time is not reached yet (happens if the original time was bigger than maxInt
+    if (timeLeft > 0)
+    {
+        start(timeLeft);
+        return;
+    }
+
     // Send the timeout signal
     emit q->timeout();
 
@@ -112,7 +139,7 @@ void Timer::start()
 {
     if (d->timing)
     {
-        int ms = d->timing->timeLeft();
+        qint64 ms = d->timing->timeLeft();
 
         // In case timeleft is invalid, do not start the timer!
         if (ms == 0)
@@ -122,7 +149,8 @@ void Timer::start()
         }
 
         d->setActive(true);
-        d->qtimer.start(ms);
+
+        d->start(ms);
     }
     else
     {
