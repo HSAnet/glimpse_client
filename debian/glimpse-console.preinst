@@ -10,8 +10,13 @@ set -e
 
 case "$1" in
     upgrade)
-	service $SERVICE_NAME stop || true
-	systemctl stop $SERVICE_NAME || true
+        if command -v service >/dev/null 2>&1; then
+            service $SERVICE_NAME stop || true
+        fi
+
+        if command -v systemctl >/dev/null 2>&1; then
+            systemctl stop $SERVICE_NAME || true
+        fi
     ;;
 esac
 
