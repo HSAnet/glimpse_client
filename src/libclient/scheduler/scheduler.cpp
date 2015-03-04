@@ -61,7 +61,7 @@ void Scheduler::Private::updateTimer()
     else
     {
         const ScheduleDefinition td = tests.at(0);
-        int ms = td.timing()->timeLeft();
+        qint64 ms = td.timing()->timeLeft();
 
         if (ms > 0)
         {
@@ -86,7 +86,7 @@ int Scheduler::Private::enqueue(const ScheduleDefinition &testDefinition)
         return -1;
     }
 
-    int timeLeft = testDefinition.timing()->timeLeft();
+    qint64 timeLeft = testDefinition.timing()->timeLeft();
 
     for (int i = 0; i < tests.size(); i++)
     {

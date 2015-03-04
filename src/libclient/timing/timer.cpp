@@ -112,7 +112,7 @@ void Timer::start()
 {
     if (d->timing)
     {
-        int ms = d->timing->timeLeft();
+        qint64 ms = d->timing->timeLeft();
 
         // In case timeleft is invalid, do not start the timer!
         if (ms == 0)

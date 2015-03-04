@@ -2,8 +2,10 @@
 #define TIMING_H
 
 #include "../serializable.h"
+
 #include <QDateTime>
 #include <QSharedPointer>
+
 
 class Timing;
 typedef QSharedPointer<Timing> TimingPtr;
@@ -11,7 +13,7 @@ typedef QSharedPointer<Timing> TimingPtr;
 class CLIENT_API Timing : public Serializable
 {
 public:
-    int timeLeft(const QDateTime &when = QDateTime::currentDateTime()) const;
+    qint64 timeLeft(const QDateTime &when = QDateTime::currentDateTime()) const;
     QDateTime lastExecution();
 
     virtual ~Timing() {}
