@@ -4,10 +4,11 @@
 #include "../network/networkmanager.h"
 #include "client.h"
 #include "controller/ntpcontroller.h"
+#include "localinformation.h"
 
 #include <QThread>
 #include <QPointer>
-#include <localinformation.h>
+#include <QElapsedTimer>
 
 LOGGER(TaskExecutor);
 
@@ -21,6 +22,7 @@ public:
 
     ScheduleDefinition currentTest;
     MeasurementPtr measurement;
+    QElapsedTimer timer;
 
 private:
     LocalInformation localInformation;
@@ -64,6 +66,7 @@ public slots:
                 // because it is right before the actual measurement
                 measurement->setPreInfo(localInformation.getVariables());
                 measurement->setStartDateTime(Client::instance()->ntpController()->currentDateTime());
+                timer.start();
 
                 if (measurement->start())
                 {
@@ -77,7 +80,7 @@ public slots:
 
             Result result;
             result.setStartDateTime(measurement->startDateTime());
-            result.setEndDateTime(Client::instance()->ntpController()->currentDateTime());
+            result.setEndDateTime(measurement->startDateTime().addMSecs(timer.elapsed()));
             result.setPreInfo(measurement->preInfo());
             result.setErrorString(measurement->errorString());
             emit finished(test, result);
@@ -100,7 +103,7 @@ public slots:
 
         Result result = measurement->result();
         result.setStartDateTime(measurement->startDateTime());
-        result.setEndDateTime(Client::instance()->ntpController()->currentDateTime());
+        result.setEndDateTime(measurement->startDateTime().addMSecs(timer.elapsed()));
         result.setPreInfo(measurement->preInfo());
         result.setPostInfo(localInformation.getVariables());
         result.setErrorString(measurement->errorString()); // should be null
@@ -119,7 +122,7 @@ public slots:
 
         Result result;
         result.setStartDateTime(measurement->startDateTime());
-        result.setEndDateTime(Client::instance()->ntpController()->currentDateTime());
+        result.setEndDateTime(measurement->startDateTime().addMSecs(timer.elapsed()));
         result.setPreInfo(measurement->preInfo());
         result.setPostInfo(localInformation.getVariables());
         result.setErrorString(errorMsg);
