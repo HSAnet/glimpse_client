@@ -70,6 +70,7 @@ void DownloadThread::startTCPConnection()
     {
         //invoke the connection tracking code
         tStatus = FinishedError;
+        emit TCPConnected(false);
         return;
     }
 
@@ -130,7 +131,7 @@ void DownloadThread::startDownload()
                               "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:31.0) Gecko/20100101 Firefox/31.0\r\n"
                               "Referer: http://www.measure-it.net\r\n\r\n").arg(path).arg(url.host());
 
-    int bytesWritten = 0;
+    qint64 bytesWritten = 0;
 
     //log actual time of start
     startTime = QDateTime::currentDateTime();
@@ -138,16 +139,18 @@ void DownloadThread::startDownload()
     //send the HTTP GET
     while(bytesWritten < request.length())
     {
-        bytesWritten += socket->write(request.mid(bytesWritten).toLatin1());
+        qint64 writeResult = socket->write(request.mid(bytesWritten).toLatin1());
 
         //on error
-        if(bytesWritten < 0)
+        if(writeResult < 0)
         {
             socket->close();
             tStatus = FinishedError;
             emit firstByteReceived(false);
             return;
         }
+
+        bytesWritten += writeResult;
     }
 
     //start eplapsed timer for calculating the time slots
