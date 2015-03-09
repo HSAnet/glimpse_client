@@ -72,7 +72,7 @@ namespace
         quint8 *icmpCode;
         quint8 *ipProto;
         quint16 *tcpFlags;
-        PingProbe probe = {0};
+        PingProbe probe;
         QByteArray payload;
 
         if (data == NULL || header == NULL)
@@ -233,7 +233,7 @@ namespace
         quint8 *icmpCode;
         quint8 *ipProto;
         quint16 *tcpFlags;
-        PingProbe probe = {0};
+        PingProbe probe;
         QByteArray payload;
 
         if (data == NULL || header == NULL)
@@ -383,7 +383,7 @@ namespace
         quint16 *ipVersion;
         pcap_pkthdr *header;
         QVector<PingProbe> probes;
-        PingProbe probe = {0};
+        PingProbe probe;
 
         while ((quint32) probes.size() < maxPackets)
         {
@@ -1048,7 +1048,7 @@ void Ping::ping(PingProbe *probe)
 
 void Ping::processUdpPackets(QVector<PingProbe> *probes)
 {
-    PingProbe newProbe = {0};
+    PingProbe newProbe;
 
     /*
      * Should there be ICMP responses, they need to be processed first as they can
@@ -1142,7 +1142,7 @@ void Ping::processUdpPackets(QVector<PingProbe> *probes)
 
 void Ping::processTcpPackets(QVector<PingProbe> *probes)
 {
-    PingProbe newProbe = {0};
+    PingProbe newProbe;
 
     // match TCP requests and responses first
     for (QVector<PingProbe>::iterator p = probes->begin(); p != probes->end(); p++)

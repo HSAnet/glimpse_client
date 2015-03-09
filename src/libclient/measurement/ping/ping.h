@@ -91,6 +91,23 @@ struct PingProbe
 #if defined(Q_OS_MAC)
     int icmpSock;
 #endif
+
+    PingProbe()
+    : sock(0)
+    , sendTime(0)
+    , recvTime(0)
+    , source()
+#if defined(Q_OS_WIN)
+    , type()
+    , response()
+    , icmpType(0)
+    , icmpCode(0)
+    , marked(false)
+#endif
+#if defined(Q_OS_MAC)
+    , icmpSock(0)
+#endif
+    {}
 };
 
 class Ping : public Measurement
