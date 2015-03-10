@@ -8,6 +8,7 @@
 #endif
 #include <numeric>
 #include <QtMath>
+#include <QtGlobal>
 
 LOGGER("Traceroute");
 
@@ -48,6 +49,19 @@ bool Traceroute::prepare(NetworkManager *networkManager,
     {
         setErrorString("Ping type not supported");
         return false;
+    }
+
+    // initialize ports randomly if not given
+    qsrand(QDateTime::currentMSecsSinceEpoch());
+
+    if (definition->destinationPort == 0)
+    {
+        definition->destinationPort = (qrand() % 64511) + 1024; // range 1024 - 65535
+    }
+
+    if (definition->sourcePort == 0)
+    {
+        definition->sourcePort = (qrand() % 64511) + 1024; // range 1024 - 65535
     }
 
     connect(&m_ping, SIGNAL(destinationUnreachable(const PingProbe &)),
