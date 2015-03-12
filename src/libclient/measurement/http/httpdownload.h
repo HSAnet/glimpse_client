@@ -153,6 +153,8 @@ private:
     static const int minTargetTime = 2000; //so download should be shorter than this, really
     static const int minSlotLength = 250;
 
+    QTimer measurementTimer;
+
 private slots:
     bool startThreads(const QHostInfo &server);
     void downloadFinished();
