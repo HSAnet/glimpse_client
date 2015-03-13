@@ -96,6 +96,7 @@ int Scheduler::Private::enqueue(const ScheduleDefinition &testDefinition)
         {
             tests.insert(i, testDefinition);
             testIds.insert(testDefinition.id());
+            allTestIds.insert(testDefinition.id());
 
             // update the timer if this is the new first element
             if (i == 0)
@@ -157,6 +158,7 @@ void Scheduler::Private::timeout()
     // remove it from the list
     tests.removeAt(0);
     testIds.remove(td.id());
+    allTestIds.remove(td.id());
 
     q->execute(td);
 
@@ -206,11 +208,6 @@ void Scheduler::enqueue(const ScheduleDefinition &testDefinition)
     if (testDefinition.timing()->type() != "ondemand")
     {
         int pos = d->enqueue(testDefinition);
-
-        if (pos >= 0)
-        {
-            d->allTestIds.insert(testDefinition.id());
-        }
 
         emit testAdded(testDefinition, pos);
     }
