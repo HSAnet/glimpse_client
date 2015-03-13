@@ -292,9 +292,13 @@ HTTPDownload::HTTPDownload(QObject *parent)
 , downloadingThreads(0)
 , notDownloadingThreads(0)
 , finishedThreads(0)
+, measurementTimer(this)
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
+
+    measurementTimer.setSingleShot(true);
+    connect(&measurementTimer, SIGNAL(timeout()), this, SLOT(downloadFinished()));
 }
 
 HTTPDownload::~HTTPDownload()
@@ -369,6 +373,11 @@ bool HTTPDownload::start()
 
     //when the lookup finishes, we want to call the startThreads() function
     //that starts the actual measurement/threads 
+
+    // TODO: There are some circumstances in which this measurement runs forever
+    //       The following timer is a quick fix for this to stop the measurement
+    measurementTimer.start(maxRampUpTime + maxTargetTime + 3000);
+
 
     QHostInfo::lookupHost(requestUrl.host(), this, SLOT(startThreads(QHostInfo)));
 
