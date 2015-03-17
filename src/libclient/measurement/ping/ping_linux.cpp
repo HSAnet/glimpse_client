@@ -214,6 +214,7 @@ bool Ping::start()
     {
         ping(&probe);
         m_pingProbes.append(probe);
+        usleep(definition->interval * 1000);
     }
 
     close(probe.sock);
