@@ -6,9 +6,9 @@
 #include <poll.h>
 #include <fcntl.h>
 #include <numeric>
-#include <unistd.h>
 
 #include <QtMath>
+#include <QThread>
 
 #include "ping.h"
 #include "../../log/logger.h"
@@ -283,7 +283,7 @@ bool Ping::start()
     {
         ping(&probe);
         m_pingProbes.append(probe);
-        usleep(definition->interval * 1000);
+        QThread::msleep(definition->interval);
     }
 
     close(probe.sock);
