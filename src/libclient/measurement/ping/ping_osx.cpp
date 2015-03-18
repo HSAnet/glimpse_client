@@ -8,6 +8,7 @@
 #include <numeric>
 
 #include <QtMath>
+#include <QThread>
 
 #include "ping.h"
 #include "../../log/logger.h"
@@ -282,6 +283,7 @@ bool Ping::start()
     {
         ping(&probe);
         m_pingProbes.append(probe);
+        QThread::msleep(definition->interval);
     }
 
     close(probe.sock);
