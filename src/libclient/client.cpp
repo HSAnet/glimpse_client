@@ -351,7 +351,7 @@ bool Client::init()
     // Initialize controllers
     d->networkManager.init(&d->scheduler, &d->settings);
     d->configController.init(&d->networkManager, &d->settings);
-    d->reportController.init(&d->reportScheduler, &d->settings);
+    d->reportController.init(&d->reportScheduler, &d->settings); //TODO uncomment
     d->loginController.init(&d->networkManager, &d->settings);
     d->crashController.init(&d->networkManager, &d->settings);
     d->trafficBudgetManager.init();
@@ -393,7 +393,8 @@ bool Client::init()
     tests.append(ScheduleDefinition(ScheduleId(10), TaskId(10), "traceroute", timing, TracerouteDefinition("measure-it.net", 3, 1000, 1000, 33434,
                                                                                33434, 74, ping::Udp).toVariant(),
                                 precondition));
-    tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", timing, QVariant(), precondition));
+    tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", TimingPtr(new ImmediateTiming()), QVariant(), precondition));
+    tests.append(ScheduleDefinition(ScheduleId(13), TaskId(13), "upnp", timing, QVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(12), TaskId(12), "wifilookup", timing, QVariant(), precondition));
 
     foreach (const ScheduleDefinition &test, tests)
