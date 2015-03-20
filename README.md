@@ -1,8 +1,5 @@
-glimpse_client - Simons branch
+glimpse_client
 ==============
-#### TODO 
-* Commented out original upnp.h and upnp.c in the src's .pro file -- undo
-
 ### Build Status
 * Linux: [![Linux](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebug)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientMasterDebug)
 * Mac: [![Mac](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientDebugMac)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientDebugMac)
