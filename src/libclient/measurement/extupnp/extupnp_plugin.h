@@ -1,9 +1,9 @@
-#ifndef UPNP_PLUGIN_H
-#define UPNP_PLUGIN_H
+#ifndef EXTUPNP_PLUGIN_H
+#define EXTUPNP_PLUGIN_H
 
 #include "../measurementplugin.h"
 
-class UPnPPlugin : public MeasurementPlugin
+class ExtUPnPPlugin : public MeasurementPlugin
 {
 public:
     // MeasurementPlugin interface
@@ -13,4 +13,4 @@ public:
     MeasurementDefinitionPtr createMeasurementDefinition(const QString &name, const QVariant &data);
 };
 
-#endif // UPNP_PLUGIN_H
+#endif // EXTUPNP_PLUGIN_H

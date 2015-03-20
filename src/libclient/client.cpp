@@ -393,7 +393,8 @@ bool Client::init()
     tests.append(ScheduleDefinition(ScheduleId(10), TaskId(10), "traceroute", timing, TracerouteDefinition("measure-it.net", 3, 1000, 1000, 33434,
                                                                                33434, 74, ping::Udp).toVariant(),
                                 precondition));
-    tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", TimingPtr(new ImmediateTiming()), QVariant(), precondition));
+//    tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", TimingPtr(new ImmediateTiming()), QVariant(), precondition));
+    tests.append(ScheduleDefinition(ScheduleId(25), TaskId(25), "extupnp", TimingPtr(new ImmediateTiming()), QVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(13), TaskId(13), "upnp", timing, QVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(12), TaskId(12), "wifilookup", timing, QVariant(), precondition));
 
@@ -449,7 +450,12 @@ void Client::http(const QString &url, bool avoidCaches, int threads, int targetT
 
 void Client::upnp()
 {
-    d->scheduler.executeOnDemandTest(ScheduleId(11));
+    d->scheduler.executeOnDemandTest(ScheduleId(13));
+}
+
+void Client::extupnp()
+{
+    d->scheduler.executeOnDemandTest(ScheduleId(25));
 }
 
 void Client::dnslookup()

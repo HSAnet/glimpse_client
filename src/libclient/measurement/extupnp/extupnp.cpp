@@ -1,10 +1,10 @@
-#include "upnp_ext.h"
+#include "extupnp.h"
 
 #include "../../log/logger.h"
 #include <QMetaEnum>
 #include "../../types.h"
 
-LOGGER(UPnP);
+LOGGER(ExtUPnP);
 
 #include <miniupnpc/miniupnpc.h>
 #include <miniupnpc/upnpcommands.h>
@@ -15,28 +15,28 @@ LOGGER(UPnP);
 #define TRUE 1
 #endif
 
-UPnP::UPnP(QObject *parent)
+ExtUPnP::ExtUPnP(QObject *parent)
 : Measurement(parent)
 {
 }
 
-UPnP::~UPnP()
+ExtUPnP::~ExtUPnP()
 {
 }
 
-Measurement::Status UPnP::status() const
+Measurement::Status ExtUPnP::status() const
 {
     return Unknown;
 }
 
-bool UPnP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
+bool ExtUPnP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
     Q_UNUSED(measurementDefinition);
     return true;
 }
 
-QStringList GetValuesFromNameValueList(struct NameValueParserData *pdata,
+QStringList GetValsFromNameValueList(struct NameValueParserData *pdata,
                                        const char *Name)
 {
     QStringList ret;
@@ -55,7 +55,7 @@ QStringList GetValuesFromNameValueList(struct NameValueParserData *pdata,
     return ret;
 }
 
-bool UPnP::start()
+bool ExtUPnP::start()
 {
     int error = 0;
 
@@ -63,24 +63,23 @@ bool UPnP::start()
     static const char * const deviceList[] = {
         "urn:schemas-upnp-org:device:MediaServer:1",
         "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
-
         0
     };
-
+    // TODO test other devices from upnp.org
     /* more or less unimportant: */
 //        "urn:schemas-upnp-org:service:ConnectionManager:1",
 //        "urn:schemas-upnp-org:service:ContentDirectory:1",
-//        "upnp:rootdevice",
 //        "urn:schemas-upnp-org:device:InternetGatewayDevice:2",
 //        "urn:schemas-upnp-org:service:WANIPConnection:2",
 //        "urn:schemas-upnp-org:service:WANIPConnection:1",
 //        "urn:schemas-upnp-org:service:WANPPPConnection:1",
+//        "upnp:rootdevice",
 //        "ssdp:all",
 
     UPNPDev *devices = upnpDiscoverDevices(deviceList,
                                            5000, NULL, NULL, FALSE,
                                            FALSE, &error);
-    QList<UPnPHash> list = goThroughDeviceList(devices);
+    QList<ExtUPnPHash> list = goThroughDeviceList(devices);
 
     /* Following functions can be called, see miniupnpc.h */
 //    UPNPDev *allDevList = upnpDiscoverAll(5000, NULL, NULL, FALSE, FALSE, &error);
@@ -91,28 +90,26 @@ bool UPnP::start()
     return true; // TODO return false if something went wrong or if there are no results
 }
 
-bool UPnP::stop()
+bool ExtUPnP::stop()
 {
     return true;
 }
 
-QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
+QList<ExtUPnP::ExtUPnPHash> ExtUPnP::goThroughDeviceList(UPNPDev *list)
 {
     UPNPDev *listBegin = list;
-    QList<UPnPHash> myResults;
+    QList<ExtUPnPHash> myResults;
 
     while (list)
     {
         UPNPUrls urls;
         IGDdatas data;
         char lanaddr[64];
-        UPnPHash resultHashOfAll;
-        QStringList controlURLs;
-        QStringList eventSubURLs;
-        int code1 = UPNP_GetValidIGD(list, &urls, &data, lanaddr, sizeof(lanaddr));
-        if(code1 > 0)
+        ExtUPnPHash resultHash;
+        int code = UPNP_GetValidIGD(list, &urls, &data, lanaddr, sizeof(lanaddr));
+        if(code > 0)
         {
-            resultHashOfAll.insert(LanIpAddress, QLatin1String(lanaddr));
+            resultHash.insert(LanIpAddress, QLatin1String(lanaddr));
 
             char externalIP[40];
 
@@ -120,7 +117,7 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
                                                                  data.first.servicetype,
                                                                  externalIP))
             {
-                resultHashOfAll.insert(ExternalIpAddress, QLatin1String(externalIP));
+                resultHash.insert(ExternalIpAddress, QLatin1String(externalIP));
             }
 
             char connectionType[64];
@@ -129,7 +126,7 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
                                                                   data.first.servicetype,
                                                                   connectionType))
             {
-                resultHashOfAll.insert(ConnectionType, QLatin1String(connectionType));
+                resultHash.insert(ConnectionType, QLatin1String(connectionType));
             }
 
             quint32 uplink, downlink;
@@ -138,8 +135,8 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
                                                                     data.CIF.servicetype,
                                                                     &downlink, &uplink))
             {
-                resultHashOfAll.insert(LinkLayerMaxDownload, downlink);
-                resultHashOfAll.insert(LinkLayerMaxUpload, uplink);
+                resultHash.insert(LinkLayerMaxDownload, downlink);
+                resultHash.insert(LinkLayerMaxUpload, uplink);
             }
 
             quint32 bytesSent, bytesReceived, packetsSent, packetsReceived;
@@ -149,7 +146,7 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
 
             if ((unsigned int)UPNPCOMMAND_HTTP_ERROR != bytesSent)
             {
-                resultHashOfAll.insert(TotalBytesSent, bytesSent);
+                resultHash.insert(TotalBytesSent, bytesSent);
             }
 
             bytesReceived = UPNP_GetTotalBytesReceived(urls.controlURL_CIF,
@@ -157,7 +154,7 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
 
             if ((unsigned int)UPNPCOMMAND_HTTP_ERROR != bytesReceived)
             {
-                resultHashOfAll.insert(TotalBytesReceived, bytesReceived);
+                resultHash.insert(TotalBytesReceived, bytesReceived);
             }
 
             packetsSent = UPNP_GetTotalPacketsSent(urls.controlURL_CIF,
@@ -165,7 +162,7 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
 
             if ((unsigned int)UPNPCOMMAND_HTTP_ERROR != packetsSent)
             {
-                resultHashOfAll.insert(TotalPacketsSent, packetsSent);
+                resultHash.insert(TotalPacketsSent, packetsSent);
             }
 
 
@@ -174,7 +171,7 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
 
             if ((unsigned int)UPNPCOMMAND_HTTP_ERROR != packetsReceived)
             {
-                resultHashOfAll.insert(TotalPacketsReceived, packetsReceived);
+                resultHash.insert(TotalPacketsReceived, packetsReceived);
             }
 
 
@@ -188,9 +185,9 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
                                                           &uptime,
                                                           lastConnectionError))
             {
-                resultHashOfAll.insert(Status, status);
-                resultHashOfAll.insert(Uptime, uptime);
-                resultHashOfAll.insert(LastConnectionError, lastConnectionError);
+                resultHash.insert(Status, status);
+                resultHash.insert(Uptime, uptime);
+                resultHash.insert(LastConnectionError, lastConnectionError);
             }
 
             quint32 num;
@@ -199,7 +196,7 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
                                                                           data.first.servicetype,
                                                                           &num))
             {
-                resultHashOfAll.insert(NumberOfPortMappings, num);
+                resultHash.insert(NumberOfPortMappings, num);
             }
 
             // TODO GetListOfPortMappings do we need this?
@@ -211,8 +208,8 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
                                                               &firewallEnabled,
                                                               &inboundPinholeAllowed))
             {
-                resultHashOfAll.insert(FirewallEnabled, firewallEnabled);
-                resultHashOfAll.insert(InboundPinholeAllowed, inboundPinholeAllowed);
+                resultHash.insert(FirewallEnabled, firewallEnabled);
+                resultHash.insert(InboundPinholeAllowed, inboundPinholeAllowed);
             }
 
             int bufferSize = 0;
@@ -222,53 +219,59 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
                 ParseNameValue(buffer, bufferSize, &pdata);
                 free(buffer);
                 buffer = NULL;
-                QStringList modelName = GetValuesFromNameValueList(&pdata, "modelName");
-
-                /* These URLs will be needed for accessing and controlling Mediaservers with SOAP */
-                controlURLs = GetValuesFromNameValueList(&pdata, "controlURL");
-                eventSubURLs = GetValuesFromNameValueList(&pdata, "eventSubURL");
+                QStringList modelName = GetValsFromNameValueList(&pdata, "modelName");
 
                 if (!modelName.isEmpty())
                 {
-                    resultHashOfAll.insert(ModelName, modelName.last());
+                    resultHash.insert(ModelName, modelName.last());
                 }
 
-                QStringList manufacturer = GetValuesFromNameValueList(&pdata, "manufacturer");
+                QStringList manufacturer = GetValsFromNameValueList(&pdata, "manufacturer");
 
                 if (!manufacturer.isEmpty())
                 {
-                    resultHashOfAll.insert(Manufacturer, manufacturer.last());
+                    resultHash.insert(Manufacturer, manufacturer.last());
                 }
 
-                QStringList friendlyName = GetValuesFromNameValueList(&pdata, "friendlyName");
+                QStringList friendlyName = GetValsFromNameValueList(&pdata, "friendlyName");
 
                 if (!friendlyName.isEmpty())
                 {
-                    resultHashOfAll.insert(FriendlyName, friendlyName.last());
+                    resultHash.insert(FriendlyName, friendlyName.last());
                 }
                 qDebug() << friendlyName;// + modelName + manufacturer;
 
                 ClearNameValueList(&pdata);
             }
         }
-        QString myIp = urls.controlURL;
+        /* These URLs will be needed for accessing and controlling Mediaservers with SOAP */
+        QString controlURL = urls.controlURL;
+        if(!controlURL.isEmpty())
+        {
+            resultHash.insert(ControlURL, controlURL);
+        }
+        QString rootDescURL = urls.rootdescURL;
+        if(!rootDescURL.isEmpty())
+        {
+            resultHash.insert(RootDescURL, rootDescURL);
+        }
         FreeUPNPUrls(&urls);
-        results.append(resultHashOfAll);
-        myResults.append(resultHashOfAll);
+        results.append(resultHash);
+        myResults.append(resultHash);
         list = list->pNext;
     }
     freeUPNPDevlist(listBegin);
     return myResults;
 }
 
-Result UPnP::result() const
+Result ExtUPnP::result() const
 {
      // List for all results
     QVariantList deviceResultList;
 
-    foreach (UPnPHash resultHash, results)
+    foreach (ExtUPnPHash resultHash, results)
     {
-        QHashIterator<UPnP::DataType, QVariant> iter(resultHash);
+        QHashIterator<ExtUPnP::DataType, QVariant> iter(resultHash);
 
         // results from one interface
         QVariantMap deviceResult;
@@ -276,7 +279,7 @@ Result UPnP::result() const
         while (iter.hasNext())
         {
             iter.next();
-            QString name = enumToString(UPnP, DataType, iter.key());
+            QString name = enumToString(ExtUPnP, DataType, iter.key());
             name = name.replace(QRegExp("([A-Z])"), "_\\1").toLower();
             name.remove(0, 1);
 

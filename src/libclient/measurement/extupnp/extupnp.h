@@ -1,18 +1,18 @@
-#ifndef UPNP_H
-#define UPNP_H
+#ifndef EXTUPNP_H
+#define EXTUPNP_H
 
 #include "../measurement.h"
 #include <QStringList>
 #include <miniupnpc/miniupnpc.h>
 
-class UPnP : public Measurement
+class ExtUPnP : public Measurement
 {
     Q_OBJECT
     Q_ENUMS(DataType)
 
 public:
-    explicit UPnP(QObject *parent = 0);
-    ~UPnP();
+    explicit ExtUPnP(QObject *parent = 0);
+    ~ExtUPnP();
 
     // Measurement interface
     Status status() const;
@@ -36,19 +36,21 @@ public:
         InboundPinholeAllowed,
         ModelName,
         Manufacturer,
-        FriendlyName
+        FriendlyName,
+        ControlURL,
+        RootDescURL
     };
     bool prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition);
     bool start();
     bool stop();
-    typedef QHash<DataType, QVariant> UPnPHash;
-    QList<UPnPHash> goThroughDeviceList(UPNPDev * list);
+    typedef QHash<DataType, QVariant> ExtUPnPHash;
+    QList<ExtUPnPHash> goThroughDeviceList(UPNPDev * list);
     Result result() const;
 
 
 private:
 //    typedef QHash<DataType, QVariant> UPnPExtHash;
-    QList<UPnPHash> results;
+    QList<ExtUPnPHash> results;
 };
 
-#endif // UPnPExt_H
+#endif // EXTUPnP_H

@@ -125,8 +125,8 @@ SOURCES +=  \
     network/tcpsocket.cpp \
     controller/logincontroller.cpp \
     measurement/btc/btc_plugin.cpp \
-#    measurement/upnp/upnp.cpp \
-#    measurement/upnp/upnp_plugin.cpp \
+    measurement/upnp/upnp.cpp \
+    measurement/upnp/upnp_plugin.cpp \
     report/reportmodel.cpp \
     controller/reportcontroller.cpp \
     types.cpp \
@@ -174,8 +174,8 @@ SOURCES +=  \
     measurement/wifilookup/wifilookup_plugin.cpp \
     storage/storage.cpp \
     timing/timer.cpp \
-    measurement/upnp_ext/upnp_ext.cpp \
-    measurement/upnp_ext/upnp_ext_plugin.cpp
+    measurement/extupnp/extupnp.cpp \
+    measurement/extupnp/extupnp_plugin.cpp
 
 HEADERS += \
     export.h \
@@ -223,8 +223,8 @@ HEADERS += \
     log/logger.h \
     measurement/measurementplugin.h \
     measurement/btc/btc_plugin.h \
-#    measurement/upnp/upnp.h \
-#    measurement/upnp/upnp_plugin.h \
+    measurement/upnp/upnp.h \
+    measurement/upnp/upnp_plugin.h \
     report/reportmodel.h \
     storage/storagepaths.h \
     controller/reportcontroller.h \
@@ -274,8 +274,8 @@ HEADERS += \
     ident.h \
     storage/storage.h \
     timing/timer.h \
-    measurement/upnp_ext/upnp_ext_plugin.h \
-    measurement/upnp_ext/upnp_ext.h
+    measurement/extupnp/extupnp.h \
+    measurement/extupnp/extupnp_plugin.h
 
 OTHER_FILES += \
     libclient.pri
