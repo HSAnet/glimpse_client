@@ -221,7 +221,6 @@ QList<ExtUPnP::ExtUPnPHash> ExtUPnP::goThroughDeviceList(UPNPDev *list)
                 NameValueParserData pdata;
                 ParseNameValue(buffer, bufferSize, &pdata);
                 free(buffer);
-                buffer = NULL;
                 QStringList modelName = GetValsFromNameValueList(&pdata, "modelName");
 
                 if (!modelName.isEmpty())
