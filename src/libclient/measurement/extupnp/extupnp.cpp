@@ -97,19 +97,14 @@ bool ExtUPnP::stop()
 
 QList<ExtUPnP::ExtUPnPHash> ExtUPnP::goThroughDeviceList(UPNPDev *list)
 {
-    //UPNPDev *listBegin = list;
     QList<ExtUPnPHash> myResults;
 
     for (UPNPDev *l = list; l; l = l->pNext)
     {
-    //while (list)
-    //{
         UPNPUrls urls;
         IGDdatas data;
         char lanaddr[64];
         ExtUPnPHash resultHash;
-        //int code = UPNP_GetValidIGD(l, &urls, &data, lanaddr, sizeof(lanaddr));
-        //int code = UPNP_GetValidIGD(list, &urls, &data, lanaddr, sizeof(lanaddr));
         if(UPNP_GetValidIGD(l, &urls, &data, lanaddr, sizeof(lanaddr)) > 0)
         {
             resultHash.insert(LanIpAddress, QLatin1String(lanaddr));
@@ -260,10 +255,8 @@ QList<ExtUPnP::ExtUPnPHash> ExtUPnP::goThroughDeviceList(UPNPDev *list)
         FreeUPNPUrls(&urls);
         results.append(resultHash);
         myResults.append(resultHash);
-        //list = list->pNext;
     }
     freeUPNPDevlist(list);
-    //freeUPNPDevlist(listBegin);
     return myResults;
 }
 
@@ -278,8 +271,6 @@ Result ExtUPnP::result() const
 
         // results from one interface
         QVariantMap deviceResult;
-//        for(; iter.hasNext(); iter.next())
-//        {
         while(iter.hasNext())
         {
             iter.next();
