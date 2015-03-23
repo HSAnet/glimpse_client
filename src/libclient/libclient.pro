@@ -174,8 +174,7 @@ SOURCES +=  \
     measurement/wifilookup/wifilookup_plugin.cpp \
     storage/storage.cpp \
     timing/timer.cpp \
-    measurement/extupnp/extupnp.cpp \
-    measurement/extupnp/extupnp_plugin.cpp
+    measurement/upnp/upnp_definition.cpp
 
 HEADERS += \
     export.h \
@@ -274,8 +273,7 @@ HEADERS += \
     ident.h \
     storage/storage.h \
     timing/timer.h \
-    measurement/extupnp/extupnp.h \
-    measurement/extupnp/extupnp_plugin.h
+    measurement/upnp/upnp_definition.h
 
 OTHER_FILES += \
     libclient.pri
