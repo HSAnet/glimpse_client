@@ -145,6 +145,8 @@ cleanup:
 Ping::Ping(QObject *parent)
 : Measurement(parent)
 , currentStatus(Unknown)
+, m_pingsSent(0)
+, m_pingsReceived(0)
 , m_device(NULL)
 , m_capture(NULL)
 , m_destAddress()
@@ -313,39 +315,61 @@ Result Ping::result() const
     QVariantMap res;
     QVariantList roundTripMs;
     float avg = 0.0;
-
-    // get max and min
-    QList<float>::const_iterator it = std::max_element(pingTime.begin(), pingTime.end());
-    float max = *it;
-    it = std::min_element(pingTime.begin(), pingTime.end());
-    float min = *it;
+    QList<float> tmpPingTime = pingTime;
 
     // calculate average and fill ping times
-    foreach (float val, pingTime)
+    foreach (float val, tmpPingTime)
     {
         roundTripMs << val;
+
+        // ignore timeouts, i.e. ping times with 0
+        if (fabs(val - 0.0) < std::numeric_limits<float>::epsilon())
+        {
+            continue;
+        }
+
         avg += val;
     }
 
-    qreal sq_sum = std::inner_product(pingTime.begin(), pingTime.end(), pingTime.begin(), 0.0);
+    // exclude timeouts from the stats
+    tmpPingTime.removeAll(0.0);
+
+    // get max and min
+    QList<float>::const_iterator it = std::max_element(tmpPingTime.begin(), tmpPingTime.end());
+    float max = *it;
+    it = std::min_element(tmpPingTime.begin(), tmpPingTime.end());
+    float min = *it;
+
+    qreal sq_sum = std::inner_product(tmpPingTime.begin(), tmpPingTime.end(), tmpPingTime.begin(), 0.0);
     qreal stdev = 0.0;
 
-    if (pingTime.size() > 0)
+    if (tmpPingTime.size() > 0)
     {
-        avg /= pingTime.size();
+        avg /= tmpPingTime.size();
         // calculate standard deviation
-        stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
+        stdev = qSqrt(sq_sum / tmpPingTime.size() - avg * avg);
     }
 
     res.insert("round_trip_avg", avg);
     res.insert("round_trip_min", min);
     res.insert("round_trip_max", max);
     res.insert("round_trip_stdev", stdev);
-    res.insert("round_trip_count", pingTime.size());
     res.insert("round_trip_ms", roundTripMs);
+    res.insert("round_trip_sent", m_pingsSent);  // count successfull pings only
+    res.insert("round_trip_received", m_pingsReceived);
+
+    if (m_pingsSent > 0)
+    {
+        res.insert("round_trip_loss", (m_pingsSent - m_pingsReceived) / m_pingsSent);
+    }
+    else
+    {
+        res.insert("round_trip_loss", 0);
+    }
 
     return Result(res);
 }
+
 quint32 Ping::estimateTraffic() const
 {
     /*
@@ -603,6 +627,9 @@ bool Ping::sendTcpData(PingProbe *probe)
         return false;
     }
 
+    // let's assume, a call to `connect' always represents a successful ping request whether it fails or not
+    m_pingsSent++;
+
     gettimeofday(&tv, NULL);
     probe->recvTime = tv.tv_sec * 1e6 + tv.tv_usec;
     memcpy(&probe->source, &(m_destAddress), sizeof(sockaddr_any));
@@ -612,6 +639,7 @@ bool Ping::sendTcpData(PingProbe *probe)
     {
         if (errno == ECONNRESET || errno == ECONNREFUSED)
         {
+            m_pingsReceived++;
             //check immediately, as connect could return immediately if called
             //for host-local addresses
             emit tcpReset(*probe);
@@ -675,12 +703,14 @@ bool Ping::sendTcpData(PingProbe *probe)
 
             if (error_num == 0)
             {
+                m_pingsReceived++;
                 //connection established
                 emit tcpConnect(*probe);
                 goto tcpcleanup;
             }
             else if (error_num == ECONNRESET || error_num == ECONNREFUSED)
             {
+                m_pingsReceived++;
                 //we really expected this reset...
                 emit tcpReset(*probe);
                 goto tcpcleanup;
@@ -703,6 +733,7 @@ bool Ping::sendTcpData(PingProbe *probe)
     //when we are here, the 3-way handshake went through...
     //really, really fast which could happen if the destination is host local
 
+    m_pingsReceived++;
     emit tcpConnect(*probe);
 
 tcpcleanup:
@@ -811,10 +842,12 @@ void Ping::receiveData(PingProbe *probe)
 
         if (icmp_type == 3 && icmp_code == 3)
         {
+            m_pingsReceived++;
             emit destinationUnreachable(*probe);
         }
         else if (icmp_type == 11 && icmp_code == 0)
         {
+            m_pingsReceived++;
             emit ttlExceeded(*probe);
         }
     }
@@ -831,6 +864,7 @@ void Ping::receiveData(PingProbe *probe)
         extractTimestamp(msg, probe->recvTime);
         memcpy(&probe->source, &from, sizeof(sockaddr_any));
 
+        m_pingsReceived++;
         emit udpResponse(*probe);
     }
     else
@@ -851,6 +885,11 @@ void Ping::ping(PingProbe *probe)
     if (definition->type == ping::Udp)
     {
         ret = sendUdpData(probe);
+
+        if (ret)
+        {
+            m_pingsSent++;
+        }
     }
     else if (definition->type == ping::Tcp)
     {
@@ -888,9 +927,17 @@ void Ping::readyRead()
 {
     // 64 bytes from 193.99.144.80: icmp_seq=0 ttl=245 time=32.031 ms
     QRegExp re("time=(\\d+.*)ms");
+    // 3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+    QRegExp stats("(\\d+).*, (\\d+).*,.*%.*,.*");
 
     for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine())
     {
+        if (stats.indexIn(line) > -1)
+        {
+            m_pingsSent = stats.cap(1).toUInt();
+            m_pingsReceived = stats.cap(2).toUInt();
+        }
+
         if (re.indexIn(line) == -1)
         {
             continue;
