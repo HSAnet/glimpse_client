@@ -145,6 +145,8 @@ private:
     Status currentStatus;
     QVector<PingProbe> m_pingProbes;
     QList<float> pingTime;
+    quint32 m_pingsSent;
+    quint32 m_pingsReceived;
 
     pcap_if_t *m_device;
     pcap_t *m_capture;
