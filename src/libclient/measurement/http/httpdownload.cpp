@@ -87,6 +87,7 @@ void DownloadThread::startTCPConnection()
         //for the successfully connected sockets, we should track the disconnection
         connect(socket, &QTcpSocket::disconnected, this, &DownloadThread::disconnectionHandling);
         tStatus = ConnectedTCP;
+        LOG_INFO("Thread connected");
         emit TCPConnected(true);
     }
     else
@@ -153,6 +154,8 @@ void DownloadThread::startDownload()
         bytesWritten += writeResult;
     }
 
+    LOG_INFO("Thread: get request sent");
+
     //start eplapsed timer for calculating the time slots
     measurementTimer.start();
 
@@ -161,6 +164,8 @@ void DownloadThread::startDownload()
     //do a blocking read for the first bytes or time-out if nothing is arriving
     if (socket->waitForReadyRead(firstByteReceivedTimeout))
     {
+        LOG_INFO("Thread: received response");
+
         //TODO: check for HTTP status code and act intelligently on it
         //currently, a 404 etc. is simply to little data
         //to generate results, but a better checking would be great
@@ -170,10 +175,12 @@ void DownloadThread::startDownload()
         connect(socket, &QTcpSocket::readyRead, this, &DownloadThread::read);
         //call read
         read();
+        LOG_INFO("Thread: emit signal firstByteReceived");
         emit firstByteReceived(true);
     }
     else
     {
+        LOG_INFO("Thread: no response received");
         tStatus = FinishedError;
         socket->close();
         emit firstByteReceived(false);
@@ -434,6 +441,8 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
     //now the actual measurement starts
     setStatus(HTTPDownload::Running);
 
+    LOG_INFO(QString("Started %1 threads").arg(definition->threads));
+
     //tell the threads to do the 3way-handshake
     emit connectTCP();
 
@@ -504,12 +513,14 @@ void HTTPDownload::downloadStartedTracking(bool success)
 
         downloadStartTime = QDateTime::currentDateTime().addMSecs(definition->rampUpTime);
         //when this timer fires we stop all downloads
+        LOG_INFO("Start timer to wait for download");
         downloadTimer.singleShot(definition->targetTime + definition->rampUpTime, this, SLOT(downloadFinished()));
     }
 }
 
 void HTTPDownload::downloadFinished()
 {
+    LOG_INFO("Download finished (timer timeout)");
     bool resultsOK = false;
 
     //stop the timer if still running (e.g. the case if all
@@ -530,6 +541,8 @@ void HTTPDownload::downloadFinished()
         workers[i]->stopDownload();
     }
 
+    LOG_INFO("All workers stopped, calculting results");
+
     resultsOK = calculateResults();
 
     //clean up (threads etc.) before emitting finished,
@@ -540,6 +553,8 @@ void HTTPDownload::downloadFinished()
         threads[i]->quit();
         threads[i]->wait();
     }
+
+    LOG_INFO("All threads stopped");
 
     if(resultsOK)
     {

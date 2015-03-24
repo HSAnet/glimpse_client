@@ -30,7 +30,7 @@ private:
 public slots:
     void execute(const ScheduleDefinition &test, MeasurementObserver *observer)
     {
-        LOG_INFO(QString("Preparing execution of %1").arg(test.name()));
+        LOG_INFO(QString("Starting execution of %1").arg(test.name()));
 
         emit started(test);
 
@@ -68,7 +68,6 @@ public slots:
                 measurement->setStartDateTime(Client::instance()->ntpController()->currentDateTime());
                 timer.start();
 
-                LOG_INFO(QString("Starting execution of %1").arg(test.name()));
                 if (measurement->start())
                 {
                     return;
