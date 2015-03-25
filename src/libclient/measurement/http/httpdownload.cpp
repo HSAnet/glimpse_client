@@ -545,6 +545,8 @@ void HTTPDownload::downloadFinished()
 
     resultsOK = calculateResults();
 
+    LOG_INFO("Waiting for threads to stop");
+
     //clean up (threads etc.) before emitting finished,
     //otherwise this thing can become deleted before the
     //contained threads
@@ -610,15 +612,19 @@ bool HTTPDownload::calculateResults()
 {
     QVariantList threadResults;
     int num_threads = 0;
+    LOG_INFO("Check if results are trustable");
     bool resultsOK = resultsTrustable();
 
     for(int i = 0; i < workers.size(); i++)
     {
+        LOG_INFO("Check which treads to consider");
         //only consider threads that finished successfully
         if(workers[i]->threadStatus() != DownloadThread::FinishedSuccess)
         {
             continue;
         }
+
+        LOG_INFO("Calculate");
 
         num_threads++;
 
