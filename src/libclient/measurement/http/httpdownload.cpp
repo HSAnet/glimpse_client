@@ -417,9 +417,6 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
         //move the worker to its own thread context
         worker->moveToThread(workerThread);
 
-        //when the thread finishes, do some cleanup
-        connect(workerThread, &QThread::finished, worker, &QObject::deleteLater);
-
         //this signal tells a worker thread to initiate the TCP 3-way handshake
         connect(this, &HTTPDownload::connectTCP, worker, &DownloadThread::startTCPConnection);
 
@@ -433,6 +430,10 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
         connect(worker, &DownloadThread::firstByteReceived, this, &HTTPDownload::downloadStartedTracking);
 
         connect(worker, &DownloadThread::TCPDisconnected, this, &HTTPDownload::prematureDisconnectedTracking);
+
+        //when the thread finishes, do some cleanup
+        connect(workerThread, &QThread::finished, worker, &QObject::deleteLater);
+        connect(workerThread, &QThread::finished, workerThread, &QObject::deleteLater);
 
         //start the thread
         workerThread->start();
@@ -539,6 +540,7 @@ void HTTPDownload::downloadFinished()
         //won't need signals from threads anymore
         workers[i]->disconnect();
         workers[i]->stopDownload();
+        workers[i]->deleteLater();
     }
 
     LOG_INFO("All workers stopped, calculting results");
@@ -552,8 +554,8 @@ void HTTPDownload::downloadFinished()
     //contained threads
     for (i = 0; i < threads.size(); i++)
     {
-        threads[i]->quit();
-        threads[i]->wait();
+        threads[i]->disconnect();
+        threads[i]->deleteLater();
     }
 
     LOG_INFO("All threads stopped");
