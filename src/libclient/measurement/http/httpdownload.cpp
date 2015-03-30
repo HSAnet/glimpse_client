@@ -299,13 +299,9 @@ HTTPDownload::HTTPDownload(QObject *parent)
 , downloadingThreads(0)
 , notDownloadingThreads(0)
 , finishedThreads(0)
-, measurementTimer(this)
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
-
-    measurementTimer.setSingleShot(true);
-    connect(&measurementTimer, SIGNAL(timeout()), this, SLOT(downloadFinished()));
 }
 
 HTTPDownload::~HTTPDownload()
@@ -380,12 +376,6 @@ bool HTTPDownload::start()
 
     //when the lookup finishes, we want to call the startThreads() function
     //that starts the actual measurement/threads 
-
-    // TODO: There are some circumstances in which this measurement runs forever
-    //       The following timer is a quick fix for this to stop the measurement
-    measurementTimer.start(maxRampUpTime + maxTargetTime + 3000);
-
-
     QHostInfo::lookupHost(requestUrl.host(), this, SLOT(startThreads(QHostInfo)));
 
     return true;
@@ -407,8 +397,8 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
     for(n = 0; n < definition->threads; n++)
     {
         //create a worker thread that starts an actual download
-        DownloadThread *worker = new DownloadThread(requestUrl, server, definition->targetTime, definition->avoidCaches);
         QThread *workerThread = new QThread();
+        DownloadThread *worker = new DownloadThread(requestUrl, server, definition->targetTime, definition->avoidCaches, workerThread);
 
         //store the references to the threads/workers
         workers.append(worker);
@@ -416,9 +406,6 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
 
         //move the worker to its own thread context
         worker->moveToThread(workerThread);
-
-        //when the thread finishes, do some cleanup
-        connect(workerThread, &QThread::finished, worker, &QObject::deleteLater);
 
         //this signal tells a worker thread to initiate the TCP 3-way handshake
         connect(this, &HTTPDownload::connectTCP, worker, &DownloadThread::startTCPConnection);
@@ -433,6 +420,9 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
         connect(worker, &DownloadThread::firstByteReceived, this, &HTTPDownload::downloadStartedTracking);
 
         connect(worker, &DownloadThread::TCPDisconnected, this, &HTTPDownload::prematureDisconnectedTracking);
+
+        //when the thread finishes, do some cleanup
+        connect(workerThread, &QThread::finished, workerThread, &QObject::deleteLater);
 
         //start the thread
         workerThread->start();
@@ -553,8 +543,9 @@ void HTTPDownload::downloadFinished()
     for (i = 0; i < threads.size(); i++)
     {
         threads[i]->quit();
-        threads[i]->wait();
     }
+
+    threads.clear();
 
     LOG_INFO("All threads stopped");
 
@@ -670,6 +661,19 @@ bool HTTPDownload::calculateResults()
 
 bool HTTPDownload::stop()
 {
+    foreach (const QPointer<DownloadThread> &downloadThread, workers)
+    {
+        if (!downloadThread.isNull())
+        {
+            downloadThread->stopDownload();
+        }
+    }
+
+    foreach (QThread *thread, threads)
+    {
+        thread->quit();
+    }
+
     return true;
 }
 
