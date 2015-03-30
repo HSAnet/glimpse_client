@@ -11,6 +11,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QTcpSocket>
+#include <QPointer>
 
 
 class DownloadThread : public QObject
@@ -127,7 +128,7 @@ private:
     QUrl requestUrl;
 
     QList <QThread *> threads;
-    QList <DownloadThread *> workers;
+    QList <QPointer<DownloadThread> > workers;
 
     QList <qreal> downloadSpeeds;
     qreal overallBandwidth;
@@ -152,8 +153,6 @@ private:
     static const int maxTargetTime = 45000; //no download should last longer than that (security reasons)
     static const int minTargetTime = 2000; //so download should be shorter than this, really
     static const int minSlotLength = 250;
-
-    QTimer measurementTimer;
 
 private slots:
     bool startThreads(const QHostInfo &server);
