@@ -1,14 +1,14 @@
 #include <QtTest>
 
-#include <timing/onofftiming.h>_>
+#include <timing/onofftiming.h>
 
 class TestOnOffTiming : public QObject
 {
     Q_OBJECT
 
 private slots:
-    void nextRuns(){
-
+    void nextRuns()
+    {
         QDateTime start = QDateTime::currentDateTime();
         OnOffTiming timing(start);
 
