@@ -46,6 +46,7 @@ bool UPnP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     if(m_mediaServerSearch)
     {
         m_handler = new UPnPHandler();
+        connect(m_handler, SIGNAL(handlingDone()), this, SLOT(waitUntilFinished()));
     }
     return true;
 }
@@ -103,9 +104,9 @@ bool UPnP::start()
             descriptionUrl = mediaServerList[i].value(RootDescURL).toString();
             eventSubUrl = mediaServerList[i].value(EventSubUrl).toString();
             controlUrl = mediaServerList[i].value(ControlURL).toString();
-            serviceType = mediaServerList[i].value(ServiceType).toString();
+            serviceType = mediaServerList[i].value(ScpdURL).toString();
             //TODO own Url handling
-            m_handler->init(url, url, descriptionUrl, eventSubUrl, controlUrl, serviceType);
+            m_handler->init(url, descriptionUrl, eventSubUrl, controlUrl, serviceType);
             //TODO wait for execution e.g. new slot here or something else
         }
 
@@ -114,8 +115,8 @@ bool UPnP::start()
         /* This is the old measurement */
         UPNPDev *devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
         QList<UPnPHash> list = goThroughDeviceList(devlist);
+        emit finished();
     }
-    emit finished();
 	//TODO return false if something went wrong or if there are no results
 	return true;
 }
@@ -307,6 +308,18 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
     }
     freeUPNPDevlist(list);
     return myResults;
+}
+
+void UPnP::waitUntilFinished()
+{
+    //TODO wait for all mediaservers, then ...
+    QList<QMap<QString, QString> > mediaResults;
+    int i = 0;
+    while(i == 0)
+    {
+        mediaResults = m_handler->foundContent();
+    }
+    emit finished();
 }
 
 bool UPnP::stop()

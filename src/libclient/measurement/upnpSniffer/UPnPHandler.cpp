@@ -5,6 +5,7 @@
 #include <QNetworkConfiguration>
 //#include <QXmlInputSource>
 #include <QCoreApplication>
+#include <QNetworkInterface>
 
 #include <QXmlStreamWriter>
 #include <QThread>
@@ -20,14 +21,25 @@ UPnPHandler::~UPnPHandler()
 
 }
 
-int UPnPHandler::init(QUrl ownUrl, QUrl remoteUrl, QString descriptionUrl, QString eventSubUrl, QString controlUrl, QString serviceType)
+int UPnPHandler::init(QUrl remoteUrl, QString descriptionUrl, QString eventSubUrl, QString controlUrl, QString serviceType)
 {
-    // old code:
-//    QUrl mediatombUrl = QUrl("http://172.16.172.1:49152/"); //TODO get from glimpse or somewhere else but not by hand
-//    QUrl myUrl = (QUrl("http://172.16.172.1:49152"));
-//    QString getPath = "/description.xml"; //descriptionUrl ... complete!
-//    QString eventPath = "/upnp/event/cds"; //eventSubUrl ... only path
-//    QString actionPath = "/upnp/control/cds"; //controlUrl ... only path
+/*  old code:
+    QUrl mediatombUrl = QUrl("http://172.16.172.1:49152/");
+    QUrl myUrl = (QUrl("http://172.16.172.1:49152"));
+    QString getPath = "/description.xml"; //descriptionUrl ... complete!
+    QString eventPath = "/upnp/event/cds"; //eventSubUrl ... only path
+    QString actionPath = "/upnp/control/cds"; //controlUrl ... only path */
+    QList<QUrl> ownUrls;
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
+        {
+            QString s = QString("http://%1").arg(address.toString());
+            ownUrls.append(QUrl(s));
+        }
+    }
+
+    setRemoteUrl(remoteUrl);
+    setOwnUrls(ownUrls); //TODO check if valid for all urls
 
     QUrl subscribeUrl, browseUrl;
     QUrl descUrl(descriptionUrl);
@@ -35,8 +47,6 @@ int UPnPHandler::init(QUrl ownUrl, QUrl remoteUrl, QString descriptionUrl, QStri
     browseUrl.setPath(controlUrl);
     subscribeUrl.setPath(eventSubUrl);
 
-    setMyUrl(ownUrl); //TODO check if valid for all
-    setRemoteUrl(remoteUrl);
     setGETUrl(descUrl);
     setActionUrl(browseUrl);
     setSubscribeUrl(subscribeUrl);
@@ -48,7 +58,7 @@ int UPnPHandler::init(QUrl ownUrl, QUrl remoteUrl, QString descriptionUrl, QStri
     setNetworkAccessManager(new QNetworkAccessManager());
     startGet();
     connect(m_GETReply, SIGNAL(readyRead()),this, SLOT(GETreadyRead()));
-    connect(m_GETReply, SIGNAL(finished()), this, SLOT(GETFinished())); //Note: finished() signal comes after readyRead()
+//    connect(m_GETReply, SIGNAL(finished()), this, SLOT(GETFinished())); //Note: finished() signal comes after readyRead()
     connect(m_parser, SIGNAL(xmlParsed()), this, SLOT(subscribe()));
     connect(this, SIGNAL(subscribed()), this, SLOT(startAction()));
     connect(this, SIGNAL(readyToParse()), m_parser, SLOT(parseAnswer()));
@@ -66,11 +76,6 @@ void UPnPHandler::setNetworkAccessManager(QNetworkAccessManager *networkAccessMa
     m_networkAccessManager = networkAccessManager;
 }
 
-void UPnPHandler::GETFinished()
-{
-    qDebug() << "Get finished";
-}
-
 void UPnPHandler::GETreadyRead()
 {
     if(m_GETReply->error() != QNetworkReply::NoError)
@@ -80,7 +85,7 @@ void UPnPHandler::GETreadyRead()
     }
     QByteArray content = m_GETReply->readAll();
     m_xmlByteArray->append(content);
-    //qDebug() << "Reply:" + *m_xmlByteArray + "EOF";
+    qDebug() << "Reply:" + *m_xmlByteArray + "EOF";
     /* comes in multiple packets */
     m_parser->parseXML(*m_xmlByteArray);
 }
@@ -91,28 +96,36 @@ void UPnPHandler::subscribe()
     m_subscribeRequest.setUrl(m_subscribeUrl);
     QByteArray val = ("</>");
 //    val.insert(1, m_myUrl.toString());
-    val.insert(1,"192.168.2.104");
-    m_subscribeRequest.setRawHeader(QByteArray("CALLBACK"), val); //TODO flexible
-    m_subscribeRequest.setRawHeader(QByteArray("NT"), ("upnp:event"));
-    m_subscribeReply = m_networkAccessManager->sendCustomRequest(m_subscribeRequest, "SUBSCRIBE"); //TODO answer?
+//    val.insert(1,"http://192.168.2.104:49153");
+    /* trying all localhost addresses */
+    foreach(QUrl u, m_ownUrls)
+    {
+        u.setPort(49153); //That is the vlc port, using it since it works in vlc
+        val.insert(1, u.toString());
+        m_subscribeRequest.setRawHeader(QByteArray("CALLBACK"), val);
+        m_subscribeRequest.setRawHeader(QByteArray("NT"), ("upnp:event"));
+
+        m_subscribeReply = m_networkAccessManager->sendCustomRequest(m_subscribeRequest, "SUBSCRIBE");
+        qDebug() << m_subscribeReply->readAll(); //TODO probably the reply is unneccesary -> delete
+    }
     emit subscribed();
 }
 
-void UPnPHandler::browse()
-{
+//void UPnPHandler::browse()
+//{
 
-    QByteArray deviceFullName = "\"urn:schemas-upnp-org:service:ContentDirectory:1";
-    QByteArray key = "SOAPACTION";
-    QByteArray action = "#Browse\""; // quotes needed!
-    deviceFullName.append(action);
-    m_browseRequest.setUrl(m_actionUrl);
-    m_browseRequest.setHeader(QNetworkRequest::ContentTypeHeader, "text/xml; charset=\"utf-8\"");
-    m_browseRequest.setRawHeader(key, deviceFullName);
-    m_browseRequest.setRawHeader(QByteArray("USER-AGENT"), QByteArray("Linux/3.13.0-24-generic, UPnP/1.0, Portable SDK for UPnP devices/1.6.17"));
-    QNetworkConfiguration conf = m_networkAccessManager->configuration();
-    m_browseRequest.setRawHeader("Accept-Language", QByteArray());
-    //    m_browseReply = m_networkAccessManager->post(m_browseRequest, xmlRaw);
-}
+//    QByteArray deviceFullName = "\"urn:schemas-upnp-org:service:ContentDirectory:1";
+//    QByteArray key = "SOAPACTION";
+//    QByteArray action = "#Browse\""; // quotes needed!
+//    deviceFullName.append(action);
+//    m_browseRequest.setUrl(m_actionUrl);
+//    m_browseRequest.setHeader(QNetworkRequest::ContentTypeHeader, "text/xml; charset=\"utf-8\"");
+//    m_browseRequest.setRawHeader(key, deviceFullName);
+//    m_browseRequest.setRawHeader(QByteArray("USER-AGENT"), QByteArray("Linux/3.13.0-24-generic, UPnP/1.0, Portable SDK for UPnP devices/1.6.17"));
+//    QNetworkConfiguration conf = m_networkAccessManager->configuration();
+//    m_browseRequest.setRawHeader("Accept-Language", QByteArray());
+//    //    m_browseReply = m_networkAccessManager->post(m_browseRequest, xmlRaw);
+//}
 
 void UPnPHandler::sendRequest()
 {
@@ -128,10 +141,12 @@ void UPnPHandler::sendRequest()
 
     if (!m_file->open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        qDebug() << "Load XML File Problem";
+        qDebug() << "Opening XML File Problem";
         exit(-1);
     }
     QByteArray xmlRaw = m_file->readAll();
+    //different values for the object-IDs need to be inserted. starting with 0;
+    //Parsing the answer and then again send request to the corresponding object-IDs -> new loop or slots TODO
     QString data(xmlRaw);
     int dataLength = data.length();
     QString url = m_remoteUrl.toString();
@@ -139,9 +154,9 @@ void UPnPHandler::sendRequest()
 
     QString header = QString("POST %1 HTTP/1.1\r\n"
                               "HOST: %2\r\n"
-                              "CONTENT-LENGTH: %3\r\n" //TODO get it automatic
+                              "CONTENT-LENGTH: %3\r\n"
                               "CONTENT-TYPE: text/xml; charset=\"utf-8\"\r\n"
-                              "SOAPACTION: \"%4#Browse\"\r\n"
+                              "SOAPACTION: \"%4\#Browse\"\r\n"
                               "USER-AGENT: Linux/3.13.0-24-generic, UPnP/1.0, Portable SDK for UPnP devices/1.6.17\r\n\r\n").arg(m_actionUrl.path())
                                                                                                                             .arg(url)
                                                                                                                             .arg(dataLength)
@@ -199,12 +214,10 @@ void UPnPHandler::sendRequest()
 
 void UPnPHandler::startAction()
 {
-    //QString h = m_actionUrl.host();
-    QHostInfo::lookupHost(m_actionUrl.host(), this, SLOT(startThreads(QHostInfo)));
-//    startThreads();
+    QHostInfo::lookupHost(m_actionUrl.host(), this, SLOT(setupTCPSocket(QHostInfo)));
 }
 
-void UPnPHandler::startThreads(const QHostInfo &server)
+void UPnPHandler::setupTCPSocket(const QHostInfo &server)
 {
     //check if the name resolution was actually successful
     QString s = server.errorString();
@@ -262,7 +275,6 @@ void UPnPHandler::startTCPConnection()
     m_socket = new QTcpSocket();
 
     //so let's connect now (if no port as part of the URL use 80 as default)
-    //TODO my port!
     int p = m_actionUrl.port();
     m_socket->connectToHost(server.addresses().first(), p);
 
@@ -317,9 +329,25 @@ void UPnPHandler::handleContent()
     {
         qDebug() << "lalala" + m_foundContent.at(1).value("title");
     }
+    emit handlingDone();
 
     QCoreApplication::exit(0);
 }
+QList<QUrl> UPnPHandler::ownUrls() const
+{
+    return m_ownUrls;
+}
+
+void UPnPHandler::setOwnUrls(const QList<QUrl> &ownUrls)
+{
+    m_ownUrls = ownUrls;
+}
+
+QList<QMap<QString, QString> > UPnPHandler::foundContent() const
+{
+    return m_foundContent;
+}
+
 QString UPnPHandler::servicetype() const
 {
     return m_servicetype;
@@ -330,17 +358,6 @@ void UPnPHandler::setServicetype(const QString &servicetype)
     m_servicetype = servicetype;
 }
 
-
-QUrl UPnPHandler::myUrl() const
-{
-    return m_myUrl;
-}
-
-void UPnPHandler::setMyUrl(const QUrl &myUrl)
-{
-    m_myUrl = myUrl;
-}
-
 void UPnPHandler::startGet()
 {
     m_GETrequest.setUrl(m_GETUrl);
@@ -349,7 +366,6 @@ void UPnPHandler::startGet()
     qDebug() << "Sending get request ...";
     m_xmlByteArray = new QByteArray();
     m_GETReply = m_networkAccessManager->get(m_GETrequest);
-//    m_GETReply->
 }
 
 QHostInfo UPnPHandler::getServer() const

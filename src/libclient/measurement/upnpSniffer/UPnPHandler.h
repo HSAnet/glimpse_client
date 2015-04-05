@@ -29,7 +29,7 @@ public:
     UPnPHandler();
     ~UPnPHandler();
 
-    int init(QUrl ownUrl, QUrl remoteUrl, QString descriptionUrl, QString eventSubUrl, QString controlUrl, QString serviceType);
+    int init(QUrl remoteUrl, QString descriptionUrl, QString eventSubUrl, QString controlUrl, QString serviceType);
 
     QNetworkAccessManager * networkAccessManager() const;
     void setNetworkAccessManager(QNetworkAccessManager *networkAccessManager);
@@ -61,21 +61,22 @@ public:
     QHostInfo getServer() const;
     void setServer(const QHostInfo &value);
 
-    QUrl myUrl() const;
-    void setMyUrl(const QUrl &myUrl);
-
     QString servicetype() const;
     void setServicetype(const QString &servicetype);
 
+    QList<QMap<QString, QString> > foundContent() const;
+
+    QList<QUrl> ownUrls() const;
+    void setOwnUrls(const QList<QUrl> &ownUrls);
+
 public slots:
     void startGet();
-    void GETFinished();
     void GETreadyRead();
     void subscribe();
-    void browse();
+//    void browse();
     void sendRequest();
     void startAction();
-    void startThreads(const QHostInfo &server);
+    void setupTCPSocket(const QHostInfo &server);
     void read();
     void disconnectionHandling();
     void startTCPConnection();
@@ -92,11 +93,10 @@ signals:
     void connectTCP();
     void startDownload();
     void readyToParse();
+    void handlingDone();
 
 private:
     QString m_servicetype;
-    QList <QThread *> threads;
-    QList <UPnPHandler *> workers;
     DownloadThreadStatus tStatus;
     Parser *m_parser;
     QTcpSocket *m_socket;
@@ -110,7 +110,7 @@ private:
     QList<qint64> bytesReceived;
     QHostInfo server;
     QUrl m_remoteUrl;
-    QUrl m_myUrl;
+    QList<QUrl> m_ownUrls;
     QUrl m_GETUrl;
     QUrl m_subscribeUrl;
     QUrl m_actionUrl;

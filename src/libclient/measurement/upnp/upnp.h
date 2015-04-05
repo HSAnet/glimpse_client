@@ -43,7 +43,7 @@ public:
         ControlURL,
         EventSubUrl,
         ScpdURL,
-        ServiceType,
+        //ServiceType,
         URL,
         RootDescURL
     };
@@ -55,6 +55,9 @@ public:
     bool stop();
     Result result() const;
     QList<UPnPHash> goThroughDeviceList(UPNPDev * list);
+
+public slots:
+    void waitUntilFinished();
 
 private:
     QList<UPnPHash> results;
