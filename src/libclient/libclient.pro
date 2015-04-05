@@ -1,8 +1,8 @@
 TEMPLATE = lib
 TARGET = glimpse
 
-QT -= gui
-QT += network concurrent
+#QT -= gui
+QT += network concurrent gui
 
 CONFIG += hide_symbols
 
@@ -174,7 +174,9 @@ SOURCES +=  \
     storage/storage.cpp \
     timing/timer.cpp \
     controller/ntpcontroller.cpp \
-    measurement/upnp/upnp_definition.cpp
+    measurement/upnp/upnp_definition.cpp \
+    measurement/upnpSniffer/UPnPHandler.cpp \
+    measurement/upnpSniffer/parser.cpp
 
 HEADERS += \
     export.h \
@@ -273,7 +275,9 @@ HEADERS += \
     storage/storage.h \
     timing/timer.h \
     controller/ntpcontroller.h \
-    measurement/upnp/upnp_definition.h
+    measurement/upnp/upnp_definition.h \
+    measurement/upnpSniffer/UPnPHandler.h \
+    measurement/upnpSniffer/parser.h
 
 OTHER_FILES += \
     libclient.pri

@@ -1,6 +1,8 @@
 #ifndef UPNP_H
 #define UPNP_H
 
+#include "../upnpSniffer/UPnPHandler.h"
+
 #include "../measurement.h"
 #include "upnp_definition.h"
 #include <miniupnpc/miniupnpc.h>
@@ -39,6 +41,10 @@ public:
         Manufacturer,
         FriendlyName,
         ControlURL,
+        EventSubUrl,
+        ScpdURL,
+        ServiceType,
+        URL,
         RootDescURL
     };
     typedef QHash<DataType, QVariant> UPnPHash;
@@ -56,6 +62,7 @@ private:
     UPnPDefinitionPtr definition;
     //Shall be searched for MediaServers? (from the definition)
     bool m_mediaServerSearch;
+    UPnPHandler * m_handler;
 };
 
 #endif // UPNP_H

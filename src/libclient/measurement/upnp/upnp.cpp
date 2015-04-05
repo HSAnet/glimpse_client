@@ -1,5 +1,7 @@
 #include "upnp.h"
 
+//#include "../upnpSniffer/UPnPHandler.h"
+
 #include "../../log/logger.h"
 #include <QMetaEnum>
 #include "../../types.h"
@@ -41,6 +43,10 @@ bool UPnP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         return false;
     }
     m_mediaServerSearch = definition->mediaServerSearch;
+    if(m_mediaServerSearch)
+    {
+        m_handler = new UPnPHandler();
+    }
     return true;
 }
 
@@ -66,33 +72,49 @@ QStringList GetValuesFromNameValueList(struct NameValueParserData *pdata,
 bool UPnP::start()
 {
     int error = 0;
-
+    QList<UPnPHash> mediaServerList;
     if(m_mediaServerSearch)
     {
         /* The following devices are important */
         static const char * const deviceList[] = {
             "urn:schemas-upnp-org:device:MediaServer:1",
-            "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
+//            "urn:schemas-upnp-org:service:ContentDirectory:1",
+//            "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
+//            "ssdp:all"
             0
         };
         // TODO test other devices from upnp.org
         /* more or less unimportant: */
     //        "urn:schemas-upnp-org:service:ConnectionManager:1",
-    //        "urn:schemas-upnp-org:service:ContentDirectory:1",
     //        "urn:schemas-upnp-org:device:InternetGatewayDevice:2",
     //        "urn:schemas-upnp-org:service:WANIPConnection:2",
     //        "urn:schemas-upnp-org:service:WANIPConnection:1",
     //        "urn:schemas-upnp-org:service:WANPPPConnection:1",
     //        "upnp:rootdevice",
-    //        "ssdp:all",
         UPNPDev *devices = upnpDiscoverDevices(deviceList,
                                                5000, NULL, NULL, FALSE,
                                                FALSE, &error);
-        QList<UPnPHash> mediaServerList = goThroughDeviceList(devices);
-    }
-    UPNPDev *devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
-    QList<UPnPHash> list = goThroughDeviceList(devlist);
+        mediaServerList = goThroughDeviceList(devices);
+        QUrl url;
+        QString descriptionUrl, eventSubUrl, controlUrl, serviceType;
+        for(int i = 0; i < 1; i++)
+        {
+            url = mediaServerList[i].value(URL).toUrl();
+            descriptionUrl = mediaServerList[i].value(RootDescURL).toString();
+            eventSubUrl = mediaServerList[i].value(EventSubUrl).toString();
+            controlUrl = mediaServerList[i].value(ControlURL).toString();
+            serviceType = mediaServerList[i].value(ServiceType).toString();
+            //TODO own Url handling
+            m_handler->init(url, url, descriptionUrl, eventSubUrl, controlUrl, serviceType);
+            //TODO wait for execution e.g. new slot here or something else
+        }
 
+    }else
+    {
+        /* This is the old measurement */
+        UPNPDev *devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
+        QList<UPnPHash> list = goThroughDeviceList(devlist);
+    }
     emit finished();
 	//TODO return false if something went wrong or if there are no results
 	return true;
@@ -245,10 +267,34 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
             }
         }
         /* These URLs will be needed for accessing and controlling Mediaservers with SOAP */
-        QString controlURL = urls.controlURL;
+        QString controlURL = data.tmp.controlurl;
         if(!controlURL.isEmpty())
         {
             resultHash.insert(ControlURL, controlURL);
+        }
+
+        QString eventSubUrl = data.tmp.eventsuburl;
+        if(!eventSubUrl.isEmpty())
+        {
+            resultHash.insert(EventSubUrl, eventSubUrl);
+        }
+
+        QString scpdUrl = data.tmp.scpdurl;
+        if(!scpdUrl.isEmpty())
+        {
+            resultHash.insert(ScpdURL, scpdUrl);
+        }
+
+        QString serviceType = data.tmp.servicetype;
+        if(!serviceType.isEmpty())
+        {
+            resultHash.insert(ScpdURL, serviceType);
+        }
+
+        QString url = urls.controlURL;
+        if(!url.isEmpty())
+        {
+            resultHash.insert(URL, url);
         }
         QString rootDescURL = urls.rootdescURL;
         if(!rootDescURL.isEmpty())
