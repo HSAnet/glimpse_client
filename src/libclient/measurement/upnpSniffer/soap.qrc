@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/xml">
+        <file>soapData.xml</file>
+    </qresource>
+</RCC>
+

@@ -11,7 +11,7 @@ public:
     explicit Parser(QObject *parent = 0);
     ~Parser();
     bool parseXML(QByteArray ba);
-    QList<QMap<QString, QString> > parseXMLtoMaps(QByteArray ba);
+    QList<QMap<QString, QString> > parseXMLtoMaps(QByteArray ba, QString elementToSearchFor);
     void parseUpnpReply();
 
     QHash<QString, QString> results() const;
@@ -24,7 +24,7 @@ public:
 
 signals:
     void xmlParsed();
-    void contentFound();
+    void contentFound(QString t);
 
 public slots:
     void parseAnswer();

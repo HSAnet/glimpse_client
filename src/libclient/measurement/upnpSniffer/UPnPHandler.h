@@ -69,11 +69,13 @@ public:
     QList<QUrl> ownUrls() const;
     void setOwnUrls(const QList<QUrl> &ownUrls);
 
+    QList<QPair<QString, QString> > containerIDs() const;
+
 public slots:
     void startGet();
     void GETreadyRead();
     void subscribe();
-//    void browse();
+        void browse();
     void sendRequest();
     void startAction();
     void setupTCPSocket(const QHostInfo &server);
@@ -83,7 +85,8 @@ public slots:
     void TCPConnectionTracking(bool success);
     void downloadStartedTracking(bool success);
     void tidyUp();
-    void handleContent();
+    void handleContent(QString t);
+    void sendExactRequests();
 
 signals:
     void subscribed();
@@ -94,6 +97,8 @@ signals:
     void startDownload();
     void readyToParse();
     void handlingDone();
+    void searchForObjectIDs();
+    void exactScan();
 
 private:
     QString m_servicetype;
@@ -118,6 +123,8 @@ private:
     QByteArray *m_xmlByteArray;
     QByteArray m_answerFromServer;
     QList<QMap<QString, QString> > m_foundContent;
+    QList<QPair<QString, QString> > m_containerIDs;
+    QString m_objectID;
 };
 
 #endif // HTTPMANAGER_H

@@ -95,7 +95,7 @@ bool UPnP::start()
         UPNPDev *devices = upnpDiscoverDevices(deviceList,
                                                5000, NULL, NULL, FALSE,
                                                FALSE, &error);
-        mediaServerList = goThroughDeviceList(devices);
+        mediaServerList = goThroughDeviceList(devices); //TODO fix not with data.tmp
         QUrl url;
         QString descriptionUrl, eventSubUrl, controlUrl, serviceType;
         for(int i = 0; i < 1; i++)

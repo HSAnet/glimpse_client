@@ -31,28 +31,33 @@ void Parser::parseUpnpReply()
 //    QString s(ba);
     QString s(m_rawData);
     int end = s.indexOf("s:Envelope"); //TODO needed?
+    if(end == -1)
+    {
+        return;
+    }
     s.remove(0, end-1);
     QTextDocumentFragment html;
     QTextDocumentFragment frag = html.fromHtml(s);
     QByteArray realXML;
     realXML.append(frag.toPlainText());
-    QList<QMap<QString, QString> > tableOfContents = parseXMLtoMaps(realXML);
+    qDebug() << realXML;
+    QList<QMap<QString, QString> > tableOfContents = parseXMLtoMaps(realXML, "container");
     if(tableOfContents.length() != 0)
     {
         m_foundContent = tableOfContents;
-        emit contentFound();
+        emit contentFound("container");
     }
-    for(int i = 0; i < tableOfContents.length(); i++)
-    {
-        qDebug() << "*** The Following contents are available in this element: ***";
-        QString all = "";
-        foreach(QString s, tableOfContents[i].keys())
-        {
-               all.append(" " + s);
-        }
-        qDebug() << all;
-        qDebug() << tableOfContents[i].value("title");
-    }
+//    for(int i = 0; i < tableOfContents.length(); i++)
+//    {
+//        qDebug() << "*** The Following contents are available in this element: ***";
+//        QString all = "";
+//        foreach(QString s, tableOfContents[i].keys())
+//        {
+//               all.append(" " + s);
+//        }
+//        qDebug() << all;
+//        qDebug() << tableOfContents[i].value("title");
+//    }
 
 }
 
@@ -112,7 +117,7 @@ bool Parser::parseXML(QByteArray ba)
  * @return It returns a List of QMaps. Each Map is a one element with its title, artists etc. as keys
  */
 
-QList<QMap<QString, QString> > Parser::parseXMLtoMaps(QByteArray ba)
+QList<QMap<QString, QString> > Parser::parseXMLtoMaps(QByteArray ba, QString elementToSearchFor)
 {
     QXmlStreamReader * xmlReader = new QXmlStreamReader(ba);
     QList<QMap<QString, QString> > contents;
@@ -127,6 +132,7 @@ QList<QMap<QString, QString> > Parser::parseXMLtoMaps(QByteArray ba)
         QXmlStreamReader::TokenType token = xmlReader->readNext();
         name = xmlReader->name().toString();
         text = xmlReader->text().toString();
+        QXmlStreamAttributes atts = xmlReader->attributes();
         if(token == QXmlStreamReader::StartDocument)
         {
            continue;
@@ -134,9 +140,14 @@ QList<QMap<QString, QString> > Parser::parseXMLtoMaps(QByteArray ba)
         if(token == QXmlStreamReader::StartElement)
         {
             /* The start of a new element which is then marked with the foundElementFlag */
-            if(name == "item")
+            if(name == elementToSearchFor)
             {
                 foundElementFlag = 1;
+                QStringRef ref = atts.value("id");
+                if(ref != "")
+                {
+                    element.insert("id", ref.toString());
+                }
             }
             if(foundElementFlag == 1)
             {
@@ -154,7 +165,7 @@ QList<QMap<QString, QString> > Parser::parseXMLtoMaps(QByteArray ba)
         if(token == QXmlStreamReader::EndElement)
         {
             /* At the end of the element it has to appended to the contents list and be cleared */
-            if(name == "item")
+            if(name == elementToSearchFor)
             {
                 contents.append(element);
                 element.clear();
@@ -175,7 +186,7 @@ QList<QMap<QString, QString> > Parser::parseXMLtoMaps(QByteArray ba)
     return contents;
 }
 
-void Parser::parseAnswer()
+void Parser::parseAnswer() //TODO delete
 {
     parseUpnpReply();
 }

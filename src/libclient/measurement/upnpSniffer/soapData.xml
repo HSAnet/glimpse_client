@@ -5,7 +5,7 @@
             <u:Browse
                 xmlns:u="urn:schemas-upnp-org:service:ContentDirectory:1">
                 <ObjectID>
-                    7</ObjectID>
+                    ##wildcard##</ObjectID>
                 <BrowseFlag>BrowseDirectChildren</BrowseFlag>
                 <Filter>
                     id,dc:title,res,sec:CaptionInfo,sec:CaptionInfoEx</Filter>

@@ -51,8 +51,9 @@ int UPnPHandler::init(QUrl remoteUrl, QString descriptionUrl, QString eventSubUr
     setActionUrl(browseUrl);
     setSubscribeUrl(subscribeUrl);
     setServicetype(serviceType);
-    setFile("/home/simon/code/upnpSniffer/xmlInfoFromVlc.xml"); //TODO
+    setFile(":/xml/soapData.xml"); //TODO
     m_answerFromServer = "";
+    m_objectID = "0";
 
     m_parser = new Parser();
     setNetworkAccessManager(new QNetworkAccessManager());
@@ -60,9 +61,13 @@ int UPnPHandler::init(QUrl remoteUrl, QString descriptionUrl, QString eventSubUr
     connect(m_GETReply, SIGNAL(readyRead()),this, SLOT(GETreadyRead()));
 //    connect(m_GETReply, SIGNAL(finished()), this, SLOT(GETFinished())); //Note: finished() signal comes after readyRead()
     connect(m_parser, SIGNAL(xmlParsed()), this, SLOT(subscribe()));
-    connect(this, SIGNAL(subscribed()), this, SLOT(startAction()));
+    connect(this, SIGNAL(subscribed()), this, SLOT(browse()));
+//    connect(this, SIGNAL(subscribed()), this, SLOT(startAction()));
+
     connect(this, SIGNAL(readyToParse()), m_parser, SLOT(parseAnswer()));
-    connect(m_parser, SIGNAL(contentFound()), this, SLOT(handleContent()));
+//    connect(m_parser, SIGNAL(contentFound(QString)), this, SLOT(handleContent(QString)));
+//    connect(this, SIGNAL(searchForObjectIDs()), this, SLOT(sendExactRequests()));
+//    connect(this, SIGNAL(exactScan()), this, SLOT(startAction()));
     return 0;
 }
 
@@ -85,9 +90,9 @@ void UPnPHandler::GETreadyRead()
     }
     QByteArray content = m_GETReply->readAll();
     m_xmlByteArray->append(content);
-    qDebug() << "Reply:" + *m_xmlByteArray + "EOF";
+    //qDebug() << "Reply:" + *m_xmlByteArray + "EOF";
     /* comes in multiple packets */
-    m_parser->parseXML(*m_xmlByteArray);
+     m_parser->parseXML(*m_xmlByteArray);
 }
 
 void UPnPHandler::subscribe()
@@ -111,21 +116,39 @@ void UPnPHandler::subscribe()
     emit subscribed();
 }
 
-//void UPnPHandler::browse()
-//{
+void UPnPHandler::browse()
+{
 
-//    QByteArray deviceFullName = "\"urn:schemas-upnp-org:service:ContentDirectory:1";
-//    QByteArray key = "SOAPACTION";
-//    QByteArray action = "#Browse\""; // quotes needed!
-//    deviceFullName.append(action);
-//    m_browseRequest.setUrl(m_actionUrl);
-//    m_browseRequest.setHeader(QNetworkRequest::ContentTypeHeader, "text/xml; charset=\"utf-8\"");
-//    m_browseRequest.setRawHeader(key, deviceFullName);
-//    m_browseRequest.setRawHeader(QByteArray("USER-AGENT"), QByteArray("Linux/3.13.0-24-generic, UPnP/1.0, Portable SDK for UPnP devices/1.6.17"));
+    QByteArray deviceFullName = "\"urn:schemas-upnp-org:service:ContentDirectory:1";
+    QByteArray key = "SOAPACTION";
+    QByteArray action = "#Browse\""; // quotes needed!
+    deviceFullName.append(action);
+    m_browseRequest.setUrl(m_actionUrl);
+    m_browseRequest.setHeader(QNetworkRequest::ContentTypeHeader, "text/xml; charset=\"utf-8\"");
+    m_browseRequest.setRawHeader(key, deviceFullName);
+    m_browseRequest.setRawHeader(QByteArray("USER-AGENT"), QByteArray("Linux/3.13.0-24-generic, UPnP/1.0, Portable SDK for UPnP devices/1.6.17"));
 //    QNetworkConfiguration conf = m_networkAccessManager->configuration();
 //    m_browseRequest.setRawHeader("Accept-Language", QByteArray());
-//    //    m_browseReply = m_networkAccessManager->post(m_browseRequest, xmlRaw);
-//}
+    if (!m_file->open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Opening XML File Problem";
+        exit(-1);
+    }
+    QByteArray xmlRaw = m_file->readAll();
+    QByteArray b;
+    b.append(m_objectID);
+    xmlRaw.replace("##wildcard##", QByteArray(b));
+    m_browseReply = m_networkAccessManager->post(m_browseRequest, xmlRaw);
+    qDebug() << m_browseReply->readAll();
+    m_answerFromServer = m_browseReply->readAll();
+    if(m_answerFromServer.contains(QByteArray("200 OK")) && !m_answerFromServer.isEmpty())
+    {
+        emit readyToParse();
+    }else
+    {
+        return;
+    }
+}
 
 void UPnPHandler::sendRequest()
 {
@@ -147,11 +170,12 @@ void UPnPHandler::sendRequest()
     QByteArray xmlRaw = m_file->readAll();
     //different values for the object-IDs need to be inserted. starting with 0;
     //Parsing the answer and then again send request to the corresponding object-IDs -> new loop or slots TODO
-    QString data(xmlRaw);
-    int dataLength = data.length();
+    QByteArray b;
+    b.append(m_objectID);
+    xmlRaw.replace("##wildcard##", QByteArray(b));
+    int dataLength = xmlRaw.length();
     QString url = m_remoteUrl.toString();
     url.remove("http://");
-
     QString header = QString("POST %1 HTTP/1.1\r\n"
                               "HOST: %2\r\n"
                               "CONTENT-LENGTH: %3\r\n"
@@ -161,9 +185,10 @@ void UPnPHandler::sendRequest()
                                                                                                                             .arg(url)
                                                                                                                             .arg(dataLength)
                                                                                                                             .arg(m_servicetype);
+    header.append(xmlRaw);
     int bytesWritten = 0;
 
-    //send the SOAP request -> HTTP POST and then the xml
+    /* Send the SOAP request -> HTTP POST header and xml data */
     while(bytesWritten < header.length())
     {
         bytesWritten += m_socket->write(header.mid(bytesWritten).toLatin1());
@@ -178,19 +203,6 @@ void UPnPHandler::sendRequest()
         }
     }
     bytesWritten = 0;
-    while(bytesWritten < data.length())
-    {
-        bytesWritten += m_socket->write(data.toLatin1());
-
-        //on error
-        if(bytesWritten < 0)
-        {
-            m_socket->close();
-            tStatus = FinishedError;
-            emit firstByteReceived(false);
-            return;
-        }
-    }
     tStatus = AwaitingFirstByte;
 
     //do a blocking read for the first bytes or time-out if nothing is arriving
@@ -198,9 +210,7 @@ void UPnPHandler::sendRequest()
     {
         tStatus = DownloadInProgress;
         //connect readyRead of the socket with read() for further reads
-        connect(m_socket, &QTcpSocket::readyRead, this, &UPnPHandler::read);
-        //call read
-        read();
+        connect(m_socket, &QTcpSocket::readyRead, this, &UPnPHandler::read); //TODO test where read is called
         emit firstByteReceived(true);
     }
     else
@@ -249,8 +259,12 @@ void UPnPHandler::read()
     bytesReceived << m_socket->bytesAvailable();
     QByteArray ba = m_socket->readAll();
     m_answerFromServer.append(ba);
+    //qDebug() << m_answerFromServer;
     m_parser->setRawData(m_answerFromServer);
-    emit readyToParse();
+    if(m_answerFromServer.contains(QByteArray("200 OK")))
+    {
+        emit readyToParse();
+    }
 }
 
 void UPnPHandler::disconnectionHandling()
@@ -320,19 +334,48 @@ void UPnPHandler::tidyUp()
     m_file->close();
 }
 
-void UPnPHandler::handleContent()
+void UPnPHandler::handleContent(QString t)
 {
-    m_foundContent = m_parser->getFoundContent();
-    //TODO...
-    //example:
-    if(m_foundContent.length() != 0)
+    if(t == "container")
     {
-        qDebug() << "lalala" + m_foundContent.at(1).value("title");
+        QList<QMap<QString, QString> > found = m_parser->getFoundContent();
+        QList<QPair<QString, QString> > objectIDsandPurpose;
+        for(int i = 0; i < found.length(); i++) {
+            QString id = found[i].value("id");
+            QString title = found[i].value("title");
+/*            QMap<QString, QString> m;
+            m.insert(title, id);*/
+            QPair<QString, QString> m;
+            m.first = title;
+            m.second = id;
+            objectIDsandPurpose.append(m);
+        }
+        m_containerIDs = objectIDsandPurpose;
+        emit searchForObjectIDs();
+    }else if (t == "item") {
+        //TODO
     }
-    emit handlingDone();
+    m_foundContent = m_parser->getFoundContent();
+//    emit handlingDone();
 
-    QCoreApplication::exit(0);
+    //    QCoreApplication::exit(0);
 }
+
+void UPnPHandler::sendExactRequests()
+{
+    for(int i = 0; i < m_containerIDs.length(); i++) {
+        QString t = m_containerIDs[i].first;
+        qDebug() << "Scanning", t, "...";
+        m_objectID = m_containerIDs[i].second;
+
+    }
+}
+
+QList<QPair<QString, QString> > UPnPHandler::containerIDs() const
+{
+    return m_containerIDs;
+}
+
 QList<QUrl> UPnPHandler::ownUrls() const
 {
     return m_ownUrls;
