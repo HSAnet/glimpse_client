@@ -4,8 +4,8 @@ glimpse_client
 ### Build Status
 * Linux: [![Linux](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebug)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientMasterDebug)
 * Mac: [![Mac](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientDebugMac)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientDebugMac)
-* Windows: [![Windows](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientDebugWindows)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientDebugWindows) 
-* Android armv7: [![Android armv7](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebugBundledAndroidArmv7)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientMasterDebugBundledAndroidArmv7) 
+* Windows: [![Windows](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientDebugWindows)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientDebugWindows)
+* Android armv7: [![Android armv7](http://mplane.informatik.hs-augsburg.de:8111/app/rest/builds/buildType:(id:MPlane_ClientMasterDebugBundledAndroidArmv7)/statusIcon)](http://mplane.informatik.hs-augsburg.de:8111/viewType.html?buildTypeId=MPlane_ClientMasterDebugBundledAndroidArmv7)
 
 ### Building
 Here are the steps how to compile GLIMPSE yourself. You can find pre-build packages at the end of this document.
@@ -13,9 +13,9 @@ Here are the steps how to compile GLIMPSE yourself. You can find pre-build packa
 1. Download and install the latest Qt version for your platform from http://download.qt-project.org/
 2. Clone this repository or fork it first if you're going to contribute
 ```
-git clone git@github.com:YOURUSERNAME/glimpse_client.git && 
+git clone git@github.com:YOURUSERNAME/glimpse_client.git &&
 cd glimpse_client &&
-git submodule init && 
+git submodule init &&
 git submodule update
 ```
 3. Run QtCreator, open client.pro, add your Qt configuration and select the "mobile" or "console" project near the "Play" button
@@ -27,7 +27,7 @@ git submodule update
 * **Android**: Android SDK and NDK
 
 #### Running requirements
-* **Linux**: openssl
+* **Linux**: openssl, iproute2
 * **Windows**: [OpenSSL](http://slproweb.com/products/Win32OpenSSL.html), [WinPcap](http://www.winpcap.org/install/default.htm)
 
 ### Pre-Build version
@@ -39,7 +39,7 @@ Packages for various Linux distributions are available here: http://distributor.
 See http://beta.measure-it.net for more information.
 
 #### Windows
-The installer is available at http://distributor.measure-it.net/packages/windows/ and installs the graphical- (glimpse-gui.exe) and the console-version (glimpse-console.exe). 
+The installer is available at http://distributor.measure-it.net/packages/windows/ and installs the graphical- (glimpse-gui.exe) and the console-version (glimpse-console.exe).
 
 Note that these packages are not signed and not automatically updated at the moment. Please use only for a quick preview, we did not test this version yet.
 

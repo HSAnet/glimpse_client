@@ -3,6 +3,7 @@
 #include <QNetworkInterface>
 #include <QHostInfo>
 #include <QStringList>
+#include <QProcess>
 
 bool RemoteHost::isValid() const
 {
@@ -110,6 +111,69 @@ QHostAddress NetworkHelper::localIpAddress()
 #endif
 
     return hostIp;
+}
+
+QHostAddress NetworkHelper::gatewayIpAddress()
+{
+    QProcess process;
+    QByteArray output;
+    QHostAddress ret;
+#if defined(Q_OS_LINUX)
+    // default via 192.168.0.1 dev wlp3s0
+    QRegExp re("^default via (\\d+\\.\\d+\\.\\d+\\.\\d+)");
+
+    process.start("ip", QStringList("route"));
+
+    while (process.waitForReadyRead())
+    {
+        output += process.readAll();
+    }
+
+    QStringList entries = QString::fromLocal8Bit(output).split('\n');
+    entries.removeLast();
+
+    foreach (const QString &s, entries)
+    {
+        if (re.indexIn(s) > -1)
+        {
+            ret = QHostAddress(re.cap(1));
+            break;
+        }
+    }
+#else
+    // 0.0.0.0  0.0.0.0  192.168.0.1  192.168.0.11  10
+    QRegExp re("(\\d+\\.\\d+\\.\\d+\\.\\d+).*(\\d+\\.\\d+\\.\\d+\\.\\d+).*\\d+\\.\\d+\\.\\d+\\.\\d+");
+
+#if defined(Q_OS_MAC)
+    process.start("netstat", QStringList("-nr"));
+#elif defined(Q_OS_WIN)
+    process.start("route", QStringList("PRINT"));
+#endif
+
+    while (process.waitForReadyRead())
+    {
+        output += process.readAll();
+    }
+
+    QStringList entries = QString::fromLocal8Bit(output).split('\n');
+    entries.removeLast();
+
+    foreach (const QString &s, entries)
+    {
+        if (re.indexIn(s) == -1)
+        {
+            continue;
+        }
+
+        if (re.cap(1) == "0.0.0.0")
+        {
+            ret = QHostAddress(re.cap(2));
+            break;
+        }
+    }
+#endif
+
+    return ret;
 }
 
 RemoteHost NetworkHelper::remoteHost(const QString &hostname)
