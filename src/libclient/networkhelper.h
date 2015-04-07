@@ -20,6 +20,7 @@ public:
 
     static QHostAddress localIpAddress();
     static QHostAddress gatewayIpAddress();
+    static QList<QHostAddress> dnsServerIpAddresses();
 
     static RemoteHost remoteHost(const QString &hostname);
 };
