@@ -19,7 +19,6 @@ public:
     static bool isLocalIpAddress(const QHostAddress &host);
 
     static QHostAddress localIpAddress();
-    static QHostAddress gatewayIpAddress();
 
     static RemoteHost remoteHost(const QString &hostname);
 };
