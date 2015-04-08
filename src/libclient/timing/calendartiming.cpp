@@ -37,6 +37,8 @@ public:
 
 QTime CalendarTiming::Private::findTime(QTime &referenceTime)
 {
+
+
     QListIterator<int> hourIter(hours);
     QListIterator<int> minuteIter(minutes);
     QListIterator<int> secondIter(seconds);
@@ -44,6 +46,9 @@ QTime CalendarTiming::Private::findTime(QTime &referenceTime)
     int hour;
     int minute;
     int second;
+    QTime comparetime;
+
+
 
     while (hourIter.hasNext()) // hours
     {
@@ -54,27 +59,22 @@ QTime CalendarTiming::Private::findTime(QTime &referenceTime)
             while (minuteIter.hasNext()) // minutes
             {
                 minute = minuteIter.next();
-                if (minute >= referenceTime.minute())
+                while (secondIter.hasNext())
                 {
-                    // minute found
-                    while (secondIter.hasNext()) // seconds
+                    second = secondIter.next();
+                    if(QTime(hour,minute,second,999) >= referenceTime )
                     {
-                        second = secondIter.next();
-                        if (second >= referenceTime.second())
-                        {
-                            // finally, second found
-                            return QTime(hour, minute, second);
-                        }
-
-                        if (!secondIter.hasNext())
-                        {
-                            secondIter.toFront();
-                            referenceTime.setHMS(referenceTime.hour(), referenceTime.minute(), 0);
-                            break;
-                        }
+                        // finally, second found
+                        return QTime(hour, minute, second);
                     }
-                }
+                    //end of seconds reached go to next minute
+                    if(!secondIter.hasNext())
+                    {
+                        secondIter.toFront();
+                        break;
+                    }
 
+                }
                 if (!minuteIter.hasNext())
                 {
                     minuteIter.toFront();
