@@ -491,6 +491,8 @@ Ping::Ping(QObject *parent)
 : Measurement(parent)
 , currentStatus(Unknown)
 , m_pingProbes(0)
+, m_pingsSent(0)
+, m_pingsReceived(0)
 , m_device(NULL)
 , m_capture(NULL)
 , m_destAddress()
@@ -728,36 +730,57 @@ Result Ping::result() const
     QVariantMap res;
     QVariantList roundTripMs;
     float avg = 0.0;
-
-    // get max and min
-    QList<float>::const_iterator it = std::max_element(pingTime.begin(), pingTime.end());
-    float max = *it;
-    it = std::min_element(pingTime.begin(), pingTime.end());
-    float min = *it;
+    QList<float> tmpPingTime = pingTime;
 
     // calculate average and fill ping times
-    foreach (float val, pingTime)
+    foreach (float val, tmpPingTime)
     {
         roundTripMs << val;
+
+        // ignore timeouts, i.e. ping times with 0
+        if (fabs(val - 0.0) < std::numeric_limits<float>::epsilon())
+        {
+            continue;
+        }
+
         avg += val;
     }
 
-    qreal sq_sum = std::inner_product(pingTime.begin(), pingTime.end(), pingTime.begin(), 0.0);
+    // exclude timeouts from the stats
+    tmpPingTime.removeAll(0.0);
+
+    // get max and min
+    QList<float>::const_iterator it = std::max_element(tmpPingTime.begin(), tmpPingTime.end());
+    float max = *it;
+    it = std::min_element(tmpPingTime.begin(), tmpPingTime.end());
+    float min = *it;
+
+    qreal sq_sum = std::inner_product(tmpPingTime.begin(), tmpPingTime.end(), tmpPingTime.begin(), 0.0);
     qreal stdev = 0.0;
 
-    if (pingTime.size() > 0)
+    if (tmpPingTime.size() > 0)
     {
-        avg /= pingTime.size();
+        avg /= tmpPingTime.size();
         // calculate standard deviation
-        stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
+        stdev = qSqrt(sq_sum / tmpPingTime.size() - avg * avg);
     }
 
     res.insert("round_trip_avg", avg);
     res.insert("round_trip_min", min);
     res.insert("round_trip_max", max);
     res.insert("round_trip_stdev", stdev);
-    res.insert("round_trip_count", pingTime.size());
     res.insert("round_trip_ms", roundTripMs);
+    res.insert("round_trip_sent", m_pingsSent);  // count successfull pings only
+    res.insert("round_trip_received", m_pingsReceived);
+
+    if (m_pingsSent > 0)
+    {
+        res.insert("round_trip_loss", (m_pingsSent - m_pingsReceived) / m_pingsSent);
+    }
+    else
+    {
+        res.insert("round_trip_loss", 0);
+    }
 
     return Result(res);
 }
@@ -1003,6 +1026,7 @@ void Ping::ping(PingProbe *probe)
                 LOG_WARNING("error while sending");
             }
 
+            m_pingsSent++;
             QThread::usleep(definition->interval * 1000);
         }
     }
@@ -1015,6 +1039,7 @@ void Ping::ping(PingProbe *probe)
                 LOG_WARNING("error while sending");
             }
 
+            m_pingsSent++;
             QThread::usleep(definition->interval * 1000);
         }
     }
@@ -1091,10 +1116,12 @@ void Ping::processUdpPackets(QVector<PingProbe> *probes)
             switch (newProbe.response)
             {
             case ping::DESTINATION_UNREACHABLE:
+                m_pingsReceived++;
                 emit destinationUnreachable(newProbe);
                 break;
 
             case ping::TTL_EXCEEDED:
+                m_pingsReceived++;
                 emit ttlExceeded(newProbe);
                 break;
 
@@ -1133,6 +1160,7 @@ void Ping::processUdpPackets(QVector<PingProbe> *probes)
 
                 m_pingProbes.append(newProbe);
 
+                m_pingsReceived++;
                 emit udpResponse(newProbe);
                 break;
             }
@@ -1171,10 +1199,12 @@ void Ping::processTcpPackets(QVector<PingProbe> *probes)
                 switch (newProbe.response)
                 {
                 case ping::TCP_CONNECT:
+                    m_pingsReceived++;
                     emit tcpConnect(newProbe);
                     break;
 
                 case ping::TCP_RESET:
+                    m_pingsReceived++;
                     emit tcpReset(newProbe);
                     break;
                 }
@@ -1212,10 +1242,12 @@ void Ping::processTcpPackets(QVector<PingProbe> *probes)
                 switch (newProbe.response)
                 {
                 case ping::DESTINATION_UNREACHABLE:
+                    m_pingsReceived++;
                     emit destinationUnreachable(newProbe);
                     break;
 
                 case ping::TTL_EXCEEDED:
+                    m_pingsReceived++;
                     emit ttlExceeded(newProbe);
                     break;
 
@@ -1252,9 +1284,17 @@ void Ping::readyRead()
 {
     // Antwort von 193.99.144.80: Bytes=32 Zeit=32ms TTL=245
     QRegExp re("=(\\d+)ms");
+    // Packets: Sent = 3, Received = 3, Lost = 0 (0% loss),
+    QRegExp stats(".*:.*= (\\d+),.*= (\\d+),.*=.*\(.*%.*\),");
 
     for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine())
     {
+        if (stats.indexIn(line) > -1)
+        {
+            m_pingsSent = stats.cap(1).toUInt();
+            m_pingsReceived = stats.cap(2).toUInt();
+        }
+
         if (re.indexIn(line) == -1)
         {
             continue;

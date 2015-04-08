@@ -82,6 +82,7 @@ public slots:
             result.setStartDateTime(measurement->startDateTime());
             result.setEndDateTime(measurement->startDateTime().addMSecs(timer.elapsed()));
             result.setPreInfo(measurement->preInfo());
+            result.setPostInfo(localInformation.getVariables());
             result.setErrorString(measurement->errorString());
             emit finished(test, result);
 

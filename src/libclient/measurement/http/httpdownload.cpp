@@ -87,6 +87,7 @@ void DownloadThread::startTCPConnection()
         //for the successfully connected sockets, we should track the disconnection
         connect(socket, &QTcpSocket::disconnected, this, &DownloadThread::disconnectionHandling);
         tStatus = ConnectedTCP;
+        LOG_INFO("Thread connected");
         emit TCPConnected(true);
     }
     else
@@ -153,6 +154,8 @@ void DownloadThread::startDownload()
         bytesWritten += writeResult;
     }
 
+    LOG_INFO("Thread: get request sent");
+
     //start eplapsed timer for calculating the time slots
     measurementTimer.start();
 
@@ -161,6 +164,8 @@ void DownloadThread::startDownload()
     //do a blocking read for the first bytes or time-out if nothing is arriving
     if (socket->waitForReadyRead(firstByteReceivedTimeout))
     {
+        LOG_INFO("Thread: received response");
+
         //TODO: check for HTTP status code and act intelligently on it
         //currently, a 404 etc. is simply to little data
         //to generate results, but a better checking would be great
@@ -170,10 +175,12 @@ void DownloadThread::startDownload()
         connect(socket, &QTcpSocket::readyRead, this, &DownloadThread::read);
         //call read
         read();
+        LOG_INFO("Thread: emit signal firstByteReceived");
         emit firstByteReceived(true);
     }
     else
     {
+        LOG_INFO("Thread: no response received");
         tStatus = FinishedError;
         socket->close();
         emit firstByteReceived(false);
@@ -292,13 +299,9 @@ HTTPDownload::HTTPDownload(QObject *parent)
 , downloadingThreads(0)
 , notDownloadingThreads(0)
 , finishedThreads(0)
-, measurementTimer(this)
 {
     connect(this, SIGNAL(error(const QString &)), this,
             SLOT(setErrorString(const QString &)));
-
-    measurementTimer.setSingleShot(true);
-    connect(&measurementTimer, SIGNAL(timeout()), this, SLOT(downloadFinished()));
 }
 
 HTTPDownload::~HTTPDownload()
@@ -373,12 +376,6 @@ bool HTTPDownload::start()
 
     //when the lookup finishes, we want to call the startThreads() function
     //that starts the actual measurement/threads 
-
-    // TODO: There are some circumstances in which this measurement runs forever
-    //       The following timer is a quick fix for this to stop the measurement
-    measurementTimer.start(maxRampUpTime + maxTargetTime + 3000);
-
-
     QHostInfo::lookupHost(requestUrl.host(), this, SLOT(startThreads(QHostInfo)));
 
     return true;
@@ -400,8 +397,8 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
     for(n = 0; n < definition->threads; n++)
     {
         //create a worker thread that starts an actual download
-        DownloadThread *worker = new DownloadThread(requestUrl, server, definition->targetTime, definition->avoidCaches);
         QThread *workerThread = new QThread();
+        DownloadThread *worker = new DownloadThread(requestUrl, server, definition->targetTime, definition->avoidCaches, workerThread);
 
         //store the references to the threads/workers
         workers.append(worker);
@@ -409,9 +406,6 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
 
         //move the worker to its own thread context
         worker->moveToThread(workerThread);
-
-        //when the thread finishes, do some cleanup
-        connect(workerThread, &QThread::finished, worker, &QObject::deleteLater);
 
         //this signal tells a worker thread to initiate the TCP 3-way handshake
         connect(this, &HTTPDownload::connectTCP, worker, &DownloadThread::startTCPConnection);
@@ -427,12 +421,17 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
 
         connect(worker, &DownloadThread::TCPDisconnected, this, &HTTPDownload::prematureDisconnectedTracking);
 
+        //when the thread finishes, do some cleanup
+        connect(workerThread, &QThread::finished, workerThread, &QObject::deleteLater);
+
         //start the thread
         workerThread->start();
     }
 
     //now the actual measurement starts
     setStatus(HTTPDownload::Running);
+
+    LOG_INFO(QString("Started %1 threads").arg(definition->threads));
 
     //tell the threads to do the 3way-handshake
     emit connectTCP();
@@ -504,12 +503,14 @@ void HTTPDownload::downloadStartedTracking(bool success)
 
         downloadStartTime = QDateTime::currentDateTime().addMSecs(definition->rampUpTime);
         //when this timer fires we stop all downloads
+        LOG_INFO("Start timer to wait for download");
         downloadTimer.singleShot(definition->targetTime + definition->rampUpTime, this, SLOT(downloadFinished()));
     }
 }
 
 void HTTPDownload::downloadFinished()
 {
+    LOG_INFO("Download finished (timer timeout)");
     bool resultsOK = false;
 
     //stop the timer if still running (e.g. the case if all
@@ -530,7 +531,11 @@ void HTTPDownload::downloadFinished()
         workers[i]->stopDownload();
     }
 
+    LOG_INFO("All workers stopped, calculting results");
+
     resultsOK = calculateResults();
+
+    LOG_INFO("Waiting for threads to stop");
 
     //clean up (threads etc.) before emitting finished,
     //otherwise this thing can become deleted before the
@@ -538,8 +543,11 @@ void HTTPDownload::downloadFinished()
     for (i = 0; i < threads.size(); i++)
     {
         threads[i]->quit();
-        threads[i]->wait();
     }
+
+    threads.clear();
+
+    LOG_INFO("All threads stopped");
 
     if(resultsOK)
     {
@@ -595,15 +603,19 @@ bool HTTPDownload::calculateResults()
 {
     QVariantList threadResults;
     int num_threads = 0;
+    LOG_INFO("Check if results are trustable");
     bool resultsOK = resultsTrustable();
 
     for(int i = 0; i < workers.size(); i++)
     {
+        LOG_INFO("Check which treads to consider");
         //only consider threads that finished successfully
         if(workers[i]->threadStatus() != DownloadThread::FinishedSuccess)
         {
             continue;
         }
+
+        LOG_INFO("Calculate");
 
         num_threads++;
 
@@ -649,6 +661,19 @@ bool HTTPDownload::calculateResults()
 
 bool HTTPDownload::stop()
 {
+    foreach (const QPointer<DownloadThread> &downloadThread, workers)
+    {
+        if (!downloadThread.isNull())
+        {
+            downloadThread->stopDownload();
+        }
+    }
+
+    foreach (QThread *thread, threads)
+    {
+        thread->quit();
+    }
+
     return true;
 }
 
