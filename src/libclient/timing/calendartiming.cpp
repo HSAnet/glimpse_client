@@ -37,8 +37,6 @@ public:
 
 QTime CalendarTiming::Private::findTime(QTime &referenceTime)
 {
-
-
     QListIterator<int> hourIter(hours);
     QListIterator<int> minuteIter(minutes);
     QListIterator<int> secondIter(seconds);
@@ -46,9 +44,6 @@ QTime CalendarTiming::Private::findTime(QTime &referenceTime)
     int hour;
     int minute;
     int second;
-    QTime comparetime;
-
-
 
     while (hourIter.hasNext()) // hours
     {
