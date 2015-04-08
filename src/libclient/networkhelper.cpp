@@ -4,7 +4,6 @@
 #include <QHostInfo>
 #include <QStringList>
 #include <QProcess>
-#include <QFile>
 
 bool RemoteHost::isValid() const
 {
@@ -174,95 +173,6 @@ QHostAddress NetworkHelper::gatewayIpAddress()
     }
 #endif
 
-    return ret;
-}
-
-QList<QHostAddress> NetworkHelper::dnsServerIpAddresses()
-{
-    QList<QHostAddress> ret;
-#if defined(Q_OS_LINUX)
-    QRegExp re("nameserver(\\t| )+([^ ]+)");
-    QFile file("/etc/resolv.conf");
-
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        return ret;
-    }
-
-    QTextStream in(&file);
-
-    while (!in.atEnd())
-    {
-        QString line = in.readLine();
-
-        if (re.indexIn(line) == -1)
-        {
-            continue;
-        }
-
-        QHostAddress addr(re.cap(2));
-        ret.append(addr);
-    }
-#elif defined(Q_OS_OSX)
-    // TODO: use networksetup command as /etc/resolv.conf is not used
-#elif defined(Q_OS_WIN)
-    QRegExp re("DNS Servers");
-    QRegExp re_ipv4("(\\d+\\.\\d+\\.\\d+\\.\\d+)");
-    QRegExp re_ipv6("(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|"
-                    "([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|"
-                    "([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|"
-                    "([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|"
-                    ":((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|"
-                    "::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|"
-                    "(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|"
-                    "1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))");
-    QProcess process;
-    QByteArray output;
-    bool dnsSection = false;
-
-    process.start("ipconfig", QStringList("/all"));
-
-    while (process.waitForReadyRead())
-    {
-        output += process.readAll();
-    }
-
-    QStringList entries = QString::fromLocal8Bit(output).split('\n');
-    entries.removeLast();
-
-    foreach (const QString &s, entries)
-    {
-        if (re.indexIn(s) == -1 && !dnsSection)
-        {
-            continue;
-        }
-
-        dnsSection = true;
-        QHostAddress addr;
-
-        if (re_ipv4.indexIn(s) != -1)
-        {
-            addr = re_ipv4.cap(1);
-        }
-        else if (re_ipv6.indexIn(s) != -1)
-        {
-            addr = re_ipv6.cap(1);
-        }
-        else
-        {
-            // end of DNS server list
-            break;
-        }
-
-        ret.append(addr);
-
-        if (ret.size() == 4)
-        {
-            // Windows allows 2 DNS servers for each IP version, i.e. 4 servers in total
-            break;
-        }
-    }
-#endif
     return ret;
 }
 
