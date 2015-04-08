@@ -18,8 +18,6 @@ public:
     static bool isLinkLocalAddress(const QHostAddress &host);
     static bool isLocalIpAddress(const QHostAddress &host);
 
-    static QHostAddress localIpAddress();
-
     static RemoteHost remoteHost(const QString &hostname);
 };
 

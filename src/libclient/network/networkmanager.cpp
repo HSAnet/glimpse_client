@@ -6,6 +6,7 @@
 #include "../settings.h"
 #include "../timing/immediatetiming.h"
 #include "../timing/periodictiming.h"
+#include "../connectiontester.h"
 
 #include "tcpsocket.h"
 #include "udpsocket.h"
@@ -368,7 +369,7 @@ void NetworkManager::Private::timeout()
     }
 
     QStringList srcIp;
-    srcIp.append(NetworkHelper::localIpAddress().toString());
+    srcIp.append(ConnectionTester().localIpAddress());
 
     QVariantMap map;
     map.insert("type", "keepalive");

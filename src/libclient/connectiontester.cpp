@@ -18,6 +18,11 @@
 #include <QStringList>
 #include <QProcess>
 #include <QDebug>
+#include <QHostInfo>
+#include <QNetworkAccessManager>
+#include <QTimer>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 #ifdef Q_OS_LINUX
 #include <netinet/in.h>
@@ -61,6 +66,8 @@ public:
 
     QString findDefaultGateway() const;
     QString findDefaultDNS() const;
+    QString localIpAddress() const;
+    QString publicIpAddress() const;
     bool canPing(const QString &host, int *averagePing = 0) const;
 
 #ifdef Q_OS_MAC
@@ -78,6 +85,8 @@ void ConnectionTester::Private::checkInterfaces()
     q->findDefaultGateway();
     q->findDefaultDNS();
     q->canPingGateway();
+    q->localIpAddress();
+    q->publicIpAddress();
     q->canPingGoogleDnsServer();
     q->canPingGoogleDomain();
 }
@@ -238,6 +247,96 @@ QString ConnectionTester::Private::findDefaultDNS() const
 #endif
 }
 
+QString ConnectionTester::Private::localIpAddress() const
+{
+    QHostInfo hostInfo = QHostInfo::fromName(QHostInfo::localHostName());
+    QList<QHostAddress> hostNameLookupAddressList = hostInfo.addresses();
+    QList<QHostAddress> interfaceAddressList = QNetworkInterface::allAddresses();
+
+    //qDebug()<<__FUNCTION__<<"hostName lookup addresses:"<<hostNameLookupAddressList;
+    //qDebug()<<__FUNCTION__<<"interface addresses:"<<interfaceAddressList;
+
+    QHostAddress hostIp;
+#if defined(Q_OS_WIN) || defined(Q_OS_MAC)
+
+    foreach (QHostAddress addr, hostNameLookupAddressList)
+    {
+        if (addr.protocol() == QAbstractSocket::IPv4Protocol && interfaceAddressList.contains(addr))
+        {
+            if (isLocalIpAddress(addr))
+            {
+                //qDebug() << __FUNCTION__ << addr << " is local ip";
+                hostIp = addr;
+                break;
+            }
+            else if (isLinkLocalAddress(addr))
+            {
+                //qDebug() << __FUNCTION__ << addr << " is Link Local Address";
+                hostIp = addr;
+            }
+            else
+            {
+                //qDebug() << __FUNCTION__ << addr << "is some different address";
+            }
+        }
+    }
+
+#else
+
+    foreach (const QHostAddress &addr, interfaceAddressList)
+    {
+        if (addr.protocol() != QAbstractSocket::IPv4Protocol)
+        {
+            interfaceAddressList.removeAll(addr);
+        }
+
+        if (addr.toString().startsWith("127."))
+        {
+            interfaceAddressList.removeAll(addr);
+        }
+    }
+
+    if (!interfaceAddressList.empty())
+    {
+        hostIp = interfaceAddressList.first();
+    }
+
+    //qDebug() << "Hope" << hostIp << "is a local ip";
+
+#endif
+
+    return hostIp.toString();
+}
+
+QString ConnectionTester::Private::publicIpAddress() const
+{
+    QString ret;
+    QEventLoop eventLoop;
+    QNetworkAccessManager mgr;
+    QTimer timer;
+
+    timer.setSingleShot(true);
+
+    QObject::connect(&mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    QObject::connect(&timer, SIGNAL(timeout()), &eventLoop, SLOT(quit()));
+
+    QNetworkRequest req(QUrl(QString("http://icanhazip.com")));
+    QNetworkReply *reply = mgr.get(req);
+
+    timer.start(10000);
+
+    eventLoop.exec();
+
+    if (reply->error() == QNetworkReply::NoError)
+    {
+        ret = QString(reply->readAll()).trimmed();
+    }
+
+    delete reply;
+
+    return ret;
+}
+
 bool ConnectionTester::Private::canPing(const QString &host, int *averagePing) const
 {
     // TODO: invoke scheduler or tell scheduler something is going on outside of its control
@@ -367,6 +466,22 @@ QString ConnectionTester::findDefaultDNS()
     QString dns = d->findDefaultDNS();
     emit checkFinished(DefaultDns, !dns.isNull(), dns);
     return dns;
+}
+
+QString ConnectionTester::localIpAddress()
+{
+    emit checkStarted(LocalIpAddress);
+    QString ip = d->localIpAddress();
+    emit checkFinished(LocalIpAddress, !ip.isNull(), ip);
+    return ip;
+}
+
+QString ConnectionTester::publicIpAddress()
+{
+    emit checkStarted(PublicIpAddress);
+    QString ip = d->publicIpAddress();
+    emit checkFinished(PublicIpAddress, !ip.isNull(), ip);
+    return ip;
 }
 
 bool ConnectionTester::canPingGateway()
