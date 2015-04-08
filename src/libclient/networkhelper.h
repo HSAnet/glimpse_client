@@ -19,6 +19,7 @@ public:
     static bool isLocalIpAddress(const QHostAddress &host);
 
     static QHostAddress localIpAddress();
+    static QHostAddress publicIpAddress();
     static QHostAddress gatewayIpAddress();
     static QList<QHostAddress> dnsServerIpAddresses();
 

@@ -5,6 +5,10 @@
 #include <QStringList>
 #include <QProcess>
 #include <QFile>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QEventLoop>
+#include <QTimer>
 
 bool RemoteHost::isValid() const
 {
@@ -112,6 +116,35 @@ QHostAddress NetworkHelper::localIpAddress()
 #endif
 
     return hostIp;
+}
+
+QHostAddress NetworkHelper::publicIpAddress()
+{
+    QHostAddress ret;
+    QEventLoop eventLoop;
+    QNetworkAccessManager mgr;
+    QTimer timer;
+
+    timer.setSingleShot(true);
+
+    QObject::connect(&mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    QObject::connect(&timer, SIGNAL(timeout()), &eventLoop, SLOT(quit()));
+
+    QNetworkRequest req(QUrl(QString("http://icanhazip.com")));
+    QNetworkReply *reply = mgr.get(req);
+
+    timer.start(10000);
+
+    eventLoop.exec();
+
+    if (reply->error() == QNetworkReply::NoError)
+    {
+        ret = QString(reply->readAll()).trimmed();
+    }
+
+    delete reply;
+
+    return ret;
 }
 
 QHostAddress NetworkHelper::gatewayIpAddress()
