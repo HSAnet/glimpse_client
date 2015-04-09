@@ -1,6 +1,7 @@
 #include "connectiontester.h"
 #include "measurement/ping/ping.h"
 #include "types.h"
+#include "networkhelper.h"
 
 #include <QNetworkConfigurationManager>
 #include <QNetworkConfiguration>
@@ -263,13 +264,13 @@ QString ConnectionTester::Private::localIpAddress() const
     {
         if (addr.protocol() == QAbstractSocket::IPv4Protocol && interfaceAddressList.contains(addr))
         {
-            if (isLocalIpAddress(addr))
+            if (NetworkHelper::isLocalIpAddress(addr))
             {
                 //qDebug() << __FUNCTION__ << addr << " is local ip";
                 hostIp = addr;
                 break;
             }
-            else if (isLinkLocalAddress(addr))
+            else if (NetworkHelper::isLinkLocalAddress(addr))
             {
                 //qDebug() << __FUNCTION__ << addr << " is Link Local Address";
                 hostIp = addr;
