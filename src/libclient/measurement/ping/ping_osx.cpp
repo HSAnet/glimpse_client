@@ -324,7 +324,7 @@ bool Ping::stop()
 
 Result Ping::result() const
 {
-    QVariantMap res;
+    QVariantList res;
     QVariantList roundTripMs;
     float avg = 0.0;
     QList<float> tmpPingTime = pingTime;
@@ -362,22 +362,22 @@ Result Ping::result() const
         stdev = qSqrt(sq_sum / tmpPingTime.size() - avg * avg);
     }
 
-    res.insert("round_trip_avg", avg);
-    res.insert("round_trip_min", min);
-    res.insert("round_trip_max", max);
-    res.insert("round_trip_stdev", stdev);
-    res.insert("round_trip_ms", roundTripMs);
-    res.insert("round_trip_sent", m_pingsSent);  // count successfull pings only
-    res.insert("round_trip_received", m_pingsReceived);
+    //res.append(roundTripMs);
+    res.append(min);
+    res.append(max);
+    res.append(avg);
+    res.append(stdev);
+    res.append(m_pingsSent);
+    res.append(m_pingsReceived);
 
-    if (m_pingsSent > 0)
+    /*if (m_pingsSent > 0)
     {
         res.insert("round_trip_loss", (m_pingsSent - m_pingsReceived) / static_cast<float>(m_pingsSent));
     }
     else
     {
         res.insert("round_trip_loss", 0);
-    }
+    }*/
 
     return Result(res);
 }

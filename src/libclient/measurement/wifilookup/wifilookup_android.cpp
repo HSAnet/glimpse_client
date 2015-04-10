@@ -123,5 +123,5 @@ Result WifiLookup::result() const
     QVariantMap map;
     map.insert("ap_list", res);
 
-    return Result(map);
+    return Result(QVariantList());
 }
