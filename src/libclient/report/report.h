@@ -12,7 +12,7 @@ class CLIENT_API Report : public Serializable
 public:
     Report();
     Report(const Report &other);
-    Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results);
+    Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results, const QVariantMap &specification = QVariantMap());
     ~Report();
 
     Report &operator=(const Report &rhs);
@@ -30,11 +30,11 @@ public:
     void setAppVersion(const QString &appVersion);
     QString appVersion() const;
 
-    void setColumnLabels(const QStringList &columnLabels);
-    QStringList columnLabels() const;
-
     void setResults(const ResultList &results);
     ResultList results() const;
+
+    void setSpecification(const QVariantMap &specification);
+    QVariantMap specification() const;
 
     // Storage
     static Report fromVariant(const QVariant &variant);

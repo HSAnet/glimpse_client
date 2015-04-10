@@ -20,6 +20,7 @@ public:
 
     // Storage
     static PingDefinitionPtr fromVariant(const QVariant &variant);
+    static PingDefinitionPtr fromSpecification(const QVariant &variant);
 
     // Getters
     QString host;
@@ -34,6 +35,8 @@ public:
 
     // Serializable interface
     QVariant toVariant() const;
+
+    static QVariantMap capability();
 };
 
 #endif // UDPPING_DEFINITION_H

@@ -25,6 +25,7 @@
 #include <sys/socket.h>
 #include <signal.h>
 #include <unistd.h>
+#include <controller/mplanecontroller.h>
 #endif // Q_OS_UNIX
 
 #ifdef Q_OS_WIN
@@ -88,6 +89,7 @@ public:
     ConfigController configController;
     CrashController crashController;
     NtpController ntpController;
+    MPlaneController mPlaneController;
 
     TrafficBudgetManager trafficBudgetManager;
 
@@ -280,7 +282,7 @@ void Client::Private::taskFinished(const ScheduleDefinition &test, const Result 
 
     if (report.isNull() || results.size() == 1)
     {
-        report = Report(test.taskId(), Client::instance()->ntpController()->currentDateTime(), Client::version(), results);
+        report = Report(test.taskId(), Client::instance()->ntpController()->currentDateTime(), Client::version(), results, test.specification());
         reportScheduler.addReport(report);
     }
     else
@@ -338,13 +340,15 @@ bool Client::init()
 
     // Initialize controllers
     d->networkManager.init(&d->scheduler, &d->settings);
-    d->configController.init(&d->networkManager, &d->settings);
+    //d->configController.init(&d->networkManager, &d->settings);
     d->reportController.init(&d->reportScheduler, &d->settings);
-    d->loginController.init(&d->networkManager, &d->settings);
-    d->crashController.init(&d->networkManager, &d->settings);
+    //d->loginController.init(&d->networkManager, &d->settings);
+    //d->crashController.init(&d->networkManager, &d->settings);
     d->ntpController.init();
     d->trafficBudgetManager.init();
+    d->mPlaneController.init(&d->networkManager, &d->scheduler, &d->settings);
 
+    /*
     if (!d->settings.isPassive())
     {
         d->taskController.init(&d->networkManager, &d->scheduler, &d->settings);
@@ -389,6 +393,7 @@ bool Client::init()
     {
         d->scheduler.enqueue(test);
     }
+    */
 
     return true;
 }

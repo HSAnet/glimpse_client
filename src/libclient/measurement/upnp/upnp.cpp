@@ -259,7 +259,5 @@ Result UPnP::result() const
         deviceResultList.append(deviceResult);
     }
 
-    QVariantMap res;
-    res.insert("data", deviceResultList);
-    return Result(res);
+    return Result(deviceResultList);
 }

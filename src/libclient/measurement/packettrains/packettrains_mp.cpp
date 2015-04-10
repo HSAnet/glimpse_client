@@ -199,5 +199,5 @@ Result PacketTrainsMP::result() const
     map.insert("sending_speed", listToVariant(m_sendSpeed));
     map.insert("receiving_speed", listToVariant(m_recvSpeed));
 
-    return Result(map, getMeasurementUuid());
+    return Result(QVariantList(), getMeasurementUuid());
 }

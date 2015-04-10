@@ -10,7 +10,7 @@ public:
     QDateTime endDateTime;
     QVariant conflictingTasks;
     QVariant crossTraffic;
-    QVariantMap probeResult;
+    QVariantList probeResult;
     QUuid measureUuid;
     QVariantMap preInfo;
     QVariantMap postInfo;
@@ -34,7 +34,7 @@ Result::Result(const Result &other)
 {
 }
 
-Result::Result(const QVariantMap &probeResult, const QUuid &measureUuid)
+Result::Result(const QVariantList &probeResult, const QUuid &measureUuid)
 : d(new ResultData)
 {
     d->probeResult = probeResult;
@@ -42,7 +42,7 @@ Result::Result(const QVariantMap &probeResult, const QUuid &measureUuid)
 }
 
 Result::Result(const QDateTime &startDateTime, const QDateTime &endDateTime,
-               const QVariantMap &probeResult, const QUuid &measureUuid,
+               const QVariantList &probeResult, const QUuid &measureUuid,
                const QVariantMap &preInfo, const QVariantMap &postInfo, const QString &errorString)
 : d(new ResultData)
 {
@@ -80,7 +80,7 @@ Result Result::fromVariant(const QVariant &variant)
 
     return Result(map.value("start_time").toDateTime(),
                   map.value("end_time").toDateTime(),
-                  map.value("probe_result").toMap(),
+                  map.value("probe_result").toList(),
                   map.value("measure_uuid").toUuid(),
                   map.value("pre_info").toMap(),
                   map.value("post_info").toMap(),
@@ -107,12 +107,12 @@ QDateTime Result::endDateTime() const
     return d->endDateTime;
 }
 
-void Result::setProbeResult(const QVariantMap &probeResult)
+void Result::setProbeResult(const QVariantList &probeResult)
 {
     d->probeResult = probeResult;
 }
 
-QVariantMap Result::probeResult() const
+QVariantList Result::probeResult() const
 {
     return d->probeResult;
 }
@@ -154,16 +154,7 @@ QString Result::errorString() const
 
 QVariant Result::toVariant() const
 {
-    QVariantMap map;
-    map.insert("start_time", d->startDateTime);
-    map.insert("end_time", d->endDateTime);
-    map.insert("duration", d->startDateTime.msecsTo(d->endDateTime));
-    map.insert("measure_uuid", uuidToString(d->measureUuid));
-    map.insert("pre_info", d->preInfo);
-    map.insert("post_info", d->postInfo);
-    map.insert("error", d->errorString);
-    map.insert("probe_result", d->probeResult);
-    return map;
+    return d->probeResult;
 }
 
 QVariant Result::toVariantStripped() const

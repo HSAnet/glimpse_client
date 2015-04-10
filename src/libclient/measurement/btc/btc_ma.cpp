@@ -278,5 +278,5 @@ Result BulkTransportCapacityMA::result() const
     res.insert("kBs_stddev", stdev);
     res.insert("kBs", downSpeeds);
 
-    return Result(res, definition->measurementUuid);
+    return Result(QVariantList(), definition->measurementUuid);
 }

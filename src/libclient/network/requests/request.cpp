@@ -6,6 +6,7 @@ public:
     QString deviceId;
     QString sessionId;
     QString path;
+    Request::AuthenticationMethod authenticationMethod;
 };
 
 Request::Request(QObject *parent)
@@ -59,4 +60,18 @@ void Request::setPath(const QString &path)
 QString Request::path() const
 {
     return d->path;
+}
+
+void Request::setAuthenticationMethod(const Request::AuthenticationMethod &authenticationMethod)
+{
+    if (d->authenticationMethod != authenticationMethod)
+    {
+        d->authenticationMethod = authenticationMethod;
+        emit authenticationMethodChanged(authenticationMethod);
+    }
+}
+
+Request::AuthenticationMethod Request::authenticationMethod() const
+{
+    return d->authenticationMethod;
 }

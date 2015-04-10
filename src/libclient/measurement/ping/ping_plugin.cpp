@@ -17,5 +17,5 @@ MeasurementPtr PingPlugin::createMeasurement(const QString &name)
 MeasurementDefinitionPtr PingPlugin::createMeasurementDefinition(const QString &name, const QVariant &data)
 {
     Q_UNUSED(name);
-    return PingDefinition::fromVariant(data);
+    return PingDefinition::fromSpecification(data);
 }

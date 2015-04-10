@@ -50,3 +50,13 @@ TimingPtr TimingFactory::timingFromVariant(const QVariant &variant)
 
     return TimingPtr();
 }
+
+TimingPtr TimingFactory::timingFromMPlaneWhen(const QString &when)
+{
+    if (when == "now")
+    {
+        return TimingPtr(new ImmediateTiming());
+    }
+
+    return TimingPtr();
+}

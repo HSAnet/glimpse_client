@@ -138,7 +138,7 @@ Result Dnslookup::result() const
 
     res.insert("records", records);
 
-    Result result(res);
+    Result result(records);
     result.setErrorString(m_dnsError);
     return result;
 }

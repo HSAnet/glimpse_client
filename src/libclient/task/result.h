@@ -19,11 +19,11 @@ public:
     Result();
     Result(const QString &errorString);
     Result(const Result &other);
-    Result(const QVariantMap &probeResult,
+    Result(const QVariantList &probeResult,
            const QUuid &measureUuid = QUuid());
     Result(const QDateTime &startDateTime,
            const QDateTime &endDateTime,
-           const QVariantMap &probeResult,
+           const QVariantList &probeResult,
            const QUuid &measureUuid,
            const QVariantMap &preInfo,
            const QVariantMap &postInfo,
@@ -40,8 +40,8 @@ public:
     void setEndDateTime(const QDateTime& endDateTime);
     QDateTime endDateTime() const;
 
-    void setProbeResult(const QVariantMap& probeResult);
-    QVariantMap probeResult() const;
+    void setProbeResult(const QVariantList &probeResult);
+    QVariantList probeResult() const;
 
     void setPreInfo(const QVariantMap& preInfo);
     QVariantMap preInfo() const;

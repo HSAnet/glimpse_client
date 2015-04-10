@@ -13,10 +13,18 @@ class CLIENT_API Request : public QObject
     Q_PROPERTY(QString deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
     Q_PROPERTY(QString sessionId READ sessionId WRITE setSessionId NOTIFY sessionIdChanged)
     Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
+    Q_PROPERTY(Request::AuthenticationMethod authenticationMethod READ authenticationMethod WRITE setAuthenticationMethod NOTIFY authenticationMethodChanged)
 
 public:
     explicit Request(QObject *parent = 0);
     ~Request();
+
+    enum AuthenticationMethod
+    {
+        None,
+        Basic,
+        ApiKey
+    };
 
     virtual QVariant toVariant() const = 0;
 
@@ -29,10 +37,14 @@ public:
     void setPath(const QString &path);
     virtual QString path() const;
 
+    void setAuthenticationMethod(const Request::AuthenticationMethod &authenticationMethod);
+    Request::AuthenticationMethod authenticationMethod() const;
+
 signals:
     void deviceIdChanged(const QUuid &deviceId);
     void sessionIdChanged(const QString &sessionId);
     void pathChanged(const QString &path);
+    void authenticationMethodChanged(const Request::AuthenticationMethod &authenticationMethod);
 
 protected:
     class Private;

@@ -11,6 +11,7 @@ public:
     TimingPtr timing;
     QVariant measurementDefinition;
     Precondition precondition;
+    QVariantMap specification;
 };
 
 ScheduleDefinition::ScheduleDefinition()
@@ -24,7 +25,7 @@ ScheduleDefinition::ScheduleDefinition(const ScheduleDefinition &other)
 }
 
 ScheduleDefinition::ScheduleDefinition(const ScheduleId &id, const TaskId& taskId, const QString &name, const TimingPtr &timing,
-                               const QVariant &measurementDefinition, const Precondition &precondition)
+                               const QVariant &measurementDefinition, const Precondition &precondition, QVariantMap specification)
 : d(new TaskData)
 {
     d->id = id;
@@ -33,6 +34,7 @@ ScheduleDefinition::ScheduleDefinition(const ScheduleId &id, const TaskId& taskI
     d->timing = timing;
     d->measurementDefinition = measurementDefinition;
     d->precondition = precondition;
+    d->specification = specification;
 }
 
 ScheduleDefinition::~ScheduleDefinition()
@@ -90,6 +92,19 @@ ScheduleDefinition ScheduleDefinition::fromVariant(const QVariant &variant)
                               Precondition::fromVariant(map.value("precondition")));
 }
 
+ScheduleDefinition ScheduleDefinition::fromMPlaneVariant(const QVariant &variant)
+{
+    QVariantMap map = variant.toMap();
+
+    return ScheduleDefinition(ScheduleId(map.value("token").toInt()),
+                              TaskId(map.value("token").toInt()),
+                              ScheduleDefinition::getMethodFromMPlaneLabel(map.value("label").toString()),
+                              TimingFactory::timingFromMPlaneWhen(map.value("when").toString()),
+                              map.value("parameters"),
+                              Precondition(),
+                              map);
+}
+
 ScheduleId ScheduleDefinition::id() const
 {
     return d->id;
@@ -138,4 +153,24 @@ void ScheduleDefinition::setPrecondition(const Precondition &precondition)
 Precondition ScheduleDefinition::precondition() const
 {
     return d->precondition;
+}
+
+void ScheduleDefinition::setSpecification(const QVariantMap &specification)
+{
+    d->specification = specification;
+}
+
+QVariantMap ScheduleDefinition::specification() const
+{
+    return d->specification;
+}
+
+QString ScheduleDefinition::getMethodFromMPlaneLabel(const QString &label)
+{
+    if (label == "glimpse-ping")
+    {
+        return "ping";
+    }
+
+    return QString();
 }

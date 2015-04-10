@@ -17,7 +17,7 @@ class CLIENT_API ScheduleDefinition : public Serializable
 public:
     ScheduleDefinition();
     ScheduleDefinition(const ScheduleDefinition &other);
-    ScheduleDefinition(const ScheduleId &id, const TaskId &taskId, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition, const Precondition &precondition);
+    ScheduleDefinition(const ScheduleId &id, const TaskId &taskId, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition, const Precondition &precondition, QVariantMap specification = QVariantMap());
     ~ScheduleDefinition();
 
     ScheduleDefinition &operator=(const ScheduleDefinition &rhs);
@@ -41,8 +41,15 @@ public:
     void setPrecondition(const Precondition &precondition);
     Precondition precondition() const;
 
+    void setSpecification(const QVariantMap &specification);
+    QVariantMap specification() const;
+
+    static QString getMethodFromMPlaneLabel(const QString &label);
+
     // Storage
     static ScheduleDefinition fromVariant(const QVariant &variant);
+    static ScheduleDefinition fromMPlaneVariant(const QVariant &variant);
+
 
     // Serializable interface
     QVariant toVariant() const;

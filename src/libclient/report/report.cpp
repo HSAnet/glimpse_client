@@ -10,6 +10,7 @@ public:
     QDateTime dateTime;
     ResultList results;
     QString appVersion;
+    QVariantMap specification;
 };
 
 Report::Report()
@@ -22,13 +23,14 @@ Report::Report(const Report &other)
 {
 }
 
-Report::Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results)
+Report::Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results, const QVariantMap &specification)
 : d(new ReportData)
 {
     d->taskId = taskId;
     d->dateTime = dateTime;
     d->appVersion = appVersion;
     d->results = results;
+    d->specification = specification;
 }
 
 Report::~Report()
@@ -105,12 +107,33 @@ ResultList Report::results() const
     return d->results;
 }
 
+void Report::setSpecification(const QVariantMap &specification)
+{
+    d->specification = specification;
+}
+
+QVariantMap Report::specification() const
+{
+    return d->specification;
+}
+
 QVariant Report::toVariant() const
 {
-    QVariantMap map;
-    map.insert("task_id", taskId().toInt());
-    map.insert("report_time", dateTime());
-    map.insert("app_version", appVersion());
-    map.insert("results", listToVariant(results()));
+    QVariantMap map = d->specification;
+
+    // make result from specification
+    map.remove("specification");
+    map.insert("result", "measure");
+
+    if (d->results.count() > 1)
+    {
+        map.insert("when", QString("%1 ... %2").arg(d->results.first().startDateTime().toString(Qt::ISODate)).arg(d->results.last().endDateTime().toString(Qt::ISODate)));
+    }
+    else
+    {
+        map.insert("when", QString("%1").arg(d->results.first().startDateTime().toString(Qt::ISODate)));
+    }
+
+    map.insert("resultvalues", listToVariant(results()));
     return map;
 }

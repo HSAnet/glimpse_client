@@ -103,7 +103,7 @@ void DownloadThread::startTCPConnection()
 void DownloadThread::disconnectionHandling()
 {
     // handling premature TCP disconnects
-    if(tStatus == DownloadInProgress)
+    if(tStatus == DownloadInProgress) // != FinishedError?
     {
         tStatus = FinishedSuccess;
         emit TCPDisconnected();
@@ -701,7 +701,7 @@ bool HTTPDownload::stop()
 
 Result HTTPDownload::result() const
 {
-    return Result(results);
+    return Result(QVariantList());
 }
 
 void HTTPDownload::setStatus(Status status)

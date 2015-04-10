@@ -6,6 +6,7 @@
 
 #include "../webrequester.h"
 #include "../network/requests/request.h"
+#include "../network/requests/postrequest.h"
 #include "../network/responses/reportresponse.h"
 #include "../timing/periodictiming.h"
 #include "../client.h"
@@ -27,7 +28,7 @@ class ReportPost : public Request
     Q_OBJECT
 
     Q_CLASSINFO("http_request_method", "post")
-    Q_CLASSINFO("authentication_method", "apikey")
+    Q_CLASSINFO("authentication_method", "none")
 
 public:
     ReportPost(QObject *parent = 0)
@@ -35,35 +36,24 @@ public:
     {
     }
 
-    void setReports(const ReportList &reports)
+    void setReport(const Report &report)
     {
-        m_reports = reports;
+        m_report = report;
     }
 
-    ReportList reports() const
+    Report report() const
     {
-        return m_reports;
+        return m_report;
     }
 
     // Request interface
     QVariant toVariant() const
     {
-        QVariantMap map;
-        QVariantList list;
-
-        foreach (Report report, m_reports)
-        {
-            list.append(report.toVariant());
-        }
-
-        map.insert("reports", list);
-        map.insert("device_id", deviceId());
-
-        return map;
+        return m_report.toVariant();
     }
 
 protected:
-    ReportList m_reports;
+    Report m_report;
 };
 
 
@@ -81,7 +71,7 @@ public:
         connect(&requester, SIGNAL(finished()), this, SLOT(onFinished()));
         connect(&requester, SIGNAL(error()), this, SLOT(onError()));
 
-        post.setPath(("/api/v1/report/"));
+        post.setPath(("/register/result"));
         requester.setRequest(&post);
         requester.setResponse(&response);
     }
@@ -112,7 +102,7 @@ public slots:
 void ReportController::Private::updateTimer()
 {
     // Set the new url
-    QString newUrl = QString("https://%1").arg(settings->config()->reportAddress());
+    QString newUrl = QString("http://%1").arg(settings->config()->supervisorAddress());
 
     if (requester.url() != newUrl)
     {
@@ -139,22 +129,7 @@ void ReportController::Private::updateTimer()
 
 void ReportController::Private::onFinished()
 {
-    QList<TaskId> taskIds = response.taskIds;
-    LOG_DEBUG(QString("%1 Results successfully inserted").arg(taskIds.size()));
-
-    foreach (const TaskId &taskId, taskIds)
-    {
-        Report report = scheduler->reportByTaskId(taskId);
-
-        if (report.isNull())
-        {
-            LOG_WARNING(QString("No task with id %1 found.").arg(taskId.toInt()));
-        }
-        else
-        {
-            scheduler->removeReport(report);
-        }
-    }
+    LOG_DEBUG("Results successfully inserted");
 }
 
 void ReportController::Private::onError()
@@ -164,10 +139,7 @@ void ReportController::Private::onError()
 
 void ReportController::Private::onReportAdded()
 {
-    if (isImmediate)
-    {
-        q->sendReports();
-    }
+    q->sendReports();
 }
 
 void ReportController::Private::onTimingChanged()
@@ -224,6 +196,8 @@ bool ReportController::init(ReportScheduler *scheduler, Settings *settings)
     connect(d->scheduler, SIGNAL(reportModified(Report)), d, SLOT(onReportAdded()));
     connect(d->scheduler, SIGNAL(reportModified(Report)), d, SLOT(rotate()));
 
+    d->updateTimer();
+
     return true;
 }
 
@@ -242,10 +216,15 @@ void ReportController::sendReports()
         return;
     }
 
+    foreach (const Report &report, reports)
+    {
+        d->post.setReport(report);
+        d->requester.start();
+        d->scheduler->removeReport(report);
+    }
+
     LOG_DEBUG(QString("Sending %1 reports").arg(reports.size()));
 
-    d->post.setReports(reports);
-    d->requester.start();
 }
 
 #include "reportcontroller.moc"

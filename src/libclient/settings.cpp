@@ -5,9 +5,10 @@
 
 #include <QSettings>
 #include <QCryptographicHash>
+#include <QCoreApplication>
 
-static QLatin1String CONFIG_SERVER("supervisor.measure-it.net");
-static QLatin1String SUPERVISOR_SERVER("supervisor.measure-it.net");
+static QLatin1String CONFIG_SERVER("localhost:8888");
+static QLatin1String SUPERVISOR_SERVER("localhost:8888");
 
 LOGGER(Settings);
 
@@ -82,8 +83,8 @@ Settings::StorageType Settings::init()
     // Create new settings
     if (newSettings)
     {
-        d->config.setConfigAddress(CONFIG_SERVER);
-        d->config.setSupervisorAdress(SUPERVISOR_SERVER);
+        //d->config.setConfigAddress(CONFIG_SERVER);
+        //d->config.setSupervisorAdress(SUPERVISOR_SERVER);
         setUsedTraffic(0);
         setUsedMobileTraffic(0);
         LOG_DEBUG("Created new settings for this device");
@@ -93,18 +94,18 @@ Settings::StorageType Settings::init()
     else
     {
         d->config.fillFromVariant(qvariant_cast<QVariantMap>(d->settings.value("config")));
-
+        /*
         // Always set the controller address if we have none
         if (d->config.configAddress().isEmpty())
         {
             LOG_WARNING("Config controller address lost, setting back default one");
             d->config.setConfigAddress(SUPERVISOR_SERVER);
-        }
+        }*/
 
         if (d->config.supervisorAddress().isEmpty())
         {
-            LOG_WARNING("Supervisor address lost, setting back default one");
-            d->config.setConfigAddress(CONFIG_SERVER);
+            LOG_ERROR("Supervisor address lost, abort");
+            qApp->quit();
         }
 
         LOG_DEBUG("Loaded existing settings for this device");

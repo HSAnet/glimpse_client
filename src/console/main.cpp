@@ -242,6 +242,7 @@ int main(int argc, char *argv[])
 
 #endif // Q_OS_UNIX
 
+    /*
     QCommandLineOption registerAnonymous("register-anonymous", "Register anonymous on server and exit application");
     parser.addOption(registerAnonymous);
 
@@ -253,12 +254,17 @@ int main(int argc, char *argv[])
 
     QCommandLineOption passiveOption("passive", "Passive probe which does not receive tasks", "0/1");
     parser.addOption(passiveOption);
+    */
 
     QCommandLineOption trafficOption("traffic", "Traffic limit per month (0 to deactivate traffic limit)", "MB");
     parser.addOption(trafficOption);
 
+    QCommandLineOption supervisorOption("supervisor", "Supervisor address", "address");
+    parser.addOption(supervisorOption);
+
     parser.process(app);
 
+    /*
     if (parser.isSet(registerOption) && parser.isSet(registerAnonymous))
     {
         out << "'--register' and '--register-anonymous' cannot be set on the same time.\n";
@@ -311,6 +317,7 @@ int main(int argc, char *argv[])
         }
         while (loginData.password.isEmpty());
     }
+    */
 
 #ifdef Q_OS_UNIX
 
@@ -383,11 +390,13 @@ int main(int argc, char *argv[])
 
     LOG_INFO(QString("Glimpse version %1").arg(Client::version()));
 
+    /*
     if (parser.isSet(passiveOption))
     {
         int setPassive = parser.value(passiveOption).toInt();
         client->settings()->setPassive((bool) setPassive);
     }
+    */
 
     if (parser.isSet(trafficOption))
     {
@@ -404,15 +413,27 @@ int main(int argc, char *argv[])
         }
     }
 
+    if (parser.isSet(supervisorOption))
+    {
+        client->settings()->config()->setSupervisorAdress(parser.value(supervisorOption));
+    }
+
     if (!client->init())
     {
         LOG_ERROR("Client initialization failed")
         return 1;
     }
 
+    if (parser.isSet(supervisorOption))
+    {
+        client->settings()->config()->setSupervisorAdress(parser.value(supervisorOption));
+    }
+
+    /*
     new LoginWatcher(client->loginController());
     new DeviceRegistrationWatcher(client->loginController(), quit);
     new ConfigWatcher(client, loginData);
+    */
 
     int value = app.exec();
     out << "Application shutting down.\n";

@@ -171,7 +171,7 @@ Result Traceroute::result() const
     map.insert("results", res);
     map.insert("hop_count", static_cast<int>(hops.size() / definition->count));
 
-    return Result(map);
+    return Result(QVariantList());
 }
 
 void Traceroute::ping()

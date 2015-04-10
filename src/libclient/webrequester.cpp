@@ -341,14 +341,6 @@ void WebRequester::start()
 
     QString httpMethod = metaObject->classInfo(methodIdx).value();
 
-    int authenticationIdx = metaObject->indexOfClassInfo("authentication_method");
-    QString authentication = "none";
-
-    if (authenticationIdx != -1)
-    {
-        authentication = metaObject->classInfo(authenticationIdx).value();
-    }
-
     d->setStatus(Running);
 
     const Settings *settings = Client::instance()->settings();
@@ -366,17 +358,19 @@ void WebRequester::start()
     QNetworkRequest request;
     QNetworkReply *reply;
 
-    if (authentication == "basic")
+    Request::AuthenticationMethod authenticationMethod = d->request->authenticationMethod();
+
+    if (authenticationMethod == Request::Basic)
     {
         url.setUserName(settings->hashedUserId());
         url.setPassword(settings->password());
     }
-    else if (authentication == "apikey")
+    else if (authenticationMethod == Request::ApiKey)
     {
         request.setRawHeader("Authorization", QString("ApiKey %1:%2").arg(settings->hashedUserId()).arg(
                                  settings->apiKey()).toUtf8());
     }
-    else if (authentication == "none")
+    else if (authenticationMethod == Request::None)
     {
 
     }
@@ -401,13 +395,11 @@ void WebRequester::start()
     }
     else if (httpMethod == "post")
     {
-        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-mplane+json");
         request.setUrl(url);
 
         // compress data, remove the first four bytes (which is the array length which does not belong there), convert to base64
-        QVariantMap map;
-        map.insert("data", qCompress(QJsonDocument::fromVariant(data).toJson(QJsonDocument::Compact)).remove(0,4).toBase64());
-        reply = Client::instance()->networkAccessManager()->post(request, QJsonDocument::fromVariant(map).toJson());
+        reply = Client::instance()->networkAccessManager()->post(request, QJsonDocument::fromVariant(data).toJson());
     }
     else
     {

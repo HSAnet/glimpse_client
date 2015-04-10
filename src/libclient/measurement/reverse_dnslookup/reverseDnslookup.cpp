@@ -94,7 +94,7 @@ Result ReverseDnslookup::result() const
     res.insert("hostname", m_reverseDnslookupOutput);
     res.insert("address", listToVariant(m_reverseDnslookupAddresses));
 
-    return Result(res);
+    return Result(QVariantList());
 }
 
 void ReverseDnslookup::started()

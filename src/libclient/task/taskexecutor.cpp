@@ -250,7 +250,7 @@ void TaskExecutor::execute(const ScheduleDefinition &test, MeasurementObserver *
     }
 
     // Abort if we are on a mobile connection
-    if (d->executor.networkManager->onMobileConnection())
+    if (false && d->executor.networkManager->onMobileConnection())
     {
         LOG_ERROR(QString("Unable to execute measurement, we are on a mobile connection or no interface is up: %1").arg(test.name()));
         return;
