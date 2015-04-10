@@ -54,27 +54,22 @@ QTime CalendarTiming::Private::findTime(QTime &referenceTime)
             while (minuteIter.hasNext()) // minutes
             {
                 minute = minuteIter.next();
-                if (minute >= referenceTime.minute())
+                while (secondIter.hasNext())
                 {
-                    // minute found
-                    while (secondIter.hasNext()) // seconds
+                    second = secondIter.next(); // seconds
+                    if(QTime(hour,minute,second) >= referenceTime )
                     {
-                        second = secondIter.next();
-                        if (second >= referenceTime.second())
-                        {
-                            // finally, second found
-                            return QTime(hour, minute, second);
-                        }
-
-                        if (!secondIter.hasNext())
-                        {
-                            secondIter.toFront();
-                            referenceTime.setHMS(referenceTime.hour(), referenceTime.minute(), 0);
-                            break;
-                        }
+                        // finally, second found
+                        return QTime(hour, minute, second);
+                    }
+                    //end of seconds reached go to next minute
+                    if(!secondIter.hasNext())
+                    {
+                        secondIter.toFront();
+                        break;
                     }
                 }
-
+                //end of minutes reached
                 if (!minuteIter.hasNext())
                 {
                     minuteIter.toFront();
@@ -147,6 +142,9 @@ QDateTime CalendarTiming::nextRun(const QDateTime &tzero) const
     QListIterator<int> dayIter(d->daysOfMonth);
     QDate nextRunDate;
     QTime nextRunTime;
+
+    //set millsec to 0
+    time.setHMS(time.hour(), time.minute(), time.second());
 
     // Check if the start time is reached
     if (d->start.isValid() && d->start > now)
