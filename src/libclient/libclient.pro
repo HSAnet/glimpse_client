@@ -173,7 +173,10 @@ SOURCES +=  \
     measurement/wifilookup/wifilookup_plugin.cpp \
     storage/storage.cpp \
     timing/timer.cpp \
-    controller/ntpcontroller.cpp
+    controller/ntpcontroller.cpp \
+    measurement/snmp/snmp.cpp \
+    measurement/snmp/snmp_definition.cpp \
+    measurement/snmp/snmp_plugin.cpp
 
 HEADERS += \
     export.h \
@@ -271,7 +274,10 @@ HEADERS += \
     ident.h \
     storage/storage.h \
     timing/timer.h \
-    controller/ntpcontroller.h
+    controller/ntpcontroller.h \
+    measurement/snmp/snmp.h \
+    measurement/snmp/snmp_definition.h \
+    measurement/snmp/snmp_plugin.h
 
 OTHER_FILES += \
     libclient.pri
