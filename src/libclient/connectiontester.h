@@ -30,7 +30,9 @@ public:
         DefaultDns,
         PingDefaultGateway,
         PingGoogleDnsServer,
-        PingGoogleDomain
+        PingGoogleDomain,
+        LocalIpAddress,
+        PublicIpAddress
     };
 
     bool isRunning() const;
@@ -41,6 +43,8 @@ public:
     Q_INVOKABLE bool checkOnline();
     Q_INVOKABLE QString findDefaultGateway();
     Q_INVOKABLE QString findDefaultDNS();
+    Q_INVOKABLE QString localIpAddress();
+    Q_INVOKABLE QString publicIpAddress();
     Q_INVOKABLE bool canPingGateway();
     Q_INVOKABLE bool canPingGoogleDnsServer();
     Q_INVOKABLE bool canPingGoogleDomain();
