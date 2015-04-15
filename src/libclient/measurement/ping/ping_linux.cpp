@@ -1,3 +1,5 @@
+#include <QtGlobal>
+
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
@@ -7,6 +9,9 @@
 #include <unistd.h>
 #include <linux/errqueue.h>
 #include <linux/icmp.h>
+#if defined(Q_OS_ANDROID)
+#include <netinet/in6.h>
+#endif
 #include <netinet/icmp6.h>
 #include <sys/socket.h>
 #include <sys/time.h>
