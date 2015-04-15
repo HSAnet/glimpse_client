@@ -735,6 +735,22 @@ Result Ping::result() const
     // calculate average and fill ping times
     foreach (float val, tmpPingTime)
     {
+        // RTTs greater than receiveTimeout are discarded and don't influence the result
+        if (val >= definition->receiveTimeout)
+        {
+            if (m_pingsReceived > 0)
+            {
+                m_pingsReceived--;
+            }
+
+            if (m_pingsSent > 0)
+            {
+                m_pingsSent--;
+            }
+
+            continue;
+        }
+
         roundTripMs << val;
 
         // ignore timeouts, i.e. ping times with 0
