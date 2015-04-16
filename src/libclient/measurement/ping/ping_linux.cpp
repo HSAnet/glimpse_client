@@ -252,8 +252,6 @@ Result Ping::result() const
     QVariantList roundTripMs;
     float avg = 0.0;
     QList<float> tmpPingTime = pingTime;
-    quint32 tmpPingsReceived = m_pingsReceived;
-    quint32 tmpPingsSent = m_pingsSent;
 
     // calculate average and fill ping times
     foreach (float val, tmpPingTime)
@@ -261,14 +259,14 @@ Result Ping::result() const
         // RTTs greater than receiveTimeout are discarded and don't influence the result
         if (val >= definition->receiveTimeout)
         {
-            if (tmpPingsReceived > 0)
+            if (m_pingsReceived > 0)
             {
-                tmpPingsReceived--;
+                m_pingsReceived--;
             }
 
-            if (tmpPingsSent > 0)
+            if (m_pingsSent > 0)
             {
-                tmpPingsSent--;
+                m_pingsSent--;
             }
 
             continue;
@@ -309,12 +307,12 @@ Result Ping::result() const
     res.insert("round_trip_max", max);
     res.insert("round_trip_stdev", stdev);
     res.insert("round_trip_ms", roundTripMs);
-    res.insert("round_trip_sent", tmpPingsSent);  // count successfull pings only
-    res.insert("round_trip_received", tmpPingsReceived);
+    res.insert("round_trip_sent", m_pingsSent);  // count successfull pings only
+    res.insert("round_trip_received", m_pingsReceived);
 
     if (m_pingsSent > 0)
     {
-        res.insert("round_trip_loss", (tmpPingsSent - tmpPingsReceived) / tmpPingsSent);
+        res.insert("round_trip_loss", (m_pingsSent - m_pingsReceived) / m_pingsSent);
     }
     else
     {
