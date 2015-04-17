@@ -809,12 +809,6 @@ void Ping::receiveData(PingProbe *probe)
                     continue;
                 }
 
-                // TODO: check whether this works for IPv6
-                if (ee->ee_type == ICMP_SOURCE_QUENCH || ee->ee_type == ICMP_REDIRECT)
-                {
-                    goto cleanup;
-                }
-
                 break;
 
             default:
