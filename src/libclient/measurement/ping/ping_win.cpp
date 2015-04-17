@@ -1064,9 +1064,21 @@ void Ping::ping(PingProbe *probe)
 
     foreach (const PingProbe &probe, m_pingProbes)
     {
-        if (probe.sendTime > 0 && probe.recvTime > 0)
+        float pt = (probe.recvTime - probe.sendTime) / 1000.;
+
+        if (pt >= definition->receiveTimeout)
         {
-            pingTime.append((probe.recvTime - probe.sendTime) / 1000.);
+            if (m_pingsReceived > 0)
+            {
+                m_pingsReceived--;
+            }
+
+            continue;
+        }
+
+        if (probe.sendTime > 0 && probe.recvTime > 0 && probe.sendTime != probe.recvTime)
+        {
+            pingTime.append(pt);
         }
     }
 }
