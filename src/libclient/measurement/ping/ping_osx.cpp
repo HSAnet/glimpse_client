@@ -372,7 +372,7 @@ Result Ping::result() const
 
     if (m_pingsSent > 0)
     {
-        res.insert("round_trip_loss", (m_pingsSent - m_pingsReceived) / m_pingsSent);
+        res.insert("round_trip_loss", (m_pingsSent - m_pingsReceived) / static_cast<float>(m_pingsSent));
     }
     else
     {
