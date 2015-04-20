@@ -775,7 +775,7 @@ Result Ping::result() const
 
     if (m_pingsSent > 0)
     {
-        res.insert("round_trip_loss", (m_pingsSent - m_pingsReceived) / m_pingsSent);
+        res.insert("round_trip_loss", (m_pingsSent - m_pingsReceived) / static_cast<float>(m_pingsSent));
     }
     else
     {
@@ -1064,9 +1064,21 @@ void Ping::ping(PingProbe *probe)
 
     foreach (const PingProbe &probe, m_pingProbes)
     {
-        if (probe.sendTime > 0 && probe.recvTime > 0)
+        float pt = (probe.recvTime - probe.sendTime) / 1000.;
+
+        if (pt >= definition->receiveTimeout)
         {
-            pingTime.append((probe.recvTime - probe.sendTime) / 1000.);
+            if (m_pingsReceived > 0)
+            {
+                m_pingsReceived--;
+            }
+
+            continue;
+        }
+
+        if (probe.sendTime > 0 && probe.recvTime > 0 && probe.sendTime != probe.recvTime)
+        {
+            pingTime.append(pt);
         }
     }
 }
