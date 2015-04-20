@@ -1,3 +1,5 @@
+#include <QtGlobal>
+
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
@@ -7,6 +9,10 @@
 #include <unistd.h>
 #include <linux/errqueue.h>
 #include <linux/icmp.h>
+#if defined(Q_OS_ANDROID)
+#include <netinet/in6.h>
+#endif
+#include <netinet/icmp6.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <numeric>
@@ -791,6 +797,26 @@ void Ping::receiveData(PingProbe *probe)
 
             break;
 
+        case SOL_IPV6:
+            switch (cm->cmsg_type)
+            {
+            case IPV6_RECVERR:
+                ee = (struct sock_extended_err *) ptr;
+
+                if (ee->ee_origin != SO_EE_ORIGIN_ICMP6)
+                {
+                    ee = NULL;
+                    continue;
+                }
+
+                break;
+
+            default:
+                break;
+            }
+
+            break;
+
         default:
             break;
         }
@@ -800,12 +826,12 @@ void Ping::receiveData(PingProbe *probe)
     {
         memcpy(&probe->source, SO_EE_OFFENDER(ee), sizeof(probe->source));
 
-        if (ee->ee_type == ICMP_TIME_EXCEEDED && ee->ee_code == ICMP_EXC_TTL)
+        if ((ee->ee_type == ICMP_TIME_EXCEEDED && ee->ee_code == ICMP_EXC_TTL) || ee->ee_type == ICMP6_TIME_EXCEEDED)
         {
             m_pingsReceived++;
             emit ttlExceeded(*probe);
         }
-        else if (ee->ee_type == ICMP_DEST_UNREACH)
+        else if (ee->ee_type == ICMP_DEST_UNREACH || ee->ee_type == ICMP6_DST_UNREACH)
         {
             m_pingsReceived++;
             emit destinationUnreachable(*probe);
