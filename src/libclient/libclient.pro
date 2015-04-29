@@ -44,6 +44,7 @@ include($$SOURCE_DIRECTORY/3rdparty/miniupnpc.pri)
 include($$SOURCE_DIRECTORY/3rdparty/breakpad.pri)
 include($$SOURCE_DIRECTORY/3rdparty/winpcap.pri)
 include($$SOURCE_DIRECTORY/3rdparty/qtsystems.pri)
+include($$SOURCE_DIRECTORY/3rdparty/snmp.pri)
 
 android {
     QT += androidextras
@@ -176,7 +177,10 @@ SOURCES +=  \
     controller/ntpcontroller.cpp \
     measurement/snmp/snmp.cpp \
     measurement/snmp/snmp_definition.cpp \
-    measurement/snmp/snmp_plugin.cpp
+    measurement/snmp/snmp_plugin.cpp \
+    snmp/main.cpp \
+    measurement/snmp/snmppaket.cpp \
+    measurement/snmp/snmpscanner.cpp
 
 HEADERS += \
     export.h \
@@ -277,7 +281,9 @@ HEADERS += \
     controller/ntpcontroller.h \
     measurement/snmp/snmp.h \
     measurement/snmp/snmp_definition.h \
-    measurement/snmp/snmp_plugin.h
+    measurement/snmp/snmp_plugin.h \
+    measurement/snmp/snmppaket.h \
+    measurement/snmp/snmpscanner.h
 
 OTHER_FILES += \
     libclient.pri

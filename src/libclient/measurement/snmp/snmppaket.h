@@ -1,0 +1,80 @@
+#ifndef SNMPROTOCOL_H
+#define SNMPROTOCOL_H
+
+/*
+  --------------------------------------------------------------------------
+  Class SnmpPaket
+  --------------------------------------------------------------------------
+
+  This class is meant to create a UDP datagram to send requests to a
+  SNMP agent.
+  To use this class it is necassary to initialize the Net-SNMP library.
+  Call 'init_snmp()' bevor. The class uses some function from the library.
+  These functions will not work unless the library is initialized.
+
+  */
+
+#include <net-snmp/net-snmp-config.h>
+#include <net-snmp/net-snmp-includes.h>
+#include <QByteArray>
+#include <QString>
+
+// Protocol type 'Sequence'.
+class Sequence
+{
+    quint16 m_length;
+
+public:
+    quint16 length() const;
+    void setLength(const quint16 length);
+    QByteArray getAsByteArray() const;
+};
+
+// TLV (Type, Length, Value) triple.
+// For the values 'version' and 'community'.
+class Triple
+{
+    quint8 m_type;
+    // length is part of QByteArray.
+    QByteArray m_value;
+
+public:
+    quint8 type() const;
+    void setType(const quint8 type);
+    quint8 length() const;
+    void setLength(const quint8 length);
+    QByteArray value() const;
+    void setValue(const QString &value);
+    void setValue(const long value, int length);
+    QByteArray getAsByteArray() const;
+};
+
+// SNMP paket
+class SnmpPaket
+{
+public:
+    SnmpPaket();
+    ~SnmpPaket();
+
+public:
+    long version() const;
+    void setVersion(const long version, const int length);
+    QString community() const;
+    void setCommunity(const QString &community);
+    void setCommand(const int command);
+    QByteArray getDatagram();
+
+    // Static functions
+    static SnmpPaket getRequest(const long version, const QString &community, const QString &objectId);
+
+private:
+    Sequence m_messageSequence;
+    Triple m_version;
+    Triple m_community;
+    struct snmp_pdu m_pdu;
+
+    // Methods
+    size_t approximatePduSize();
+};
+
+#endif // SNMPROTOCOL_H

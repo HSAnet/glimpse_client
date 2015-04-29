@@ -12,7 +12,7 @@ SnmpDefinition::~SnmpDefinition()
 
 SnmpDefinitionPtr SnmpDefinition::fromVariant(const QVariant &variant)
 {
-    return NULL;
+    return SnmpDefinitionPtr(new SnmpDefinition());
 }
 
 QVariant SnmpDefinition::toVariant() const
