@@ -11,15 +11,24 @@
  *
  * Automatically detect subnets
  * The scanner searches for network interfaces which are currently
- * connected to a subnet and have an IPv4 address. It calculates
- * the IP range from interfaces IP address and netmask.
- * SNMP requests will be send on each detected interfcace.
- * To every IP of subnet will be send one request. After the last IP
- * in range is arrived the scanner will start again if more then one
- * retries are set. If all retries are done the scanner will take
- * the next community string from its list and start again with that
- * community string.
- * The scan is over if all community string are used on each interface.
+ * connected to a subnet and have an IPv4 address.
+ * It takes an interface and calculates the IP range with interfaces
+ * IP address and netmask.
+ * To send a request to a SNMP agent function 'writteDatagram()' is
+ * called. If message was send the signal 'bytesWritten()' is emitted.
+ * This signal causes the scanner to send the next request to another
+ * IP address.
+ * SNMP requests will be send to each IP address in range. If the end
+ * of the range is arrived then signal 'retry()' is emitted.
+ * These signal calls 'doRetry()'. That will set the scanner back to
+ * start scan the IP range again if retries are configured.
+ * If retries are done the signal 'changeSnmpCommunity()' is emitted.
+ * This calls 'nextSnmpCommunityString()'. Function creates a new UDP
+ * datagram with another community string from the list. Scan starts
+ * again with the new community string and does its retries.
+ * Afterwarts if no more community strings available the next network
+ * interface will be selected. And the prozedure starts again until
+ * no more interfaces are available.
  *
  * A range of IP addresses
  * Same as automatically detect but will only use the given IP range.
@@ -37,16 +46,23 @@ public:
     explicit SnmpScanner(QObject *parent = 0);
     ~SnmpScanner();
 
-    bool startScan(const QStringList &communityList, const quint8 retriesPerIp);
+    bool startScan(const long version, const QStringList &communityList, const QString& objectId, const quint8 retriesPerIp);
 
 signals:
     void retry();
+    void changeSnmpCommunity();
+    void changeInterface();
 
 public slots:
     void sendPaketToNextIP();
     void doRetry();
+    void scanNextSnmpCommunity();
+    void scanNextInterface();
 
 private:
+    QString m_objectId;
+    long m_snmpVersion;
+    const int m_port;
     QList<QNetworkInterface> m_interfaceList;
     quint32 m_firstIp;
     quint32 m_currentIp;
@@ -54,6 +70,7 @@ private:
     QStringList m_communityList;
     quint8 m_retriesPerIp;
     quint8 m_retryCount;
+    quint8 m_currentCommunityIndex;
     QByteArray m_datagram;
 
     // Methods

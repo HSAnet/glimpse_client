@@ -1,10 +1,13 @@
 #include "snmpscanner.h"
 
 // Constructor
-SnmpScanner::SnmpScanner(QObject *parent) : QUdpSocket(parent)
+SnmpScanner::SnmpScanner(QObject *parent)
+    : QUdpSocket(parent),
+      m_port(161)
 {
     connect(this, SIGNAL(bytesWritten(qint64)), this, SLOT(sendPaketToNextIP()));
     connect(this, SIGNAL(retry()), this, SLOT(doRetry()));
+    connect(this, SIGNAL(changeSnmpCommunity()), SLOT(scanNextSnmpCommunity()));
 }
 // Destructor
 SnmpScanner::~SnmpScanner()
@@ -13,21 +16,24 @@ SnmpScanner::~SnmpScanner()
 }
 
 // Start SNMP device scan. Send UDP datagram to each ip in available subnets.
-bool SnmpScanner::startScan(const QStringList &communityList, const quint8 retriesPerIp)
+bool SnmpScanner::startScan(const long version, const QStringList &communityList, const QString &objectId, const quint8 retriesPerIp)
 {
     m_interfaceList = getCurrentlyOnlineInterfacesIPv4();
     if (m_interfaceList.isEmpty())
     {
         return false;
     }
+    m_snmpVersion = version;
+    m_objectId = objectId;
     m_communityList = communityList;
-    SnmpPaket paket = SnmpPaket::getRequest(SNMP_VERSION_2c, m_communityList.takeLast(), QString("sysDescr.0"));
+    m_currentCommunityIndex = 0;
+    SnmpPaket paket = SnmpPaket::getRequest(m_snmpVersion, m_communityList[m_currentCommunityIndex], m_objectId);
     m_datagram = paket.getDatagram();
     m_retryCount = m_retriesPerIp = retriesPerIp;
     QNetworkInterface interface = m_interfaceList.takeLast();
     m_firstIp = m_currentIp = getInterfacesLowestIPv4(interface);
     m_lastIp = getInterfacesHighestIPv4(interface);
-    writeDatagram(m_datagram, QHostAddress(m_currentIp), 161);
+    writeDatagram(m_datagram, QHostAddress(m_currentIp), m_port);
 
     return true;
 }
@@ -41,19 +47,63 @@ void SnmpScanner::sendPaketToNextIP()
         emit retry();
         return;
     }
-    writeDatagram(m_datagram, QHostAddress(m_currentIp), 161);
+    writeDatagram(m_datagram, QHostAddress(m_currentIp), m_port);
 }
 
 // Send request to the same IP range as before.
 void SnmpScanner::doRetry()
 {
-    if (m_retryCount > 0) {
+    if (m_retryCount > 0)
+    {
         --m_retryCount;
         m_currentIp = m_firstIp;
-        writeDatagram(m_datagram, QHostAddress(m_currentIp), 161);
-    } else {
+        writeDatagram(m_datagram, QHostAddress(m_currentIp), m_port);
+    }
+    else
+    {
+        // All retries done. Scan another community string.
+        emit changeSnmpCommunity();
+    }
+}
+
+// Scan subnet with another community string.
+void SnmpScanner::scanNextSnmpCommunity()
+{
+    ++m_currentCommunityIndex;
+    if (m_currentCommunityIndex < m_communityList.size())
+    {
+        m_retryCount = m_retriesPerIp;
+        m_currentIp = m_firstIp;
+        SnmpPaket paket = SnmpPaket::getRequest(m_snmpVersion, m_communityList[m_currentCommunityIndex], m_objectId);
+        m_datagram = paket.getDatagram();
+        writeDatagram(m_datagram, QHostAddress(m_currentIp), m_port);
+    }
+    else
+    {
         // ToDo:
-        // ----------------------------------- next community string -----------------------------------
+        // next interface.
+    }
+}
+
+// Scan subnet of another network interfcae.
+void SnmpScanner::scanNextInterface()
+{
+    if (!m_interfaceList.isEmpty())
+    {
+        QNetworkInterface interface = m_interfaceList.takeLast();
+        m_firstIp = m_currentIp = getInterfacesLowestIPv4(interface);
+        m_lastIp = getInterfacesHighestIPv4(interface);
+        m_retryCount = m_retriesPerIp;
+        m_currentCommunityIndex = 0;
+        SnmpPaket paket = SnmpPaket::getRequest(m_snmpVersion, m_communityList[m_currentCommunityIndex], m_objectId);
+        m_datagram = paket.getDatagram();
+        writeDatagram(m_datagram, QHostAddress(m_currentIp), m_port);
+    }
+    else
+    {
+        // ToDo:
+        // Scan is over.
+        // The scan result should be analysed.
     }
 }
 
