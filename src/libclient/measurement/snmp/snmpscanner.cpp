@@ -8,6 +8,7 @@ SnmpScanner::SnmpScanner(QObject *parent)
     connect(this, SIGNAL(bytesWritten(qint64)), this, SLOT(sendPaketToNextIP()));
     connect(this, SIGNAL(retry()), this, SLOT(doRetry()));
     connect(this, SIGNAL(changeSnmpCommunity()), SLOT(scanNextSnmpCommunity()));
+    connect(this, SIGNAL(readyRead()), this, SLOT(readResponse()));
 }
 // Destructor
 SnmpScanner::~SnmpScanner()
@@ -27,7 +28,7 @@ bool SnmpScanner::startScan(const long version, const QStringList &communityList
     m_objectId = objectId;
     m_communityList = communityList;
     m_currentCommunityIndex = 0;
-    SnmpPaket paket = SnmpPaket::getRequest(m_snmpVersion, m_communityList[m_currentCommunityIndex], m_objectId);
+    SnmpPaket paket = SnmpPaket::snmpGetRequest(m_snmpVersion, m_communityList[m_currentCommunityIndex], m_objectId);
     m_datagram = paket.getDatagram();
     m_retryCount = m_retriesPerIp = retriesPerIp;
     QNetworkInterface interface = m_interfaceList.takeLast();
@@ -74,7 +75,7 @@ void SnmpScanner::scanNextSnmpCommunity()
     {
         m_retryCount = m_retriesPerIp;
         m_currentIp = m_firstIp;
-        SnmpPaket paket = SnmpPaket::getRequest(m_snmpVersion, m_communityList[m_currentCommunityIndex], m_objectId);
+        SnmpPaket paket = SnmpPaket::snmpGetRequest(m_snmpVersion, m_communityList[m_currentCommunityIndex], m_objectId);
         m_datagram = paket.getDatagram();
         writeDatagram(m_datagram, QHostAddress(m_currentIp), m_port);
     }
@@ -95,7 +96,7 @@ void SnmpScanner::scanNextInterface()
         m_lastIp = getInterfacesHighestIPv4(interface);
         m_retryCount = m_retriesPerIp;
         m_currentCommunityIndex = 0;
-        SnmpPaket paket = SnmpPaket::getRequest(m_snmpVersion, m_communityList[m_currentCommunityIndex], m_objectId);
+        SnmpPaket paket = SnmpPaket::snmpGetRequest(m_snmpVersion, m_communityList[m_currentCommunityIndex], m_objectId);
         m_datagram = paket.getDatagram();
         writeDatagram(m_datagram, QHostAddress(m_currentIp), m_port);
     }
@@ -104,6 +105,25 @@ void SnmpScanner::scanNextInterface()
         // ToDo:
         // Scan is over.
         // The scan result should be analysed.
+    }
+}
+
+// Got an answer. Read message and store information.
+// Store response in a QHash. Use host address as key.
+// Value of QHash: Community string and PDU value as QPair
+void SnmpScanner::readResponse()
+{
+    while (hasPendingDatagrams())
+    {
+        QByteArray datagram;
+        datagram.resize(pendingDatagramSize());
+        QHostAddress host;
+        readDatagram(datagram.data(), datagram.size(), &host);
+        SnmpPaket paket = SnmpPaket::fromDatagram(datagram);
+        QPair<QString, QString> response;
+        response.first = paket.community();
+        response.second = paket.pduValue(0);
+        m_resultMap.insert(host, response);
     }
 }
 

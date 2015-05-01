@@ -82,8 +82,24 @@ QByteArray SnmpPaket::getDatagram()
     return datagram;
 }
 
+// Get a value of PDU at index.
+QString SnmpPaket::pduValue(const quint8 index) const
+{
+    variable_list *list = variableAtindex(index);
+    if (list == NULL)
+        return QString();
+    size_t bufferLen = list->val_len + 10;
+    char *buffer = (char*)malloc(bufferLen);
+    memset(buffer, 0, bufferLen);
+    snprint_value(buffer, bufferLen, list->name, list->name_length, list);
+    QString value(buffer);
+    free(buffer);
+
+    return value;
+}
+
 // Factory function. Creates a SNMP paket for a get request.
-SnmpPaket SnmpPaket::getRequest(const long version, const QString &community, const QString &objectId)
+SnmpPaket SnmpPaket::snmpGetRequest(const long version, const QString &community, const QString &objectId)
 {
     SnmpPaket paket;
     paket.setCommand(SNMP_MSG_GET);
@@ -97,6 +113,62 @@ SnmpPaket SnmpPaket::getRequest(const long version, const QString &community, co
     return paket;
 }
 
+// Parse a received datagram.
+SnmpPaket SnmpPaket::fromDatagram(const QByteArray &datagram)
+{
+    SnmpPaket paket;
+    // Get protocoll head
+    quint16 position = paket.m_messageSequence.fromByteArray(datagram, 0);
+    if (position == 0)
+    {
+        // Is not a SNMP datagram it starts not with a sequence.
+        paket.setCommand(SNMP_MSG_RESPONSE);
+        return paket;
+    }
+    position = paket.m_version.fromByteArray(datagram, position);
+    position = paket.m_community.fromByteArray(datagram, position);
+    // Get Protocoll Data Unit.
+    QByteArray pdu = datagram.mid(position);
+    size_t pduLength = pdu.size();
+    snmp_pdu_parse(&paket.m_pdu, (u_char*)pdu.data(), &pduLength);
+
+    return paket;
+}
+
+// Get the length value of a byte array. Value is distributed over some bytes.
+quint16 SnmpPaket::lengthValueFromByteArray(const QByteArray &array, quint16 &position)
+{
+    quint8 higestBit = 128;
+    if (array[position] < higestBit)
+    {
+        return array[position++];
+    }
+    quint16 length = 0;
+    quint8 numFields = array[position++] - higestBit;
+    for (quint8 index=0; index<numFields; ++index)
+    {
+        length = (length << 8) + array[position++];
+    }
+
+    return length;
+}
+
+// Get a length value as a byte array. A value higher then 127 must take more then one byte.
+QByteArray SnmpPaket::lengthValueToByteArray(const int length)
+{
+    QByteArray array;
+    if (length < 128)
+    {
+        array.append((char)length);
+        return array;
+    }
+    array.append((char)128 + 2);                // Set highest bit and define two fields for length value.
+    array.append((char)length / 255);           // Set high byte.
+    array.append((char)length % 255);           // Set low byte.
+
+    return array;
+}
+
 // Get approximate size of PDU.
 size_t SnmpPaket::approximatePduSize()
 {
@@ -105,6 +177,21 @@ size_t SnmpPaket::approximatePduSize()
     pduSize += 10;                  // Add 50 bytes as ensurense
 
     return pduSize;
+}
+
+// Return a variable_list pointer of a variable at given index or null.
+variable_list *SnmpPaket::variableAtindex(const quint8 index) const
+{
+    variable_list *list = m_pdu.variables;
+    quint8 pos = 0;
+    while (pos < index) {
+        if (list == NULL)
+            break;
+        list = list->next_variable;
+        ++pos;
+    }
+
+    return list;
 }
 
 
@@ -123,12 +210,22 @@ void Sequence::setLength(const quint16 length)
 QByteArray Sequence::getAsByteArray() const
 {
     QByteArray array;
-    array.append((char)48);                 // Protocols sequence mark.
-    array.append((char)(128 + 2));          // Set the highest bit and define the following 2 bytes as length value.
-    array.append((char)(m_length / 255));   // Set heigh byte
-    array.append((char)(m_length % 255));   // Set low byte
+    array.append((char)TypeSequence);       // Protocols sequence mark.
+    array.append( SnmpPaket::lengthValueToByteArray(m_length) );
 
     return array;
+}
+
+// Get the paket length and return the position of next value in datagram.
+quint16 Sequence::fromByteArray(const QByteArray &datagram, quint16 position)
+{
+    if (datagram[position++] != TypeSequence)
+    {
+        return 0;
+    }
+    m_length = SnmpPaket::lengthValueFromByteArray(datagram, position);
+
+    return position;
 }
 
 // Getter and setter
@@ -174,10 +271,19 @@ void Triple::setType(const quint8 type)
 // Get a TLV triple as byte array. (Type, Length, Value)
 QByteArray Triple::getAsByteArray() const
 {
-    QByteArray array;
-    array.append((char)m_value.size());
+    QByteArray array = SnmpPaket::lengthValueToByteArray(m_value.size());
     array.append(m_type);
     array.append(m_value);
 
     return array;
+}
+
+// Parses the SNMP version or the community string from datagram.
+quint16 Triple::fromByteArray(const QByteArray &datagram, quint16 position)
+{
+    m_type = datagram[position++];
+    quint16 length = SnmpPaket::lengthValueFromByteArray(datagram, position);
+    m_value = datagram.mid(position, length);
+
+    return position + length;
 }

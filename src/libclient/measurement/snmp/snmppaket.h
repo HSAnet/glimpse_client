@@ -24,10 +24,13 @@ class Sequence
 {
     quint16 m_length;
 
+    enum SnmpTypes { TypeSequence = 0x30 };
+
 public:
     quint16 length() const;
     void setLength(const quint16 length);
     QByteArray getAsByteArray() const;
+    quint16 fromByteArray(const QByteArray &datagram, quint16 position);
 };
 
 // TLV (Type, Length, Value) triple.
@@ -42,11 +45,11 @@ public:
     quint8 type() const;
     void setType(const quint8 type);
     quint8 length() const;
-    void setLength(const quint8 length);
     QByteArray value() const;
     void setValue(const QString &value);
     void setValue(const long value, int length);
     QByteArray getAsByteArray() const;
+    quint16 fromByteArray(const QByteArray &datagram, quint16 position);
 };
 
 // SNMP paket
@@ -63,9 +66,13 @@ public:
     void setCommunity(const QString &community);
     void setCommand(const int command);
     QByteArray getDatagram();
+    QString pduValue(const quint8 index) const;
 
     // Static functions
-    static SnmpPaket getRequest(const long version, const QString &community, const QString &objectId);
+    static SnmpPaket snmpGetRequest(const long version, const QString &community, const QString &objectId);
+    static SnmpPaket fromDatagram(const QByteArray &datagram);
+    static quint16 lengthValueFromByteArray(const QByteArray &array, quint16 &position);
+    static QByteArray lengthValueToByteArray(const int length);
 
 private:
     Sequence m_messageSequence;
@@ -75,6 +82,7 @@ private:
 
     // Methods
     size_t approximatePduSize();
+    variable_list* variableAtindex(const quint8 index) const;
 };
 
 #endif // SNMPROTOCOL_H

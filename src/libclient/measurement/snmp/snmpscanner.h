@@ -38,6 +38,7 @@
 #include "snmppaket.h"
 #include <QUdpSocket>
 #include <QNetworkAddressEntry>
+#include <QHash>
 
 class SnmpScanner : public QUdpSocket
 {
@@ -58,6 +59,7 @@ public slots:
     void doRetry();
     void scanNextSnmpCommunity();
     void scanNextInterface();
+    void readResponse();
 
 private:
     QString m_objectId;
@@ -72,6 +74,7 @@ private:
     quint8 m_retryCount;
     quint8 m_currentCommunityIndex;
     QByteArray m_datagram;
+    QHash<QHostAddress, QPair<QString, QString> > m_resultMap;
 
     // Methods
     QList<QNetworkInterface> getCurrentlyOnlineInterfacesIPv4() const;
