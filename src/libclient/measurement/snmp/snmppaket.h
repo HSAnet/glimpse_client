@@ -47,7 +47,7 @@ public:
     quint8 length() const;
     QByteArray value() const;
     void setValue(const QString &value);
-    void setValue(const long value, int length);
+    void setValue(const long value);
     QByteArray getAsByteArray() const;
     quint16 fromByteArray(const QByteArray &datagram, quint16 position);
 };
@@ -61,7 +61,7 @@ public:
 
 public:
     long version() const;
-    void setVersion(const long version, const int length);
+    void setVersion(const long version);
     QString community() const;
     void setCommunity(const QString &community);
     void setCommand(const int command);
@@ -82,7 +82,7 @@ private:
 
     // Methods
     size_t approximatePduSize();
-    variable_list* variableAtindex(const quint8 index) const;
+    variable_list* variableAtIndex(const quint8 index) const;
 };
 
 #endif // SNMPROTOCOL_H

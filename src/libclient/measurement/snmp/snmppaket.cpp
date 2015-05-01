@@ -26,10 +26,10 @@ long SnmpPaket::version() const
 }
 
 // Set Snmp version
-void SnmpPaket::setVersion(const long version, const int length)
+void SnmpPaket::setVersion(const long version)
 {
     m_version.setType(ASN_INTEGER);
-    m_version.setValue(version, length);
+    m_version.setValue(version);
 }
 
 QString SnmpPaket::community() const
@@ -49,11 +49,11 @@ void SnmpPaket::setCommunity(const QString &community)
 void SnmpPaket::setCommand(const int command)
 {
     memset(&m_pdu, 0, sizeof(snmp_pdu));
-    m_pdu.version = SNMP_DEFAULT_VERSION;
+    m_pdu.version = SNMP_VERSION_1;
     m_pdu.command = command;
-    m_pdu.errstat = SNMP_DEFAULT_ERRSTAT;
-    m_pdu.errindex = SNMP_DEFAULT_ERRINDEX;
-    m_pdu.securityModel = SNMP_DEFAULT_SECMODEL;
+    m_pdu.errstat = SNMP_ERR_NOERROR;
+    m_pdu.errindex = 0;
+    m_pdu.securityModel = SNMP_SEC_MODEL_SNMPv1;
     m_pdu.transport_data = NULL;
     m_pdu.transport_data_length = 0;
     m_pdu.securityNameLen = 0;
@@ -69,6 +69,7 @@ QByteArray SnmpPaket::getDatagram()
     size_t bufferLength = approximatePduSize();
     size_t outLength = bufferLength;
     u_char *buffer = (u_char*)malloc(bufferLength);
+    memset(buffer, 0, bufferLength);
     snmp_pdu_build(&m_pdu, buffer, &outLength);
     size_t pduLength = bufferLength - outLength;
     QByteArray version = m_version.getAsByteArray();
@@ -85,7 +86,7 @@ QByteArray SnmpPaket::getDatagram()
 // Get a value of PDU at index.
 QString SnmpPaket::pduValue(const quint8 index) const
 {
-    variable_list *list = variableAtindex(index);
+    variable_list *list = variableAtIndex(index);
     if (list == NULL)
         return QString();
     size_t bufferLen = list->val_len + 10;
@@ -103,7 +104,7 @@ SnmpPaket SnmpPaket::snmpGetRequest(const long version, const QString &community
 {
     SnmpPaket paket;
     paket.setCommand(SNMP_MSG_GET);
-    paket.setVersion(version, sizeof(long));
+    paket.setVersion(version);
     paket.setCommunity(community);
     oid objectIdentifier[MAX_OID_LEN];
     size_t identifierLength = MAX_OID_LEN;
@@ -172,15 +173,21 @@ QByteArray SnmpPaket::lengthValueToByteArray(const int length)
 // Get approximate size of PDU.
 size_t SnmpPaket::approximatePduSize()
 {
-    size_t pduSize = 4 + 3 + 3 + 3; // Sequence + RequestId + Error + ErrIndex
-    pduSize += snmp_varbind_len(&m_pdu);
-    pduSize += 10;                  // Add 50 bytes as ensurense
+    size_t pduSize = 4 + 3 + 3 + 3; // Type + RequestId + Error + ErrIndex
+    variable_list *list = m_pdu.variables;
+    while (list)
+    {
+        pduSize += 2 + list->name_length;   // Type and Length field + value
+        pduSize += 2 + list->val_len;       // Type and Length field + value
+        list = list->next_variable;
+    }
+    pduSize += 20;                  // Add bytes as ensurense
 
     return pduSize;
 }
 
 // Return a variable_list pointer of a variable at given index or null.
-variable_list *SnmpPaket::variableAtindex(const quint8 index) const
+variable_list *SnmpPaket::variableAtIndex(const quint8 index) const
 {
     variable_list *list = m_pdu.variables;
     quint8 pos = 0;
@@ -246,16 +253,30 @@ void Triple::setValue(const QString &value)
 }
 
 // Set a long value. (snmp version)
-void Triple::setValue(const long value, int length)
+void Triple::setValue(const long value)
 {
-    int startPosition = sizeof(long) - length;
-    char *currentPosition = ((char*)value) + startPosition;
-    while (length >= 0)
+    m_value.clear();
+    int state = 0;
+    const int LeadingNull = 0, Value = 1;
+    char *currentPosition = (char*)&value;
+    int length = sizeof(long);
+    while (length > 0)
     {
-        m_value.append(*currentPosition);
+        if (*currentPosition != 0)
+            state = Value;
+        switch (state)
+        {
+        case LeadingNull:
+            break;
+        case Value:
+            m_value.append(*currentPosition);
+            break;
+        }
         ++currentPosition;
         --length;
     }
+    if (m_value.isEmpty())
+        m_value.append((char)0);
 }
 
 quint8 Triple::type() const
@@ -271,8 +292,9 @@ void Triple::setType(const quint8 type)
 // Get a TLV triple as byte array. (Type, Length, Value)
 QByteArray Triple::getAsByteArray() const
 {
-    QByteArray array = SnmpPaket::lengthValueToByteArray(m_value.size());
+    QByteArray array;
     array.append(m_type);
+    array.append( SnmpPaket::lengthValueToByteArray(m_value.size()) );
     array.append(m_value);
 
     return array;
