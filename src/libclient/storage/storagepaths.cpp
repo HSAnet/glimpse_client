@@ -31,6 +31,11 @@ QDir StoragePaths::logDirectory() const
     return QDir(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/logs");
 }
 
+QDir StoragePaths::localCopyDirectory() const
+{
+    return QDir(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/results");
+}
+
 QDir StoragePaths::crashDumpDirectory() const
 {
     return QDir(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/crashdumps");

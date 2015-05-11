@@ -11,7 +11,7 @@ public:
     ReportStorage(ReportScheduler *scheduler, QObject *parent = 0);
     ~ReportStorage();
 
-    void storeData();
+    void storeData(bool localStore = true);
     void loadData();
 
 protected:

@@ -307,7 +307,8 @@ Client::Client(QObject *parent)
 Client::~Client()
 {
     d->schedulerStorage.storeData();
-    d->reportStorage.storeData();
+    // don't write to local storage to avoid duplicates
+    d->reportStorage.storeData(false);
     delete d;
 }
 
