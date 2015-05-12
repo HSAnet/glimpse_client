@@ -220,7 +220,9 @@ bool ReportController::init(ReportScheduler *scheduler, Settings *settings)
 
     connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(updateTimer()));
     connect(d->scheduler, SIGNAL(reportAdded(Report)), d, SLOT(onReportAdded()));
+    connect(d->scheduler, SIGNAL(reportAdded(Report)), d, SLOT(rotate()));
     connect(d->scheduler, SIGNAL(reportModified(Report)), d, SLOT(onReportAdded()));
+    connect(d->scheduler, SIGNAL(reportModified(Report)), d, SLOT(rotate()));
 
     return true;
 }
