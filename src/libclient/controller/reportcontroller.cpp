@@ -179,15 +179,16 @@ void ReportController::Private::onTimingChanged()
 
 void ReportController::Private::rotate()
 {
+    // <task-id>_yyyy-MM-dd.json
     QRegExp regex("^\\d+_(\\d{4}-\\d{2}-\\d{2}).json$");
     QDir dir(StoragePaths().localCopyDirectory());
-    QDate b = QDateTime::currentDateTime().addDays(-static_cast<qint64>(settings->backlog())).date();
+    QDate oldest = QDateTime::currentDateTime().addDays(-static_cast<qint64>(settings->backlog())).date();
 
     foreach (const QString &file, dir.entryList(QDir::Files))
     {
         if (regex.exactMatch(file))
         {
-            if (QDateTime::fromString(regex.cap(1), "yyyy-MM-dd").date() < b)
+            if (QDateTime::fromString(regex.cap(1), "yyyy-MM-dd").date() < oldest)
             {
                 dir.remove(file);
             }
