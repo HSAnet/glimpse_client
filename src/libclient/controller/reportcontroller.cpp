@@ -10,10 +10,14 @@
 #include "../timing/periodictiming.h"
 #include "../client.h"
 #include "../timing/timer.h"
+#include "../storage/storagepaths.h"
 
 #include <QPointer>
 #include <QStringList>
 #include <QTimer>
+#include <QDir>
+#include <QRegExp>
+#include <QDateTime>
 
 LOGGER(ReportController);
 
@@ -102,6 +106,7 @@ public slots:
     void onError();
     void onReportAdded();
     void onTimingChanged();
+    void rotate();
 };
 
 void ReportController::Private::updateTimer()
@@ -172,6 +177,24 @@ void ReportController::Private::onTimingChanged()
               .arg(timer.timing()->timeLeft() / 1000));
 }
 
+void ReportController::Private::rotate()
+{
+    QRegExp regex("^\\d+_(\\d{4}-\\d{2}-\\d{2}).json$");
+    QDir dir(StoragePaths().localCopyDirectory());
+    QDate b = QDateTime::currentDateTime().addDays(-static_cast<qint64>(settings->backlog())).date();
+
+    foreach (const QString &file, dir.entryList(QDir::Files))
+    {
+        if (regex.exactMatch(file))
+        {
+            if (QDateTime::fromString(regex.cap(1), "yyyy-MM-dd").date() < b)
+            {
+                dir.remove(file);
+            }
+        }
+    }
+}
+
 ReportController::ReportController(QObject *parent)
 : Controller(parent)
 , d(new Private(this))
@@ -180,6 +203,7 @@ ReportController::ReportController(QObject *parent)
 
 ReportController::~ReportController()
 {
+    d->rotate();
     delete d;
 }
 
