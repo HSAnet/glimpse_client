@@ -27,6 +27,7 @@ class CLIENT_API Settings : public QObject
     Q_PROPERTY(quint32 usedMobileTraffic READ usedMobileTraffic WRITE setUsedMobileTraffic NOTIFY usedMobileTrafficChanged)
     Q_PROPERTY(bool trafficBudgetManagerActive READ trafficBudgetManagerActive WRITE setTrafficBudgetManagerActive
                NOTIFY trafficBudgetManagerActiveChanged)
+    Q_PROPERTY(quint32 backlog READ backlog WRITE setBacklog NOTIFY backlogChanged)
     Q_PROPERTY(GetConfigResponse *config READ config CONSTANT)
 
 public:
@@ -74,6 +75,9 @@ public:
     void setTrafficBudgetManagerActive(bool active);
     bool trafficBudgetManagerActive() const;
 
+    void setBacklog(quint32 backlog);
+    quint32 backlog() const;
+
     GetConfigResponse *config() const;
 
     void clear();
@@ -93,6 +97,7 @@ signals:
     void availableMobileTrafficChanged(quint32 traffic);
     void usedMobileTrafficChanged(quint32 traffic);
     void trafficBudgetManagerActiveChanged(bool active);
+    void backlogChanged(quint32 backlog);
 
 protected:
     class Private;
