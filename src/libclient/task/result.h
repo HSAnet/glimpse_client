@@ -60,6 +60,7 @@ public:
 
     // Serializable interface
     QVariant toVariant() const;
+    QVariant toVariantStripped() const;
 
 private:
     QSharedDataPointer<class ResultData> d;

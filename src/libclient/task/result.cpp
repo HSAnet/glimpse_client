@@ -165,3 +165,15 @@ QVariant Result::toVariant() const
     map.insert("probe_result", d->probeResult);
     return map;
 }
+
+QVariant Result::toVariantStripped() const
+{
+    QVariantMap map;
+    map.insert("start_time", d->startDateTime);
+    map.insert("end_time", d->endDateTime);
+    map.insert("duration", d->startDateTime.msecsTo(d->endDateTime));
+    map.insert("measure_uuid", uuidToString(d->measureUuid));
+    map.insert("error", d->errorString);
+    map.insert("probe_result", d->probeResult);
+    return map;
+}

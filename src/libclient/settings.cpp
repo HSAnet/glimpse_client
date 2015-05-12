@@ -265,6 +265,20 @@ bool Settings::trafficBudgetManagerActive() const
     return d->settings.value("traffic-budget-manager-active", false).toBool();
 }
 
+void Settings::setBacklog(quint32 backlog)
+{
+    if (this->backlog() != backlog)
+    {
+        d->settings.setValue("backlog", backlog);
+        emit backlogChanged(backlog);
+    }
+}
+
+quint32 Settings::backlog() const
+{
+    return d->settings.value("backlog", 10).toUInt();
+}
+
 GetConfigResponse *Settings::config() const
 {
     return &d->config;

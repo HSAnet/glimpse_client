@@ -14,6 +14,7 @@ public:
     static QDir cache;
     static QDir log;
     static QDir crashDumps;
+    static QDir localCopy;
 };
 
 bool StoragePaths::Private::initialized = false;
@@ -22,6 +23,7 @@ QDir StoragePaths::Private::report;
 QDir StoragePaths::Private::cache;
 QDir StoragePaths::Private::log;
 QDir StoragePaths::Private::crashDumps;
+QDir StoragePaths::Private::localCopy;
 
 StoragePaths::StoragePaths()
 : d(NULL)
@@ -38,6 +40,7 @@ StoragePaths::StoragePaths()
     StoragePaths::Private::cache = storageHelper.callObjectMethod<jstring>("getCacheDirectory").toString();
     StoragePaths::Private::log = storageHelper.callObjectMethod<jstring>("getLogDirectory").toString();
     StoragePaths::Private::crashDumps = storageHelper.callObjectMethod<jstring>("getCrashDumpDirectory").toString();
+    StoragePaths::Private::localCopy = storageHelper.callObjectMethod<jstring>("getLocalCopyDirectory").toString();
     StoragePaths::Private::initialized = true;
 }
 
@@ -68,4 +71,9 @@ QDir StoragePaths::logDirectory() const
 QDir StoragePaths::crashDumpDirectory() const
 {
     return StoragePaths::Private::crashDumps;
+}
+
+QDir StoragePaths::localCopyDirectory() const
+{
+    return StoragePaths::Private::localCopy;
 }
