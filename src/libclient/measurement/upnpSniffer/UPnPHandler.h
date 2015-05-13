@@ -29,11 +29,7 @@ public:
     UPnPHandler();
     ~UPnPHandler();
 
-    int init(QUrl remoteUrl, QString descriptionUrl, QString eventSubUrl, QString controlUrl, QString serviceType);
-
-    QNetworkAccessManager * networkAccessManager() const;
-    void setNetworkAccessManager(QNetworkAccessManager *networkAccessManager);
-    bool parseXML(QByteArray ba);
+    int init(QUrl descriptionUrl, QString eventSubUrl, QString controlUrl, QString serviceType);
 
     QUrl GETUrl() const;
     void setGETUrl(const QUrl &GETUrl);
@@ -50,10 +46,10 @@ public:
     QUrl actionUrl() const;
     void setActionUrl(const QUrl &actionUrl);
 
-    static const int tcpConnectTimeout = 10000;
-    static const int firstByteReceivedTimeout = 10000;
-    static const int defaultPort = 80;
-    static const int threadnum = 1;
+    static const int tcpConnectTimeout = 5000;
+    static const int firstByteReceivedTimeout = 5000;
+
+    static const int defaultPort = 49160;
 
     QUrl remoteUrl() const;
     void setRemoteUrl(const QUrl &url);
@@ -71,41 +67,35 @@ public:
 
     QList<QPair<QString, QString> > containerIDs() const;
 
+    bool startTCPConnection();
+    QList<QPair<QString, QString> > handleContent(QString t);
+    QList<QPair<QString, QString> > sendRequest(QString objectID);
+    QList<QPair<QString, QString> > read();
+    int setupTCPSocketAndSend(QString objectID, int counter);
+
+    int expectedLength() const;
+    void setExpectedLength(int expectedLength);
+
 public slots:
-    void startGet();
-    void GETreadyRead();
-    void subscribe();
-        void browse();
-    void sendRequest();
-    void startAction();
-    void setupTCPSocket(const QHostInfo &server);
-    void read();
+    int startGet();
+    int GETreadyRead(QByteArray content);
+    int subscribe();
     void disconnectionHandling();
-    void startTCPConnection();
-    void TCPConnectionTracking(bool success);
-    void downloadStartedTracking(bool success);
-    void tidyUp();
-    void handleContent(QString t);
-    void sendExactRequests();
+    int printResults();
+    void readSID();
 
 signals:
-    void subscribed();
-    void firstByteReceived(bool success);
     void TCPConnected(bool success);
     void TCPDisconnected();
     void connectTCP();
     void startDownload();
-    void readyToParse();
-    void handlingDone();
-    void searchForObjectIDs();
-    void exactScan();
+    void foundContainer();
 
 private:
     QString m_servicetype;
     DownloadThreadStatus tStatus;
     Parser *m_parser;
     QTcpSocket *m_socket;
-    QNetworkAccessManager *m_networkAccessManager;
     QNetworkReply *m_GETReply;
     QNetworkReply *m_subscribeReply;
     QNetworkReply *m_browseReply;
@@ -113,7 +103,7 @@ private:
     QNetworkRequest m_subscribeRequest;
     QNetworkRequest m_browseRequest;
     QList<qint64> bytesReceived;
-    QHostInfo server;
+    QHostInfo m_server;
     QUrl m_remoteUrl;
     QList<QUrl> m_ownUrls;
     QUrl m_GETUrl;
@@ -124,7 +114,9 @@ private:
     QByteArray m_answerFromServer;
     QList<QMap<QString, QString> > m_foundContent;
     QList<QPair<QString, QString> > m_containerIDs;
-    QString m_objectID;
+    QList<QMap<QString, QString> > m_totalTableOfContents;
+    QByteArray m_soapData;
+    int m_expectedLength;
 };
 
 #endif // HTTPMANAGER_H

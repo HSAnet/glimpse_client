@@ -11,7 +11,7 @@ CONFIG -= qt
     PRE_TARGETDEPS += miniupnp/miniupnpc/miniupnpcstrings.h
 }
 
-DEFINES += HAVE_UPNP MINIUPNP_STATICLIB
+DEFINES += HAVE_UPNP MINIUPNP_STATICLIB MINIUPNPC_SET_SOCKET_TIMEOUT
 
 # Disable warnings
 *clang*|*g++*|*llvm* {

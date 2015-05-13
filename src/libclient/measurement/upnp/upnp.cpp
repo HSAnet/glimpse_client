@@ -93,23 +93,37 @@ bool UPnP::start()
     //        "urn:schemas-upnp-org:service:WANPPPConnection:1",
     //        "upnp:rootdevice",
         UPNPDev *devices = upnpDiscoverDevices(deviceList,
-                                               5000, NULL, NULL, FALSE,
+                                               2000, NULL, NULL, FALSE,
                                                FALSE, &error);
-        mediaServerList = goThroughDeviceList(devices); //TODO fix not with data.tmp
+        UPNPDev *dev = devices;
+        int x = 0;
+        while(devices != NULL)
+        {
+            qDebug() << x << " " << devices->descURL;
+            devices = devices->pNext;
+            x++;
+        }
+        devices = dev;
         QUrl url;
         QString descriptionUrl, eventSubUrl, controlUrl, serviceType;
-        for(int i = 0; i < 1; i++)
+        int i = 0;
+        QList<UPnPHash> mediaServerList = quickDevicesCheck(devices);
+        int ret = 0;
+       for(int i = 0; i < mediaServerList.length(); i++)
         {
-            url = mediaServerList[i].value(URL).toUrl();
             descriptionUrl = mediaServerList[i].value(RootDescURL).toString();
             eventSubUrl = mediaServerList[i].value(EventSubUrl).toString();
             controlUrl = mediaServerList[i].value(ControlURL).toString();
             serviceType = mediaServerList[i].value(ScpdURL).toString();
-            //TODO own Url handling
-            m_handler->init(url, descriptionUrl, eventSubUrl, controlUrl, serviceType);
-            //TODO wait for execution e.g. new slot here or something else
+            int ret = m_handler->init(descriptionUrl, eventSubUrl, controlUrl, serviceType);
+            if(ret < 0) //TODO check
+            {
+                qDebug() << "unsuccessfull on " << descriptionUrl;
+            }else{
+                qDebug() << "successfull on " << descriptionUrl;
+            }
         }
-
+        emit finished();
     }else
     {
         /* This is the old measurement */
@@ -223,8 +237,6 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
                 resultHash.insert(NumberOfPortMappings, num);
             }
 
-            // TODO GetListOfPortMappings do we need this?
-
             int firewallEnabled, inboundPinholeAllowed;
 
             if (UPNPCOMMAND_SUCCESS == UPNP_GetFirewallStatus(urls.controlURL,
@@ -305,6 +317,76 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
         FreeUPNPUrls(&urls);
         results.append(resultHash);
         myResults.append(resultHash);
+    }
+    freeUPNPDevlist(list);
+    return myResults;
+}
+
+void UPnP::getValidSlot(UPNPDev *l, UPNPUrls urls, IGDdatas data, char *lanaddr)
+{
+    int i = UPNP_GetValidIGD(l, &urls, &data, lanaddr, sizeof(lanaddr));
+    emit done();
+}
+
+QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
+{
+    QList<UPnPHash> myResults;
+
+    for (UPNPDev *l = list; l; l = l->pNext)
+    {
+        UPNPUrls urls;
+        IGDdatas data;
+        char lanaddr[64];
+        UPnPHash resultHash;
+        qDebug() << "Checking " << l->descURL;
+        if(!strcmp( l->descURL, "http://141.82.171.125:2869/upnphost/udhisapi.dll?content=uuid:1d3319a8-f766-4d40-8908-5e6f94e8b327"))
+        {
+            qDebug() << "test";
+            continue;
+        }
+        int xmlFound = UPNP_GetIGDFromUrl(l->descURL, &urls, &data, lanaddr, sizeof(lanaddr));
+        qDebug() << "Result:" << xmlFound;
+        if(xmlFound)
+        {
+            /* These URLs will be needed for accessing and controlling Mediaservers with SOAP */
+            QString controlURL = data.tmp.controlurl;
+            if(!controlURL.isEmpty())
+            {
+                resultHash.insert(ControlURL, controlURL);
+            }
+
+            QString eventSubUrl = data.tmp.eventsuburl;
+            if(!eventSubUrl.isEmpty())
+            {
+                resultHash.insert(EventSubUrl, eventSubUrl);
+            }
+
+            QString scpdUrl = data.tmp.scpdurl;
+            if(!scpdUrl.isEmpty())
+            {
+                resultHash.insert(ScpdURL, scpdUrl);
+            }
+
+            QString serviceType = data.tmp.servicetype;
+            if(!serviceType.isEmpty())
+            {
+                resultHash.insert(ScpdURL, serviceType);
+            }
+
+            QString url = urls.controlURL;
+            if(!url.isEmpty())
+            {
+                resultHash.insert(URL, url);
+            }
+            QString rootDescURL = urls.rootdescURL;
+            if(!rootDescURL.isEmpty())
+            {
+                resultHash.insert(RootDescURL, rootDescURL);
+            }
+            FreeUPNPUrls(&urls);
+            results.append(resultHash);
+            myResults.append(resultHash);
+        }
     }
     freeUPNPDevlist(list);
     return myResults;

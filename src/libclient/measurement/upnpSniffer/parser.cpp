@@ -17,48 +17,37 @@ Parser::~Parser()
 
 }
 
-void Parser::parseUpnpReply()
+QList<QMap<QString, QString> > Parser::parseUpnpReply(int expectedLength)
 {
-//    Old code - This was used to write the parser separatly
-
-//    QFile *answer = new QFile("/home/simon/code/QtHttp/massiveAnswer");
-//    if (!answer->open(QIODevice::ReadOnly | QIODevice::Text))
-//    {
-//        qDebug() << "Loading File Problem";
-//        exit(-1);
-//    }
-//    QByteArray ba = answer->readAll();
-//    QString s(ba);
+    QList<QMap<QString, QString> > tableOfContents;
     QString s(m_rawData);
-    int end = s.indexOf("s:Envelope"); //TODO needed?
+    QTextDocumentFragment html;
+    QByteArray realXML;
+    int end = s.indexOf("s:Envelope");
     if(end == -1)
     {
-        return;
+        qDebug() << "No xml data was found";
+        return tableOfContents;
     }
     s.remove(0, end-1);
-    QTextDocumentFragment html;
+    if(s.length() != expectedLength)
+    {
+        throw 400;
+    }
     QTextDocumentFragment frag = html.fromHtml(s);
-    QByteArray realXML;
+    QString s2 = frag.toPlainText();
     realXML.append(frag.toPlainText());
-    qDebug() << realXML;
-    QList<QMap<QString, QString> > tableOfContents = parseXMLtoMaps(realXML, "container");
-    if(tableOfContents.length() != 0)
+
+    tableOfContents = parseXMLtoMaps(realXML, m_searchTerm);
+    realXML.clear();
+    m_rawData.clear();
+    if(m_foundContent != tableOfContents)
     {
         m_foundContent = tableOfContents;
-        emit contentFound("container");
-    }
-//    for(int i = 0; i < tableOfContents.length(); i++)
-//    {
-//        qDebug() << "*** The Following contents are available in this element: ***";
-//        QString all = "";
-//        foreach(QString s, tableOfContents[i].keys())
-//        {
-//               all.append(" " + s);
-//        }
-//        qDebug() << all;
-//        qDebug() << tableOfContents[i].value("title");
-//    }
-
+    }else{
+        qDebug() << "Nichts neues wurde auf item ebene gefunden"; //TODO
+    };
+    return tableOfContents;
 }
 
 QHash<QString, QString> Parser::results() const
@@ -72,13 +61,9 @@ void Parser::setResults(const QHash<QString, QString> &results)
 }
 
 
-bool Parser::parseXML(QByteArray ba)
+int Parser::parseXML(QByteArray ba)
 {
     QXmlStreamReader * xmlReader = new QXmlStreamReader(ba);
-
-    QHash<QString, QString> values;
-    QString name;
-    QString text;
     //Parse the XML until we reach end of it
     while(!xmlReader->atEnd() && !xmlReader->hasError()) {
             // Read next element
@@ -92,23 +77,13 @@ bool Parser::parseXML(QByteArray ba)
                 if(xmlReader->name() == "root") {
                     continue;
                 }
-                name = xmlReader->name().toString();
-            }
-            if(token == QXmlStreamReader::Characters && !name.isEmpty()) {
-                text = xmlReader->text().toString();
-                values.insert(name, text); //TODO excerpt
-                name.clear();
-                text.clear();
             }
     }
     if(xmlReader->hasError()){
             qDebug() << "xmlFile.xml Parse Error";
-            values.clear();
-            return false;
+            return -1;
     }
-    emit xmlParsed();
-    m_results = values;
-    return true;
+    return 0;
 }
 
 /**
@@ -174,7 +149,7 @@ QList<QMap<QString, QString> > Parser::parseXMLtoMaps(QByteArray ba, QString ele
         }
     }
     if(xmlReader->hasError()){
-            qDebug() << "XML Parse Error";
+//            qDebug() << "XML Parse Error";
             /* Since obtaining as much information as possible is the task, the
              * list wont be cleared.
              * An xml error can be arbitrary characters at the
@@ -186,14 +161,21 @@ QList<QMap<QString, QString> > Parser::parseXMLtoMaps(QByteArray ba, QString ele
     return contents;
 }
 
-void Parser::parseAnswer() //TODO delete
-{
-    parseUpnpReply();
-}
 QList<QMap<QString, QString> > Parser::getFoundContent() const
 {
     return m_foundContent;
 }
+
+QString Parser::searchTerm() const
+{
+    return m_searchTerm;
+}
+
+void Parser::setSearchTerm(const QString &searchTerm)
+{
+    m_searchTerm = searchTerm;
+}
+
 
 QByteArray Parser::rawData() const
 {
@@ -202,6 +184,8 @@ QByteArray Parser::rawData() const
 
 void Parser::setRawData(const QByteArray &rawData)
 {
+//    qDebug() << "##before###\n" << m_rawData; TODO
     m_rawData = rawData;
+//    qDebug() << "##after###\n" << m_rawData;
 }
 

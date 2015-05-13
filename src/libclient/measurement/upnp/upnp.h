@@ -8,6 +8,7 @@
 #include <miniupnpc/miniupnpc.h>
 
 #include <QStringList>
+#include <QTimer>
 
 class UPnP : public Measurement
 {
@@ -55,15 +56,19 @@ public:
     bool stop();
     Result result() const;
     QList<UPnPHash> goThroughDeviceList(UPNPDev * list);
+    QList<UPnPHash> quickDevicesCheck(UPNPDev * list);
+
+signals:
+    void done();
 
 public slots:
     void waitUntilFinished();
+    void getValidSlot(UPNPDev *l, UPNPUrls urls, IGDdatas data, char *lanaddr);
 
 private:
     QList<UPnPHash> results;
 
     UPnPDefinitionPtr definition;
-    //Shall be searched for MediaServers? (from the definition)
     bool m_mediaServerSearch;
     UPnPHandler * m_handler;
 };
