@@ -167,7 +167,7 @@ QVariantMap ScheduleDefinition::specification() const
 
 QString ScheduleDefinition::getMethodFromMPlaneLabel(const QString &label)
 {
-    if (label == "glimpse-ping")
+    if (label.startsWith("glimpse-ping"))
     {
         return "ping";
     }
