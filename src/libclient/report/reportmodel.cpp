@@ -1,6 +1,9 @@
 #include "reportmodel.h"
 #include "reportscheduler.h"
 #include "../types.h"
+#include "task/scheduledefinition.h"
+#include "scheduler/scheduler.h"
+#include "client.h"
 
 #include <QPointer>
 #include <QUuid>

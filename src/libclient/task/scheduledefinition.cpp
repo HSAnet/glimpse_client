@@ -1,4 +1,4 @@
-#include "task.h"
+#include "scheduledefinition.h"
 #include "../types.h"
 #include "../timing/timingfactory.h"
 
@@ -33,6 +33,8 @@ ScheduleDefinition::ScheduleDefinition(const ScheduleId &id, const TaskId& taskI
     d->timing = timing;
     d->measurementDefinition = measurementDefinition;
     d->precondition = precondition;
+
+    // TODO: save scheduleDefinition as JSON
 }
 
 ScheduleDefinition::~ScheduleDefinition()

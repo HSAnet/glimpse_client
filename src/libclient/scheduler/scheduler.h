@@ -1,7 +1,7 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-#include "../task/task.h"
+#include "../task/scheduledefinition.h"
 
 class TaskExecutor;
 

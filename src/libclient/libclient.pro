@@ -111,7 +111,7 @@ SOURCES +=  \
     report/report.cpp \
     task/taskvalidator.cpp \
     task/taskexecutor.cpp \
-    task/task.cpp \
+    task/scheduledefinition.cpp \
     task/result.cpp \
     network/networkmanager.cpp \
     measurement/measurementfactory.cpp \
@@ -204,7 +204,7 @@ HEADERS += \
     report/report.h \
     task/taskvalidator.h \
     task/taskexecutor.h \
-    task/task.h \
+    task/scheduledefinition.h \
     task/result.h \
     serializable.h \
     network/networkmanager.h \

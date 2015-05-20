@@ -1,5 +1,5 @@
-#ifndef TASK_H
-#define TASK_H
+#ifndef SCHEDULE_DEFINITION_H
+#define SCHEDULE_DEFINITION_H
 
 #include "../ident.h"
 #include "../timing/timing.h"
@@ -35,6 +35,8 @@ public:
     void setTiming(const TimingPtr &timing);
     TimingPtr timing() const;
 
+    QVariant task() const;
+
     void setMeasurementDefinition(const QVariant &measurementDefinition);
     QVariant measurementDefinition() const;
 
@@ -60,4 +62,4 @@ Q_DECLARE_METATYPE(ScheduleDefinition)
 Q_DECLARE_TYPEINFO(ScheduleDefinition, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(ScheduleDefinitionList)
 
-#endif // TASK_H
+#endif // SCHEDULE_DEFINITION_H

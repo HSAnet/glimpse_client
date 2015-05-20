@@ -1,7 +1,7 @@
 #ifndef TASKEXECUTOR_H
 #define TASKEXECUTOR_H
 
-#include "task.h"
+#include "scheduledefinition.h"
 #include "../report/report.h"
 
 #include <QObject>

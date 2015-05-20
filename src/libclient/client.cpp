@@ -35,7 +35,7 @@
 #include "timing/immediatetiming.h"
 #include "timing/ondemandtiming.h"
 #include "timing/timing.h"
-#include "task/task.h"
+#include "task/scheduledefinition.h"
 #include "measurement/btc/btc_definition.h"
 #include "measurement/http/httpdownload_definition.h"
 #include "measurement/dnslookup/dnslookup_definition.h"
