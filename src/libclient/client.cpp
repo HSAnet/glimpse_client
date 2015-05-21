@@ -7,6 +7,7 @@
 #include "controller/ntpcontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
+#include "task/taskstorage.h"
 #include "scheduler/schedulerstorage.h"
 #include "report/reportstorage.h"
 #include "scheduler/scheduler.h"
@@ -57,6 +58,7 @@ public:
     , networkAccessManager(new QNetworkAccessManager(q))
     , schedulerStorage(&scheduler)
     , reportStorage(&reportScheduler)
+    , taskStorage(&scheduler)
     {
         executor.setNetworkManager(&networkManager);
         scheduler.setExecutor(&executor);
@@ -75,6 +77,7 @@ public:
 
     Scheduler scheduler;
     SchedulerStorage schedulerStorage;
+    TaskStorage taskStorage;
 
     ReportScheduler reportScheduler;
     ReportStorage reportStorage;
@@ -335,6 +338,7 @@ bool Client::init()
     // Initialize storages
     d->schedulerStorage.loadData();
     d->reportStorage.loadData();
+    d->taskStorage.loadData();
 
     // Initialize controllers
     d->networkManager.init(&d->scheduler, &d->settings);

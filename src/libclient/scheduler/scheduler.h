@@ -2,6 +2,7 @@
 #define SCHEDULER_H
 
 #include "../task/scheduledefinition.h"
+#include "../task/task.h"
 
 class TaskExecutor;
 
@@ -17,6 +18,9 @@ public:
     TaskExecutor *executor() const;
 
     ScheduleDefinitionList tests() const;
+    TaskList tasks() const;
+
+    void addTask(const Task &task);
 
     void enqueue(const ScheduleDefinition &testDefinition);
     void dequeue(const ScheduleId &id);
@@ -30,6 +34,7 @@ signals:
     void testAdded(const ScheduleDefinition &test, int position);
     void testRemoved(const ScheduleDefinition &test, int position);
     void testMoved(const ScheduleDefinition &test, int from, int to);
+    void taskAdded(const Task &task);
 
 protected:
     class Private;

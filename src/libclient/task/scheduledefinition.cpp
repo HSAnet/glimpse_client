@@ -1,16 +1,15 @@
 #include "scheduledefinition.h"
 #include "../types.h"
 #include "../timing/timingfactory.h"
+#include "task.h"
 
 class TaskData : public QSharedData
 {
 public:
     ScheduleId id;
-    TaskId taskId;
-    QString name;
     TimingPtr timing;
-    QVariant measurementDefinition;
     Precondition precondition;
+    Task task;
 };
 
 ScheduleDefinition::ScheduleDefinition()
@@ -28,13 +27,9 @@ ScheduleDefinition::ScheduleDefinition(const ScheduleId &id, const TaskId& taskI
 : d(new TaskData)
 {
     d->id = id;
-    d->taskId = taskId;
-    d->name = name;
     d->timing = timing;
-    d->measurementDefinition = measurementDefinition;
     d->precondition = precondition;
-
-    // TODO: save scheduleDefinition as JSON
+    d->task = Task(taskId, name, measurementDefinition);
 }
 
 ScheduleDefinition::~ScheduleDefinition()
@@ -61,19 +56,19 @@ void ScheduleDefinition::setId(const ScheduleId &id)
     d->id = id;
 }
 
+QVariant ScheduleDefinition::task() const
+{
+    return d->task.toVariant();
+}
+
 QVariant ScheduleDefinition::toVariant() const
 {
     QVariantMap map;
-    QVariantMap task;
-
-    task.insert("id", d->taskId.toInt());
-    task.insert("method", d->name);
-    task.insert("options", d->measurementDefinition);
 
     map.insert("id", d->id.toInt());
     map.insert("timing", d->timing->toVariant());
     map.insert("precondition", d->precondition.toVariant());
-    map.insert("task", task);
+    map.insert("task", d->task.toVariant());
 
     return map;
 }
@@ -99,17 +94,17 @@ ScheduleId ScheduleDefinition::id() const
 
 TaskId ScheduleDefinition::taskId() const
 {
-    return d->taskId;
+    return d->task.id();
 }
 
 void ScheduleDefinition::setName(const QString &name)
 {
-    d->name = name;
+    d->task.setMethod(name);
 }
 
 QString ScheduleDefinition::name() const
 {
-    return d->name;
+    return d->task.method();
 }
 
 void ScheduleDefinition::setTiming(const TimingPtr &timing)
@@ -124,12 +119,12 @@ TimingPtr ScheduleDefinition::timing() const
 
 void ScheduleDefinition::setMeasurementDefinition(const QVariant &measurementDefinition)
 {
-    d->measurementDefinition = measurementDefinition;
+    d->task.setMeasurementDefinition(measurementDefinition);
 }
 
 QVariant ScheduleDefinition::measurementDefinition() const
 {
-    return d->measurementDefinition;
+    return d->task.measurementDefinition();
 }
 
 void ScheduleDefinition::setPrecondition(const Precondition &precondition)
