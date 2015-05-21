@@ -27,4 +27,8 @@ public class StorageHelper {
         public String getCrashDumpDirectory() {
                 return getDataDirectory() + "/crashdumps";
         }
+
+        public String getLocalCopyDirectory() {
+                return getDataDirectory() + "/results";
+        }
 }
