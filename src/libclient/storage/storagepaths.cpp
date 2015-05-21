@@ -40,3 +40,8 @@ QDir StoragePaths::crashDumpDirectory() const
 {
     return QDir(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/crashdumps");
 }
+
+QDir StoragePaths::taskDirectory() const
+{
+    return QDir(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/tasks");
+}

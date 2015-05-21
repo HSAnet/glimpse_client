@@ -173,7 +173,9 @@ SOURCES +=  \
     measurement/wifilookup/wifilookup_plugin.cpp \
     storage/storage.cpp \
     timing/timer.cpp \
-    controller/ntpcontroller.cpp
+    controller/ntpcontroller.cpp \
+    task/taskstorage.cpp \
+    task/task.cpp
 
 HEADERS += \
     export.h \
@@ -271,7 +273,9 @@ HEADERS += \
     ident.h \
     storage/storage.h \
     timing/timer.h \
-    controller/ntpcontroller.h
+    controller/ntpcontroller.h \
+    task/taskstorage.h \
+    task/task.h
 
 OTHER_FILES += \
     libclient.pri
