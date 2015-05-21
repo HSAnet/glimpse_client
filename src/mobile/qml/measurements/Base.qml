@@ -45,8 +45,13 @@ Page {
 
             var child = children.length === 1 ? children[0] : children[1];
 
-            if (!child.value && !child.text && !child.hasOwnProperty("checked"))
+            if (!child.value && !child.text && !child.hasOwnProperty("checked") && !child.hasOwnProperty("currentText"))
                 continue;
+
+            if (child.hasOwnProperty("currentText")) {
+                params.push(child.currentText);
+                continue;
+            }
 
             params.push(child.hasOwnProperty("checked") ? child.checked : (child.text ? child.text : child.value));
         }
@@ -65,7 +70,8 @@ Page {
 
             var column = columnComponent.createObject(grid);
             column.Layout.fillWidth = true;
-            var valueLabel;
+            // I don't know why, but this does the trick preserving the payload's value with ping and traceroute
+            var valueLabel = "";
 
             switch(prop.type) {
             case "Slider":
