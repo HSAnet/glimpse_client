@@ -30,6 +30,8 @@ public:
 
     bool knownTestId(const ScheduleId &id);
 
+    Task taskByTaskId(const TaskId &id) const;
+
 signals:
     void testAdded(const ScheduleDefinition &test, int position);
     void testRemoved(const ScheduleDefinition &test, int position);

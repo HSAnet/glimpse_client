@@ -278,4 +278,17 @@ bool Scheduler::knownTestId(const ScheduleId &id)
     return false;
 }
 
+Task Scheduler::taskByTaskId(const TaskId &id) const
+{
+    foreach (const Task &task, d->tasks)
+    {
+        if (task.id() == id)
+        {
+            return task;
+        }
+    }
+
+    return Task();
+}
+
 #include "scheduler.moc"
