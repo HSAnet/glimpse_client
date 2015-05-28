@@ -12,6 +12,8 @@
   Call 'init_snmp()' bevor. The class uses some function from the library.
   These functions will not work unless the library is initialized.
 
+  Works with the SNMP versions 1 and 2c.
+
   */
 
 #include <net-snmp/net-snmp-config.h>
@@ -20,6 +22,7 @@
 #include <QString>
 
 // Protocol type 'Sequence'.
+// As described in the SMI.
 class Sequence
 {
     quint16 m_length;
@@ -34,7 +37,8 @@ public:
 };
 
 // TLV (Type, Length, Value) triple.
-// For the values 'version' and 'community'.
+// Encode values as described in the Basic Encoding Rules.
+// Customiced for the values 'version' and 'community'.
 class Triple
 {
     quint8 m_type;
