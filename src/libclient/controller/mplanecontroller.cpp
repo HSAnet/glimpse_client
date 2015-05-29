@@ -9,6 +9,7 @@
 #include "scheduler/scheduler.h"
 #include "timing/periodictiming.h"
 #include "measurement/ping/ping_definition.h"
+#include "measurement/http/httpdownload_definition.h"
 
 #include <QPointer>
 #include <QCoreApplication>
@@ -149,9 +150,10 @@ void MPlaneController::sendCapabilities()
 {
     d->postRequest.setPath("/register/capability");
     d->postRequest.addData(PingDefinition::capability());
+    d->postRequest.addData(HTTPDownloadDefinition::capability());
     d->postRequest.setAuthenticationMethod(Request::None);
     d->capabilityRequester.setRequest(&d->postRequest);
-    //d->requester.setResponse(d->response);
+    //d->requester.setResponse(d->response); // TODO we might care for the response
 
     d->capabilityRequester.start();
 }

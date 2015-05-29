@@ -673,10 +673,10 @@ bool HTTPDownload::calculateResults()
         threadResults.append(thread);
     }
 
-    results.insert("actual_num_threads", num_threads);
-    results.insert("results_ok", resultsOK);
-    results.insert("bandwidth_bps_avg", overallBandwidth);
-    results.insert("bandwidth_bps_per_thread", threadResults);
+    results.append(overallBandwidth);
+    results.append(num_threads);
+    results.append(resultsOK);
+    //results.insert("bandwidth_bps_per_thread", threadResults);
 
     return true;
 }
@@ -701,7 +701,7 @@ bool HTTPDownload::stop()
 
 Result HTTPDownload::result() const
 {
-    return Result(QVariantList());
+    return results;
 }
 
 void HTTPDownload::setStatus(Status status)

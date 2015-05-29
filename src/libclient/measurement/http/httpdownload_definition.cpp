@@ -29,6 +29,22 @@ HTTPDownloadDefinitionPtr HTTPDownloadDefinition::fromVariant(const QVariant &va
                                                                 map.value("slot_length", 1000).toInt()));
 }
 
+HTTPDownloadDefinitionPtr HTTPDownloadDefinition::fromSpecification(const QVariant &variant)
+{
+    QVariantMap map = variant.toMap();
+    if (map.isEmpty())
+    {
+        return HTTPDownloadDefinitionPtr();
+    }
+
+    return HTTPDownloadDefinitionPtr(new HTTPDownloadDefinition(map.value("destination.url", "").toString(),
+                                                                map.value("glimpse.http.avoid-caches", false).toBool(),
+                                                                map.value("glimpse.http.thread.count", 1).toInt(),
+                                                                map.value("glimpse.http.target-time", 10000).toInt(),
+                                                                map.value("glimpse.http.ramp-up-time", 3000).toInt(),
+                                                                map.value("glimpse.http.slot-length", 1000).toInt()));
+}
+
 QVariant HTTPDownloadDefinition::toVariant() const
 {
     QVariantMap map;
@@ -40,3 +56,32 @@ QVariant HTTPDownloadDefinition::toVariant() const
     map.insert("slot_length", slotLength);
     return map;
 }
+
+QVariantMap HTTPDownloadDefinition::capability()
+{
+    QVariantMap parameters;
+    parameters.insert("destination.url", "*");
+    //parameters.insert("glimpse.http.avoid-caches", "*"); // TODO registry
+    parameters.insert("glimpse.http.thread.count", "*");
+    //parameters.insert("glimpse.http.target-time", "*"); // TODO
+    //parameters.insert("glimpse.http.ramp-up-time", "*"); // TODO
+    //parameters.insert("glimpse.http.slot-length", "*"); // TODO
+
+    QVariantList results;
+    results.append("glimpse.http.bandwidth.imputed.bps.avg");
+    results.append("glimpse.http.thread.count");
+    results.append("untainted");
+    //results.append("bandwidth_bps_per_thread");
+
+    QVariantMap capability;
+    capability.insert("capability", "measure");
+    capability.insert("label", "glimpse-httpdownload");
+    capability.insert("parameters", parameters);
+    capability.insert("results", results);
+    capability.insert("version", 0);
+    capability.insert("when", "now");
+    capability.insert("registry", "https://www.measure-it.net/static/glimpse_registry.json");
+
+    return capability;
+}
+

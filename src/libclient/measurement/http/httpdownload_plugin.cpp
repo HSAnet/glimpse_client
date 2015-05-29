@@ -17,5 +17,5 @@ MeasurementPtr HTTPDownloadPlugin::createMeasurement(const QString &name)
 MeasurementDefinitionPtr HTTPDownloadPlugin::createMeasurementDefinition(const QString &name, const QVariant &data)
 {
     Q_UNUSED(name);
-    return HTTPDownloadDefinition::fromVariant(data);
+    return HTTPDownloadDefinition::fromSpecification(data);
 }

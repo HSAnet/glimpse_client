@@ -171,6 +171,10 @@ QString ScheduleDefinition::getMethodFromMPlaneLabel(const QString &label)
     {
         return "ping";
     }
+    else if (label.startsWith("glimpse-httpdownload"))
+    {
+        return "httpdownload";
+    }
 
     return QString();
 }

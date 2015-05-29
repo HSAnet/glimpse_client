@@ -17,6 +17,8 @@ public:
 
     // Storage
     static HTTPDownloadDefinitionPtr fromVariant(const QVariant &variant);
+    static HTTPDownloadDefinitionPtr fromSpecification(const QVariant &variant);
+    static QVariantMap capability();
 
     // Getters
     QString url;

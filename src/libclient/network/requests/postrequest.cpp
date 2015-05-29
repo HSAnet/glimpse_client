@@ -3,7 +3,8 @@
 class PostRequest::Private
 {
 public:
-    QVariantMap data;
+    //QVariantMap data;
+    QVariantList data;
 };
 
 PostRequest::PostRequest(QObject *parent)
@@ -25,18 +26,18 @@ QVariant PostRequest::toVariant() const
     envelope.insert("envelope", "message");
     envelope.insert("version", 0);
 
-    QVariantList contents;
-    contents.append(d->data);
-    envelope.insert("contents",contents);
+    envelope.insert("contents", d->data);
     return envelope;
 }
 
 void PostRequest::addData(const QVariantMap &data)
 {
+    d->data.append(data);
+    /*
     QMapIterator<QString, QVariant> i(data);
     while (i.hasNext())
     {
         i.next();
         d->data.insert(i.key(), i.value());
-    }
+    }*/
 }
