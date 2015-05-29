@@ -8,7 +8,9 @@
 #include <DiskArbitration/DADisk.h>
 #include <qbatteryinfo.h>
 #include <qnetworkinfo.h>
-#include <qdeviceinfo.h>
+//left in in case the state of QSystem ever improves, same for the
+//functions using QDeviceInfo
+//#include <qdeviceinfo.h>
 #include <qstorageinfo.h>
 
 LOGGER(DeviceInfo);
@@ -93,32 +95,38 @@ QString DeviceInfo::platform() const
 
 QString DeviceInfo::OSName() const
 {
-    return QDeviceInfo().operatingSystemName();
+    //return QDeviceInfo().operatingSystemName();
+    return "Mac OS";
 }
 
 QString DeviceInfo::OSVersion() const
 {
-    return QDeviceInfo().version(QDeviceInfo::Os);
+    //return QDeviceInfo().version(QDeviceInfo::Os);
+    return "Unknown";
 }
 
 QString DeviceInfo::firmwareVersion() const
 {
-    return QDeviceInfo().version(QDeviceInfo::Firmware);
+    //return QDeviceInfo().version(QDeviceInfo::Firmware);
+    return "Unknown";
 }
 
 QString DeviceInfo::board() const
 {
-    return QDeviceInfo().boardName();
+    //return QDeviceInfo().boardName();
+    return "Unknown";
 }
 
 QString DeviceInfo::manufacturer() const
 {
-    return QDeviceInfo().manufacturer();
+    //return QDeviceInfo().manufacturer();
+    return "Apple";
 }
 
 QString DeviceInfo::model() const
 {
-    return QDeviceInfo().model();
+    //return QDeviceInfo().model();
+    return "Unknown";
 }
 
 qlonglong DeviceInfo::availableDiskSpace() const
