@@ -415,7 +415,7 @@ void Client::btc(const QString &host)
 {
     BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024, 10);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(9), TaskId(9), "btc_ma", timing,
+    ScheduleDefinition testDefinition(ScheduleId(2), TaskId(2), "btc_ma", timing,
                                   btcDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -430,7 +430,7 @@ void Client::http(const QString &url, bool avoidCaches, int threads, int targetT
 {
     HTTPDownloadDefinition httpDef(url, avoidCaches, threads , targetTime, rampUpTime, slotLength);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(3), TaskId(3), "httpdownload", timing,
+    ScheduleDefinition testDefinition(ScheduleId(7), TaskId(7), "httpdownload", timing,
                                   httpDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -461,7 +461,7 @@ void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint1
     PacketTrainsDefinition packetTrainsDef(host, port, packetSize, trainLength, iterations, rateMin, rateMax, delay);
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(11), TaskId(11), "packettrains_ma", timing,
+    ScheduleDefinition testDefinition(ScheduleId(8), TaskId(8), "packettrains_ma", timing,
                                   packetTrainsDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -479,7 +479,7 @@ void Client::ping(const QString &url, const quint32 &count, const quint32 &inter
                            pingTypeFromString(type));
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(12), TaskId(12), "ping", timing,
+    ScheduleDefinition testDefinition(ScheduleId(1), TaskId(1), "ping", timing,
                                   pingDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -502,7 +502,7 @@ void Client::traceroute(const QString &url,
                                        pingTypeFromString(type));
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(13), TaskId(13), "traceroute", timing,
+    ScheduleDefinition testDefinition(ScheduleId(10), TaskId(10), "traceroute", timing,
                                   tracerouteDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
