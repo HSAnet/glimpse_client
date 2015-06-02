@@ -34,7 +34,7 @@ QString DeviceInfo::deviceId() const
 
     if (session)
     {
-        char *mountPoint = "/";
+        const char *mountPoint = "/";
         CFURLRef url = CFURLCreateFromFileSystemRepresentation(NULL, (const UInt8 *)mountPoint, strlen(mountPoint), TRUE);
         disk = DADiskCreateFromVolumePath(NULL, session, url);
         CFRelease(url);
