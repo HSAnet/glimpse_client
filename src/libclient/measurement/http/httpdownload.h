@@ -89,7 +89,7 @@ public slots:
     void startDownload();
     void stopDownload();
     //reads data from the socket whenever there's data ready to be read
-    void read();
+    QByteArray read();
 
 signals:
     void TCPConnected(bool success);
