@@ -56,7 +56,9 @@ DeviceInfo::~DeviceInfo()
 
 QString DeviceInfo::deviceId() const
 {
-    if (int ret = setfsent() != 1)
+    int ret = setfsent();
+
+    if (ret != 1)
     {
         LOG_DEBUG(QString("Error opening fstab: setfsent returned %1").arg(ret));
         return QString();
