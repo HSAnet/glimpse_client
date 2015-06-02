@@ -124,8 +124,8 @@ SOURCES +=  \
     network/tcpsocket.cpp \
     controller/logincontroller.cpp \
     measurement/btc/btc_plugin.cpp \
-#    measurement/upnp/upnp.cpp \
-#    measurement/upnp/upnp_plugin.cpp \
+    measurement/upnp/upnp.cpp \
+    measurement/upnp/upnp_plugin.cpp \
     report/reportmodel.cpp \
     controller/reportcontroller.cpp \
     types.cpp \
@@ -174,8 +174,8 @@ SOURCES +=  \
     storage/storage.cpp \
     timing/timer.cpp \
     controller/ntpcontroller.cpp \
-    measurement/upnp_ext/upnp_ext.cpp \
-    measurement/upnp_ext/upnp_ext_plugin.cpp
+    measurement/extupnp/extupnp.cpp \
+    measurement/extupnp/extupnp_plugin.cpp
 
 HEADERS += \
     export.h \
@@ -222,8 +222,8 @@ HEADERS += \
     log/logger.h \
     measurement/measurementplugin.h \
     measurement/btc/btc_plugin.h \
-#    measurement/upnp/upnp.h \
-#    measurement/upnp/upnp_plugin.h \
+    measurement/upnp/upnp.h \
+    measurement/upnp/upnp_plugin.h \
     report/reportmodel.h \
     storage/storagepaths.h \
     controller/reportcontroller.h \
