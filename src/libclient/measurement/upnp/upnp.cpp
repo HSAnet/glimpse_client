@@ -32,7 +32,15 @@ Measurement::Status UPnP::status() const
 bool UPnP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
-    Q_UNUSED(measurementDefinition);
+
+    definition = measurementDefinition.dynamicCast<UPnPDefinition>();
+
+    if (definition.isNull())
+    {
+        setErrorString("received NULL definition");
+        return false;
+    }
+    m_mediaServerSearch = definition->mediaServerSearch;
     return true;
 }
 
@@ -59,26 +67,48 @@ bool UPnP::start()
 {
     int error = 0;
 
+    if(m_mediaServerSearch)
+    {
+        /* The following devices are important */
+        static const char * const deviceList[] = {
+            "urn:schemas-upnp-org:device:MediaServer:1",
+            "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
+            0
+        };
+        // TODO test other devices from upnp.org
+        /* more or less unimportant: */
+    //        "urn:schemas-upnp-org:service:ConnectionManager:1",
+    //        "urn:schemas-upnp-org:service:ContentDirectory:1",
+    //        "urn:schemas-upnp-org:device:InternetGatewayDevice:2",
+    //        "urn:schemas-upnp-org:service:WANIPConnection:2",
+    //        "urn:schemas-upnp-org:service:WANIPConnection:1",
+    //        "urn:schemas-upnp-org:service:WANPPPConnection:1",
+    //        "upnp:rootdevice",
+    //        "ssdp:all",
+        UPNPDev *devices = upnpDiscoverDevices(deviceList,
+                                               5000, NULL, NULL, FALSE,
+                                               FALSE, &error);
+        QList<UPnPHash> mediaServerList = goThroughDeviceList(devices);
+    }
     UPNPDev *devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
-    UPNPDev *devlistBegin = devlist;
+    QList<UPnPHash> list = goThroughDeviceList(devlist);
 
-    // get interface list
-    /*foreach(interface, interfaces) {
-        newdevlist = ::upnpDiscover(2000, interface, NULL, FALSE, FALSE, &error);
+    emit finished();
+	//TODO return false if something went wrong or if there are no results
+	return true;
+}
 
-        // go to end of list and append
-    }*/
+QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
+{
+    QList<UPnPHash> myResults;
 
-    while (devlist)
+    for (UPNPDev *l = list; l; l = l->pNext)
     {
         UPNPUrls urls;
         IGDdatas data;
         char lanaddr[64];
         UPnPHash resultHash;
-
-        int code = UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr));
-
-        if (code > 0)   // TODO maybe distinguish between the return codes (1,2,3) to add information what happend to the result
+        if(UPNP_GetValidIGD(l, &urls, &data, lanaddr, sizeof(lanaddr)) > 0)
         {
             resultHash.insert(LanIpAddress, QLatin1String(lanaddr));
 
@@ -184,14 +214,11 @@ bool UPnP::start()
             }
 
             int bufferSize = 0;
-
             if (char *buffer = (char *)miniwget(urls.rootdescURL, &bufferSize, 0))
             {
                 NameValueParserData pdata;
                 ParseNameValue(buffer, bufferSize, &pdata);
                 free(buffer);
-                buffer = NULL;
-
                 QStringList modelName = GetValuesFromNameValueList(&pdata, "modelName");
 
                 if (!modelName.isEmpty())
@@ -212,21 +239,28 @@ bool UPnP::start()
                 {
                     resultHash.insert(FriendlyName, friendlyName.last());
                 }
+                qDebug() << friendlyName;// + modelName + manufacturer;
 
                 ClearNameValueList(&pdata);
             }
         }
-
+        /* These URLs will be needed for accessing and controlling Mediaservers with SOAP */
+        QString controlURL = urls.controlURL;
+        if(!controlURL.isEmpty())
+        {
+            resultHash.insert(ControlURL, controlURL);
+        }
+        QString rootDescURL = urls.rootdescURL;
+        if(!rootDescURL.isEmpty())
+        {
+            resultHash.insert(RootDescURL, rootDescURL);
+        }
         FreeUPNPUrls(&urls);
-
         results.append(resultHash);
-        devlist = devlist->pNext;
+        myResults.append(resultHash);
     }
-
-    freeUPNPDevlist(devlistBegin);
-
-    emit finished();
-    return true; // TODO return false if something went wrong or if there are no results
+    freeUPNPDevlist(list);
+    return myResults;
 }
 
 bool UPnP::stop()

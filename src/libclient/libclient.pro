@@ -174,8 +174,7 @@ SOURCES +=  \
     storage/storage.cpp \
     timing/timer.cpp \
     controller/ntpcontroller.cpp \
-    measurement/extupnp/extupnp.cpp \
-    measurement/extupnp/extupnp_plugin.cpp
+    measurement/upnp/upnp_definition.cpp
 
 HEADERS += \
     export.h \
@@ -274,8 +273,7 @@ HEADERS += \
     storage/storage.h \
     timing/timer.h \
     controller/ntpcontroller.h \
-    measurement/upnp_ext/upnp_ext_plugin.h \
-    measurement/upnp_ext/upnp_ext.h
+    measurement/upnp/upnp_definition.h
 
 OTHER_FILES += \
     libclient.pri

@@ -43,6 +43,7 @@
 #include "measurement/packettrains/packettrainsdefinition.h"
 #include "measurement/ping/ping_definition.h"
 #include "measurement/traceroute/traceroute_definition.h"
+#include "measurement/upnp/upnp_definition.h"
 
 LOGGER(Client);
 
@@ -382,9 +383,8 @@ bool Client::init()
     tests.append(ScheduleDefinition(ScheduleId(10), TaskId(10), "traceroute", timing, TracerouteDefinition("measure-it.net", 3, 1000, 1000, 33434,
                                                                                33434, 74, ping::Udp).toVariant(),
                                 precondition));
-//    tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", TimingPtr(new ImmediateTiming()), QVariant(), precondition));
-    tests.append(ScheduleDefinition(ScheduleId(25), TaskId(25), "extupnp", TimingPtr(new ImmediateTiming()), QVariant(), precondition));
-    tests.append(ScheduleDefinition(ScheduleId(13), TaskId(13), "upnp", timing, QVariant(), precondition));
+//    tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", TimingPtr(new ImmediateTiming()), UPnPDefinition(true).toVariant(), precondition));
+    tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", timing, UPnPDefinition(true).toVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(12), TaskId(12), "wifilookup", timing, QVariant(), precondition));
 
     foreach (const ScheduleDefinition &test, tests)
@@ -437,14 +437,18 @@ void Client::http(const QString &url, bool avoidCaches, int threads, int targetT
     d->scheduler.enqueue(testDefinition);
 }
 
-void Client::upnp()
+void Client::upnp(const bool mediaServerSearch)
 {
-    d->scheduler.executeOnDemandTest(ScheduleId(13));
+    UPnPDefinition upnpDef(mediaServerSearch);
+    TimingPtr timing(new ImmediateTiming());
+    ScheduleDefinition testDefinition(ScheduleId(3), TaskId(3), "upnp", timing,
+                                  upnpDef.toVariant(), Precondition());
+    d->scheduler.enqueue(testDefinition);
 }
 
-void Client::extupnp()
+void Client::upnp()
 {
-    d->scheduler.executeOnDemandTest(ScheduleId(25));
+    d->scheduler.executeOnDemandTest(ScheduleId(11));
 }
 
 void Client::dnslookup()

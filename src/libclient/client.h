@@ -98,8 +98,8 @@ public slots:
     void http();
     void http(const QString &url, bool avoidCaches, int threads, int targetTime,
               int rampUpTime, int slotLength);
+    void upnp(const bool mediaServerSearch);
     void upnp();
-    void extupnp();
     void packetTrains();
     void packetTrains(const QString host,
                       quint16 port,
