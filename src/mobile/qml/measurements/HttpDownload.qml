@@ -13,7 +13,7 @@ Base {
         {
             "label": "Url",
             "type": "TextField",
-            "text": "http://www.measure-it.net:80/static/measurement/67108864"
+            "text": "http://www.measure-it.net/static/measurement/268435456"
         },
 
         {
