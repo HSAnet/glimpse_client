@@ -108,6 +108,7 @@ bool UPnP::start()
         QString descriptionUrl, eventSubUrl, controlUrl, serviceType;
         int i = 0;
         QList<UPnPHash> mediaServerList = quickDevicesCheck(devices);
+//        QList<UPnPHash> mediaServerList = goThroughDeviceList(devices);
         int ret = 0;
        for(int i = 0; i < mediaServerList.length(); i++)
         {
@@ -382,6 +383,36 @@ QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
             if(!rootDescURL.isEmpty())
             {
                 resultHash.insert(RootDescURL, rootDescURL);
+            }
+            int bufferSize = 0;
+            if (char *buffer = (char *)miniwget(urls.rootdescURL, &bufferSize, 0))
+            {
+                NameValueParserData pdata;
+                ParseNameValue(buffer, bufferSize, &pdata);
+                free(buffer);
+                QStringList modelName = GetValuesFromNameValueList(&pdata, "modelName");
+
+                if (!modelName.isEmpty())
+                {
+                    resultHash.insert(ModelName, modelName.last());
+                }
+
+                QStringList manufacturer = GetValuesFromNameValueList(&pdata, "manufacturer");
+
+                if (!manufacturer.isEmpty())
+                {
+                    resultHash.insert(Manufacturer, manufacturer.last());
+                }
+
+                QStringList friendlyName = GetValuesFromNameValueList(&pdata, "friendlyName");
+
+                if (!friendlyName.isEmpty())
+                {
+                    resultHash.insert(FriendlyName, friendlyName.last());
+                }
+                qDebug() << friendlyName << modelName << manufacturer;
+
+                ClearNameValueList(&pdata);
             }
             FreeUPNPUrls(&urls);
             results.append(resultHash);
