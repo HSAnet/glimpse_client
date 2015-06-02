@@ -44,7 +44,49 @@ android|mac|win32|linux {
         $$PWD/miniupnp/miniupnpc/receivedata.h \
         $$PWD/miniupnp/miniupnpc/upnpcommands.h \
         $$PWD/miniupnp/miniupnpc/upnperrors.h \
-        $$PWD/miniupnp/miniupnpc/upnpreplyparse.h
+        $$PWD/miniupnp/miniupnpc/upnpreplyparse.h \
+#        $$PWD/miniupnp/miniupnpd/portinuse.h \
+#        $$PWD/miniupnp/miniupnpd/upnpurns.h \
+#        $$PWD/miniupnp/miniupnpd/config.h \
+#        $$PWD/miniupnp/miniupnpd/upnpsoap.h \
+#        $$PWD/miniupnp/miniupnpd/minixml.h \
+#        $$PWD/miniupnp/miniupnpd/upnpreplyparse.h \
+#        $$PWD/miniupnp/miniupnpd/pcpserver.h \
+#        $$PWD/miniupnp/miniupnpd/asyncsendto.h \
+#        $$PWD/miniupnp/miniupnpd/upnppinhole.h \
+#        $$PWD/miniupnp/miniupnpd/upnphttp.h \
+#        $$PWD/miniupnp/miniupnpd/upnpredirect.h \
+#        $$PWD/miniupnp/miniupnpd/options.h \
+#        $$PWD/miniupnp/miniupnpd/macros.h \
+#        $$PWD/miniupnp/miniupnpd/getifaddr.h \
+#        $$PWD/miniupnp/miniupnpd/upnpdescgen.h \
+#        $$PWD/miniupnp/miniupnpd/miniupnpdpath.h \
+#        $$PWD/miniupnp/miniupnpd/getroute.h \
+#        $$PWD/miniupnp/miniupnpd/pcp_msg_struct.h \
+#        $$PWD/miniupnp/miniupnpd/upnpglobalvars.h \
+#        $$PWD/miniupnp/miniupnpd/upnpevents.h \
+#        $$PWD/miniupnp/miniupnpd/ipf/ipfrdr.h \
+#        $$PWD/miniupnp/miniupnpd/getifstats.h \
+#        $$PWD/miniupnp/miniupnpd/upnputils.h \
+#        $$PWD/miniupnp/miniupnpd/pcplearndscp.h \
+#        $$PWD/miniupnp/miniupnpd/codelength.h \
+#        $$PWD/miniupnp/miniupnpd/commonrdr.h \
+#        $$PWD/miniupnp/miniupnpd/natpmp.h \
+#        $$PWD/miniupnp/miniupnpd/daemonize.h \
+#        $$PWD/miniupnp/miniupnpd/ipfw/ipfwaux.h \
+#        $$PWD/miniupnp/miniupnpd/ipfw/ipfwrdr.h \
+#        $$PWD/miniupnp/miniupnpd/minissdp.h \
+#        $$PWD/miniupnp/miniupnpd/upnpdescstrings.h \
+#        $$PWD/miniupnp/miniupnpd/pf/pfpinhole.h \
+#        $$PWD/miniupnp/miniupnpd/pf/obsdrdr.h \
+#        $$PWD/miniupnp/miniupnpd/getconnstatus.h \
+#        $$PWD/miniupnp/miniupnpd/upnppermissions.h \
+#        $$PWD/miniupnp/miniupnpd/netfilter/iptpinhole.h \
+#        $$PWD/miniupnp/miniupnpd/netfilter/iptcrdr.h \
+#        $$PWD/miniupnp/miniupnpd/netfilter/tiny_nf_nat.h \
+#        $$PWD/miniupnp/miniupnpd/miniupnpdtypes.h \
+#        $$PWD/miniupnp/miniupnpd/ifacewatcher.h
+
 
     SOURCES += \
         $$PWD/miniupnp/miniupnpc/connecthostport.c \
@@ -67,6 +109,46 @@ android|mac|win32|linux {
         $$PWD/miniupnp/miniupnpc/upnpcommands.c \
         $$PWD/miniupnp/miniupnpc/upnperrors.c \
         $$PWD/miniupnp/miniupnpc/upnpreplyparse.c \
-    #    $$PWD/miniupnp/miniupnpc/wingenminiupnpcstrings.c
+    #    $$PWD/miniupnp/miniupnpc/wingenminiupnpcstrings.c \
+#        $$PWD/miniupnp/miniupnpd/testupnpdescgen.c \
+#        $$PWD/miniupnp/miniupnpd/ipf/ipfrdr.c \
+#        $$PWD/miniupnp/miniupnpd/ipf/testipfrdr.c \
+#        $$PWD/miniupnp/miniupnpd/testgetroute.c \
+#        $$PWD/miniupnp/miniupnpd/testportinuse.c \
+#        $$PWD/miniupnp/miniupnpd/upnppermissions.c \
+#        $$PWD/miniupnp/miniupnpd/upnpredirect.c \
+#        $$PWD/miniupnp/miniupnpd/options.c \
+#        $$PWD/miniupnp/miniupnpd/daemonize.c \
+#        $$PWD/miniupnp/miniupnpd/pcplearndscp.c \
+#        $$PWD/miniupnp/miniupnpd/ipfw/ipfwrdr.c \
+#        $$PWD/miniupnp/miniupnpd/ipfw/testipfwrdr.c \
+#        $$PWD/miniupnp/miniupnpd/ipfw/ipfwaux.c \
+#        $$PWD/miniupnp/miniupnpd/testasyncsendto.c \
+#        $$PWD/miniupnp/miniupnpd/upnpevents.c \
+#        $$PWD/miniupnp/miniupnpd/pf/testpfpinhole.c \
+#        $$PWD/miniupnp/miniupnpd/pf/pfpinhole.c \
+#        $$PWD/miniupnp/miniupnpd/pf/obsdrdr.c \
+#        $$PWD/miniupnp/miniupnpd/pf/testobsdrdr.c \
+#        $$PWD/miniupnp/miniupnpd/miniupnpdctl.c \
+#        $$PWD/miniupnp/miniupnpd/natpmp.c \
+#        $$PWD/miniupnp/miniupnpd/asyncsendto.c \
+#        $$PWD/miniupnp/miniupnpd/miniupnpd.c \
+#        $$PWD/miniupnp/miniupnpd/solaris/getifstats.c \
+#        $$PWD/miniupnp/miniupnpd/getconnstatus.c \
+#        $$PWD/miniupnp/miniupnpd/upnphttp.c \
+#        $$PWD/miniupnp/miniupnpd/upnppinhole.c \
+#        $$PWD/miniupnp/miniupnpd/mac/testgetifstats.c \
+#        $$PWD/miniupnp/miniupnpd/mac/getifstats.c \
+#        $$PWD/miniupnp/miniupnpd/netfilter/iptcrdr.c \
+#        $$PWD/miniupnp/miniupnpd/netfilter/testiptpinhole.c \
+#        $$PWD/miniupnp/miniupnpd/netfilter/iptpinhole.c \
+#        $$PWD/miniupnp/miniupnpd/netfilter/nfct_get.c \
+#        $$PWD/miniupnp/miniupnpd/netfilter/testiptcrdr_peer.c \
+#        $$PWD/miniupnp/miniupnpd/netfilter/testiptcrdr_dscp.c \
+#        $$PWD/miniupnp/miniupnpd/netfilter/testiptcrdr.c \
+#        $$PWD/miniupnp/miniupnpd/netfilter/test_nfct_get.c \
+#        $$PWD/miniupnp/miniupnpd/linux/getroute.c \
+#        $$PWD/miniupnp/miniupnpd/linux/ifacewatcher.c \
+#        $$PWD/miniupnp/miniupnpd/linux/getifstats.c
 }
 
