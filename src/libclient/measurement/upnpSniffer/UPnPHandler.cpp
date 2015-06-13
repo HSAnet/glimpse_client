@@ -34,8 +34,20 @@ int UPnPHandler::init(QUrl descriptionUrl, QString eventSubUrl, QString controlU
             ownUrls.append(QUrl(s));
         }
     }
+    //TODO further investigation on how to get real urls and and upnp error code 402 Invalid args, e.g. on minidlna
+//    descriptionUrl = QUrl("http://192.168.2.104:8200/rootDesc.xml");
+//    controlUrl = "/ctl/ContentDir";
+//    eventSubUrl = "/evt/ContentDir";
+//    serviceType = "urn:schemas-upnp-org:service:ContentDirectory:1";
+
+    //melli:
+//    descriptionUrl = QUrl("http://192.168.2.107:2869/upnphost/udhisapi.dll?content=uuid:2d3ce55a-e65b-4048-a002-624ddc452e95");
+//    controlUrl = "/upnphost/udhisapi.dll?control=uuid:2d3ce55a-e65b-4048-a002-624ddc452e95+urn:upnp-org:serviceId:ContentDirectory";
+//    eventSubUrl = "/upnphost/udhisapi.dll?event=uuid:2d3ce55a-e65b-4048-a002-624ddc452e95+urn:upnp-org:serviceId:ContentDirectory";
+//    serviceType = "urn:schemas-upnp-org:service:ContentDirectory:1";
+
     QString s = descriptionUrl.url().remove(descriptionUrl.path());
-    setRemoteUrl(QUrl(s));
+    setRemoteUrl(QUrl(s)); //TODO what is this, remote and own?!
     setOwnUrls(ownUrls);
 
     QUrl subscribeUrl, browseUrl;
@@ -44,7 +56,8 @@ int UPnPHandler::init(QUrl descriptionUrl, QString eventSubUrl, QString controlU
     browseUrl.setPath(controlUrl);
     subscribeUrl.setPath(eventSubUrl);
 
-    setGETUrl(descUrl);
+    m_GETUrl = descUrl;
+//    setGETUrl(descUrl);
     setActionUrl(browseUrl);
     setSubscribeUrl(subscribeUrl);
     setServicetype(serviceType);
@@ -55,7 +68,7 @@ int UPnPHandler::init(QUrl descriptionUrl, QString eventSubUrl, QString controlU
         if (!m_file->open(QIODevice::ReadOnly | QIODevice::Text))
         {
             qDebug() << "Opening XML File Problem";
-            exit(-1);
+            return -1;
         }
     }
     m_soapData = m_file->readAll();
@@ -64,14 +77,20 @@ int UPnPHandler::init(QUrl descriptionUrl, QString eventSubUrl, QString controlU
     m_xmlByteArray = new QByteArray();
 
     m_parser = new Parser();
-    m_parser->setSearchTerm("container"); //will be changed later, after all levels have been gone trough
-//    return startGet();
-    return subscribe();
+    /* will be changed later, after all levels have been gone trough */
+    m_parser->setSearchTerm("container");
+    return startGet();
+    //return subscribe();
+}
+
+int UPnPHandler::cleanup()
+{
+    m_totalTableOfContents.clear();
+    return 0;
 }
 
 int UPnPHandler::GETreadyRead(QByteArray content)
 {
-    qDebug() << content;
     int end1 = content.indexOf("400 Bad Request");
     if(end1 != -1)
     {
@@ -86,8 +105,20 @@ int UPnPHandler::GETreadyRead(QByteArray content)
     }
 
     content.remove(0, end);
-    m_xmlByteArray->append(content);
-    int ret = m_parser->parseXML(*m_xmlByteArray);
+    //m_xmlByteArray->append(content);
+    QList<QMap<QString, QString> > *urls = new QList<QMap<QString, QString> >();
+    int ret = m_parser->parseRootXML(content, urls);
+
+    if(!urls->isEmpty())
+    {
+        QUrl subscribeUrl, browseUrl;
+        browseUrl = subscribeUrl = m_remoteUrl;
+        browseUrl.setPath(urls->at(0).value("controlURL"));
+        subscribeUrl.setPath(urls->at(0).value("eventSubURL"));
+        setActionUrl(browseUrl);
+        setSubscribeUrl(subscribeUrl);
+    }
+
     return ret;
 }
 
@@ -136,7 +167,7 @@ int UPnPHandler::subscribe()
     }
     else
     {
-        qDebug() << socket->errorString();
+        //qDebug() << socket->errorString();
         tStatus = FinishedError;
         ret = -1;
         m_socket->close();
@@ -172,20 +203,20 @@ int UPnPHandler::subscribe()
             if(socket->waitForReadyRead(3000))
             {
                 QByteArray answer = socket->readAll();
-//                qDebug() << answer;
             }
             bytesWritten = 0;
             //TODO parse this answer, extract SID ->
         }
         else
         {
-            qDebug() << socket->errorString();
+            //qDebug() << socket->errorString();
             socket->close();
         }
     }else{
-        qDebug() << "No tcp connection established" << listener.errorString();
+        qDebug() << "No tcp connection established"; //<< listener.errorString(); //TODO check why always
     }
-    ret = setupTCPSocketAndSend("0", 0);
+    int x = setupTCPSocketAndSend("0", 0);
+    ret = (m_totalTableOfContents.length() != 0) ? 1 : -1;
     if(printResults() == 0)
     {
         ret = -1;
@@ -251,7 +282,7 @@ QList<QPair<QString, QString> > UPnPHandler::sendRequest(QString objectID)
     }
     else
     {
-        qDebug() << m_socket->errorString();
+        //qDebug() << m_socket->errorString();
         tStatus = FinishedError;
         m_socket->close();
     }
@@ -267,7 +298,7 @@ int UPnPHandler::setupTCPSocketAndSend(QString objectID, int counter)
         if(!startTCPConnection())
         {
             qDebug() << "No TCP connection established";
-            QCoreApplication::exit(-1);
+            return -1;
         }
         /* At first foundObjs list is empty,
          * later those lists are needed to step through
@@ -287,7 +318,7 @@ int UPnPHandler::setupTCPSocketAndSend(QString objectID, int counter)
         if(!foundObjs.isEmpty() && counter < foundObjs.length())
         {
             m_socket->close();
-            qDebug() << "Searching " + foundObjs.at(counter).first + " "  + foundObjs.at(counter).second;
+            //qDebug() << "Searching " + foundObjs.at(counter).first + " "  + foundObjs.at(counter).second;
             counter = setupTCPSocketAndSend(foundObjs.at(counter).second, counter);
         }
         else{
@@ -301,7 +332,6 @@ int UPnPHandler::setupTCPSocketAndSend(QString objectID, int counter)
      * to find containers again */
     m_parser->setSearchTerm("container");
     m_socket->close();
-    qDebug() << counter;
     return counter;
 }
 
@@ -346,7 +376,7 @@ QList<QPair<QString, QString> > UPnPHandler::read()
         }
     }else
     {
-        qDebug() << "Error from Server or incomplete package:\n" + m_answerFromServer;
+        qDebug() << "Error from Server or incomplete package" << m_answerFromServer;
         return containers;
     }
     if(l.length() != 0)
@@ -387,44 +417,25 @@ void UPnPHandler::disconnectionHandling()
 
 int UPnPHandler::printResults()
 {
-//    QStringList list;
-//    for(int i = 0; i < m_totalTableOfContents.length(); i++)
-//    {
-//        if(list.contains(m_totalTableOfContents[i].value("id")))
-//        {
-//            qDebug() << "double found";
-//        }
-//        QString s = m_totalTableOfContents[i].value("id");
-//        list.append(s);
-
-//        qDebug() << "Found items:";
-//        foreach(QString s, l)
-//        {
-//            qDebug() << s + " " + m_totalTableOfContents[i].value(s);
-//        }originalTrackNumber
-//        qDebug() << m_totalTableOfContents[i].value("id") << m_totalTableOfContents[i].value("title") << m_totalTableOfContents[i].value("originalTrackNumber");
-//    }
-//    QList<int> listInt;
-//    foreach(QString s, list)
-//    {
-//        listInt.append(s.toInt());
-//    }
-//    qSort(listInt.begin(), listInt.end());
     qDebug() << "A total of" << m_totalTableOfContents.length() << "elements was found";
     return m_totalTableOfContents.length();
-    //QCoreApplication::exit(0);
 }
 
 void UPnPHandler::readSID()
 {
     if(m_subscribeReply->error() != QNetworkReply::NoError)
     {
-        qDebug() << "Error occured while subscribe-request:" , m_subscribeReply->errorString();
+        //qDebug() << "Error occured while subscribe-request:" , m_subscribeReply->errorString();
         return;
     }
     QByteArray a = m_subscribeReply->readAll();
     qDebug() << a;
 }
+QList<QMap<QString, QString> > UPnPHandler::totalTableOfContents() const
+{
+    return m_totalTableOfContents;
+}
+
 int UPnPHandler::expectedLength() const
 {
     return m_expectedLength;
@@ -479,12 +490,8 @@ QList<QPair<QString, QString> > UPnPHandler::handleContent(QString t)
             m.first = title;
             m.second = id;
             objectIDsandPurpose.append(m);
-//            objectIDsandPurpose.append(QPair<QString, QString>
-//                                       (m_foundContent[i].value("id"),
-//                                        m_foundContent[i].value("title")));
         }
     }else if (t == "item") {
-        qDebug() << "Found " << m_foundContent.length();
         /* Copying only non-existant values into totalTableOfContents */
         for(int i = 0; i < m_foundContent.length(); i++)
         {
@@ -546,8 +553,12 @@ int UPnPHandler::startGet()
                               "USER-AGENT: Linux/3.13.0-24-generic, UPnP/1.0, Portable SDK for UPnP devices/1.6.17\r\n\r\n").arg(m_GETUrl.path())
                                                                                                                             .arg(url);
     int bytesWritten = 0;
+    int tries = 0;
     while(true)
     {
+        if(tries == 20){
+            break;}
+
         QTcpSocket * socket = new QTcpSocket();
         socket->connectToHost(m_GETUrl.host(), m_GETUrl.port());
 
@@ -569,24 +580,28 @@ int UPnPHandler::startGet()
         {
             tStatus = DownloadInProgress;
             QByteArray ba = socket->readAll();
-            //qDebug() << ba;
             int err = GETreadyRead(ba);
             if(err == -2)
             {
+                socket->close();
+                tries++;
+                ret = err;
                 continue;
             }else if(err == -3){
                 /* error case */
                 ret = err;
                 break;
             }else{
-                /*continuing the execution*/
+                /* Parsing the root-xml file the right way */
+                //m_parser->parseXML(ba);
+                /* continuing the execution */
                 ret = subscribe();
                 break;
             }
         }
         else
         {
-            qDebug() << socket->errorString();
+            //qDebug() << socket->errorString();
             tStatus = FinishedError;
             ret = -1;
             socket->close();
@@ -653,14 +668,4 @@ QNetworkRequest UPnPHandler::GETrequest() const
 void UPnPHandler::setGETrequest(const QNetworkRequest &GETrequest)
 {
     m_GETrequest = GETrequest;
-}
-
-QUrl UPnPHandler::GETUrl() const
-{
-    return m_GETUrl;
-}
-
-void UPnPHandler::setGETUrl(const QUrl &GETUrl)
-{
-    m_GETUrl = GETUrl;
 }

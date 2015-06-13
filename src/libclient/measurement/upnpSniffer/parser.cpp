@@ -45,8 +45,8 @@ QList<QMap<QString, QString> > Parser::parseUpnpReply(int expectedLength)
     {
         m_foundContent = tableOfContents;
     }else{
-        qDebug() << "Nichts neues wurde auf item ebene gefunden"; //TODO
-    };
+        qDebug() << "Nothing new was found on lowest (item-)level";
+    }
     return tableOfContents;
 }
 
@@ -61,21 +61,54 @@ void Parser::setResults(const QHash<QString, QString> &results)
 }
 
 
-int Parser::parseXML(QByteArray ba)
+int Parser::parseRootXML(QByteArray ba, QList<QMap<QString, QString> > *contents)
 {
     QXmlStreamReader * xmlReader = new QXmlStreamReader(ba);
-    //Parse the XML until we reach end of it
+    QString serviceType = "urn:schemas-upnp-org:service:ContentDirectory:1";
+    QString controlURL = "controlURL";
+    QString eventSubURL = "eventSubURL";
+    int foundElementFlag = 0;
+    QMap<QString, QString> element;
+    QString key;
+    //Parse the XML until the end of it
     while(!xmlReader->atEnd() && !xmlReader->hasError()) {
             // Read next element
             QXmlStreamReader::TokenType token = xmlReader->readNext();
-            //If token is just StartDocument - go to next
+            QString name = xmlReader->name().toString();
+            QString content = xmlReader->text().toString();
+            if(content == serviceType)
+            {
+                foundElementFlag = 2;
+            }
+            if(foundElementFlag != 0 &&
+                    (name == eventSubURL ||
+                     name == controlURL))
+            {
+                key = (name == controlURL) ? controlURL:eventSubURL;
+            }
+            if(token == QXmlStreamReader::Characters)
+            {
+                if(foundElementFlag != 0 && !key.isEmpty())
+                {
+                    element.insert(key, content);
+                    foundElementFlag --;
+                }
+            }
             if(token == QXmlStreamReader::StartDocument) {
                 continue;
             }
-            //If token is StartElement - read it
             if(token == QXmlStreamReader::StartElement) {
                 if(xmlReader->name() == "root") {
                     continue;
+                }
+            }
+            if(token == QXmlStreamReader::EndElement)
+            {
+                /* At the end of the element it has to appended to the contents list and be cleared */
+                if(name == "serviceType" && !element.isEmpty())
+                {
+                    contents->append(element);
+                    element.clear();
                 }
             }
     }
@@ -149,7 +182,6 @@ QList<QMap<QString, QString> > Parser::parseXMLtoMaps(QByteArray ba, QString ele
         }
     }
     if(xmlReader->hasError()){
-//            qDebug() << "XML Parse Error";
             /* Since obtaining as much information as possible is the task, the
              * list wont be cleared.
              * An xml error can be arbitrary characters at the
@@ -184,8 +216,6 @@ QByteArray Parser::rawData() const
 
 void Parser::setRawData(const QByteArray &rawData)
 {
-//    qDebug() << "##before###\n" << m_rawData; TODO
     m_rawData = rawData;
-//    qDebug() << "##after###\n" << m_rawData;
 }
 

@@ -44,7 +44,7 @@ public:
         ControlURL,
         EventSubUrl,
         ScpdURL,
-        //ServiceType,
+        ZFoundContent,
         URL,
         RootDescURL
     };
@@ -57,16 +57,17 @@ public:
     Result result() const;
     QList<UPnPHash> goThroughDeviceList(UPNPDev * list);
     QList<UPnPHash> quickDevicesCheck(UPNPDev * list);
+    void printResultsToMap(QVariantList *list);
 
 signals:
     void done();
 
 public slots:
     void waitUntilFinished();
-    void getValidSlot(UPNPDev *l, UPNPUrls urls, IGDdatas data, char *lanaddr);
 
 private:
     QList<UPnPHash> results;
+    QVariantList additional_res;
 
     UPnPDefinitionPtr definition;
     bool m_mediaServerSearch;

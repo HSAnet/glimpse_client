@@ -1,7 +1,5 @@
 #include "upnp.h"
 
-//#include "../upnpSniffer/UPnPHandler.h"
-
 #include "../../log/logger.h"
 #include <QMetaEnum>
 #include "../../types.h"
@@ -46,7 +44,7 @@ bool UPnP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     if(m_mediaServerSearch)
     {
         m_handler = new UPnPHandler();
-        connect(m_handler, SIGNAL(handlingDone()), this, SLOT(waitUntilFinished()));
+//        connect(m_handler, SIGNAL(handlingDone()), this, SLOT(waitUntilFinished()));
     }
     return true;
 }
@@ -73,25 +71,24 @@ QStringList GetValuesFromNameValueList(struct NameValueParserData *pdata,
 bool UPnP::start()
 {
     int error = 0;
-    QList<UPnPHash> mediaServerList;
     if(m_mediaServerSearch)
     {
         /* The following devices are important */
         static const char * const deviceList[] = {
             "urn:schemas-upnp-org:device:MediaServer:1",
 //            "urn:schemas-upnp-org:service:ContentDirectory:1",
-//            "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
-//            "ssdp:all"
+            /*"urn:schemas-upnp-org:device:InternetGatewayDevice:1",
+            "ssdp:all"*/
             0
         };
         // TODO test other devices from upnp.org
-        /* more or less unimportant: */
-    //        "urn:schemas-upnp-org:service:ConnectionManager:1",
-    //        "urn:schemas-upnp-org:device:InternetGatewayDevice:2",
-    //        "urn:schemas-upnp-org:service:WANIPConnection:2",
-    //        "urn:schemas-upnp-org:service:WANIPConnection:1",
-    //        "urn:schemas-upnp-org:service:WANPPPConnection:1",
-    //        "upnp:rootdevice",
+        /* more or less important:
+        "urn:schemas-upnp-org:service:ConnectionManager:1",
+        "urn:schemas-upnp-org:device:InternetGatewayDevice:2",
+        "urn:schemas-upnp-org:service:WANIPConnection:2",
+        "urn:schemas-upnp-org:service:WANIPConnection:1",
+        "urn:schemas-upnp-org:service:WANPPPConnection:1",
+        "upnp:rootdevice",*/
         UPNPDev *devices = upnpDiscoverDevices(deviceList,
                                                2000, NULL, NULL, FALSE,
                                                FALSE, &error);
@@ -103,30 +100,40 @@ bool UPnP::start()
             devices = devices->pNext;
             x++;
         }
+        qDebug() << x;
         devices = dev;
-        QUrl url;
-        QString descriptionUrl, eventSubUrl, controlUrl, serviceType;
-        int i = 0;
+        QString descriptionUrl, eventSubUrl, controlUrl, serviceType, modelName;
         QList<UPnPHash> mediaServerList = quickDevicesCheck(devices);
 //        QList<UPnPHash> mediaServerList = goThroughDeviceList(devices);
-        int ret = 0;
-       for(int i = 0; i < mediaServerList.length(); i++)
+        qDebug() << "-- Going through devices --";
+        UPnPHash mServer;
+        foreach(mServer, mediaServerList)
         {
-            descriptionUrl = mediaServerList[i].value(RootDescURL).toString();
-            eventSubUrl = mediaServerList[i].value(EventSubUrl).toString();
-            controlUrl = mediaServerList[i].value(ControlURL).toString();
-            serviceType = mediaServerList[i].value(ScpdURL).toString();
+            QList<QMap<QString, QString> > resultsOfSniff;
+            descriptionUrl = mServer.value(RootDescURL).toString();
+            eventSubUrl = mServer.value(EventSubUrl).toString();
+            controlUrl = mServer.value(ControlURL).toString();
+            serviceType = mServer.value(ScpdURL).toString();
+            modelName = mServer.value(ModelName).toString();
             int ret = m_handler->init(descriptionUrl, eventSubUrl, controlUrl, serviceType);
             if(ret < 0) //TODO check
             {
-                qDebug() << "unsuccessfull on " << descriptionUrl;
+                qDebug() << "ret" << ret << "Unsuccessfull on " << modelName << "at" << descriptionUrl;
+                results.append(mServer);
+                m_handler->cleanup();
             }else{
-                qDebug() << "successfull on " << descriptionUrl;
+                qDebug() << "ret" << ret << "Successfull on " << modelName << "at" << descriptionUrl;
+                resultsOfSniff = m_handler->totalTableOfContents();
+                printResultsToMap(&additional_res);
+                QVariant res(additional_res);
+                mServer.insert(ZFoundContent, res);
+                results.append(mServer);
+                m_handler->cleanup();
             }
+            ret = 0;
         }
         emit finished();
-    }else
-    {
+    }else{
         /* This is the old measurement */
         UPNPDev *devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
         QList<UPnPHash> list = goThroughDeviceList(devlist);
@@ -323,12 +330,6 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
     return myResults;
 }
 
-void UPnP::getValidSlot(UPNPDev *l, UPNPUrls urls, IGDdatas data, char *lanaddr)
-{
-    int i = UPNP_GetValidIGD(l, &urls, &data, lanaddr, sizeof(lanaddr));
-    emit done();
-}
-
 QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
 {
     QList<UPnPHash> myResults;
@@ -340,11 +341,12 @@ QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
         char lanaddr[64];
         UPnPHash resultHash;
         qDebug() << "Checking " << l->descURL;
-        if(!strcmp( l->descURL, "http://141.82.171.125:2869/upnphost/udhisapi.dll?content=uuid:1d3319a8-f766-4d40-8908-5e6f94e8b327"))
-        {
-            qDebug() << "test";
-            continue;
-        }
+//        if(!strcmp(l->descURL, "http://141.82.174.26:2869/upnphost/udhisapi.dll?content=uuid:d44c1a83-9755-4c55-97ba-56161fd398f8") ||
+//           !strcmp(l->descURL, "http://141.82.163.197:2869/upnphost/udhisapi.dll?content=uuid:2a13fb96-212b-40cf-94e9-800221c03169"))
+//        {
+//            qDebug() << "test";
+//            continue;
+//        }
         int xmlFound = UPNP_GetIGDFromUrl(l->descURL, &urls, &data, lanaddr, sizeof(lanaddr));
         qDebug() << "Result:" << xmlFound;
         if(xmlFound)
@@ -374,11 +376,11 @@ QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
                 resultHash.insert(ScpdURL, serviceType);
             }
 
-            QString url = urls.controlURL;
-            if(!url.isEmpty())
-            {
-                resultHash.insert(URL, url);
-            }
+//            QString url = urls.controlURL;
+//            if(!url.isEmpty())
+//            {
+//                resultHash.insert(URL, url);
+//            }
             QString rootDescURL = urls.rootdescURL;
             if(!rootDescURL.isEmpty())
             {
@@ -415,12 +417,26 @@ QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
                 ClearNameValueList(&pdata);
             }
             FreeUPNPUrls(&urls);
-            results.append(resultHash);
+            //results.append(resultHash);
             myResults.append(resultHash);
         }
     }
     freeUPNPDevlist(list);
     return myResults;
+}
+
+void UPnP::printResultsToMap(QVariantList *list)
+{
+    QMap<QString, QString> m;
+
+    foreach (m, m_handler->totalTableOfContents()) {
+        QVariantMap entry;
+        foreach(QString key, m.keys())
+        {
+            entry.insertMulti(key, m.value(key));
+        }
+        list->append(entry);
+    }
 }
 
 void UPnP::waitUntilFinished()

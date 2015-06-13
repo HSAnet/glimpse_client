@@ -30,9 +30,7 @@ public:
     ~UPnPHandler();
 
     int init(QUrl descriptionUrl, QString eventSubUrl, QString controlUrl, QString serviceType);
-
-    QUrl GETUrl() const;
-    void setGETUrl(const QUrl &GETUrl);
+    int cleanup();
 
     QNetworkRequest GETrequest() const;
     void setGETrequest(const QNetworkRequest &GETrequest);
@@ -49,7 +47,7 @@ public:
     static const int tcpConnectTimeout = 5000;
     static const int firstByteReceivedTimeout = 5000;
 
-    static const int defaultPort = 49160;
+    static const int defaultPort = 33333;
 
     QUrl remoteUrl() const;
     void setRemoteUrl(const QUrl &url);
@@ -75,6 +73,8 @@ public:
 
     int expectedLength() const;
     void setExpectedLength(int expectedLength);
+
+    QList<QMap<QString, QString> > totalTableOfContents() const;
 
 public slots:
     int startGet();
