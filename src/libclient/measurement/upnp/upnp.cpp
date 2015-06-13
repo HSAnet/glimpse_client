@@ -44,7 +44,6 @@ bool UPnP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     if(m_mediaServerSearch)
     {
         m_handler = new UPnPHandler();
-//        connect(m_handler, SIGNAL(handlingDone()), this, SLOT(waitUntilFinished()));
     }
     return true;
 }
@@ -104,7 +103,6 @@ bool UPnP::start()
         devices = dev;
         QString descriptionUrl, eventSubUrl, controlUrl, serviceType, modelName;
         QList<UPnPHash> mediaServerList = quickDevicesCheck(devices);
-//        QList<UPnPHash> mediaServerList = goThroughDeviceList(devices);
         qDebug() << "-- Going through devices --";
         UPnPHash mServer;
         foreach(mServer, mediaServerList)
@@ -116,9 +114,17 @@ bool UPnP::start()
             serviceType = mServer.value(ScpdURL).toString();
             modelName = mServer.value(ModelName).toString();
             int ret = m_handler->init(descriptionUrl, eventSubUrl, controlUrl, serviceType);
-            if(ret < 0) //TODO check
+            if(ret < 0)
             {
                 qDebug() << "ret" << ret << "Unsuccessfull on " << modelName << "at" << descriptionUrl;
+                if(mServer.value(ControlURL) != m_handler->actionUrl().path())
+                {
+                    mServer.insert(ControlURL, m_handler->actionUrl().path());
+                }
+                if(mServer.value(EventSubUrl) != m_handler->subscribeUrl().path())
+                {
+                    mServer.insert(EventSubUrl, m_handler->subscribeUrl().path());
+                }
                 results.append(mServer);
                 m_handler->cleanup();
             }else{
@@ -127,6 +133,14 @@ bool UPnP::start()
                 printResultsToMap(&additional_res);
                 QVariant res(additional_res);
                 mServer.insert(ZFoundContent, res);
+                if(mServer.value(ControlURL) != m_handler->actionUrl().path())
+                {
+                    mServer.insert(ControlURL, m_handler->actionUrl().path());
+                }
+                if(mServer.value(EventSubUrl) != m_handler->subscribeUrl().path())
+                {
+                    mServer.insert(EventSubUrl, m_handler->subscribeUrl().path());
+                }
                 results.append(mServer);
                 m_handler->cleanup();
             }
@@ -134,7 +148,7 @@ bool UPnP::start()
         }
         emit finished();
     }else{
-        /* This is the old measurement */
+        /* This is the old measurement about Internet Gateway Devices*/
         UPNPDev *devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
         QList<UPnPHash> list = goThroughDeviceList(devlist);
         emit finished();
@@ -341,12 +355,6 @@ QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
         char lanaddr[64];
         UPnPHash resultHash;
         qDebug() << "Checking " << l->descURL;
-//        if(!strcmp(l->descURL, "http://141.82.174.26:2869/upnphost/udhisapi.dll?content=uuid:d44c1a83-9755-4c55-97ba-56161fd398f8") ||
-//           !strcmp(l->descURL, "http://141.82.163.197:2869/upnphost/udhisapi.dll?content=uuid:2a13fb96-212b-40cf-94e9-800221c03169"))
-//        {
-//            qDebug() << "test";
-//            continue;
-//        }
         int xmlFound = UPNP_GetIGDFromUrl(l->descURL, &urls, &data, lanaddr, sizeof(lanaddr));
         qDebug() << "Result:" << xmlFound;
         if(xmlFound)
@@ -376,11 +384,6 @@ QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
                 resultHash.insert(ScpdURL, serviceType);
             }
 
-//            QString url = urls.controlURL;
-//            if(!url.isEmpty())
-//            {
-//                resultHash.insert(URL, url);
-//            }
             QString rootDescURL = urls.rootdescURL;
             if(!rootDescURL.isEmpty())
             {
