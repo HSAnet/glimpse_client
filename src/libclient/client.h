@@ -100,6 +100,7 @@ public slots:
               int rampUpTime, int slotLength);
     void upnp(const bool mediaServerSearch);
     void upnp();
+    void bonjour();
     void packetTrains();
     void packetTrains(const QString host,
                       quint16 port,

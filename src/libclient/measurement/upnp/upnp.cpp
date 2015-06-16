@@ -108,18 +108,18 @@ bool UPnP::start()
         foreach(mServer, mediaServerList)
         {
             QList<QMap<QString, QString> > resultsOfSniff;
-            descriptionUrl = mServer.value(RootDescURL).toString();
+            descriptionUrl = mServer.value(RootDescUrl).toString();
             eventSubUrl = mServer.value(EventSubUrl).toString();
-            controlUrl = mServer.value(ControlURL).toString();
-            serviceType = mServer.value(ScpdURL).toString();
+            controlUrl = mServer.value(ControlUrl).toString();
+            serviceType = mServer.value(ServiceType).toString();
             modelName = mServer.value(ModelName).toString();
             int ret = m_handler->init(descriptionUrl, eventSubUrl, controlUrl, serviceType);
             if(ret < 0)
             {
                 qDebug() << "ret" << ret << "Unsuccessfull on " << modelName << "at" << descriptionUrl;
-                if(mServer.value(ControlURL) != m_handler->actionUrl().path())
+                if(mServer.value(ControlUrl) != m_handler->actionUrl().path())
                 {
-                    mServer.insert(ControlURL, m_handler->actionUrl().path());
+                    mServer.insert(ControlUrl, m_handler->actionUrl().path());
                 }
                 if(mServer.value(EventSubUrl) != m_handler->subscribeUrl().path())
                 {
@@ -132,10 +132,10 @@ bool UPnP::start()
                 resultsOfSniff = m_handler->totalTableOfContents();
                 printResultsToMap(&additional_res);
                 QVariant res(additional_res);
-                mServer.insert(ZFoundContent, res);
-                if(mServer.value(ControlURL) != m_handler->actionUrl().path())
+                mServer.insert(FoundContent, res);
+                if(mServer.value(ControlUrl) != m_handler->actionUrl().path())
                 {
-                    mServer.insert(ControlURL, m_handler->actionUrl().path());
+                    mServer.insert(ControlUrl, m_handler->actionUrl().path());
                 }
                 if(mServer.value(EventSubUrl) != m_handler->subscribeUrl().path())
                 {
@@ -305,7 +305,7 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
         QString controlURL = data.tmp.controlurl;
         if(!controlURL.isEmpty())
         {
-            resultHash.insert(ControlURL, controlURL);
+            resultHash.insert(ControlUrl, controlURL);
         }
 
         QString eventSubUrl = data.tmp.eventsuburl;
@@ -317,13 +317,13 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
         QString scpdUrl = data.tmp.scpdurl;
         if(!scpdUrl.isEmpty())
         {
-            resultHash.insert(ScpdURL, scpdUrl);
+            resultHash.insert(ScpdUrl, scpdUrl);
         }
 
         QString serviceType = data.tmp.servicetype;
         if(!serviceType.isEmpty())
         {
-            resultHash.insert(ScpdURL, serviceType);
+            resultHash.insert(ScpdUrl, serviceType);
         }
 
         QString url = urls.controlURL;
@@ -334,7 +334,7 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
         QString rootDescURL = urls.rootdescURL;
         if(!rootDescURL.isEmpty())
         {
-            resultHash.insert(RootDescURL, rootDescURL);
+            resultHash.insert(RootDescUrl, rootDescURL);
         }
         FreeUPNPUrls(&urls);
         results.append(resultHash);
@@ -363,7 +363,7 @@ QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
             QString controlURL = data.tmp.controlurl;
             if(!controlURL.isEmpty())
             {
-                resultHash.insert(ControlURL, controlURL);
+                resultHash.insert(ControlUrl, controlURL);
             }
 
             QString eventSubUrl = data.tmp.eventsuburl;
@@ -372,22 +372,16 @@ QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
                 resultHash.insert(EventSubUrl, eventSubUrl);
             }
 
-            QString scpdUrl = data.tmp.scpdurl;
-            if(!scpdUrl.isEmpty())
-            {
-                resultHash.insert(ScpdURL, scpdUrl);
-            }
-
             QString serviceType = data.tmp.servicetype;
             if(!serviceType.isEmpty())
             {
-                resultHash.insert(ScpdURL, serviceType);
+                resultHash.insert(ServiceType, serviceType);
             }
 
             QString rootDescURL = urls.rootdescURL;
             if(!rootDescURL.isEmpty())
             {
-                resultHash.insert(RootDescURL, rootDescURL);
+                resultHash.insert(RootDescUrl, rootDescURL);
             }
             int bufferSize = 0;
             if (char *buffer = (char *)miniwget(urls.rootdescURL, &bufferSize, 0))
@@ -420,7 +414,6 @@ QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
                 ClearNameValueList(&pdata);
             }
             FreeUPNPUrls(&urls);
-            //results.append(resultHash);
             myResults.append(resultHash);
         }
     }
@@ -462,8 +455,8 @@ bool UPnP::stop()
 Result UPnP::result() const
 {
      // List for all results
-    QVariantList deviceResultList;
-
+    //QVariantList deviceResultList;
+    QVariantMap res;
     foreach (UPnPHash resultHash, results)
     {
         QHashIterator<UPnP::DataType, QVariant> iter(resultHash);
@@ -480,11 +473,18 @@ Result UPnP::result() const
 
             deviceResult.insert(name, iter.value());
         }
+        QUrl rootUrl = QUrl(resultHash.value(RootDescUrl).toString());
+        QString ipFull = rootUrl.host();
+        ipFull.append(':');
+        QString p;
+        p.setNum(rootUrl.port());
+        ipFull.append(p);
+        res.insertMulti(ipFull, deviceResult);
 
-        deviceResultList.append(deviceResult);
+        //deviceResultList.append(deviceResult);
     }
 
-    QVariantMap res;
-    res.insert("data", deviceResultList);
+    //QVariantMap res;
+    //res.insert("data", deviceResultList);
     return Result(res);
 }

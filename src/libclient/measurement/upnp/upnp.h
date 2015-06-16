@@ -41,12 +41,13 @@ public:
         ModelName,
         Manufacturer,
         FriendlyName,
-        ControlURL,
+        ControlUrl,
         EventSubUrl,
-        ScpdURL,
-        ZFoundContent,
+        ScpdUrl,
+        ServiceType,
+        FoundContent,
         URL,
-        RootDescURL
+        RootDescUrl
     };
     typedef QHash<DataType, QVariant> UPnPHash;
 

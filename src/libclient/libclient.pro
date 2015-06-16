@@ -12,7 +12,6 @@ staticlib {
     DEFINES += LIBCLIENT_STATIC
 } else {
     DEFINES += LIBCLIENT_BUILD
-
     win32:LIBS += -lws2_32 -lCrypt32 -lPdh -lntdll
 }
 
@@ -37,9 +36,8 @@ defineReplace(getVersion) {
 
 !win32:VERSION = $$getVersion()
 
-INCLUDEPATH += $$PWD
-
 include($$SOURCE_DIRECTORY/dist.pri)
+include($$SOURCE_DIRECTORY/3rdparty/avahi.pri)
 include($$SOURCE_DIRECTORY/3rdparty/miniupnpc.pri)
 include($$SOURCE_DIRECTORY/3rdparty/breakpad.pri)
 include($$SOURCE_DIRECTORY/3rdparty/winpcap.pri)
@@ -176,7 +174,11 @@ SOURCES +=  \
     controller/ntpcontroller.cpp \
     measurement/upnp/upnp_definition.cpp \
     measurement/upnpSniffer/UPnPHandler.cpp \
-    measurement/upnpSniffer/parser.cpp
+    measurement/upnpSniffer/parser.cpp \
+    measurement/bonjour/bonjour.cpp \
+    measurement/bonjour/bonjourservicebrowser.cpp \
+    measurement/bonjour/bonjourserviceresolver.cpp \
+    measurement/bonjour/
 
 HEADERS += \
     export.h \
@@ -277,7 +279,11 @@ HEADERS += \
     controller/ntpcontroller.h \
     measurement/upnp/upnp_definition.h \
     measurement/upnpSniffer/UPnPHandler.h \
-    measurement/upnpSniffer/parser.h
+    measurement/upnpSniffer/parser.h \
+    measurement/bonjour/bonjour.h \
+    measurement/bonjour/bonjourrecord.h \
+    measurement/bonjour/bonjourservicebrowser.h \
+    measurement/bonjour/bonjourserviceresolver.h
 
 OTHER_FILES += \
     libclient.pri \
