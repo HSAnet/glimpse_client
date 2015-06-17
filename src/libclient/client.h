@@ -119,7 +119,7 @@ public slots:
               const quint16 &destinationPort,
               const quint16 &sourcePort,
               const quint32 &payload,
-              const ping::PingType &type);
+              const QString &type);
     void traceroute();
     void traceroute(const QString &url,
                     const quint32 &count,
@@ -128,7 +128,7 @@ public slots:
                     const quint16 &destinationPort,
                     const quint16 &sourcePort,
                     const quint32 &payload,
-                    const ping::PingType type);
+                    const QString &type);
     void wifiLookup();
     void measureIt();
 

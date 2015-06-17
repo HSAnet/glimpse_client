@@ -2,6 +2,7 @@
 #include "../../log/logger.h"
 #include "types.h"
 
+#include <QRegularExpression>
 #include <QtMath>
 #include <numeric>
 
@@ -166,17 +167,27 @@ void DownloadThread::startDownload()
     {
         LOG_INFO("Thread: received response");
 
-        //TODO: check for HTTP status code and act intelligently on it
-        //currently, a 404 etc. is simply to little data
-        //to generate results, but a better checking would be great
         timeToFirstByte = measurementTimer.nsecsElapsed();
         tStatus = DownloadInProgress;
         //connect readyRead of the socket with read() for further reads
         connect(socket, &QTcpSocket::readyRead, this, &DownloadThread::read);
-        //call read
-        read();
-        LOG_INFO("Thread: emit signal firstByteReceived");
-        emit firstByteReceived(true);
+
+        //call read and check for HTTP response code
+        QRegularExpression re("HTTP/\\d\\.\\d\\s+(\\d+)\\s+.*");
+        QString HTTPResponseCode = re.match(read()).captured(1);
+
+        if (HTTPResponseCode == "200")
+        {
+            LOG_INFO("Thread: emit signal firstByteReceived");
+            emit firstByteReceived(true);
+        }
+        else
+        {
+            LOG_INFO(QString("Thread: unexpected HTTP response code %1").arg(HTTPResponseCode));
+            tStatus = FinishedError;
+            socket->close();
+            emit firstByteReceived(false);
+        }
     }
     else
     {
@@ -187,13 +198,12 @@ void DownloadThread::startDownload()
     }
 }
 
-void DownloadThread::read()
+QByteArray DownloadThread::read()
 {
     bytesReceived << socket->bytesAvailable();
     timeIntervals << measurementTimer.nsecsElapsed();
 
-    socket->readAll();   //we don't need the actual data but need to free space in the
-                         //socket buffer
+    return socket->readAll();
 }
 
 qreal DownloadThread::averageThroughput(qint64 sTime, qint64 eTime) const
@@ -470,6 +480,12 @@ void HTTPDownload::TCPConnectionTracking(bool success)
     {
         if(connectedThreads == 0)
         {
+            // quit threads before emitting
+            for (int i = 0; i < threads.size(); i++)
+            {
+                threads[i]->quit();
+            }
+
             emit error("Unable to establish a TCP connection");
             return;
         }
@@ -497,6 +513,12 @@ void HTTPDownload::downloadStartedTracking(bool success)
     {
         if(notDownloadingThreads == definition->threads)
         {
+            // quit threads before emitting
+            for (int i = 0; i < threads.size(); i++)
+            {
+                threads[i]->quit();
+            }
+
             emit error("No thread able to download after TCP connection was established.");
             return;
         }

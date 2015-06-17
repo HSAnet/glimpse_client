@@ -72,5 +72,11 @@ Base {
             "value": 74,
             "format": qsTr("%1 bytes")
         },
+
+        {
+            "label": "Type",
+            "type": "ComboBox",
+            "model": ["Udp", "Tcp"]
+        },
     ]
 }
