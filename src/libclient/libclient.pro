@@ -44,7 +44,7 @@ include($$SOURCE_DIRECTORY/3rdparty/miniupnpc.pri)
 include($$SOURCE_DIRECTORY/3rdparty/breakpad.pri)
 include($$SOURCE_DIRECTORY/3rdparty/winpcap.pri)
 include($$SOURCE_DIRECTORY/3rdparty/qtsystems.pri)
-include($$SOURCE_DIRECTORY/3rdpardy/snmp.pri)
+include($$SOURCE_DIRECTORY/3rdparty/snmp.pri)
 
 android {
     QT += androidextras

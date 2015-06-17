@@ -20,6 +20,7 @@
 #include <net-snmp/net-snmp-includes.h>
 #include <QByteArray>
 #include <QString>
+#include <QHostAddress>
 
 // Protocol type 'Sequence'.
 // As described in the SMI.
@@ -41,6 +42,11 @@ public:
 // Customiced for the values 'version' and 'community'.
 class Triple
 {
+public:
+    Triple();
+    Triple(const Triple &rhs);
+
+private:
     quint8 m_type;
     // length is part of QByteArray.
     QByteArray m_value;
@@ -57,11 +63,12 @@ public:
 };
 
 // SNMP paket
-class SnmpPaket
+class SnmpPacket
 {
 public:
-    SnmpPaket();
-    ~SnmpPaket();
+    SnmpPacket();
+    SnmpPacket(const SnmpPacket &rhs);
+    ~SnmpPacket();
 
 public:
     long version() const;
@@ -70,19 +77,30 @@ public:
     void setCommunity(const QString &community);
     void setCommand(const int command);
     QByteArray getDatagram();
-    QString pduValue(const quint8 index) const;
+    QString pduValueAt(const quint8 index) const;
+    int intValueAt(const quint8 index) const;
+    QString stringValueAt(const quint8 index) const;
+    quint8 valueTypeAt(const quint8 index) const;
+    bool addNullValue(const QString &oidString);
+    snmp_session* getSnmpSession(const QHostAddress &peerAddress) const;
+
+    // Inline functions
+    bool isEmpty() const                { return m_pdu == NULL; }
+    snmp_pdu* pduClone() const               { return snmp_clone_pdu(m_pdu); }
 
     // Static functions
-    static SnmpPaket snmpGetRequest(const long version, const QString &community, const QString &objectId);
-    static SnmpPaket fromDatagram(const QByteArray &datagram);
+    static SnmpPacket snmpGetRequest(const long version, const QString &community);
+    static SnmpPacket snmpGetRequest(const long version, const QString &community, const QString &objectId);
+    static SnmpPacket fromDatagram(const QByteArray &datagram);
     static quint16 lengthValueFromByteArray(const QByteArray &array, quint16 &position);
     static QByteArray lengthValueToByteArray(const int length);
+    static SnmpPacket fromPduStruct(snmp_pdu *pduClone);
 
 private:
     Sequence m_messageSequence;
     Triple m_version;
     Triple m_community;
-    struct snmp_pdu m_pdu;
+    struct snmp_pdu *m_pdu;
 
     // Methods
     size_t approximatePduSize();

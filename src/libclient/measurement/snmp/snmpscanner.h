@@ -33,15 +33,17 @@
  * no more interfaces are available.
  * If all interfaces are scanned then the signal 'scanFinished()'
  * is emitted. These signal takes a pointer to the scan result table.
- * The receiver must free the memory of that pointer.
  *
  * ___A range of IP addresses___
  * Same as automatically detect but will only use the given IP range.
  * Do not search for interfaces.
+ *
+ * The memory of the scan result pointer is handled here. Do NOT free
+ * memory of this pointer.
  */
 
-#include "snmppaket.h"
-#include "scanresult.h"
+#include "snmppacket.h"
+#include "devicemap.h"
 #include <QUdpSocket>
 #include <QNetworkAddressEntry>
 
@@ -57,17 +59,22 @@ public:
     bool scanRange(const long version, const QStringList &communityList, const QString &objectId, const quint8 retriesPerIp,
                    const QHostAddress &start, const QHostAddress &end);
 
+    // Getter
+    QString errorMessage()              { return m_errorMessage; }
+
 signals:
     void retry();
     void changeSnmpCommunity();
     void changeInterface();
-    void scanFinished(ScanResult *resultTable);
+    void scanFinished(const DeviceMap *resultTable);
+    void reportError(const QString errorMsg);
 
 private slots:
     void doRetry();
     void scanNextSnmpCommunity();
     void scanNextInterface();
     void readResponse();
+    void handleError(QAbstractSocket::SocketError socketError);
 
 private:
     QString m_objectId;
@@ -82,17 +89,18 @@ private:
     quint8 m_retryCount;
     quint8 m_currentCommunityIndex;
     QByteArray m_datagram;
-    ScanResult *m_pResultTable;
+    DeviceMap *m_pResultTable;
     int m_sendIntervalTimerId;
     int m_sendInterval;
     bool m_sentAllPackets;
+    QString m_errorMessage;
 
     // Methods
     QList<QNetworkInterface> getCurrentlyOnlineInterfacesIPv4() const;
-    bool hasInterfaceIPv4Entry(const QNetworkInterface &interface) const;
-    QNetworkAddressEntry getInterfacesIPv4Entry(const QNetworkInterface &interface);
-    quint32 getInterfacesLowestIPv4(const QNetworkInterface &interface);
-    quint32 getInterfacesHighestIPv4(const QNetworkInterface &interface);
+    bool hasInterfaceIPv4Entry(const QNetworkInterface &netAdapter) const;
+    QNetworkAddressEntry getInterfacesIPv4Entry(const QNetworkInterface &netAdapter);
+    quint32 getInterfacesLowestIPv4(const QNetworkInterface &netAdapter);
+    quint32 getInterfacesHighestIPv4(const QNetworkInterface &netAdapter);
     bool nextIp()       { ++m_currentIp; return (m_currentIp <= m_lastIp && m_currentIp > m_firstIp); }
     void timerEvent(QTimerEvent *event);
 };
