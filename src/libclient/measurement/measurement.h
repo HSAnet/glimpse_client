@@ -2,7 +2,7 @@
 #define MEASUREMENT_H
 
 #include "measurementdefinition.h"
-#include "../task/result.h"
+#include "../result/result.h"
 
 #include <QSharedPointer>
 
