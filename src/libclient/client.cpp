@@ -57,8 +57,8 @@ public:
     , status(Client::Unregistered)
     , networkAccessManager(new QNetworkAccessManager(q))
     , schedulerStorage(&scheduler)
-    , reportStorage(&reportScheduler)
     , taskStorage(&scheduler)
+    , reportStorage(&reportScheduler)
     {
         executor.setNetworkManager(&networkManager);
         scheduler.setExecutor(&executor);
