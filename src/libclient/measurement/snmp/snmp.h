@@ -3,7 +3,9 @@
 
 #include "measurement/measurement.h"
 #include "snmp_definition.h"
-#include "snmppaket.h"
+#include "snmppacket.h"
+#include "snmpscanner.h"
+#include "resultcreator.h"
 #include <QNetworkInterface>
 
 class Snmp : public Measurement
@@ -16,6 +18,8 @@ public:
 signals:
 
 public slots:
+    void finaliseMeasurement();
+    void errorReport(const QString errorMsg);
 
     // Measurement interface
 public:
@@ -25,8 +29,13 @@ public:
     bool stop();
     Result result() const;
 
+    enum Type { AutoScan, RangeScan, SingleRequest, GatewayRequest };
+
 private:
     Status m_status;
+    SnmpDefinitionPtr m_definition;
+    SnmpScanner m_scanner;
+    ResultCreator m_resultCreator;
 };
 
 #endif // SNMP_MEASUREMENT_H

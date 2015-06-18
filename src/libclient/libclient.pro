@@ -178,8 +178,10 @@ SOURCES +=  \
     measurement/snmp/snmp.cpp \
     measurement/snmp/snmp_definition.cpp \
     measurement/snmp/snmp_plugin.cpp \
-    measurement/snmp/snmppaket.cpp \
-    measurement/snmp/snmpscanner.cpp
+    measurement/snmp/snmppacket.cpp \
+    measurement/snmp/snmpscanner.cpp \
+    measurement/snmp/devicemap.cpp \
+    measurement/snmp/resultcreator.cpp
 
 HEADERS += \
     export.h \
@@ -281,8 +283,10 @@ HEADERS += \
     measurement/snmp/snmp.h \
     measurement/snmp/snmp_definition.h \
     measurement/snmp/snmp_plugin.h \
-    measurement/snmp/snmppaket.h \
-    measurement/snmp/snmpscanner.h
+    measurement/snmp/snmppacket.h \
+    measurement/snmp/snmpscanner.h \
+    measurement/snmp/devicemap.h \
+    measurement/snmp/resultcreator.h
 
 OTHER_FILES += \
     libclient.pri

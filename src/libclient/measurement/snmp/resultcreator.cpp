@@ -3,6 +3,7 @@
 // Constructor
 ResultCreator::ResultCreator(QObject *parent) : QObject(parent)
 {
+    // IMPORTANT: If you changes the order of these list then change it in enum 'MibValues' too.
     m_objectIdList << "ipForwarding.0"
                    << "ifNumber.0"
                    << ".1.3.6.1.2.1.43.5.1.1.1.1"       // Value in Printer-MIB.
@@ -11,10 +12,11 @@ ResultCreator::ResultCreator(QObject *parent) : QObject(parent)
 
 // SLOT
 // Takes a pointer to the scan result and creates the probes result.
+// It does a request to each device to distinguish between printer,
+// switches and router.
 void ResultCreator::createResult(const DeviceMap *scanResult)
 {
-    qDebug() << "Scanner found " << scanResult->count() << " devices.";
-    QVariantMap resultMap;
+    m_resultMap.clear();
     foreach (SnmpDevice device, scanResult->deviceList()) {
         QVariantMap deviceMap;
         deviceMap.insert(QString("host"), device.host.toString());
@@ -23,9 +25,9 @@ void ResultCreator::createResult(const DeviceMap *scanResult)
         SnmpPacket packet = sendSnmpRequest(device.host, device.communityName(), m_objectIdList);
         if (packet.isEmpty())
         {
-            // Error. Could not communicate with agent.
+            // Error. Could not communicate with agent. Is defined as 'unknown'.
             deviceMap.insert(QString("type"), QString("unknown"));
-            resultMap.insert(device.host.toString(), deviceMap);
+            m_resultMap.insert(device.host.toString(), deviceMap);
             continue;
         }
         if (isDeviceRouter(packet))
@@ -45,64 +47,65 @@ void ResultCreator::createResult(const DeviceMap *scanResult)
             deviceMap.insert(QString("type"), QString("unknown"));
         }
 
-        resultMap.insert(device.host.toString(), deviceMap);
+        m_resultMap.insert(device.host.toString(), deviceMap);
     }
 
-    qDebug() << "Found " << resultMap.size() << " devices.";
-    printResultMap(resultMap);
+    emit scanResultReady();
 }
 
-// Its a printer if the third value in response is present.
+// Its a printer if at least one of two values in Printer MIB are present.
 bool ResultCreator::isDevicePrinter(const SnmpPacket &packet) const
 {
-    quint8 dataType1 = packet.valueTypeAt(2);
-    quint8 dataType2 = packet.valueTypeAt(3);
+    quint8 dataType1 = packet.valueTypeAt(PrinterValueOne);
+    quint8 dataType2 = packet.valueTypeAt(PrinterValueTwo);
+    // Data type shows if value is not available.
     bool notMib1 = dataType1 == noSuchObject || dataType1 == noSuchInstance || dataType1 == endOfMibView;
     bool notMib2 = dataType2 == noSuchObject || dataType2 == noSuchInstance || dataType2 == endOfMibView;
     if (notMib1 && notMib2)
     {
+        // None of the values are available. It is not a printer.
         return false;
     }
 
     return true;
 }
 
-// Send a request to the device. Query a value in the IP-MIB.
-// Its a router if 'ipForwarding.0' is set to 1.
+// Its a router if 'ipForwarding.0' is set to 1
+// and it has many network interfaces. (more then 3 interfaces)
 bool ResultCreator::isDeviceRouter(const SnmpPacket &packet) const
 {
-    quint8 dataType = packet.valueTypeAt(0);
+    quint8 dataType = packet.valueTypeAt(IpForwarding);
     if (dataType != ASN_INTEGER)
     {
         return false;
     }
-    int ipForwarding = packet.intValueAt(0);
-    dataType = packet.valueTypeAt(1);
+    int ipForwarding = packet.intValueAt(IpForwarding);
+    dataType = packet.valueTypeAt(InterfaceNumber);
     if (dataType != ASN_INTEGER)
     {
         return false;
     }
-    int numInterfaces = packet.intValueAt(1);
+    int numInterfaces = packet.intValueAt(InterfaceNumber);
 
     return ipForwarding == 1 && numInterfaces >= 4;
 }
 
-// Takes the response of a request (ipForwarding and ifNumber).
-// Tests if device is a switch. No forwarding but many interfaces.
+// Takes a response packet.
+// Tests if device is a switch. No ipForwarding but many interfaces.
 bool ResultCreator::isDeviceSwitch(const SnmpPacket &packet) const
 {
-    quint8 dataType = packet.valueTypeAt(0);
+    quint8 dataType = packet.valueTypeAt(IpForwarding);
     if (dataType != ASN_INTEGER)
     {
         return false;
     }
-    int ipForwarding = packet.intValueAt(0);
-    dataType = packet.valueTypeAt(1);
+    int ipForwarding = packet.intValueAt(IpForwarding);
+    dataType = packet.valueTypeAt(InterfaceNumber);
     if (dataType != ASN_INTEGER)
     {
         return false;
     }
-    int numInterfaces = packet.intValueAt(1);
+    int numInterfaces = packet.intValueAt(InterfaceNumber);
 
     return ipForwarding != 1 && numInterfaces >= 4;
 }
@@ -140,24 +143,3 @@ SnmpPacket ResultCreator::sendSnmpRequest(const QHostAddress &host, const QStrin
 
     return SnmpPacket::fromPduStruct(response);
 }
-
-// DEBUG
-// Print scann result.
-void ResultCreator::printResultMap(const QVariantMap &resultMap) const
-{
-    QTextStream outStream(stdout);
-    foreach ( QVariant value, resultMap.values()) {
-        QVariantMap map = value.value<QVariantMap>();
-        outStream << "----------------------------------------------------" << endl;
-        outStream << "Host              : " << map.value("host").toString() << endl;
-        outStream << "Community list    : ";
-        foreach (QString communityName, map.value("communityList").toStringList()) {
-            outStream << communityName << " ";
-        }
-        outStream << endl;
-        outStream << "Description       : " << map.value("description").toString() << endl;
-        outStream << "Type              : " << map.value("type").toString() << endl;
-    }
-    outStream << "----------------------------------------------------" << endl;
-}
-

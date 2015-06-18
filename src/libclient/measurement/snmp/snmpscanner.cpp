@@ -61,6 +61,10 @@ bool SnmpScanner::scanRange(const long version, const QStringList &communityList
     m_firstIp = m_currentIp = start.toIPv4Address();
     m_lastIp = end.toIPv4Address();
     SnmpPacket packet = SnmpPacket::snmpGetRequest(m_snmpVersion, m_communityList[0], m_objectId);
+    if (packet.isEmpty())
+    {
+        return false;
+    }
     m_datagram = packet.getDatagram();
     writeDatagram(m_datagram, start, m_port);
     m_sendIntervalTimerId = startTimer(m_sendInterval);

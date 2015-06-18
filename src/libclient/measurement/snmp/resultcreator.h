@@ -12,23 +12,25 @@ class ResultCreator : public QObject
 public:
     explicit ResultCreator(QObject *parent = 0);
 
+    QVariantMap resultMap() const                   { return m_resultMap; }
+
 signals:
+    void scanResultReady();
 
 public slots:
     void createResult(const DeviceMap *scanResult);
 
 private:
     enum ImplicitNull { noSuchObject = 128, noSuchInstance, endOfMibView };
+    enum MibValues { IpForwarding, InterfaceNumber, PrinterValueOne, PrinterValueTwo };
     QStringList m_objectIdList;
+    QVariantMap m_resultMap;
 
     // Methods
     bool isDevicePrinter(const SnmpPacket &packet) const;
     bool isDeviceRouter(const SnmpPacket &packet) const;
     bool isDeviceSwitch(const SnmpPacket &packet) const;
     SnmpPacket sendSnmpRequest(const QHostAddress &host, const QString &community, const QStringList &oidList) const;
-
-    // Debug methods
-    void printResultMap(const QVariantMap &resultMap) const;
 };
 
 #endif // RESULTCREATOR_H
