@@ -21,7 +21,6 @@ public:
     Private()
     : loading(false)
     , dir(StoragePaths().reportDirectory())
-    , localCopyDir(StoragePaths().localCopyDirectory())
     {
         if (!dir.exists())
         {
@@ -34,33 +33,17 @@ public:
                 LOG_DEBUG("Report storage directory created");
             }
         }
-
-        if (!localCopyDir.exists())
-        {
-            if (!QDir::root().mkpath(localCopyDir.absolutePath()))
-            {
-                LOG_ERROR(QString("Unable to create path %1").arg(localCopyDir.absolutePath()));
-            }
-            else
-            {
-                LOG_DEBUG("Report storage directory created");
-            }
-        }
     }
 
     // Properties
     bool loading;
 
     QDir dir;
-    QDir localCopyDir;
     QPointer<ReportScheduler> scheduler;
 
     // Functions
-    void store(const Report &report, bool localStore = true);
-    void storeLocalCopy(const Report &report);
-    QVariantList loadLocalCopy(const Report &report) const;
+    void store(const Report &report);
     QString fileNameForReport(const Report &report) const;
-    QString fileNameForLocalCopy(const Report &report) const;
 
 public slots:
     void reportAdded(const Report &report);
@@ -68,7 +51,7 @@ public slots:
     void reportRemoved(const Report &report);
 };
 
-void ReportStorage::Private::store(const Report &report, bool localStore)
+void ReportStorage::Private::store(const Report &report)
 {
     QJsonDocument document = QJsonDocument::fromVariant(report.toVariant());
 
@@ -83,75 +66,11 @@ void ReportStorage::Private::store(const Report &report, bool localStore)
     {
         LOG_ERROR(QString("Unable to open file: %1").arg(file.errorString()));
     }
-
-    if (localStore)
-    {
-        storeLocalCopy(report);
-    }
-}
-
-void ReportStorage::Private::storeLocalCopy(const Report &report)
-{
-
-    QVariantList results(loadLocalCopy(report));
-
-    if (report.results().length() > 0)
-    {
-        // only add the last (latest) result to avoid duplicates
-        results.append(report.results()[report.results().length()-1].toVariantStripped());
-    }
-
-    QJsonDocument document = QJsonDocument::fromVariant(results);
-    QFile file(localCopyDir.absoluteFilePath(fileNameForLocalCopy(report)));
-
-    if (file.open(QIODevice::WriteOnly))
-    {
-        file.write(document.toJson());
-        file.close();
-    }
-    else
-    {
-        LOG_ERROR(QString("Unable to open file: %1").arg(file.errorString()));
-    }
-}
-
-QVariantList ReportStorage::Private::loadLocalCopy(const Report &report) const
-{
-    QVariantList out;
-    QFile file(localCopyDir.absoluteFilePath(fileNameForLocalCopy(report)));
-
-    if (!file.exists())
-    {
-        return out;
-    }
-
-    file.open(QIODevice::ReadOnly);
-
-    // Error checking
-    QJsonParseError error;
-    QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
-
-    if (error.error == QJsonParseError::NoError)
-    {
-        out = document.toVariant().toList();
-    }
-    else
-    {
-        LOG_ERROR(QString("Error loading file %1: %2").arg(file.fileName()).arg(error.errorString()));
-    }
-
-    return out;
 }
 
 QString ReportStorage::Private::fileNameForReport(const Report &report) const
 {
     return QString::number(report.taskId().toInt());
-}
-
-QString ReportStorage::Private::fileNameForLocalCopy(const Report &report) const
-{
-    return QString("%1_%2.json").arg(QString::number(report.taskId().toInt())).arg(
-                                     QDateTime::currentDateTime().date().toString("yyyy-MM-dd"));
 }
 
 void ReportStorage::Private::reportAdded(const Report &report)
@@ -191,11 +110,11 @@ ReportStorage::~ReportStorage()
     delete d;
 }
 
-void ReportStorage::storeData(bool localStore)
+void ReportStorage::storeData()
 {
     foreach (const Report &report, d->scheduler->reports())
     {
-        d->store(report, localStore);
+        d->store(report);
     }
 }
 

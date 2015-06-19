@@ -175,7 +175,9 @@ SOURCES +=  \
     storage/storage.cpp \
     timing/timer.cpp \
     controller/ntpcontroller.cpp \
-    result/result.cpp
+    result/result.cpp \
+    result/resultstorage.cpp \
+    result/resultscheduler.cpp
 
 HEADERS += \
     export.h \
@@ -275,7 +277,9 @@ HEADERS += \
     storage/storage.h \
     timing/timer.h \
     controller/ntpcontroller.h \
-    result/result.h
+    result/result.h \
+    result/resultstorage.h \
+    result/resultscheduler.h
 
 OTHER_FILES += \
     libclient.pri
