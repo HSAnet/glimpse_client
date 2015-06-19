@@ -49,6 +49,12 @@ ListPage {
             measurement: "Packettrains"
             description: "Trains of packet pairs measurement (experimental)"
         }
+        ListElement {
+            title: "SNMP Scanner"
+            group:"Glimpse peer measurements"
+            measurement: "Snmp"
+            description: "Searches for SNMP devices in networks"
+        }
     }
 
     section.delegate: Rectangle {
