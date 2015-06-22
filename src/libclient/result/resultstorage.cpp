@@ -119,7 +119,12 @@ void ResultStorage::Private::reportAdded(const Report &report)
     }
 
     store(report);
-    scheduler->addResult(report.taskId(), report.results()[report.results().length()-1]);
+
+    QVariantMap map;
+
+    map.insert("task_id", report.taskId().toInt());
+    map.insert("results", report.results()[report.results().length()-1].toVariant());
+    scheduler->addResult(map);
 }
 
 ResultStorage::ResultStorage(ResultScheduler *scheduler, ReportScheduler *reportScheduler, QObject *parent)
@@ -161,12 +166,13 @@ void ResultStorage::loadData()
         if (error.error == QJsonParseError::NoError)
         {
             QVariantList list = document.toVariant().toList();
-            Result result;
+            QVariantMap result;
 
             foreach (const QVariant &variant, list)
             {
-                result = Result::fromVariant(variant);
-                d->scheduler->addResult(taskId, result);
+                result.insert("task_id", taskId.toInt());
+                result.insert("results", variant);
+                d->scheduler->addResult(result);
             }
         }
         else

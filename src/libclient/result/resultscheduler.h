@@ -17,11 +17,11 @@ public:
 
     ExtResultList results() const;
 
-    void addResult(const TaskId &id, const Result &result);
+    void addResult(const QVariantMap &vmap);
 
 signals:
-    void resultAdded(const TaskId &id, const Result &result);
-    void resultModified(const TaskId &id, const Result &result);
+    void resultAdded(const QVariantMap &map);
+    void resultModified(const QVariantMap &map);
 
 protected:
     class Private;

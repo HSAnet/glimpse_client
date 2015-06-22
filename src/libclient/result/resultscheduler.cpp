@@ -22,8 +22,11 @@ ExtResultList ResultScheduler::results() const
     return d->results;
 }
 
-void ResultScheduler::addResult(const TaskId &id, const Result &result)
+void ResultScheduler::addResult(const QVariantMap &vmap)
 {
+    TaskId id = TaskId(vmap.value("task_id").toInt());
+    Result result = Result::fromVariant(vmap.value("results"));
+
     for (int i = 0; i < d->results.size(); i++)
     {
         if (d->results.at(i).value("task_id") == id.toInt())
@@ -35,7 +38,7 @@ void ResultScheduler::addResult(const TaskId &id, const Result &result)
             map["results"] = list;
 
             d->results[i] = map;
-            emit resultModified(id, result);
+            emit resultModified(vmap);
 
             return;
         }
@@ -50,5 +53,5 @@ void ResultScheduler::addResult(const TaskId &id, const Result &result)
     map.insert("results", list);
 
     d->results.append(map);
-    emit resultAdded(id, result);
+    emit resultAdded(map);
 }
