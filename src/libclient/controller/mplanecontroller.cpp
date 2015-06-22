@@ -3,6 +3,7 @@
 #include "network/requests/postrequest.h"
 #include "network/requests/getrequest.h"
 #include "network/responses/specificationresponse.h"
+#include "network/responses/capabilityresponse.h"
 #include "timing/timer.h"
 #include "settings.h"
 #include "log/logger.h"
@@ -27,6 +28,7 @@ public:
     : q(q)
     {
         connect(&timer, SIGNAL(timeout()), q, SLOT(fetchSpecifications()));
+        connect(&timer, SIGNAL(timeout()), q, SLOT(sendCapabilities()));
         connect(&capabilityRequester, SIGNAL(error()), this, SLOT(capabilitiesError()));
         connect(&capabilityRequester, SIGNAL(finished()), this, SLOT(capabilitiesFinished()));
         connect(&capabilityRequester, SIGNAL(started()), q, SIGNAL(started()));
@@ -49,6 +51,7 @@ public:
     PostRequest postRequest;
     GetRequest getRequest;
     SpecificationResponse specificationResponse;
+    CapabilityResponse capabilityResponse;
 
 
     Timer timer;
@@ -78,7 +81,6 @@ void MPlaneController::Private::updateTimer()
 void MPlaneController::Private::capabilitiesError()
 {
     LOG_ERROR(QString("Error sending capabilities: %1").arg(capabilityRequester.errorString()));
-    qApp->quit();
 }
 
 void MPlaneController::Private::capabilitiesFinished()
@@ -153,7 +155,7 @@ void MPlaneController::sendCapabilities()
     d->postRequest.addData(HTTPDownloadDefinition::capability());
     d->postRequest.setAuthenticationMethod(Request::None);
     d->capabilityRequester.setRequest(&d->postRequest);
-    //d->requester.setResponse(d->response); // TODO we might care for the response
+    d->capabilityRequester.setResponse(&d->capabilityResponse); // TODO we might care for the response
 
     d->capabilityRequester.start();
 }

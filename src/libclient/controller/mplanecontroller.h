@@ -19,9 +19,8 @@ public:
     Status status() const;
     QString errorString() const;
 
-    void sendCapabilities();
-
 public slots:
+    void sendCapabilities();
     void fetchSpecifications();
 
 signals:
