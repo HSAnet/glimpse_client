@@ -335,8 +335,8 @@ bool Client::init()
     d->settings.init();
 
     // Initialize storages
-    d->schedulerStorage.loadData();
-    d->reportStorage.loadData();
+    //d->schedulerStorage.loadData();
+    //d->reportStorage.loadData();
 
     // Initialize controllers
     d->networkManager.init(&d->scheduler, &d->settings);
