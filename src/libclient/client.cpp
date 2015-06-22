@@ -611,6 +611,11 @@ NtpController *Client::ntpController() const
     return &d->ntpController;
 }
 
+MPlaneController *Client::mPlaneController() const
+{
+    return &d->mPlaneController;
+}
+
 Settings *Client::settings() const
 {
     return &d->settings;

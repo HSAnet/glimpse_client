@@ -155,7 +155,7 @@ void MPlaneController::sendCapabilities()
     d->postRequest.addData(HTTPDownloadDefinition::capability());
     d->postRequest.setAuthenticationMethod(Request::None);
     d->capabilityRequester.setRequest(&d->postRequest);
-    d->capabilityRequester.setResponse(&d->capabilityResponse); // TODO we might care for the response
+    d->capabilityRequester.setResponse(&d->capabilityResponse);
 
     d->capabilityRequester.start();
 }
