@@ -5,6 +5,7 @@
 #include "controller/configcontroller.h"
 #include "controller/crashcontroller.h"
 #include "controller/ntpcontroller.h"
+#include "controller/mplanecontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
 #include "scheduler/schedulerstorage.h"
@@ -25,7 +26,6 @@
 #include <sys/socket.h>
 #include <signal.h>
 #include <unistd.h>
-#include <controller/mplanecontroller.h>
 #endif // Q_OS_UNIX
 
 #ifdef Q_OS_WIN
@@ -335,8 +335,8 @@ bool Client::init()
     d->settings.init();
 
     // Initialize storages
-    d->schedulerStorage.loadData();
-    d->reportStorage.loadData();
+    //d->schedulerStorage.loadData();
+    //d->reportStorage.loadData();
 
     // Initialize controllers
     d->networkManager.init(&d->scheduler, &d->settings);
@@ -609,6 +609,11 @@ CrashController *Client::crashController() const
 NtpController *Client::ntpController() const
 {
     return &d->ntpController;
+}
+
+MPlaneController *Client::mPlaneController() const
+{
+    return &d->mPlaneController;
 }
 
 Settings *Client::settings() const

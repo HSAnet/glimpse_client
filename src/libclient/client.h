@@ -21,6 +21,7 @@ class TaskExecutor;
 class Settings;
 class QNetworkAccessManager;
 class TrafficBudgetManager;
+class MPlaneController;
 
 ////////////////////////////////////////////////////////////
 
@@ -40,6 +41,7 @@ class CLIENT_API Client : public QObject
     Q_PROPERTY(TaskController *taskController READ taskController CONSTANT)
     Q_PROPERTY(CrashController *crashController READ crashController CONSTANT)
     Q_PROPERTY(NtpController *ntpController READ ntpController CONSTANT)
+    Q_PROPERTY(MPlaneController *mPlaneController READ mPlaneController CONSTANT)
 
     explicit Client(QObject *parent = 0);
     ~Client();
@@ -74,6 +76,7 @@ public:
     TaskController *taskController() const;
     CrashController *crashController() const;
     NtpController *ntpController() const;
+    MPlaneController *mPlaneController() const;
 
     Settings *settings() const;
     TrafficBudgetManager *trafficBudgetManager() const;

@@ -177,7 +177,8 @@ SOURCES +=  \
     controller/mplanecontroller.cpp \
     network/requests/postrequest.cpp \
     network/requests/getrequest.cpp \
-    network/responses/specificationresponse.cpp
+    network/responses/specificationresponse.cpp \
+    network/responses/capabilityresponse.cpp
 
 HEADERS += \
     export.h \
@@ -279,7 +280,8 @@ HEADERS += \
     controller/mplanecontroller.h \
     network/requests/postrequest.h \
     network/requests/getrequest.h \
-    network/responses/specificationresponse.h
+    network/responses/specificationresponse.h \
+    network/responses/capabilityresponse.h
 
 OTHER_FILES += \
     libclient.pri
