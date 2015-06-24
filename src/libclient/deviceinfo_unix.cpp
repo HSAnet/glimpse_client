@@ -57,94 +57,102 @@ DeviceInfo::~DeviceInfo()
 
 QString DeviceInfo::deviceId() const
 {
+    QCryptographicHash hash(QCryptographicHash::Sha224);
+    bool foundUUID = false;
+    bool foundMac = false;
+
     int ret = setfsent();
 
     if (ret != 1)
     {
         LOG_DEBUG(QString("Error opening fstab: setfsent returned %1").arg(ret));
-        return QString();
-    }
-
-    QByteArray uuid;
-
-    for (const char **fsentry = FSEntries; *fsentry != NULL; ++fsentry)
-    {
-        fstab *tab = getfsfile(*fsentry);
-
-        if (!tab)
-        {
-            continue;
-        }
-
-        uuid = QByteArray::fromRawData(tab->fs_spec, strlen(tab->fs_spec));
-
-        if (uuid.indexOf("UUID=") == 0)
-        {
-            uuid.remove(0, 5);
-            break;
-        }
-        else
-        {
-            // No UUID in fstab
-            QString target;
-            QFileInfo info;
-
-            if (uuid.indexOf("LABEL=") == 0)
-            {
-                uuid.remove(0, 6);
-                info = QFileInfo(QString("/dev/disk/by-label/%1").arg(QString::fromUtf8(uuid)));
-            }
-            else
-            {
-                info = QFileInfo(uuid);
-            }
-
-            uuid.clear();
-
-            if (info.isSymLink())
-            {
-                target = info.symLinkTarget();
-            }
-            else
-            {
-                target = info.absoluteFilePath();
-            }
-
-            uuid = uuidForDevice(target);
-
-            if (!uuid.isEmpty())
-            {
-                break;
-            }
-        }
-    }
-
-    endfsent();
-
-    QCryptographicHash hash(QCryptographicHash::Sha224);
-
-    if (uuid.isEmpty())
-    {
-        LOG_DEBUG("No HDD UID found!");
     }
     else
     {
-        hash.addData(uuid);
+        QByteArray uuid;
+
+        for (const char **fsentry = FSEntries; *fsentry != NULL; ++fsentry)
+        {
+            fstab *tab = getfsfile(*fsentry);
+
+            if (!tab)
+            {
+                continue;
+            }
+
+            uuid = QByteArray::fromRawData(tab->fs_spec, strlen(tab->fs_spec));
+
+            if (uuid.indexOf("UUID=") == 0)
+            {
+                uuid.remove(0, 5);
+                break;
+            }
+            else
+            {
+                // No UUID in fstab
+                QString target;
+                QFileInfo info;
+
+                if (uuid.indexOf("LABEL=") == 0)
+                {
+                    uuid.remove(0, 6);
+                    info = QFileInfo(QString("/dev/disk/by-label/%1").arg(QString::fromUtf8(uuid)));
+                }
+                else
+                {
+                    info = QFileInfo(uuid);
+                }
+
+                uuid.clear();
+
+                if (info.isSymLink())
+                {
+                    target = info.symLinkTarget();
+                }
+                else
+                {
+                    target = info.absoluteFilePath();
+                }
+
+                uuid = uuidForDevice(target);
+
+                if (!uuid.isEmpty())
+                {
+                    break;
+                }
+            }
+        }
+
+        endfsent();
+
+        if (uuid.isEmpty())
+        {
+            LOG_DEBUG("No HDD UID found!");
+        }
+        else
+        {
+            hash.addData(uuid);
+            foundUUID = true;
+        }
+
     }
 
     QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
-    bool foundMac = false;
+
 
     foreach (const QNetworkInterface &inf, interfaces)
     {
-        if ((inf.flags() & 0x2) && !(inf.flags() & 0x8))
+        QString name = inf.name();
+        if (name.startsWith("eth") || name.startsWith("wlan")
+           || name.startsWith("wifi") || name.startsWith("en")
+           || name.startsWith("wl"))
         {
             hash.addData(inf.hardwareAddress().toUtf8());
             foundMac = true;
         }
     }
 
-    if (uuid.isEmpty() && !foundMac)
+    if (foundUUID && !foundMac)
     {
         return QString();
     }
