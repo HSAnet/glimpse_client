@@ -34,9 +34,7 @@ Page {
         }
 
         if (root.loginMode) {
-            client.settings.userId = mailField.text;
-            client.settings.password = passwordField.text;
-            client.loginController.login();
+            client.loginController.login(mailField.text, passwordField.text);
         } else {
             client.loginController.registration(mailField.text, passwordField.text);
         }
