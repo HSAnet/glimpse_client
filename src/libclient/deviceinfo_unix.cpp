@@ -4,6 +4,7 @@
 #include "network/networkmanager.h"
 
 #include <QCryptographicHash>
+#include <QNetworkInterface>
 #include <QDir>
 #include <fstab.h>
 #include <unistd.h>
@@ -120,14 +121,33 @@ QString DeviceInfo::deviceId() const
 
     endfsent();
 
+    QCryptographicHash hash(QCryptographicHash::Sha224);
+
     if (uuid.isEmpty())
     {
         LOG_DEBUG("No HDD UID found!");
-        return QString();
+    }
+    else
+    {
+        hash.addData(uuid);
     }
 
-    QCryptographicHash hash(QCryptographicHash::Sha224);
-    hash.addData(uuid);
+    QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
+    bool foundMac = false;
+
+    foreach (const QNetworkInterface &inf, interfaces)
+    {
+        if ((inf.flags() & 0x2) && !(inf.flags() & 0x8))
+        {
+            hash.addData(inf.hardwareAddress().toUtf8());
+            foundMac = true;
+        }
+    }
+
+    if (uuid.isEmpty() && !foundMac)
+    {
+        return QString();
+    }
 
     return QString::fromLatin1(hash.result().toHex());
 }
