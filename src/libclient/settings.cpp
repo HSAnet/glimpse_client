@@ -23,12 +23,7 @@ public:
 void Settings::Private::sync()
 {
     settings.setValue("config", config.toVariant());
-
-    // remove password before sync so it is not written into storage
-    QVariant tmpPassword = settings.value("password");
-    settings.remove("password");
     settings.sync();
-    settings.setValue("password", tmpPassword);
 }
 
 Settings::Settings(QObject *parent)
@@ -151,20 +146,6 @@ QString Settings::userId() const
 QString Settings::hashedUserId() const
 {
     return d->settings.value("hashed-user-id").toString();
-}
-
-void Settings::setPassword(const QString &password)
-{
-    if (this->password() != password)
-    {
-        d->settings.setValue("password", password);
-        emit passwordChanged(password);
-    }
-}
-
-QString Settings::password() const
-{
-    return d->settings.value("password").toString();
 }
 
 void Settings::setApiKey(const QString &apiKey)
