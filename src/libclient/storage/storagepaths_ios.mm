@@ -61,3 +61,8 @@ QDir StoragePaths::localCopyDirectory() const
 {
     return QDir(d->applicationRootPath + "/results");
 }
+
+QDir StoragePaths::taskDirectory() const
+{
+    return QDir(d->applicationRootPath + "/tasks");
+}

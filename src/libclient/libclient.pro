@@ -111,7 +111,7 @@ SOURCES +=  \
     report/report.cpp \
     task/taskvalidator.cpp \
     task/taskexecutor.cpp \
-    task/task.cpp \
+    task/scheduledefinition.cpp \
     task/result.cpp \
     network/networkmanager.cpp \
     measurement/measurementfactory.cpp \
@@ -173,7 +173,9 @@ SOURCES +=  \
     measurement/wifilookup/wifilookup_plugin.cpp \
     storage/storage.cpp \
     timing/timer.cpp \
-    controller/ntpcontroller.cpp
+    controller/ntpcontroller.cpp \
+    task/taskstorage.cpp \
+    task/task.cpp
 
 HEADERS += \
     export.h \
@@ -204,7 +206,7 @@ HEADERS += \
     report/report.h \
     task/taskvalidator.h \
     task/taskexecutor.h \
-    task/task.h \
+    task/scheduledefinition.h \
     task/result.h \
     serializable.h \
     network/networkmanager.h \
@@ -271,7 +273,9 @@ HEADERS += \
     ident.h \
     storage/storage.h \
     timing/timer.h \
-    controller/ntpcontroller.h
+    controller/ntpcontroller.h \
+    task/taskstorage.h \
+    task/task.h
 
 OTHER_FILES += \
     libclient.pri

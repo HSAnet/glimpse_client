@@ -7,6 +7,7 @@
 #include "controller/ntpcontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
+#include "task/taskstorage.h"
 #include "scheduler/schedulerstorage.h"
 #include "report/reportstorage.h"
 #include "scheduler/scheduler.h"
@@ -35,7 +36,7 @@
 #include "timing/immediatetiming.h"
 #include "timing/ondemandtiming.h"
 #include "timing/timing.h"
-#include "task/task.h"
+#include "task/scheduledefinition.h"
 #include "measurement/btc/btc_definition.h"
 #include "measurement/http/httpdownload_definition.h"
 #include "measurement/dnslookup/dnslookup_definition.h"
@@ -56,6 +57,7 @@ public:
     , status(Client::Unregistered)
     , networkAccessManager(new QNetworkAccessManager(q))
     , schedulerStorage(&scheduler)
+    , taskStorage(&scheduler)
     , reportStorage(&reportScheduler)
     {
         executor.setNetworkManager(&networkManager);
@@ -75,6 +77,7 @@ public:
 
     Scheduler scheduler;
     SchedulerStorage schedulerStorage;
+    TaskStorage taskStorage;
 
     ReportScheduler reportScheduler;
     ReportStorage reportStorage;
@@ -335,6 +338,7 @@ bool Client::init()
     // Initialize storages
     d->schedulerStorage.loadData();
     d->reportStorage.loadData();
+    d->taskStorage.loadData();
 
     // Initialize controllers
     d->networkManager.init(&d->scheduler, &d->settings);
