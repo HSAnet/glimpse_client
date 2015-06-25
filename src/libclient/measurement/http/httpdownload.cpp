@@ -96,11 +96,6 @@ void DownloadThread::startTCPConnection()
         //something went wrong
         tStatus = FinishedError;
         emit TCPConnected(false);
-
-        if (socket->isOpen())
-        {
-            socket->close();
-        }
     }
 }
 
@@ -150,7 +145,6 @@ void DownloadThread::startDownload()
         //on error
         if(writeResult < 0)
         {
-            socket->close();
             tStatus = FinishedError;
             emit firstByteReceived(false);
             return;
@@ -189,7 +183,6 @@ void DownloadThread::startDownload()
         {
             LOG_INFO(QString("Thread: unexpected HTTP response code %1").arg(HTTPResponseCode));
             tStatus = FinishedError;
-            socket->close();
             emit firstByteReceived(false);
         }
     }
@@ -197,7 +190,6 @@ void DownloadThread::startDownload()
     {
         LOG_INFO("Thread: no response received");
         tStatus = FinishedError;
-        socket->close();
         emit firstByteReceived(false);
     }
 }
