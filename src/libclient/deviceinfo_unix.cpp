@@ -143,16 +143,14 @@ QString DeviceInfo::deviceId() const
     foreach (const QNetworkInterface &inf, interfaces)
     {
         QString name = inf.name();
-        if (name.startsWith("eth") || name.startsWith("wlan")
-           || name.startsWith("wifi") || name.startsWith("en")
-           || name.startsWith("wl"))
+        if (name.startsWith("eth") || name.startsWith("wifi") || name.startsWith("en") || name.startsWith("wl"))
         {
             hash.addData(inf.hardwareAddress().toUtf8());
             foundMac = true;
         }
     }
 
-    if (foundUUID && !foundMac)
+    if (!foundUUID && !foundMac)
     {
         return QString();
     }
