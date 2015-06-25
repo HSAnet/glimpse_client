@@ -123,6 +123,7 @@ void ResultStorage::Private::reportAdded(const Report &report)
     QVariantMap map;
 
     map.insert("task_id", report.taskId().toInt());
+    map.insert("report_time", report.dateTime());
     map.insert("results", report.results()[report.results().length()-1].toVariant());
     scheduler->addResult(map);
 }
@@ -158,6 +159,7 @@ void ResultStorage::loadData()
         // read TaskId from filename as this is needed for the result page
         QStringList fn = fileName.split("_");
         TaskId taskId(fn[0].toInt());
+        QString date(fn[1].split(".")[0]);
 
         // Error checking
         QJsonParseError error;
@@ -171,6 +173,7 @@ void ResultStorage::loadData()
             foreach (const QVariant &variant, list)
             {
                 result.insert("task_id", taskId.toInt());
+                result.insert("report_time", QDateTime::fromString(date, "yyyy-MM-dd"));
                 result.insert("results", variant);
                 d->scheduler->addResult(result);
             }

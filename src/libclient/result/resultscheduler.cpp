@@ -25,6 +25,7 @@ ExtResultList ResultScheduler::results() const
 void ResultScheduler::addResult(const QVariantMap &vmap)
 {
     TaskId id = TaskId(vmap.value("task_id").toInt());
+    QDateTime reportTime = QDateTime::fromString(vmap.value("report_time").toString());
     Result result = Result::fromVariant(vmap.value("results"));
 
     for (int i = 0; i < d->results.size(); i++)
@@ -50,6 +51,7 @@ void ResultScheduler::addResult(const QVariantMap &vmap)
     list << result.toVariantStripped();
 
     map.insert("task_id", id.toInt());
+    map.insert("report_time", reportTime);
     map.insert("results", list);
 
     d->results.append(map);
