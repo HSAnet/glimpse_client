@@ -39,15 +39,15 @@ Page {
         }
 
         Item {
-            property string title: "Reports"
+            property string title: "Results"
             /*property alias actionTitle: reports.actionTitle
 
             function actionClicked() {
                 return reports.actionClicked();
             }*/
 
-            Reports {
-                id: reports
+            Results {
+                id: results
                 anchors.fill: parent
             }
         }
