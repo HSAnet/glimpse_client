@@ -96,7 +96,11 @@ void DownloadThread::startTCPConnection()
         //something went wrong
         tStatus = FinishedError;
         emit TCPConnected(false);
-        socket->close();
+
+        if (socket->isOpen())
+        {
+            socket->close();
+        }
     }
 }
 
