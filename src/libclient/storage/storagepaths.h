@@ -15,7 +15,7 @@ public:
     QDir reportDirectory() const;
     QDir cacheDirectory() const;
     QDir logDirectory() const;
-    QDir localCopyDirectory() const;
+    QDir resultDirectory() const;
     QDir crashDumpDirectory() const;
     QDir taskDirectory() const;
 

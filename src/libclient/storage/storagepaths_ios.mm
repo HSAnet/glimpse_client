@@ -57,7 +57,7 @@ QDir StoragePaths::crashDumpDirectory() const
     return QDir(d->applicationRootPath + "/crashdumps");
 }
 
-QDir StoragePaths::localCopyDirectory() const
+QDir StoragePaths::resultDirectory() const
 {
     return QDir(d->applicationRootPath + "/results");
 }
