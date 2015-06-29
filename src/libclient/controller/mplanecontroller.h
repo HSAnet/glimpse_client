@@ -2,7 +2,10 @@
 #define MPLANECONTROLLER_H
 
 #include "controller.h"
-#include "network/networkmanager.h"
+
+class NetworkManager;
+class Scheduler;
+class Settings;
 
 class CLIENT_API MPlaneController : Controller
 {

@@ -346,7 +346,6 @@ bool Client::init()
     //d->crashController.init(&d->networkManager, &d->settings);
     d->ntpController.init();
     d->trafficBudgetManager.init();
-    d->mPlaneController.init(&d->networkManager, &d->scheduler, &d->settings);
 
     /*
     if (!d->settings.isPassive())

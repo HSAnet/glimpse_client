@@ -5,6 +5,7 @@
 #include "controller/logincontroller.h"
 #include "controller/taskcontroller.h"
 #include "controller/configcontroller.h"
+#include "controller/mplanecontroller.h"
 #include "types.h"
 
 #include "webrequester.h"
@@ -388,7 +389,7 @@ int main(int argc, char *argv[])
     // Initialize the client instance
     Client *client = Client::instance();
 
-    LOG_INFO(QString("Glimpse version %1").arg(Client::version()));
+    LOG_INFO(QString("GLIMPSE version %1").arg(Client::version()));
 
     /*
     if (parser.isSet(passiveOption))
@@ -413,11 +414,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (parser.isSet(supervisorOption))
-    {
-        client->settings()->config()->setSupervisorAdress(parser.value(supervisorOption));
-    }
-
     if (!client->init())
     {
         LOG_ERROR("Client initialization failed")
@@ -428,6 +424,9 @@ int main(int argc, char *argv[])
     {
         client->settings()->config()->setSupervisorAdress(parser.value(supervisorOption));
     }
+
+    // init the mPlaner controller her so we can set the supervisor before
+    client->mPlaneController()->init(client->networkManager(), client->scheduler(), client->settings());
 
     /*
     new LoginWatcher(client->loginController());

@@ -1,5 +1,6 @@
 #include "mplanecontroller.h"
 #include "webrequester.h"
+#include "network/networkmanager.h"
 #include "network/requests/postrequest.h"
 #include "network/requests/getrequest.h"
 #include "network/responses/specificationresponse.h"
@@ -124,9 +125,9 @@ MPlaneController::~MPlaneController()
 
 bool MPlaneController::init(NetworkManager *networkManager, Scheduler *scheduler, Settings *settings)
 {
+    d->networkManager = networkManager;
     d->scheduler = scheduler;
     d->settings = settings;
-    d->networkManager = networkManager;
 
     QString url = QString("http://%1").arg(settings->config()->supervisorAddress());
 
