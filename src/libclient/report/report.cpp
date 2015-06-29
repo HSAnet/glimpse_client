@@ -118,8 +118,9 @@ QVariantMap Report::specification() const
 }
 
 QVariant Report::toVariant() const
-{
+{    
     QVariantMap map = d->specification;
+    QStringList errors;
 
     // make result from specification
     map.remove("specification");
@@ -138,10 +139,32 @@ QVariant Report::toVariant() const
 
     foreach(const Result &res, d->results)
     {
+        // use result only if error string is not set
+        if (res.errorString() != "")
+        {
+            errors.append(res.errorString());
+            continue;
+        }
+
         resList.append(res.probeResult());
     }
 
-    map.insert("resultvalues", resList);
+    // check if we have results at all
+    if (resList.isEmpty())
+    {
+        // return an exception instead of the results
+        map.remove("result");
+        map.insert("exception", "");
+        map.insert("message", "One or multiple errors: " + errors.join(','));
+    }
+    else
+    {
+        map.insert("resultvalues", resList);
+        if (!errors.isEmpty())
+        {
+            map.insert("metadata", "One or multiple executions not possible due to the following error(s): " + errors.join(','));
+        }
+    }
 
     return map;
 }
