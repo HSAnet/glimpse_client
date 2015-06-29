@@ -183,6 +183,10 @@ QString ScheduleDefinition::getMethodFromMPlaneLabel(const QString &label)
     {
         return "traceroute";
     }
+    else if (label.startsWith("glimpse-reversednslookup"))
+    {
+        return "reversednslookup";
+    }
 
     return QString();
 }

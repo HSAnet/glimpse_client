@@ -13,6 +13,7 @@
 #include "measurement/http/httpdownload_definition.h"
 #include "measurement/dnslookup/dnslookup_definition.h"
 #include "measurement/traceroute/traceroute_definition.h"
+#include "measurement/reverse_dnslookup/reverseDnslookup_definition.h"
 
 #include <QPointer>
 #include <QCoreApplication>
@@ -157,6 +158,7 @@ void MPlaneController::sendCapabilities()
     d->postRequest.addData(HTTPDownloadDefinition::capability());
     d->postRequest.addData(DnslookupDefinition::capability());
     d->postRequest.addData(TracerouteDefinition::capability());
+    d->postRequest.addData(ReverseDnslookupDefinition::capability());
     d->postRequest.setAuthenticationMethod(Request::None);
     d->capabilityRequester.setRequest(&d->postRequest);
     d->capabilityRequester.setResponse(&d->capabilityResponse);

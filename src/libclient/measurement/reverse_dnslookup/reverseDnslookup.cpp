@@ -89,12 +89,17 @@ bool ReverseDnslookup::stop()
 
 Result ReverseDnslookup::result() const
 {
-    QVariantMap res;
+    QVariantList res;
 
-    res.insert("hostname", m_reverseDnslookupOutput);
-    res.insert("address", listToVariant(m_reverseDnslookupAddresses));
+    foreach (const QHostAddress &hostaddress, m_reverseDnslookupAddresses)
+    {
+        QVariantList tmp;
+        tmp.append(m_reverseDnslookupOutput);
+        tmp.append(hostaddress.toString());
+        res.append(QVariant(tmp));
+    }
 
-    return Result(QVariantList());
+    return Result(res);
 }
 
 void ReverseDnslookup::started()

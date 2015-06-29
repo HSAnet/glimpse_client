@@ -51,5 +51,16 @@ DnslookupDefinitionPtr DnslookupDefinition::fromVariant(const QVariant &variant)
         return DnslookupDefinitionPtr();
     }
 
+    return DnslookupDefinitionPtr(new DnslookupDefinition(map.value("host").toString(), map.value("dns_server").toString()));
+}
+
+DnslookupDefinitionPtr DnslookupDefinition::fromSpecification(const QVariant &variant)
+{
+    QVariantMap map = variant.toMap();
+    if (map.isEmpty())
+    {
+        return DnslookupDefinitionPtr();
+    }
+
     return DnslookupDefinitionPtr(new DnslookupDefinition(map.value("destination.url").toString(), map.value("glimpse.dns.server").toString()));
 }

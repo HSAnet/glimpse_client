@@ -16,12 +16,15 @@ public:
 
     // Storage
     static ReverseDnslookupDefinitionPtr fromVariant(const QVariant &variant);
+    static ReverseDnslookupDefinitionPtr fromSpecification(const QVariant &variant);
 
     // Getters
     QString ip;
 
     // Serializable interface
     QVariant toVariant() const;
+
+    static QVariantMap capability();
 };
 
 #endif // REVERSEDNSLOOKUP_DEFINITION_H

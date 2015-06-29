@@ -16,6 +16,7 @@ public:
 
     // Storage
     static DnslookupDefinitionPtr fromVariant(const QVariant &variant);
+    static DnslookupDefinitionPtr fromSpecification(const QVariant &variant);
 
     // Getters
     QString host;

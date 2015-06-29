@@ -15,5 +15,5 @@ MeasurementPtr DnslookupPlugin::createMeasurement(const QString &name)
 MeasurementDefinitionPtr DnslookupPlugin::createMeasurementDefinition(const QString &name, const QVariant &data)
 {
     Q_UNUSED(name);
-    return DnslookupDefinition::fromVariant(data);
+    return DnslookupDefinition::fromSpecification(data);
 }
