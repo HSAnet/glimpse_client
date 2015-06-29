@@ -11,6 +11,8 @@
 #include "timing/periodictiming.h"
 #include "measurement/ping/ping_definition.h"
 #include "measurement/http/httpdownload_definition.h"
+#include "measurement/dnslookup/dnslookup_definition.h"
+#include "measurement/traceroute/traceroute_definition.h"
 
 #include <QPointer>
 #include <QCoreApplication>
@@ -153,6 +155,8 @@ void MPlaneController::sendCapabilities()
     d->postRequest.setPath("/register/capability");
     d->postRequest.addData(PingDefinition::capability());
     d->postRequest.addData(HTTPDownloadDefinition::capability());
+    d->postRequest.addData(DnslookupDefinition::capability());
+    d->postRequest.addData(TracerouteDefinition::capability());
     d->postRequest.setAuthenticationMethod(Request::None);
     d->capabilityRequester.setRequest(&d->postRequest);
     d->capabilityRequester.setResponse(&d->capabilityResponse);

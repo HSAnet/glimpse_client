@@ -101,12 +101,12 @@ Result Traceroute::result() const
 {
     QVariantList res;
     QVariantList pings;
-    QVariantMap hop;
     QVariantMap probe;
     QList<quint64> pingTime;
 
     for (int i = 0; i < hops.size(); i += definition->count)
     {
+        QVariantList hop;
         pings.clear();
         pingTime.clear();
 
@@ -155,23 +155,20 @@ Result Traceroute::result() const
             stdev = qSqrt(sq_sum / pingTime.size() - avg * avg);
         }
 
-        hop.insert("hop", QString(inet_ntoa(hops[i].probe.source.sin.sin_addr)));
-        hop.insert("pings", pings);
-        hop.insert("ttl", i / 3 + 1);
-        hop.insert("rtt_min", min);
-        hop.insert("rtt_max", max);
-        hop.insert("rtt_avg", avg);
-        hop.insert("rtt_stdev", stdev);
-        hop.insert("rtt_count", pingTime.size());
+        hop.append(startDateTime().toString(Qt::ISODate).replace('T', ' '));
+        hop.append(QString(inet_ntoa(hops[i].probe.source.sin.sin_addr)));
+        //hop.append(pings);
+        hop.append(i / 3 + 1);
+        hop.append(min);
+        hop.append(max);
+        hop.append(avg);
+        hop.append(stdev);
+        hop.append(pingTime.size());
 
-        res << hop;
+        res.append(QVariant(hop));
     }
 
-    QVariantMap map;
-    map.insert("results", res);
-    map.insert("hop_count", static_cast<int>(hops.size() / definition->count));
-
-    return Result(QVariantList());
+    return Result(res);
 }
 
 void Traceroute::ping()

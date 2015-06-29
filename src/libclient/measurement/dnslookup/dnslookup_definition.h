@@ -23,6 +23,8 @@ public:
 
     // Serializable interface
     QVariant toVariant() const;
+
+    static QVariantMap capability();
 };
 
 #endif // Dnslookup_DEFINITION_H

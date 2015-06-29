@@ -127,13 +127,21 @@ QVariant Report::toVariant() const
 
     if (d->results.count() > 1)
     {
-        map.insert("when", QString("%1 ... %2").arg(d->results.first().startDateTime().toString(Qt::ISODate)).arg(d->results.last().endDateTime().toString(Qt::ISODate)));
+        map.insert("when", QString("%1 ... %2").arg(d->results.first().startDateTime().toString(Qt::ISODate).replace('T', ' ')).arg(d->results.last().endDateTime().toString(Qt::ISODate).replace('T', ' ')));
     }
     else
     {
-        map.insert("when", QString("%1").arg(d->results.first().startDateTime().toString(Qt::ISODate)));
+        map.insert("when", QString("%1").arg(d->results.first().startDateTime().toString(Qt::ISODate).replace('T', ' ')));
     }
 
-    map.insert("resultvalues", listToVariant(results()));
+    QVariantList resList;
+
+    foreach(const Result &res, d->results)
+    {
+        resList.append(res.probeResult());
+    }
+
+    map.insert("resultvalues", resList);
+
     return map;
 }

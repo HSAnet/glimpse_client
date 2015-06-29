@@ -26,16 +26,21 @@ TracerouteDefinition::~TracerouteDefinition()
 TracerouteDefinitionPtr TracerouteDefinition::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
+    if (map.isEmpty())
+    {
+        return TracerouteDefinitionPtr();
+    }
+
     return TracerouteDefinitionPtr(new TracerouteDefinition(
-                                       map.value("host", "").toString(),
-                                       map.value("count", 3).toUInt(),
-                                       map.value("interval", 1000).toUInt(),
-                                       map.value("receive_timeout", 1000).toUInt(),
-                                       map.value("destination_port", 33434).toUInt(),
-                                       map.value("source_port", 33434).toUInt(),
-                                       map.value("payload", 74).toUInt(),
+                                       map.value("destination.url", "").toString(),
+                                       map.value("packets.ip", 3).toUInt(),
+                                       map.value("glimpse.ping.interval.ms", 1000).toUInt(),
+                                       map.value("glimpse.ping.timeout.ms", 1000).toUInt(),
+                                       map.value("destination.port", 33434).toUInt(),
+                                       map.value("source.port", 33434).toUInt(),
+                                       map.value("glimpse.ping.payload", 74).toUInt(),
                                        pingTypeFromString(map.value(
-                                                              "ping_type", "Udp").toString().toLatin1())));
+                                                              "glimpse.ping.type", "Udp").toString().toLatin1())));
 }
 
 QVariant TracerouteDefinition::toVariant() const
@@ -50,4 +55,37 @@ QVariant TracerouteDefinition::toVariant() const
     map.insert("payload", payload);
     map.insert("ping_type", pingTypeToString(type));
     return map;
+}
+
+QVariantMap TracerouteDefinition::capability()
+{
+    QVariantMap parameters;
+    parameters.insert("destination.url", "*");
+    parameters.insert("packets.ip", "*");
+    parameters.insert("glimpse.ping.timeout.ms", "*");
+    parameters.insert("glimpse.ping.interval.ms", "*");
+    parameters.insert("destination.port", "*");
+    parameters.insert("source.port", "*");
+    parameters.insert("glimpse.ping.payload", "*");
+
+    QVariantList results;
+    results.append("glimpse.traceroute.start-time");
+    results.append("glimpse.traceroute.hop-ip");
+    results.append("ttl");
+    results.append("rtt.ms.min");
+    results.append("rtt.ms.max");
+    results.append("rtt.ms.avg");
+    results.append("rtt.ms.stdev");
+    results.append("packets.ip");
+
+    QVariantMap capability;
+    capability.insert("capability", "measure");
+    capability.insert("label", "glimpse-traceroute");
+    capability.insert("parameters", parameters);
+    capability.insert("results", results);
+    capability.insert("version", 0);
+    capability.insert("when", "now");
+    capability.insert("registry", "https://www.measure-it.net/static/glimpse_registry.json");
+
+    return capability;
 }
