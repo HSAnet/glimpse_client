@@ -105,9 +105,7 @@ bool Dnslookup::stop()
 
 Result Dnslookup::result() const
 {
-    QVariantMap res;
-
-    QVariantList records;
+    QVariantList res;
 
     foreach (const QDnsHostAddressRecord &val, m_dnslookupOutput)
     {
@@ -127,18 +125,16 @@ Result Dnslookup::result() const
             break;
         }
 
-        QVariantMap map;
-        map.insert("name", val.name());
-        map.insert("ttl", val.timeToLive());
-        map.insert("value", val.value().toString());
-        map.insert("type", type);
+        QVariantList records;
+        records.append(val.name());
+        records.append(val.timeToLive());
+        records.append(val.value().toString());
+        records.append(type);
 
-        records << map;
+        res.append(QVariant(records));
     }
 
-    res.insert("records", records);
-
-    Result result(records);
+    Result result(res);
     result.setErrorString(m_dnsError);
     return result;
 }

@@ -1,5 +1,6 @@
 #include "mplanecontroller.h"
 #include "webrequester.h"
+#include "network/networkmanager.h"
 #include "network/requests/postrequest.h"
 #include "network/requests/getrequest.h"
 #include "network/responses/specificationresponse.h"
@@ -11,6 +12,9 @@
 #include "timing/periodictiming.h"
 #include "measurement/ping/ping_definition.h"
 #include "measurement/http/httpdownload_definition.h"
+#include "measurement/dnslookup/dnslookup_definition.h"
+#include "measurement/traceroute/traceroute_definition.h"
+#include "measurement/reverse_dnslookup/reverseDnslookup_definition.h"
 
 #include <QPointer>
 #include <QCoreApplication>
@@ -121,9 +125,9 @@ MPlaneController::~MPlaneController()
 
 bool MPlaneController::init(NetworkManager *networkManager, Scheduler *scheduler, Settings *settings)
 {
+    d->networkManager = networkManager;
     d->scheduler = scheduler;
     d->settings = settings;
-    d->networkManager = networkManager;
 
     QString url = QString("http://%1").arg(settings->config()->supervisorAddress());
 
@@ -153,6 +157,9 @@ void MPlaneController::sendCapabilities()
     d->postRequest.setPath("/register/capability");
     d->postRequest.addData(PingDefinition::capability());
     d->postRequest.addData(HTTPDownloadDefinition::capability());
+    d->postRequest.addData(DnslookupDefinition::capability());
+    d->postRequest.addData(TracerouteDefinition::capability());
+    d->postRequest.addData(ReverseDnslookupDefinition::capability());
     d->postRequest.setAuthenticationMethod(Request::None);
     d->capabilityRequester.setRequest(&d->postRequest);
     d->capabilityRequester.setResponse(&d->capabilityResponse);

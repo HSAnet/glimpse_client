@@ -766,12 +766,14 @@ Result Ping::result() const
     }
 
     //res.append(roundTripMs);
+    QVariantList resList;
     res.append(min);
     res.append(max);
     res.append(avg);
     res.append(stdev);
     res.append(m_pingsSent);
     res.append(m_pingsReceived);
+    resList.append(QVariant(res));
 
     /*if (m_pingsSent > 0)
     {

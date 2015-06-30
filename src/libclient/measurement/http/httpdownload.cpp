@@ -673,9 +673,13 @@ bool HTTPDownload::calculateResults()
         threadResults.append(thread);
     }
 
-    results.append(overallBandwidth);
-    results.append(num_threads);
-    results.append(resultsOK);
+    // results need to be in a list for mplane
+    QVariantList tmpResult;
+    tmpResult.append(overallBandwidth);
+    tmpResult.append(num_threads);
+    tmpResult.append(resultsOK);
+    results.append(QVariant(tmpResult));
+
     //results.insert("bandwidth_bps_per_thread", threadResults);
 
     return true;

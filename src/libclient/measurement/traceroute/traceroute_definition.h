@@ -35,6 +35,8 @@ public:
 
     // Serializable interface
     QVariant toVariant() const;
+
+    static QVariantMap capability();
 };
 
 #endif // TRACEROUTE_DEFINITION_H

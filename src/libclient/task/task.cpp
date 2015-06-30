@@ -175,6 +175,18 @@ QString ScheduleDefinition::getMethodFromMPlaneLabel(const QString &label)
     {
         return "httpdownload";
     }
+    else if (label.startsWith("glimpse-dnslookup"))
+    {
+        return "dnslookup";
+    }
+    else if (label.startsWith("glimpse-traceroute"))
+    {
+        return "traceroute";
+    }
+    else if (label.startsWith("glimpse-reversednslookup"))
+    {
+        return "reversednslookup";
+    }
 
     return QString();
 }

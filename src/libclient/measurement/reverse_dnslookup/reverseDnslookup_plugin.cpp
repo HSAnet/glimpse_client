@@ -15,5 +15,5 @@ MeasurementPtr ReverseDnslookupPlugin::createMeasurement(const QString &name)
 MeasurementDefinitionPtr ReverseDnslookupPlugin::createMeasurementDefinition(const QString &name, const QVariant &data)
 {
     Q_UNUSED(name);
-    return ReverseDnslookupDefinition::fromVariant(data);
+    return ReverseDnslookupDefinition::fromSpecification(data);
 }

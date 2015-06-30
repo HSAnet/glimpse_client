@@ -62,15 +62,15 @@ PingDefinitionPtr PingDefinition::fromSpecification(const QVariant &variant)
 QVariant PingDefinition::toVariant() const
 {
     QVariantMap map;
-    map.insert("host", host);
-    map.insert("count", count);
-    map.insert("interval", interval);
-    map.insert("timeout", receiveTimeout);
+    map.insert("destination.url", host);
+    map.insert("packets.ip", count);
+    map.insert("glimpse.ping.interval.ms", interval);
+    map.insert("glimpse.ping.timeout.ms", receiveTimeout);
     map.insert("ttl", ttl);
-    map.insert("destination_port", destinationPort);
-    map.insert("source_port", sourcePort);
-    map.insert("payload", payload);
-    map.insert("type", pingTypeToString(type));
+    map.insert("destination.port", destinationPort);
+    map.insert("source.port", sourcePort);
+    map.insert("glimpse.ping.payload", payload);
+    map.insert("glimpse.ping.type", pingTypeToString(type));
     return map;
 }
 
