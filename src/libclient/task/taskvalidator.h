@@ -1,7 +1,7 @@
 #ifndef TASKVALIDATOR_H
 #define TASKVALIDATOR_H
 
-#include "task.h"
+#include "scheduledefinition.h"
 
 class CLIENT_API TaskValidator
 {

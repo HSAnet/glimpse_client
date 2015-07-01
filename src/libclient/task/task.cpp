@@ -1,47 +1,36 @@
 #include "task.h"
-#include "../types.h"
-#include "../timing/timingfactory.h"
 
-class TaskData : public QSharedData
+class Task::Private : public QSharedData
 {
 public:
-    ScheduleId id;
-    TaskId taskId;
-    QString name;
-    TimingPtr timing;
+    TaskId id;
+    QString method;
     QVariant measurementDefinition;
-    Precondition precondition;
-    QVariantMap specification;
 };
 
-ScheduleDefinition::ScheduleDefinition()
-: d(new TaskData)
+Task::Task()
+: d(new Private)
 {
 }
 
-ScheduleDefinition::ScheduleDefinition(const ScheduleDefinition &other)
+Task::Task(const Task &other)
 : d(other.d)
 {
 }
 
-ScheduleDefinition::ScheduleDefinition(const ScheduleId &id, const TaskId& taskId, const QString &name, const TimingPtr &timing,
-                               const QVariant &measurementDefinition, const Precondition &precondition, QVariantMap specification)
-: d(new TaskData)
+Task::Task(const TaskId &id, const QString &method, const QVariant &measurementDefinition)
+: d(new Private)
 {
     d->id = id;
-    d->taskId = taskId;
-    d->name = name;
-    d->timing = timing;
+    d->method = method;
     d->measurementDefinition = measurementDefinition;
-    d->precondition = precondition;
-    d->specification = specification;
 }
 
-ScheduleDefinition::~ScheduleDefinition()
+Task::~Task()
 {
 }
 
-ScheduleDefinition &ScheduleDefinition::operator=(const ScheduleDefinition &rhs)
+Task &Task::operator=(const Task &rhs)
 {
     if (this != &rhs)
     {
@@ -51,142 +40,57 @@ ScheduleDefinition &ScheduleDefinition::operator=(const ScheduleDefinition &rhs)
     return *this;
 }
 
-bool ScheduleDefinition::isNull() const
+bool Task::isNull() const
 {
     return !d->id.isValid();
 }
 
-void ScheduleDefinition::setId(const ScheduleId &id)
+void Task::setId(const TaskId &id)
 {
     d->id = id;
 }
 
-QVariant ScheduleDefinition::toVariant() const
-{
-    QVariantMap map;
-    QVariantMap task;
-
-    task.insert("id", d->taskId.toInt());
-    task.insert("method", d->name);
-    task.insert("options", d->measurementDefinition);
-
-    map.insert("id", d->id.toInt());
-    map.insert("timing", d->timing->toVariant());
-    map.insert("precondition", d->precondition.toVariant());
-    map.insert("task", task);
-
-    return map;
-}
-
-ScheduleDefinition ScheduleDefinition::fromVariant(const QVariant &variant)
-{
-    QVariantMap map = variant.toMap();
-
-    QVariantMap task = map.value("task").toMap();
-
-    return ScheduleDefinition(ScheduleId(map.value("id").toInt()),
-                              TaskId(task.value("id").toInt()),
-                              task.value("method").toString(),
-                              TimingFactory::timingFromVariant(map.value("timing")),
-                              task.value("options"),
-                              Precondition::fromVariant(map.value("precondition")));
-}
-
-ScheduleDefinition ScheduleDefinition::fromMPlaneVariant(const QVariant &variant)
-{
-    QVariantMap map = variant.toMap();
-
-    return ScheduleDefinition(ScheduleId(map.value("token").toInt()),
-                              TaskId(map.value("token").toInt()),
-                              ScheduleDefinition::getMethodFromMPlaneLabel(map.value("label").toString()),
-                              TimingFactory::timingFromMPlaneWhen(map.value("when").toString()),
-                              map.value("parameters"),
-                              Precondition(),
-                              map);
-}
-
-ScheduleId ScheduleDefinition::id() const
+TaskId Task::id() const
 {
     return d->id;
 }
 
-TaskId ScheduleDefinition::taskId() const
+void Task::setMethod(const QString &method)
 {
-    return d->taskId;
+    d->method = method;
 }
 
-void ScheduleDefinition::setName(const QString &name)
+QString Task::method() const
 {
-    d->name = name;
+    return d->method;
 }
 
-QString ScheduleDefinition::name() const
-{
-    return d->name;
-}
-
-void ScheduleDefinition::setTiming(const TimingPtr &timing)
-{
-    d->timing = timing;
-}
-
-TimingPtr ScheduleDefinition::timing() const
-{
-    return d->timing;
-}
-
-void ScheduleDefinition::setMeasurementDefinition(const QVariant &measurementDefinition)
+void Task::setMeasurementDefinition(const QVariant &measurementDefinition)
 {
     d->measurementDefinition = measurementDefinition;
 }
 
-QVariant ScheduleDefinition::measurementDefinition() const
+QVariant Task::measurementDefinition() const
 {
     return d->measurementDefinition;
 }
 
-void ScheduleDefinition::setPrecondition(const Precondition &precondition)
+Task Task::fromVariant(const QVariant &variant)
 {
-    d->precondition = precondition;
+    QVariantMap map = variant.toMap();
+
+    return Task(TaskId(map.value("id").toInt()),
+                map.value("method").toString(),
+                map.value("options"));
 }
 
-Precondition ScheduleDefinition::precondition() const
+QVariant Task::toVariant() const
 {
-    return d->precondition;
-}
+    QVariantMap map;
 
-void ScheduleDefinition::setSpecification(const QVariantMap &specification)
-{
-    d->specification = specification;
-}
+    map.insert("id", d->id.toInt());
+    map.insert("method", d->method);
+    map.insert("options", d->measurementDefinition);
 
-QVariantMap ScheduleDefinition::specification() const
-{
-    return d->specification;
-}
-
-QString ScheduleDefinition::getMethodFromMPlaneLabel(const QString &label)
-{
-    if (label.startsWith("glimpse-ping"))
-    {
-        return "ping";
-    }
-    else if (label.startsWith("glimpse-httpdownload"))
-    {
-        return "httpdownload";
-    }
-    else if (label.startsWith("glimpse-dnslookup"))
-    {
-        return "dnslookup";
-    }
-    else if (label.startsWith("glimpse-traceroute"))
-    {
-        return "traceroute";
-    }
-    else if (label.startsWith("glimpse-reversednslookup"))
-    {
-        return "reversednslookup";
-    }
-
-    return QString();
+    return map;
 }

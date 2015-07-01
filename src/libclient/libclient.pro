@@ -111,7 +111,7 @@ SOURCES +=  \
     report/report.cpp \
     task/taskvalidator.cpp \
     task/taskexecutor.cpp \
-    task/task.cpp \
+    task/scheduledefinition.cpp \
     task/result.cpp \
     network/networkmanager.cpp \
     measurement/measurementfactory.cpp \
@@ -178,7 +178,9 @@ SOURCES +=  \
     network/requests/postrequest.cpp \
     network/requests/getrequest.cpp \
     network/responses/specificationresponse.cpp \
-    network/responses/capabilityresponse.cpp
+    network/responses/capabilityresponse.cpp \
+    task/taskstorage.cpp \
+    task/task.cpp
 
 HEADERS += \
     export.h \
@@ -209,7 +211,7 @@ HEADERS += \
     report/report.h \
     task/taskvalidator.h \
     task/taskexecutor.h \
-    task/task.h \
+    task/scheduledefinition.h \
     task/result.h \
     serializable.h \
     network/networkmanager.h \
@@ -281,7 +283,9 @@ HEADERS += \
     network/requests/postrequest.h \
     network/requests/getrequest.h \
     network/responses/specificationresponse.h \
-    network/responses/capabilityresponse.h
+    network/responses/capabilityresponse.h \
+    task/taskstorage.h \
+    task/task.h
 
 OTHER_FILES += \
     libclient.pri

@@ -176,9 +176,7 @@ private slots:
                     break;
 
                 case LoginData::Login:
-                    m_client->settings()->setUserId(m_loginData.userId);
-                    m_client->settings()->setPassword(m_loginData.password);
-                    m_client->loginController()->login();
+                    m_client->loginController()->login(m_loginData.userId, m_loginData.password);
                     break;
                 default:
                     break;

@@ -6,7 +6,7 @@
 
 #include "timing/timing.h"
 #include "channel.h"
-#include "task/task.h"
+#include "task/scheduledefinition.h"
 #include "task/taskvalidator.h"
 
 

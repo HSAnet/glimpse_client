@@ -1,70 +1,51 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include "../ident.h"
-#include "../timing/timing.h"
-#include "../measurement/measurementdefinition.h"
-#include "../precondition.h"
+#include "ident.h"
+#include "serializable.h"
+#include "measurement/measurementdefinition.h"
 
-#include <QUuid>
 #include <QSharedDataPointer>
 
-class ScheduleDefinition;
-typedef QList<ScheduleDefinition> ScheduleDefinitionList;
+class Task;
+typedef QList<Task> TaskList;
 
-class CLIENT_API ScheduleDefinition : public Serializable
+class CLIENT_API Task : public Serializable
 {
 public:
-    ScheduleDefinition();
-    ScheduleDefinition(const ScheduleDefinition &other);
-    ScheduleDefinition(const ScheduleId &id, const TaskId &taskId, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition, const Precondition &precondition, QVariantMap specification = QVariantMap());
-    ~ScheduleDefinition();
+    Task();
+    Task(const Task &other);
+    Task(const TaskId &id, const QString &method, const QVariant &measurementDefinition);
+    ~Task();
 
-    ScheduleDefinition &operator=(const ScheduleDefinition &rhs);
+    Task &operator=(const Task &task);
 
     bool isNull() const;
 
-    void setId(const ScheduleId &id);
-    ScheduleId id() const;
+    void setId(const TaskId &id);
+    TaskId id() const;
 
-    TaskId taskId() const;
-
-    void setName(const QString &name);
-    QString name() const;
-
-    void setTiming(const TimingPtr &timing);
-    TimingPtr timing() const;
+    void setMethod(const QString &method);
+    QString method() const;
 
     void setMeasurementDefinition(const QVariant &measurementDefinition);
     QVariant measurementDefinition() const;
 
-    void setPrecondition(const Precondition &precondition);
-    Precondition precondition() const;
-
-    void setSpecification(const QVariantMap &specification);
-    QVariantMap specification() const;
-
-    static QString getMethodFromMPlaneLabel(const QString &label);
-
-    // Storage
-    static ScheduleDefinition fromVariant(const QVariant &variant);
-    static ScheduleDefinition fromMPlaneVariant(const QVariant &variant);
-
-
-    // Serializable interface
+    static Task fromVariant(const QVariant &variant);
     QVariant toVariant() const;
 
-    inline bool operator==(const ScheduleDefinition &b) const
+    inline bool operator==(const Task &b) const
     {
         return (this->id() == b.id());
     }
 
 private:
-    QSharedDataPointer<class TaskData> d;
+    class Private;
+    QSharedDataPointer<Private> d;
 };
 
-Q_DECLARE_METATYPE(ScheduleDefinition)
-Q_DECLARE_TYPEINFO(ScheduleDefinition, Q_MOVABLE_TYPE);
-Q_DECLARE_METATYPE(ScheduleDefinitionList)
+Q_DECLARE_METATYPE(Task)
+Q_DECLARE_TYPEINFO(Task, Q_MOVABLE_TYPE);
+Q_DECLARE_METATYPE(TaskList)
 
 #endif // TASK_H

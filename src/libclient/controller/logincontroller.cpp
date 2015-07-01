@@ -197,10 +197,13 @@ void LoginController::registration(const QString &username, const QString &passw
     d->requester.start();
 }
 
-void LoginController::login()
+void LoginController::login(const QString &username, const QString &password)
 {
+    // save username to settings
+    d->settings->setUserId(username);
+
     d->loginRequest.setUserId(d->settings->hashedUserId());
-    d->loginRequest.setPassword(d->settings->password());
+    d->loginRequest.setPassword(password);
 
     d->requester.setRequest(&d->loginRequest);
     d->requester.setResponse(&d->response);
