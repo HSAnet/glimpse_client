@@ -152,9 +152,12 @@ QVariant Report::toVariant() const
     // check if we have results at all
     if (resList.isEmpty())
     {
+        // save token and clear spec
+        QString token = map.value("token").toString();
+        map.clear();
+
         // return an exception instead of the results
-        map.remove("result");
-        map.insert("exception", "");
+        map.insert("exception", token);
         map.insert("message", "One or multiple errors: " + errors.join(','));
     }
     else
