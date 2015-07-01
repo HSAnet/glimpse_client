@@ -70,6 +70,15 @@ public slots:
 
 void MPlaneController::Private::updateTimer()
 {
+    QString newUrl = QString("http://%1").arg(settings->config()->supervisorAddress());
+
+    if (capabilityRequester.url() != newUrl)
+    {
+        LOG_DEBUG(QString("Supervisor url set to %1").arg(newUrl));
+        capabilityRequester.setUrl(newUrl);
+        specificationRequester.setUrl(newUrl);
+    }
+
     TimingPtr timing = TIMING;
 
     if (timing.isNull())
@@ -77,6 +86,9 @@ void MPlaneController::Private::updateTimer()
         timer.stop();
         return;
     }
+
+    // send capabilities after updating the timer
+    q->sendCapabilities();
 
     timer.setTiming(timing);
     timer.start();
@@ -129,14 +141,7 @@ bool MPlaneController::init(NetworkManager *networkManager, Scheduler *scheduler
     d->scheduler = scheduler;
     d->settings = settings;
 
-    QString url = QString("http://%1").arg(settings->config()->supervisorAddress());
-
-    d->capabilityRequester.setUrl(url);
-    d->specificationRequester.setUrl(url);
-
-    // send capabilities
-    sendCapabilities();    
-
+    connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(updateTimer()));
     d->updateTimer();
 
     return true;

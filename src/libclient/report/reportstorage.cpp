@@ -43,7 +43,7 @@ public:
             }
             else
             {
-                LOG_DEBUG("Report storage directory created");
+                LOG_DEBUG("Result storage directory created");
             }
         }
     }
