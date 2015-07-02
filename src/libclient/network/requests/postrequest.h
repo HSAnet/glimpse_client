@@ -15,7 +15,8 @@ public:
 
     QVariant toVariant() const;
 
-    void addData(const QVariantMap &data);
+    void clear();
+    void setData(const QVariant &data);
 
 signals:
 

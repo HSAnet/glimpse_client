@@ -11,6 +11,7 @@ public:
     ResultList results;
     QString appVersion;
     QVariantMap specification;
+    TimingPtr timing;
 };
 
 Report::Report()
@@ -23,7 +24,7 @@ Report::Report(const Report &other)
 {
 }
 
-Report::Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results, const QVariantMap &specification)
+Report::Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results, const QVariantMap &specification, const TimingPtr &timing)
 : d(new ReportData)
 {
     d->taskId = taskId;
@@ -31,6 +32,7 @@ Report::Report(const TaskId &taskId, const QDateTime &dateTime, const QString &a
     d->appVersion = appVersion;
     d->results = results;
     d->specification = specification;
+    d->timing = timing;
 }
 
 Report::~Report()
@@ -117,57 +119,76 @@ QVariantMap Report::specification() const
     return d->specification;
 }
 
+void Report::setTiming(const TimingPtr &timing)
+{
+    d->timing = timing;
+}
+
+TimingPtr Report::timing() const
+{
+    return d->timing;
+}
+
 QVariant Report::toVariant() const
 {    
-    QVariantMap map = d->specification;
+    QVariantMap envelope = d->specification;
     QStringList errors;
 
     // make result from specification
-    map.remove("specification");
-    map.insert("result", "measure");
+    envelope.remove("specification");
+    envelope.remove("registry");
+    envelope.remove("parameters");
+    envelope.remove("results");
+    envelope.remove("link");
+    envelope.insert("envelope", "message");
+
+    QVariantList contents;
 
     if (d->results.count() > 1)
     {
-        map.insert("when", QString("%1 ... %2").arg(d->results.first().startDateTime().toString(Qt::ISODate).replace('T', ' ')).arg(d->results.last().endDateTime().toString(Qt::ISODate).replace('T', ' ')));
+        envelope.insert("when", QString("%1 ... %2").arg(d->results.first().startDateTime().toString(Qt::ISODate).replace('T', ' ')).arg(d->results.last().endDateTime().toString(Qt::ISODate).replace('T', ' ')));
     }
     else
     {
-        map.insert("when", QString("%1").arg(d->results.first().startDateTime().toString(Qt::ISODate).replace('T', ' ')));
+        envelope.insert("when", QString("%1").arg(d->results.first().startDateTime().toString(Qt::ISODate).replace('T', ' ')));
     }
-
-    QVariantList resList;
 
     foreach(const Result &res, d->results)
     {
-        // use result only if error string is not set
-        if (res.errorString() != "")
+        QVariantMap result = d->specification;
+        result.remove("specification");
+        result.remove("token");
+        result.remove("link");
+        result.insert("result", "measure");
+        QString token = QUuid::createUuid().toString();
+        result.insert("token", token.mid(1, token.length()-2).remove('-'));
+        result.insert("when", QString("%1 ... %2").arg(res.startDateTime().toString(Qt::ISODate).replace('T', ' ')).arg(res.endDateTime().toString(Qt::ISODate).replace('T', ' ')));
+        result.insert("resultvalues", res.probeResult());
+
+        if (!res.errorString().isEmpty())
         {
             errors.append(res.errorString());
-            continue;
         }
-
-        resList.append(res.probeResult());
+        contents.append(result);
     }
 
     // check if we have results at all
-    if (resList.isEmpty())
+    if (contents.isEmpty())
     {
-        // save token and clear spec
-        QString token = map.value("token").toString();
-        map.clear();
-
-        // return an exception instead of the results
-        map.insert("exception", token);
-        map.insert("message", "One or multiple errors: " + errors.join(','));
+        // generate exception
+        // TODO this does not happen at the moment, do we need this?
+        QVariantMap exception;
+        exception.insert("exception", envelope.value("token").toString());
+        exception.insert("message", "One or multiple errors: " + errors.join(','));
     }
     else
     {
-        map.insert("resultvalues", resList);
+        envelope.insert("contents", contents);
         if (!errors.isEmpty())
         {
-            map.insert("metadata", "One or multiple executions not possible due to the following error(s): " + errors.join(','));
+            envelope.insert("metadata", "One or multiple executions not possible due to the following error(s): " + errors.join(','));
         }
     }
 
-    return map;
+    return envelope;
 }

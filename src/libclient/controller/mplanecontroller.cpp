@@ -8,7 +8,6 @@
 #include "timing/timer.h"
 #include "settings.h"
 #include "log/logger.h"
-#include "scheduler/scheduler.h"
 #include "timing/periodictiming.h"
 #include "measurement/ping/ping_definition.h"
 #include "measurement/http/httpdownload_definition.h"
@@ -41,7 +40,11 @@ public:
         connect(&specificationRequester, SIGNAL(finished()), this, SLOT(specificationsFinished()));
         connect(&specificationRequester, SIGNAL(started()), q, SIGNAL(started()));
         connect(&specificationRequester, SIGNAL(error()), q, SIGNAL(error()));
-    }
+        //connect(&receiptRequester, SIGNAL(error()), this, SLOT(specificationsError()));
+        //connect(&receiptRequester, SIGNAL(finished()), this, SLOT(specificationsFinished()));
+        connect(&receiptRequester, SIGNAL(started()), q, SIGNAL(started()));
+        connect(&receiptRequester, SIGNAL(error()), q, SIGNAL(error()));
+      }
 
     MPlaneController *q;
 
@@ -52,11 +55,11 @@ public:
 
     WebRequester capabilityRequester;
     WebRequester specificationRequester;
+    WebRequester receiptRequester;
     PostRequest postRequest;
     GetRequest getRequest;
     SpecificationResponse specificationResponse;
     CapabilityResponse capabilityResponse;
-
 
     Timer timer;
 
@@ -77,6 +80,7 @@ void MPlaneController::Private::updateTimer()
         LOG_DEBUG(QString("Supervisor url set to %1").arg(newUrl));
         capabilityRequester.setUrl(newUrl);
         specificationRequester.setUrl(newUrl);
+        receiptRequester.setUrl(newUrl);
     }
 
     TimingPtr timing = TIMING;
@@ -122,7 +126,6 @@ void MPlaneController::Private::specificationsFinished()
     }
 }
 
-
 MPlaneController::MPlaneController(QObject *parent)
 : Controller(parent)
 , d(new Private(this))
@@ -142,6 +145,8 @@ bool MPlaneController::init(NetworkManager *networkManager, Scheduler *scheduler
     d->settings = settings;
 
     connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(updateTimer()));
+    connect(scheduler, SIGNAL(testAdded(ScheduleDefinition, int)), this, SLOT(sendReceipt(ScheduleDefinition)));
+
     d->updateTimer();
 
     return true;
@@ -159,12 +164,23 @@ QString MPlaneController::errorString() const
 
 void MPlaneController::sendCapabilities()
 {
+    d->postRequest.clear();
     d->postRequest.setPath("/register/capability");
-    d->postRequest.addData(PingDefinition::capability());
-    d->postRequest.addData(HTTPDownloadDefinition::capability());
-    d->postRequest.addData(DnslookupDefinition::capability());
-    d->postRequest.addData(TracerouteDefinition::capability());
-    d->postRequest.addData(ReverseDnslookupDefinition::capability());
+
+    QVariantList contents;
+    contents.append(PingDefinition::capability());
+    contents.append(HTTPDownloadDefinition::capability());
+    contents.append(DnslookupDefinition::capability());
+    contents.append(TracerouteDefinition::capability());
+    contents.append(ReverseDnslookupDefinition::capability());
+
+    QVariantMap envelope;
+    envelope.insert("envelope", "message");
+    envelope.insert("version", 0);
+    envelope.insert("contents", contents);
+
+    d->postRequest.setData(envelope);
+
     d->postRequest.setAuthenticationMethod(Request::None);
     d->capabilityRequester.setRequest(&d->postRequest);
     d->capabilityRequester.setResponse(&d->capabilityResponse);
@@ -180,6 +196,22 @@ void MPlaneController::fetchSpecifications()
     d->specificationRequester.setResponse(&d->specificationResponse);
 
     d->specificationRequester.start();
+}
+
+void MPlaneController::sendReceipt(const ScheduleDefinition &def)
+{
+    d->postRequest.clear();
+
+    QVariantMap receipt = def.specification();
+    receipt.remove("specification");
+    receipt.insert("receipt", "measure");
+
+    d->postRequest.setPath("/register/result");
+    d->postRequest.setAuthenticationMethod(Request::None);
+    d->postRequest.setData(receipt);
+    d->receiptRequester.setRequest(&d->postRequest);
+
+    d->receiptRequester.start();
 }
 
 #include "mplanecontroller.moc"

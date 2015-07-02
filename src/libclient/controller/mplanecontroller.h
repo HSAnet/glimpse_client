@@ -2,6 +2,7 @@
 #define MPLANECONTROLLER_H
 
 #include "controller.h"
+#include "scheduler/scheduler.h"
 
 class NetworkManager;
 class Scheduler;
@@ -25,6 +26,7 @@ public:
 public slots:
     void sendCapabilities();
     void fetchSpecifications();
+    void sendReceipt(const ScheduleDefinition &def);
 
 signals:
 

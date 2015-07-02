@@ -103,21 +103,24 @@ TimingPtr TimingFactory::timingFromMPlaneWhen(const QString &when)
     }
 
     QStringList valsplit = when.split("repeat ");
+    QString valstr;
 
     if (valsplit.length() > 1)
     {
-        LOG_ERROR("Repeated when not supported, use a periodic when and modify the parameters to get the same results");
-        return TimingPtr();
+        valstr = valsplit[1];
+    }
+    else
+    {
+        valstr = valsplit[0];
     }
 
     int period = -1;
     int duration = -1;
     QDateTime start;
     QDateTime end;
-    QString valstr;
 
     // split period
-    valsplit = valsplit[0].split(" / ");
+    valsplit = valstr.split(" / ");
     if (valsplit.length() > 1)
     {
         // periodic
@@ -158,7 +161,8 @@ TimingPtr TimingFactory::timingFromMPlaneWhen(const QString &when)
 
     if (valsplit[0] == "now")
     {
-        start = Client::instance()->ntpController()->currentDateTime();
+        // start is now + 1 second because it takes some time to get to the scheduler
+        start = Client::instance()->ntpController()->currentDateTime().addSecs(1);
     }
     else
     {

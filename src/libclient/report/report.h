@@ -3,6 +3,7 @@
 
 #include "../serializable.h"
 #include "../task/result.h"
+#include "timing/timing.h"
 
 class Report;
 typedef QList<Report> ReportList;
@@ -12,7 +13,7 @@ class CLIENT_API Report : public Serializable
 public:
     Report();
     Report(const Report &other);
-    Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results, const QVariantMap &specification = QVariantMap());
+    Report(const TaskId &taskId, const QDateTime &dateTime, const QString &appVersion, const ResultList &results, const QVariantMap &specification = QVariantMap(), const TimingPtr &timing = TimingPtr());
     ~Report();
 
     Report &operator=(const Report &rhs);
@@ -35,6 +36,9 @@ public:
 
     void setSpecification(const QVariantMap &specification);
     QVariantMap specification() const;
+
+    void setTiming(const TimingPtr &timing);
+    TimingPtr timing() const;
 
     // Storage
     static Report fromVariant(const QVariant &variant);

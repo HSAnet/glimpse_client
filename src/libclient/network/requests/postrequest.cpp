@@ -4,7 +4,7 @@ class PostRequest::Private
 {
 public:
     //QVariantMap data;
-    QVariantList data;
+    QVariant data;
 };
 
 PostRequest::PostRequest(QObject *parent)
@@ -21,18 +21,17 @@ PostRequest::~PostRequest()
 
 QVariant PostRequest::toVariant() const
 {
-    QVariantMap envelope;
-
-    envelope.insert("envelope", "message");
-    envelope.insert("version", 0);
-
-    envelope.insert("contents", d->data);
-    return envelope;
+    return d->data;
 }
 
-void PostRequest::addData(const QVariantMap &data)
+void PostRequest::clear()
 {
-    d->data.append(data);
+    d->data.clear();
+}
+
+void PostRequest::setData(const QVariant &data)
+{
+    d->data = data;
     /*
     QMapIterator<QString, QVariant> i(data);
     while (i.hasNext())

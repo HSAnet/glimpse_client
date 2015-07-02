@@ -218,13 +218,13 @@ void ReportController::sendReports()
 
     foreach (const Report &report, reports)
     {
-        d->post.setReport(report);
-        d->requester.start();
-        d->scheduler->removeReport(report);
+        if (!report.timing()->reset())
+        {
+            d->post.setReport(report);
+            d->requester.start();
+            d->scheduler->removeReport(report);
+        }
     }
-
-    LOG_DEBUG(QString("Sending %1 reports").arg(reports.size()));
-
 }
 
 #include "reportcontroller.moc"

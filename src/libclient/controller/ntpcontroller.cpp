@@ -178,7 +178,7 @@ QDateTime NtpController::networkTime() const
 
 QDateTime NtpController::currentDateTime() const
 {
-    return QDateTime::currentDateTime().addSecs(this->offset());
+    return QDateTime::currentDateTimeUtc().addSecs(this->offset());
 }
 
 quint64 NtpController::offset() const

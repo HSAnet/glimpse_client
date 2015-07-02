@@ -5,6 +5,7 @@
 #include "controller/logincontroller.h"
 #include "controller/taskcontroller.h"
 #include "controller/configcontroller.h"
+#include "controller/mplanecontroller.h"
 #include "types.h"
 
 #include "webrequester.h"
@@ -411,24 +412,20 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (parser.isSet(supervisorOption))
-    {
-        client->settings()->config()->setSupervisorAdress(parser.value(supervisorOption));
-        emit client->settings()->config()->responseChanged();
-    }
-
     if (!client->init())
     {
         LOG_ERROR("Client initialization failed")
         return 1;
     }
 
-    // set the supervisor again after the client is initialized. this is not perfect but the easiest solution for now
+    // set the supervisor
     if (parser.isSet(supervisorOption))
     {
         client->settings()->config()->setSupervisorAdress(parser.value(supervisorOption));
         emit client->settings()->config()->responseChanged();
     }
+
+    client->mPlaneController()->init(client->networkManager(), client->scheduler(), client->settings());
 
     /*
     new LoginWatcher(client->loginController());
