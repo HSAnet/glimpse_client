@@ -1,6 +1,7 @@
 #include <QtTest>
 
 #include <timing/onofftiming.h>
+#include <controller/ntpcontroller.h>
 
 class TestOnOffTiming : public QObject
 {
@@ -9,7 +10,10 @@ class TestOnOffTiming : public QObject
 private slots:
     void nextRuns()
     {
-        QDateTime start = QDateTime::currentDateTime();
+        NtpController ntp;
+        ntp.init();
+
+        QDateTime start = ntp.currentDateTime();
         OnOffTiming timing(start);
 
         QCOMPARE(timing.type(), QLatin1String("onoff"));
