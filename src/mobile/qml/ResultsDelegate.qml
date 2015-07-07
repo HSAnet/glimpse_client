@@ -7,7 +7,7 @@ import "controls"
 Rectangle {
     id: root
     width: ListView.view.width
-    height: units.gu(50)
+    height: units.gu(90)
     //anchors.top: placeholder.bottom
 
     property alias headline: headlineitem.text
@@ -25,25 +25,43 @@ Rectangle {
     property variant previousSection: ListView.previousSection
 
     function showResult(result) {
-        foo.clear();
+        resultsModel.clear();
+
         for (var i = 0; i < result["results"].length; i++) {
-            switch (result["task_id"]) {
-            case 1:
-            case 4:
-            case 5:
-                foo.append({"result": addPing(result["results"][i])});;
+            switch (String(name).toLowerCase()) {
+            case "ping":
+                resultsModel.append({"result": addPing(result["results"][i])});;
                 break;
-            case 10:
-                foo.append({"result": addTraceroute(result["results"][i])});
+            case "traceroute":
+                resultsModel.append({"result": addTraceroute(result["results"][i])});
                 break;
-            case 15:
-                foo.append({"result": addHttpDownload(result["results"][i])});
+            case "httpdownload":
+                resultsModel.append({"result": addHttpDownload(result["results"][i])});
+                break;
+            case "packettrains":
+                resultsModel.append({"result": addPackettrains(result["results"][i])});
+                break;
+            case "btc_ma":
+                resultsModel.append({"result": addBtc(result["results"][i])});
+                break;
+            case "dnslookup":
+                resultsModel.append({"result": addDnsLookup(result["results"][i])});
+                break;
+            case "reversednslookup":
+                resultsModel.append({"result": addReverseDnsLookup(result["results"][i])});
+                break;
+            case "upnp":
+                resultsModel.append({"result": addUpnp(result["results"][i])});
+                break;
+            case "wifilookup":
+                resultsModel.append({"result": addWifiLookup(result["results"][i])});
+                break;
             }
         }
 
         if (expanded) {
             expanded = false;
-            height = units.gu(50);
+            height = units.gu(90);
         } else {
             expanded = true;
             height += result["results"].length * 14;
@@ -73,6 +91,51 @@ Rectangle {
         out += result["probe_result"]["actual_num_threads"] + " threads";
         return out
     }
+
+    function addPackettrains(result) {
+        var out;
+        out = result["end_time"].toLocaleString(Qt.locale(), "yyyy-MM-dd HH:mm:ss") + "\t";
+        out += (result["probe_result"]["sending_speed"] / 1024).toFixed(2) + " kB/s\t";
+        out += (result["probe_result"]["receiving_speed"] / 1024).toFixed(2) + " kB/s";
+        return out
+    }
+
+    function addBtc(result) {
+        var out;
+        out = result["end_time"].toLocaleString(Qt.locale(), "yyyy-MM-dd HH:mm:ss") + "\t";
+        out += (result["probe_result"]["kBs_avg"]).toFixed(2) + " kB/s\t";
+        out += (result["probe_result"]["kBs_max"]).toFixed(2) + " kB/s max";
+        return out
+    }
+
+    function addDnsLookup(result) {
+        var out;
+        out = result["end_time"].toLocaleString(Qt.locale(), "yyyy-MM-dd HH:mm:ss") + "\t";
+        out += result["probe_result"]["name"] + "\t";
+        out += result["probe_result"]["ttl"] + "ms";
+        return out
+    }
+
+    function addReverseDnsLookup(result) {
+        var out;
+        out = result["end_time"].toLocaleString(Qt.locale(), "yyyy-MM-dd HH:mm:ss") + "\t";
+        out += result["probe_result"]["address"];
+        return out
+    }
+
+    function addUpnp(result) {
+        var out;
+        out = result["end_time"].toLocaleString(Qt.locale(), "yyyy-MM-dd HH:mm:ss") + "\t";
+        out += result["probe_result"]["data"];
+        return out
+    }
+
+    function addWifiLookup(result) {
+        var out;
+        out = result["end_time"].toLocaleString(Qt.locale(), "yyyy-MM-dd HH:mm:ss") + "\t";
+        return out
+    }
+
     Rectangle {
         id: innerRectangle
 
@@ -112,7 +175,7 @@ Rectangle {
                 left: root.showImage ? info.right : parent.left
                 right: root.showArrow ? arrow.left : parent.right
                 leftMargin: root.showImage ? units.gu(50) : 0
-                topMargin: units.gu(25)
+                topMargin: units.gu(50)
             }
             //            elide: Text.ElideMiddle
         }
@@ -131,15 +194,16 @@ Rectangle {
         }
 
         ListModel {
-            id: foo
+            id: resultsModel
         }
 
         ListView {
-            id: bar
-            model: foo
+            id: results
+            model: resultsModel
             anchors {
                 top: headlineitem.bottom
                 bottom: parent.bottom
+                topMargin: units.gu(10)
             }
 
             delegate: Text {
@@ -152,7 +216,7 @@ Rectangle {
             height: 1
             color: "#e2e2e2"
             anchors {
-                top: bar.top
+                top: results.top
                 left: parent.left
                 right: parent.right
                 bottomMargin: units.gu(20)
