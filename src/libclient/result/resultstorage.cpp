@@ -21,8 +21,7 @@ class ResultStorage::Private : public QObject
 public:
     Private()
     : loading(false)
-    // TODO: change to resultDirectory
-    , dir(StoragePaths().localCopyDirectory())
+    , dir(StoragePaths().resultDirectory())
     {
         if (!dir.exists())
         {

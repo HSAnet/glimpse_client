@@ -1,6 +1,7 @@
 #include <QtTest>
 
 #include <timing/periodictiming.h>
+#include <controller/ntpcontroller.h>
 
 class TestPeriodicTiming : public QObject
 {
@@ -16,7 +17,10 @@ private slots:
 
     void nextRuns()
     {
-        QDateTime now = QDateTime::currentDateTime();
+        NtpController ntp;
+        ntp.init();
+
+        QDateTime now = ntp.currentDateTime();
 
         // milliseconds, minutes and hours with infinite timing
         PeriodicTiming tenMs(10, QDateTime(), QDateTime(), 0);

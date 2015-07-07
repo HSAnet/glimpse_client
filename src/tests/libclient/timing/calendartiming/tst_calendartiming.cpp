@@ -2,6 +2,8 @@
 
 #include <timing/calendartiming.h>
 
+#include <controller/ntpcontroller.h>
+
 class TestCalendarTiming : public QObject
 {
     Q_OBJECT
@@ -9,12 +11,17 @@ class TestCalendarTiming : public QObject
 private slots:
     void nextRuns()
     {
-        QTime time = QTime::currentTime();
+
+        NtpController ntp;
+        ntp.init();
+
+        QDateTime now = ntp.currentDateTime();
+
+        QTime time = now.time();
         time = QTime(time.hour(), time.minute(), time.second()); // to remove milliseconds
-        QDateTime now = QDateTime::currentDateTime();
         now.setTime(time);
 
-        QDateTime start = QDateTime::currentDateTime();
+        QDateTime start = ntp.currentDateTime();
         QDateTime end;
         QList<int> months = CalendarTiming::AllMonths;
         QList<int> daysOfWeek =  CalendarTiming::AllDaysOfWeek;
@@ -69,12 +76,12 @@ private slots:
         //test if timing at 6am until 2am is wrong
         CalendarTiming sixTiming(start.addDays(-1), end,  months, daysOfWeek, daysOfMonth, QList<int>()<<2<<6, QList<int>()<<0, QList<int>()<<0);
         qDebug("nextRun today at 6");
-        QCOMPARE(sixTiming.nextRun(QDateTime(now.date(), QTime(5,0,0))), QDateTime(now.date(), QTime(6,0,0)));
+        QCOMPARE(sixTiming.nextRun(QDateTime(now.date(), QTime(5,0,0))), QDateTime(now.date(), QTime(6,0,0), Qt::UTC));
 
         //test if timing at 2am until 6am is wrong
         CalendarTiming twoTiming(start.addDays(-1), end,  months, daysOfWeek, daysOfMonth, QList<int>()<<2<<6, QList<int>()<<0, QList<int>()<<0);
         qDebug("nextRun today at 2");
-        QCOMPARE(twoTiming.nextRun(QDateTime(now.date(), QTime(1,0,0))), QDateTime(now.date(), QTime(2,0,0)));
+        QCOMPARE(twoTiming.nextRun(QDateTime(now.date(), QTime(1,0,0))), QDateTime(now.date(), QTime(2,0,0), Qt::UTC));
 
         // start next month because day already passed this month
         CalendarTiming nextMonthTiming(QDateTime(), end, months, daysOfWeek, QList<int>()<<1, hours, minutes, seconds);
@@ -97,7 +104,7 @@ private slots:
         // start next year because day already passed this year
         CalendarTiming yearTiming(start, end,  QList<int>()<<1, daysOfWeek, QList<int>()<<1, hours, minutes, seconds);
         qDebug("nextRun on January 1st");
-        QCOMPARE(yearTiming.nextRun(QDateTime(QDate(now.date().year(), now.date().month(), 2))), QDateTime(QDate(now.date().year()+1, 1, 1), QTime(0,0,0)));
+        QCOMPARE(yearTiming.nextRun(QDateTime(QDate(now.date().year(), now.date().month(), 2))), QDateTime(QDate(now.date().year()+1, 1, 1), QTime(0,0,0), Qt::UTC));
     }
 };
 

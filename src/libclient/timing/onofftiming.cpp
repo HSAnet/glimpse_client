@@ -32,7 +32,7 @@ bool OnOffTiming::reset()
 QDateTime OnOffTiming::nextRun(const QDateTime &tzero) const
 {
     Q_UNUSED(tzero)
-    return d->dateTime.addSecs(Client::instance()->ntpController()->offset());
+    return d->dateTime;
 }
 
 bool OnOffTiming::isValid() const
