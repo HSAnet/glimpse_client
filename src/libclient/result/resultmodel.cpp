@@ -4,10 +4,13 @@
 #include "task/scheduledefinition.h"
 #include "scheduler/scheduler.h"
 #include "client.h"
+#include "log/logger.h"
 
 #include <QPointer>
 #include <QUuid>
 #include <QHash>
+
+LOGGER("ResultModel");
 
 class ResultModel::Private : public QObject
 {
@@ -46,12 +49,23 @@ void ResultModel::Private::resultAdded(const QVariantMap &result)
 void ResultModel::Private::resultModified(const QVariantMap &result)
 {
     int pos = identToResult.value(TaskId(result.value("task_id").toInt()));
-    Q_ASSERT(pos != -1);
+
+    if (pos == -1)
+    {
+        LOG_ERROR("invalid ident");
+        return;
+    }
 
     results = resultScheduler->results();
 
     QModelIndex index = q->indexFromTaskId(TaskId(result.value("task_id").toInt()));
-    Q_ASSERT(index.isValid());
+
+    if (!index.isValid())
+    {
+        LOG_ERROR("invalid index");
+        return;
+    }
+
     emit q->dataChanged(index, index);
 }
 
