@@ -6,7 +6,6 @@
 #include "scheduler/scheduler.h"
 #include "scheduler/schedulermodel.h"
 #include "task/taskexecutor.h"
-#include "report/reportmodel.h"
 #include "report/reportscheduler.h"
 #include "result/resultmodel.h"
 #include "result/resultscheduler.h"
@@ -86,7 +85,6 @@ void QmlModule::registerTypes()
     qmlRegisterUncreatableType<ReportController>(MODULE_URI, 1, 0, "ReportController", "uncreatable type");
     qmlRegisterUncreatableType<ReportScheduler>(MODULE_URI, 1, 0, "ReportScheduler", "uncreatable type");
     qmlRegisterUncreatableType<ResultScheduler>(MODULE_URI, 1, 0, "ResultScheduler", "uncreatable type");
-    qmlRegisterType<ReportModel>(MODULE_URI, 1, 0, "ReportModel");
     qmlRegisterType<ResultModel>(MODULE_URI, 1, 0, "ResultModel");
 
     // Requests
