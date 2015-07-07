@@ -15,6 +15,7 @@
 #include "log/logger.h"
 #include "types.h"
 #include "trafficbudgetmanager.h"
+#include "result/resultstorage.h"
 
 #include <QCoreApplication>
 #include <QNetworkAccessManager>
@@ -59,6 +60,7 @@ public:
     , schedulerStorage(&scheduler)
     , taskStorage(&scheduler)
     , reportStorage(&reportScheduler)
+    , resultStorage(&resultScheduler, &reportScheduler)
     {
         executor.setNetworkManager(&networkManager);
         scheduler.setExecutor(&executor);
@@ -81,6 +83,9 @@ public:
 
     ReportScheduler reportScheduler;
     ReportStorage reportStorage;
+
+    ResultScheduler resultScheduler;
+    ResultStorage resultStorage;
 
     Settings settings;
     NetworkManager networkManager;
@@ -310,8 +315,7 @@ Client::Client(QObject *parent)
 Client::~Client()
 {
     d->schedulerStorage.storeData();
-    // don't write to local storage to avoid duplicates
-    d->reportStorage.storeData(false);
+    d->reportStorage.storeData();
     delete d;
 }
 
@@ -339,6 +343,9 @@ bool Client::init()
     d->schedulerStorage.loadData();
     d->reportStorage.loadData();
     d->taskStorage.loadData();
+    d->resultStorage.loadData();
+    // init() must be called after reportStorage.loadData()
+    d->resultStorage.init();
 
     // Initialize controllers
     d->networkManager.init(&d->scheduler, &d->settings);

@@ -112,7 +112,8 @@ SOURCES +=  \
     task/taskvalidator.cpp \
     task/taskexecutor.cpp \
     task/scheduledefinition.cpp \
-    task/result.cpp \
+    task/taskstorage.cpp \
+    task/task.cpp \
     network/networkmanager.cpp \
     measurement/measurementfactory.cpp \
     measurement/measurement.cpp \
@@ -174,8 +175,9 @@ SOURCES +=  \
     storage/storage.cpp \
     timing/timer.cpp \
     controller/ntpcontroller.cpp \
-    task/taskstorage.cpp \
-    task/task.cpp
+    result/result.cpp \
+    result/resultstorage.cpp \
+    result/resultscheduler.cpp
 
 HEADERS += \
     export.h \
@@ -207,7 +209,8 @@ HEADERS += \
     task/taskvalidator.h \
     task/taskexecutor.h \
     task/scheduledefinition.h \
-    task/result.h \
+    task/taskstorage.h \
+    task/task.h \
     serializable.h \
     network/networkmanager.h \
     measurement/measurementfactory.h \
@@ -274,8 +277,9 @@ HEADERS += \
     storage/storage.h \
     timing/timer.h \
     controller/ntpcontroller.h \
-    task/taskstorage.h \
-    task/task.h
+    result/result.h \
+    result/resultstorage.h \
+    result/resultscheduler.h
 
 OTHER_FILES += \
     libclient.pri

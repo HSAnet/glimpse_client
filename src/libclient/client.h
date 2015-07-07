@@ -21,6 +21,7 @@ class TaskExecutor;
 class Settings;
 class QNetworkAccessManager;
 class TrafficBudgetManager;
+class ResultScheduler;
 
 ////////////////////////////////////////////////////////////
 

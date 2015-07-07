@@ -16,6 +16,10 @@ public class StorageHelper {
 		return getDataDirectory() + "/reports";
 	}
 
+	public String getResultDirectory() {
+		return getDataDirectory() + "/results";
+	}
+
 	public String getCacheDirectory() {
                 return MobileActivity.instance.getCacheDir().getAbsolutePath();
 	}
