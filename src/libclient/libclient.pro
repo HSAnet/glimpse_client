@@ -112,7 +112,8 @@ SOURCES +=  \
     task/taskvalidator.cpp \
     task/taskexecutor.cpp \
     task/scheduledefinition.cpp \
-    task/result.cpp \
+    task/taskstorage.cpp \
+    task/task.cpp \
     network/networkmanager.cpp \
     measurement/measurementfactory.cpp \
     measurement/measurement.cpp \
@@ -126,7 +127,6 @@ SOURCES +=  \
     measurement/btc/btc_plugin.cpp \
     measurement/upnp/upnp.cpp \
     measurement/upnp/upnp_plugin.cpp \
-    report/reportmodel.cpp \
     controller/reportcontroller.cpp \
     types.cpp \
     controller/controller.cpp \
@@ -179,9 +179,10 @@ SOURCES +=  \
     network/requests/getrequest.cpp \
     network/responses/specificationresponse.cpp \
     network/responses/capabilityresponse.cpp \
-    task/taskstorage.cpp \
-    task/task.cpp
-
+    result/result.cpp \
+    result/resultstorage.cpp \
+    result/resultscheduler.cpp \
+    result/resultmodel.cpp
 HEADERS += \
     export.h \
     client.h \
@@ -212,7 +213,8 @@ HEADERS += \
     task/taskvalidator.h \
     task/taskexecutor.h \
     task/scheduledefinition.h \
-    task/result.h \
+    task/taskstorage.h \
+    task/task.h \
     serializable.h \
     network/networkmanager.h \
     measurement/measurementfactory.h \
@@ -229,7 +231,6 @@ HEADERS += \
     measurement/btc/btc_plugin.h \
     measurement/upnp/upnp.h \
     measurement/upnp/upnp_plugin.h \
-    report/reportmodel.h \
     storage/storagepaths.h \
     controller/reportcontroller.h \
     deviceinfo.h \
@@ -284,8 +285,10 @@ HEADERS += \
     network/requests/getrequest.h \
     network/responses/specificationresponse.h \
     network/responses/capabilityresponse.h \
-    task/taskstorage.h \
-    task/task.h
+    result/result.h \
+    result/resultstorage.h \
+    result/resultscheduler.h \
+    result/resultmodel.h
 
 OTHER_FILES += \
     libclient.pri

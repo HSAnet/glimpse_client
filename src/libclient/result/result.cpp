@@ -15,6 +15,7 @@ public:
     QVariantMap preInfo;
     QVariantMap postInfo;
     QString errorString;
+    qint64 duration;
 };
 
 Result::Result()
@@ -41,13 +42,15 @@ Result::Result(const QVariantList &probeResult, const QUuid &measureUuid)
     d->measureUuid = measureUuid;
 }
 
-Result::Result(const QDateTime &startDateTime, const QDateTime &endDateTime,
+
+Result::Result(const QDateTime &startDateTime, const QDateTime &endDateTime, qint64 duration,
                const QVariantList &probeResult, const QUuid &measureUuid,
                const QVariantMap &preInfo, const QVariantMap &postInfo, const QString &errorString)
 : d(new ResultData)
 {
     d->startDateTime = startDateTime;
     d->endDateTime = endDateTime;
+    d->duration = duration;
     d->probeResult = probeResult;
     d->measureUuid = measureUuid;
     d->preInfo = preInfo;
@@ -80,6 +83,7 @@ Result Result::fromVariant(const QVariant &variant)
 
     return Result(map.value("start_time").toDateTime(),
                   map.value("end_time").toDateTime(),
+                  map.value("duration").toInt(),
                   map.value("probe_result").toList(),
                   map.value("measure_uuid").toUuid(),
                   map.value("pre_info").toMap(),

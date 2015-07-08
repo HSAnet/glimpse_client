@@ -2,8 +2,8 @@
 #define REPORT_H
 
 #include "../serializable.h"
-#include "../task/result.h"
 #include "timing/timing.h"
+#include "../result/result.h"
 
 class Report;
 typedef QList<Report> ReportList;

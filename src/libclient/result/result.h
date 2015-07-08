@@ -23,6 +23,7 @@ public:
            const QUuid &measureUuid = QUuid());
     Result(const QDateTime &startDateTime,
            const QDateTime &endDateTime,
+           qint64 duration,
            const QVariantList &probeResult,
            const QUuid &measureUuid,
            const QVariantMap &preInfo,
