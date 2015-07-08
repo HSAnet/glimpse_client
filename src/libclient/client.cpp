@@ -577,6 +577,11 @@ ReportScheduler *Client::reportScheduler() const
     return &d->reportScheduler;
 }
 
+ResultScheduler *Client::resultScheduler() const
+{
+    return &d->resultScheduler;
+}
+
 NetworkManager *Client::networkManager() const
 {
     return &d->networkManager;

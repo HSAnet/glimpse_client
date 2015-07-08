@@ -127,7 +127,6 @@ SOURCES +=  \
     measurement/btc/btc_plugin.cpp \
     measurement/upnp/upnp.cpp \
     measurement/upnp/upnp_plugin.cpp \
-    report/reportmodel.cpp \
     controller/reportcontroller.cpp \
     types.cpp \
     controller/controller.cpp \
@@ -177,7 +176,8 @@ SOURCES +=  \
     controller/ntpcontroller.cpp \
     result/result.cpp \
     result/resultstorage.cpp \
-    result/resultscheduler.cpp
+    result/resultscheduler.cpp \
+    result/resultmodel.cpp
 
 HEADERS += \
     export.h \
@@ -227,7 +227,6 @@ HEADERS += \
     measurement/btc/btc_plugin.h \
     measurement/upnp/upnp.h \
     measurement/upnp/upnp_plugin.h \
-    report/reportmodel.h \
     storage/storagepaths.h \
     controller/reportcontroller.h \
     deviceinfo.h \
@@ -279,7 +278,8 @@ HEADERS += \
     controller/ntpcontroller.h \
     result/result.h \
     result/resultstorage.h \
-    result/resultscheduler.h
+    result/resultscheduler.h \
+    result/resultmodel.h
 
 OTHER_FILES += \
     libclient.pri
