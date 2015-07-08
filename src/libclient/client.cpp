@@ -60,8 +60,8 @@ public:
     , networkAccessManager(new QNetworkAccessManager(q))
     , schedulerStorage(&scheduler)
     , taskStorage(&scheduler)
-    , reportStorage(&reportScheduler)
-    , resultStorage(&resultScheduler, &reportScheduler)
+    //, reportStorage(&reportScheduler)
+    //, resultStorage(&resultScheduler, &reportScheduler)
     {
         executor.setNetworkManager(&networkManager);
         scheduler.setExecutor(&executor);
@@ -83,10 +83,10 @@ public:
     TaskStorage taskStorage;
 
     ReportScheduler reportScheduler;
-    ReportStorage reportStorage;
+    //ReportStorage reportStorage;
 
     ResultScheduler resultScheduler;
-    ResultStorage resultStorage;
+    //ResultStorage resultStorage;
 
     Settings settings;
     NetworkManager networkManager;
@@ -316,8 +316,8 @@ Client::Client(QObject *parent)
 
 Client::~Client()
 {
-    d->schedulerStorage.storeData();
-    d->reportStorage.storeData();
+    //d->schedulerStorage.storeData();
+    //d->reportStorage.storeData();
     delete d;
 }
 
@@ -345,9 +345,9 @@ bool Client::init()
     //d->schedulerStorage.loadData();
     //d->reportStorage.loadData();
     d->taskStorage.loadData();
-    d->resultStorage.loadData();
+    //d->resultStorage.loadData();
     // init() must be called after reportStorage.loadData()
-    d->resultStorage.init();
+    //d->resultStorage.init();
 
     // Initialize controllers
     d->networkManager.init(&d->scheduler, &d->settings);

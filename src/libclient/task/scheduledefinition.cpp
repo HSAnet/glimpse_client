@@ -93,8 +93,8 @@ ScheduleDefinition ScheduleDefinition::fromMPlaneVariant(const QVariant &variant
 {
     QVariantMap map = variant.toMap();
 
-    return ScheduleDefinition(ScheduleId(map.value("token").toInt()),
-                              TaskId(map.value("token").toInt()),
+    return ScheduleDefinition(ScheduleId(qHash(map.value("token").toString())),
+                              TaskId(qHash(map.value("token").toString())),
                               ScheduleDefinition::getMethodFromMPlaneLabel(map.value("label").toString()),
                               TimingFactory::timingFromMPlaneWhen(map.value("when").toString()),
                               map.value("parameters"),

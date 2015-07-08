@@ -22,7 +22,7 @@ QVariantMap DnslookupDefinition::capability()
 {
     QVariantMap parameters;
     parameters.insert("destination.url", "*");
-    //parameters.insert("glimpse.dns.server", "*"); // TODO add to registry
+    parameters.insert("glimpse.dns.server", "*");
 
     QVariantList results;
     results.append("glimpse.dns.record-name");
