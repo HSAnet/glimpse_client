@@ -20,7 +20,7 @@
 
 LOGGER(MplaneController);
 
-static TimingPtr TIMING(new PeriodicTiming(30000));
+static TimingPtr TIMING(new PeriodicTiming(9000));
 
 class MPlaneController::Private : public QObject
 {
