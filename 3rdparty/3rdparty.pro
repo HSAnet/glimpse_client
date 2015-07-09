@@ -1,7 +1,6 @@
 TEMPLATE = subdirs
 
-SUBDIRS += miniupnp.pro \
-    snmp
+SUBDIRS += miniupnp.pro
 
 !ios:SUBDIRS += breakpad.pro
 
@@ -10,4 +9,5 @@ SUBDIRS += miniupnp.pro \
 OTHER_FILES += miniupnpc.pri \
                breakpad.pri \
                winpcap.pri \
-               qtsystems.pri
+               qtsystems.pri \
+               snmp.pri
