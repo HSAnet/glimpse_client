@@ -4,7 +4,7 @@
 
 QStringList SnmpPlugin::measurements() const
 {
-    return QStringList() << "SNMP device scan";
+    return QStringList() << "snmp";
 }
 
 MeasurementPtr SnmpPlugin::createMeasurement(const QString &name)

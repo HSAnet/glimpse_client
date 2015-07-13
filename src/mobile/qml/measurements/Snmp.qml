@@ -9,242 +9,205 @@ Item {
     property string subtitle: "Snmp tests"
 
 
+    Column {
+        width: parent.width - 40
+        anchors.fill: parent
+        anchors.margins: 20
+        spacing: 10
+
+        LabeledComboBox {
+            id: measurementType
+            label: qsTr("Mode")
+            model: ["Scan subnet", "Scan IP range", "Request a device"]
+        }
+
+        // -----------------------
+        // Dialog to send a request
         Column {
-            width: parent.width - 40
-            anchors.fill: parent
-            anchors.margins: 20
-            spacing: 10
+            id: requestDialog
+            width: parent.width
+            spacing: 5
 
-            ComboBox {
-                id: measurementType
-
-                width: 200
-                model: ["Scan subnet", "Scan IP range", "Request OID"]
+            LabeledComboBox {
+                id: snmpVersionComboBox
+                label: qsTr("Version")
+                model: ["SNMPv1", "SNMPv2c", "SNMPv3"]
             }
-
-            // Dialog to send a request
-            Column {
-                id: requestDialog
-
-                Label {
-                    text: qsTr("Choose version")
-                }
-                ComboBox {
-                    id: snmpVersionComboBox
-                    width: 200
-                    model: ["SNMPv1", "SNMPv2c", "SNMPv3"]
-                }
-
-                Label {
-                    text: qsTr("Host address")
-                }
-                TextField {
-                    id: host
-                    text: "host"
-                }
-
-                Label {
-                    text: qsTr("Object Identifier")
-                }
-                TextField {
-                    id: objectId
-                    text: "oid"
-                }
-
-                // Community name dialog for request
-                Column {
-                    width: parent.width
-                    visible: snmpVersionComboBox.currentIndex !== 2
-                    Label {
-                        text: qsTr("Community name")
-                    }
-                    TextField {
-                        id: singleCommuniyName
-                        text: "community"
-                    }
-                }
-
-                // Security dialog for SNMPv3
-                Column {
-                    width: parent.width
-                    visible: snmpVersionComboBox.currentIndex === 2
-                    Label {
-                        text: qsTr("Authentication")
-                    }
-                    ComboBox {
-                        id: authAlgoCombo
-                        model: ["none", "MD5"]
-                    }
-                    Label {
-                        text: qsTr("Privacy")
-                    }
-                    ComboBox {
-                        id: privacyCombo
-                        model: ["none", "AES", "DES"]
-                    }
-                    Label {
-                        text: qsTr("Username")
-                    }
-                    TextField {
-                        id: usernameField
-                    }
-                    Label {
-                        text: qsTr("Password")
-                    }
-                    TextField {
-                        id: passwordField
-                    }
-                    Label {
-                        text: qsTr("Context OID")
-                    }
-                    TextField {
-                        id: contextOidField
-                    }
-                }
+            LabeledTextField {
+                id: host
+                label: qsTr("Host")
             }
-
-            // Editfields to insert IP range
-            Column {
-                id: ipRangeDialog
-
-                Label {
-                    text: qsTr("Start IP of range")
-                }
-                TextField {
-                    width: 200
-                }
-                Label {
-                    text: qsTr("Last IP of range")
-                }
-                TextField {
-                    width: 200
-                }
-
-                Item {
-                    width: 10
-                    height: 1
-                }
+            LabeledTextField {
+                id: objectId
+                label: qsTr("Object Id")
             }
-
-            // Slider to set send interval.
-            Column {
-                id: sendIntervalDialog
-
-                Label {
-                    text: qsTr("Send interval ms")
-                }
-                Row {
-                    Slider {
-                        id: intervalSlider
-                        stepSize: 1
-                        minimumValue: 2
-                        maximumValue: 10
-                        value: 2
-                    }
-                    Item {
-                        width: 20
-                        height: 5
-                    }
-                    Label {
-                        text: qsTr("%1 ms").arg(intervalSlider.value)
-                    }
-                }
+            // Community name dialog for request
+            LabeledTextField {
+                id: singleCommunityName
+                label: qsTr("Community")
+                visible: snmpVersionComboBox.currentIndex !== 2
             }
-
-            // Set wait time after sending to receive answers.
+            // Security dialog for SNMPv3
             Column {
-                id: waitTimeDialog
-
-                Label {
-                    text: qsTr("Wait for answers after scan")
-                }
-                Row {
-                    Slider {
-                        id: waitTimeSlider
-                        stepSize: 1
-                        minimumValue: 1
-                        maximumValue: 10
-                        value: 2
-                    }
-                    Item {
-                        width: 20
-                        height: 5
-                    }
-                    Label {
-                        text: qsTr("%1 seconds").arg(waitTimeSlider.value)
-                    }
-                }
-            }
-
-            // Controls for a list of community names to scan.
-            Column {
-                id: communityList
                 width: parent.width
+                spacing: 5
+                visible: snmpVersionComboBox.currentIndex === 2
 
-                Label {
-                    text: qsTr("Community name")
+                LabeledComboBox {
+                    id: authAlgoCombo
+                    label: qsTr("Authentication")
+                    controlScale: 0.3
+                    model: ["none", "MD5"]
                 }
-                Row {
-                    TextField {
-                        id: communityName
-                        width: 200
-                    }
-                    Item {
-                        width: 20
-                        height: 5
-                    }
-                    Button {
-                        text: qsTr("add")
-                        onClicked: {
-                            if (communityName.text !== "") {
-                                model.append({ name: communityName.text })
-                            }
-                        }
-                    }
+                LabeledComboBox {
+                    id: privacyCombo
+                    label: qsTr("Privacy")
+                    controlScale: 0.3
+                    model: ["none", "AES", "DES"]
                 }
-                Item {
-                    width: 5
-                    height: 10
+                LabeledTextField {
+                    id: usernameField
+                    label: qsTr("Username")
                 }
-
-                // ListView for community names
-                Rectangle {
-                    width: parent.width
-                    height: 100
-                    color: "white"
-                    border.color: "black"
-
-                    ListView {
-                        id: list
-                        anchors.fill: parent
-                        anchors.margins: 10
-                        model: model
-                        delegate: delegate
-                        highlight: itemHighlight
-                    }
+                LabeledTextField {
+                    id: passwordField
+                    label: qsTr("Password")
                 }
-
-                Button {
-                    text: qsTr("remove")
-                    onClicked: {
-                        model.remove(list.currentIndex)
-                    }
+                LabeledTextField {
+                    id: contextOidField
+                    label: qsTr("Context Oid")
                 }
-            }
-
-            Item {
-                width: 5
-                height: 10
-            }
-
-            // Button to start measurement.
-            BigButton {
-                id: startButton
-                text: qsTr("Start")
-                anchors.horizontalCenter: parent.horizontalCenter
             }
         }
 
+        // -----------------------------
+        // Editfield to insert IP range
+        LabeledTextField {
+            id: ipRangeDialog
+            label: qsTr("IP range")
+            text: qsTr("startIP-endIP")
+        }
+
+        // ---------------------------------------------------------------------
+        // Slider to set send interval, wait time for answers and retries per IP.
+        Column {
+            id: timingAndRetryDialog
+            spacing: 5
+
+            Label {
+                text: qsTr("Send interval ms")
+            }
+            Row {
+                spacing: 20
+                Slider {
+                    id: intervalSlider
+                    stepSize: 1
+                    minimumValue: 2
+                    maximumValue: 10
+                    value: 2
+                }
+                Label {
+                    text: qsTr("%1 ms").arg(intervalSlider.value)
+                }
+            }
+            Label {
+                text: qsTr("Wait for answers after scan")
+            }
+            Row {
+                spacing: 20
+                Slider {
+                    id: waitTimeSlider
+                    stepSize: 1
+                    minimumValue: 1
+                    maximumValue: 10
+                    value: 2
+                }
+                Label {
+                    text: qsTr("%1 seconds").arg(waitTimeSlider.value)
+                }
+            }
+            Label {
+                text: qsTr("Retries per IP")
+            }
+            Row {
+                spacing: 20
+                Slider {
+                    id: retrySlider
+                    stepSize: 1
+                    minimumValue: 1
+                    maximumValue: 5
+                    value: 2
+                }
+                Label {
+                    text: qsTr("%1 retries").arg(retrySlider.value)
+                }
+            }
+        }
+
+        // -----------------------------------------------
+        // Controls to maintain a list of community names.
+        Column {
+            id: communityList
+            width: parent.width
+            spacing: 5
+
+            Label {
+                text: qsTr("Community name")
+            }
+            Row {
+                TextField {
+                    id: communityName
+                    width: 200
+                }
+                Item {
+                    width: 20
+                    height: 5
+                }
+                Button {
+                    text: qsTr("add")
+                    onClicked: {
+                        if (communityName.text !== "") {
+                            model.append({ name: communityName.text })
+                        }
+                    }
+                }
+            }
+
+            // ListView for community names
+            Rectangle {
+                width: parent.width
+                height: 80
+                color: "white"
+                border.color: "black"
+
+                ListView {
+                    id: list
+                    anchors.fill: parent
+                    anchors.margins: 10
+                    model: model
+                    delegate: delegate
+                    highlight: itemHighlight
+                }
+            }
+
+            Button {
+                text: qsTr("remove")
+                onClicked: {
+                    model.remove(list.currentIndex)
+                }
+            }
+        }
+
+        // Button to start measurement.
+        BigButton {
+            id: startButton
+            text: qsTr("Start")
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+    }
+
+    // -----------------------------------------
+    // List utility : model, delegate, highliting
     ListModel {
         id: model
         ListElement { name: "public" }
@@ -283,6 +246,7 @@ Item {
         }
     }
 
+    // -------------------------
     // States of view.
     states: [
         State {
@@ -301,8 +265,7 @@ Item {
             when: measurementType.currentIndex === 2
             PropertyChanges { target: ipRangeDialog; visible: false; }
             PropertyChanges { target: communityList; visible: false; }
-            PropertyChanges { target: sendIntervalDialog; visible: false; }
-            PropertyChanges { target: waitTimeDialog; visible: false; }
+            PropertyChanges { target: timingAndRetryDialog; visible: false; }
             PropertyChanges { target: requestDialog; visible: true; }
         }
 
