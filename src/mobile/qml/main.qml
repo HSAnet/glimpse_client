@@ -9,6 +9,7 @@ Rectangle {
     width: units.gu(768)
     height: units.gu(1200)
     color: "#d1e0e0"
+    property bool started: false
 
     Component.onCompleted: {
         // Initialize the client
@@ -18,12 +19,7 @@ Rectangle {
         }
 
         // Maybe we can log in automatically from here
-        if (client.autoLogin()) {
-            autoLoginWatcher.enabled = true;
-            menuPage();
-        } else {
-            nextPage("WelcomePage.qml");
-        }
+        autoLogin();
     }
 
     Component.onDestruction: {
@@ -52,6 +48,14 @@ Rectangle {
         trackingID: "UA-51299738-2"
     }
 
+    Timer {
+        id: autoLoginTimer
+        interval: 30000
+        onTriggered :{
+            autoLogin();
+        }
+    }
+
     function menuPage() {
         var params = {
             item: Qt.resolvedUrl("MainPage.qml"),
@@ -62,6 +66,29 @@ Rectangle {
             pageStack.pop(null);
         } else {
            nextPage(params);
+        }
+    }
+
+    function autoLogin() {
+        // check if we have internet access
+        if (!client.connectionTester.checkOnline() && !client.connectionTester.canPingGoogleDomain()) {
+            // set timer to check again once we have internet access
+            autoLoginTimer.start();
+            console.log("Internet not available at the moment, doing login/registration later.");
+            if (!started)
+            {
+                started = true;
+                menuPage();
+            }
+
+            return;
+        }
+
+        if (client.autoLogin()) {
+            autoLoginWatcher.enabled = true;
+            menuPage();
+        } else {
+            nextPage("WelcomePage.qml");
         }
     }
 

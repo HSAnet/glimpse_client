@@ -16,6 +16,7 @@
 #include "types.h"
 #include "trafficbudgetmanager.h"
 #include "result/resultstorage.h"
+#include "connectiontester.h"
 
 #include <QCoreApplication>
 #include <QNetworkAccessManager>
@@ -98,6 +99,7 @@ public:
     NtpController ntpController;
 
     TrafficBudgetManager trafficBudgetManager;
+    ConnectionTester connectionTester;
 
 #ifdef Q_OS_UNIX
     static int sigintFd[2];
@@ -630,6 +632,11 @@ Settings *Client::settings() const
 TrafficBudgetManager *Client::trafficBudgetManager() const
 {
     return &d->trafficBudgetManager;
+}
+
+ConnectionTester *Client::connectionTester() const
+{
+    return &d->connectionTester;
 }
 
 #include "client.moc"
