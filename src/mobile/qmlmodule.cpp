@@ -38,7 +38,6 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <qqml.h>
-#include <QTimer>
 
 class Time : public QObject
 {
@@ -70,8 +69,6 @@ protected:
 void QmlModule::registerTypes()
 {
     qmlRegisterType<GAnalytics>("analytics", 1, 0, "Tracker");
-
-    qmlRegisterType<QTimer>(MODULE_URI, 1, 0, "QTimer");
 
     qmlRegisterUncreatableType<Units>(MODULE_URI, 1, 0, "Units", "Do not create units");
     qmlRegisterUncreatableType<Client>(MODULE_URI, 1, 0, "Client", "This is a singleton");

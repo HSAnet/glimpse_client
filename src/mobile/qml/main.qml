@@ -48,10 +48,10 @@ Rectangle {
         trackingID: "UA-51299738-2"
     }
 
-    QTimer {
+    Timer {
         id: autoLoginTimer
         interval: 30000
-        onTimeout :{
+        onTriggered :{
             autoLogin();
         }
     }
