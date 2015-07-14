@@ -43,6 +43,7 @@
 #include "measurement/packettrains/packettrainsdefinition.h"
 #include "measurement/ping/ping_definition.h"
 #include "measurement/traceroute/traceroute_definition.h"
+#include "measurement/snmp/snmp_definition.h"
 
 LOGGER(Client);
 
@@ -383,6 +384,8 @@ bool Client::init()
                                 precondition));
     tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", timing, QVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(12), TaskId(12), "wifilookup", timing, QVariant(), precondition));
+//    tests.append(ScheduleDefinition(ScheduleId(14), TaskId(14), "snmp", timing, SnmpDefinition(QStringList() << "public" << "private", 2, 1, QString(), QString(), 0, 2, 2).toVariant(),
+//                                    precondition));
 
     foreach (const ScheduleDefinition &test, tests)
     {
@@ -526,6 +529,28 @@ void Client::measureIt()
 
     // Traceroute
     d->scheduler.executeOnDemandTest(ScheduleId(10));
+}
+
+void Client::snmp()
+{
+    d->scheduler.executeOnDemandTest(ScheduleId(14));
+}
+
+void Client::snmp(const QStringList &communityList, const int retriesPerIp, const int version, const QString &ipRange,
+                  const int measurementType, const int sendInterval, const int waitTime)
+{
+    // ipRange is a string like :   "192.168.1.1-192.168.1.255"
+    QStringList ipList = ipRange.split(QRegExp(QString("[-,;|]")), QString::SkipEmptyParts);
+    QString startIP, endIP;
+    if (ipList.size() == 2)
+    {
+        startIP = ipList[0];
+        endIP = ipList[1];
+    }
+    SnmpDefinition snmpDefinition(communityList, retriesPerIp, version, startIP, endIP, measurementType, sendInterval, waitTime);
+    TimingPtr timing(new ImmediateTiming());
+    ScheduleDefinition testDefinition(ScheduleId(14), TaskId(14), "snmp", timing, snmpDefinition.toVariant(), Precondition());
+    d->scheduler.enqueue(testDefinition);
 }
 
 void Client::setStatus(Client::Status status)

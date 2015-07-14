@@ -55,12 +55,14 @@ public:
     explicit SnmpScanner(QObject *parent = 0);
     ~SnmpScanner();
 
-    bool startScan(const long version, const QStringList &communityList, const QString& objectId, const quint8 retriesPerIp);
+    bool startScan(const long version, const QStringList &communityList, const QString& objectId, const quint8 retriesPerIp,
+                   const int sendInterval, const int waitTime);
     bool scanRange(const long version, const QStringList &communityList, const QString &objectId, const quint8 retriesPerIp,
-                   const QHostAddress &start, const QHostAddress &end);
+                   const QHostAddress &start, const QHostAddress &end, const int sendInterval, const int waitTime);
 
     // Getter
     QString errorMessage()              { return m_errorMessage; }
+    bool stopScanner();
 
 signals:
     void retry();
@@ -90,10 +92,11 @@ private:
     quint8 m_currentCommunityIndex;
     QByteArray m_datagram;
     DeviceMap *m_pResultTable;
-    int m_sendIntervalTimerId;
+    int m_timerId;
     int m_sendInterval;
     bool m_sentAllPackets;
     QString m_errorMessage;
+    int m_waitTime;
 
     // Methods
     QList<QNetworkInterface> getCurrentlyOnlineInterfacesIPv4() const;

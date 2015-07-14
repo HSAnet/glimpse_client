@@ -1,5 +1,6 @@
 #include "snmp_plugin.h"
 #include "snmp.h"
+#include "snmp_definition.h"
 
 
 QStringList SnmpPlugin::measurements() const

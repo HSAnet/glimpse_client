@@ -203,6 +203,7 @@ Item {
             id: startButton
             text: qsTr("Start")
             anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: startMeasurement()
         }
     }
 
@@ -210,6 +211,16 @@ Item {
     // List utility : model, delegate, highliting
     ListModel {
         id: model
+
+        readonly property var stringList: {
+            var list = []
+            for (var i=0; i<count; ++i) {
+                list.push(get(i).name)
+            }
+
+            return list
+        }
+
         ListElement { name: "public" }
         ListElement { name: "private" }
         ListElement { name: "demopublic" }
@@ -244,6 +255,13 @@ Item {
             border.color: "lightblue"
             border.width: 1
         }
+    }
+
+    // ------------------------------------
+    // Function :       startMeasurement()
+    function startMeasurement() {
+        client.snmp(model.stringList, retrySlider.value, snmpVersionComboBox.currentIndex, ipRangeDialog.text,
+                    measurementType.currentIndex, intervalSlider.value, waitTimeSlider.value)
     }
 
     // -------------------------

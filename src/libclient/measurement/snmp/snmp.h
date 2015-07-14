@@ -1,9 +1,8 @@
 #ifndef SNMP_MEASUREMENT_H
 #define SNMP_MEASUREMENT_H
 
-#include "measurement/measurement.h"
+#include "../measurement.h"
 #include "snmp_definition.h"
-#include "snmppacket.h"
 #include "snmpscanner.h"
 #include "resultcreator.h"
 #include <QNetworkInterface>
@@ -18,8 +17,8 @@ public:
 signals:
 
 public slots:
-    void finaliseMeasurement();
-    void errorReport(const QString errorMsg);
+    void snmpMeasurementFinished();
+    void snmpErrorReport(const QString errorMsg);
 
     // Measurement interface
 public:
@@ -36,6 +35,9 @@ private:
     SnmpDefinitionPtr m_definition;
     SnmpScanner m_scanner;
     ResultCreator m_resultCreator;
+
+    // Private Methods
+    void setStatus(Measurement::Status status);
 };
 
 #endif // SNMP_MEASUREMENT_H

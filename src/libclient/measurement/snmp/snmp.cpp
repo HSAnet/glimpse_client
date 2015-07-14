@@ -14,15 +14,14 @@ Snmp::~Snmp()
 
 // SLOT
 // Is called when scan result is ready.
-void Snmp::finaliseMeasurement()
+void Snmp::snmpMeasurementFinished()
 {
-    m_status = Finished;
-    result();
+    setStatus(Finished);
 }
 
 // SLOT
 // Received an error report from scanner.
-void Snmp::errorReport(const QString errorMsg)
+void Snmp::snmpErrorReport(const QString errorMsg)
 {
     emit error(errorMsg);
 }
@@ -63,21 +62,27 @@ bool Snmp::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     if ( (m_definition->m_measurementType == AutoScan || m_definition->m_measurementType == RangeScan) &&
             (m_definition->m_retriesPerIp < 1 || m_definition->m_retriesPerIp > 10) )
     {
-        setErrorString(QString("Too much retries defined. Max. number of retries is 10."));
+        setErrorString(QString("Too much or too less retries defined. A valid number of retries is 1 to 10."));
         return false;
     }
     // Check IP address range if measurment scans a range of IP addresses. (measurement type is 'ScanRange').
-    if (m_definition->m_measurementType == RangeScan && m_definition->m_startRangeIp > m_definition->m_endRangeIp)
+    if (m_definition->m_measurementType == RangeScan)
     {
-        setErrorString(QString("Start IP address is higher then end IP of range."));
-        return false;
+        if (m_definition->m_startRangeIp.protocol() == QAbstractSocket::IPv4Protocol)
+            if (m_definition->m_startRangeIp.toIPv4Address() >= m_definition->m_endRangeIp.toIPv4Address()) {
+                setErrorString(QString("Start IP address is higher then end IP of range."));
+                return false;
+            } else {
+                    setErrorString(QString("IPv6 is not supported."));
+                    return false;
+            }
     }
     // Connect Signals with Slots
     if (m_definition->m_measurementType == AutoScan || m_definition->m_measurementType == RangeScan)
     {
         QObject::connect(&m_scanner, SIGNAL(scanFinished(const DeviceMap*)), &m_resultCreator, SLOT(createResult(const DeviceMap*)));
-        QObject::connect(&m_resultCreator, SIGNAL(scanResultReady()), this, SLOT(finaliseMeasurement()));
-        QObject::connect(&m_scanner, SIGNAL(reportError(const QString)), this, SLOT(errorReport(const QString)));
+        QObject::connect(&m_resultCreator, SIGNAL(scanResultReady()), this, SLOT(snmpMeasurementFinished()));
+        QObject::connect(&m_scanner, SIGNAL(reportError(const QString)), this, SLOT(snmpErrorReport(const QString)));
     }
 
     return true;
@@ -86,31 +91,31 @@ bool Snmp::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
 // start snmp measurement
 bool Snmp::start()
 {
-    m_status = Running;
+    setStatus(Running);
     switch (m_definition->m_measurementType)
     {
     case AutoScan:
         if (!m_scanner.startScan(m_definition->m_snmpVersion, m_definition->m_communityList, QString("sysDescr.0"),
-                                     m_definition->m_retriesPerIp))
+                                     m_definition->m_retriesPerIp, m_definition->m_sendInterval, m_definition->m_waitTime))
         {
             setErrorString(QString("Could not find any online network interface."));
-            m_status = Unknown;
+            setStatus(Error);
             return false;
         }
         break;
     case RangeScan:
         if (m_scanner.scanRange(m_definition->m_snmpVersion, m_definition->m_communityList, QString("sysDescr.0"),
-                                m_definition->m_retriesPerIp, QHostAddress(m_definition->m_startRangeIp),
-                                QHostAddress(m_definition->m_endRangeIp)))
+                                m_definition->m_retriesPerIp, m_definition->m_startRangeIp, m_definition->m_endRangeIp,
+                                m_definition->m_sendInterval, m_definition->m_waitTime))
         {
             setErrorString(QString("Could not create SNMP packet."));
-            m_status = Unknown;
+            setStatus(Error);
             return false;
         }
         break;
     default:
         setErrorString(QString("No measurement of this type available."));
-        m_status = Unknown;
+        setStatus(Error);
         return false;
         break;
     }
@@ -122,25 +127,37 @@ bool Snmp::start()
 // is called when measurement has finished.
 bool Snmp::stop()
 {
-    return true;
+    if (m_scanner.stopScanner())
+    {
+        setStatus(Unknown);
+        return true;
+    }
+
+    return false;
 }
 
 // return the measurements result.
 Result Snmp::result() const
 {
+    Result result;
     switch (m_definition->m_measurementType) {
     case AutoScan:
     case RangeScan:
     {
         QVariantMap resultMap = m_resultCreator.resultMap();
-        Result result(resultMap);
-        return result;
+        result = Result(resultMap);
         break;
     }
     default:
         break;
     }
 
-    return Result();
+    return result;
+}
+
+// Change the current status.
+void Snmp::setStatus(Measurement::Status status)
+{
+    m_status = status;
 }
 

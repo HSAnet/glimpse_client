@@ -9,6 +9,7 @@
 #include "ping/ping_plugin.h"
 #include "traceroute/traceroute_plugin.h"
 #include "wifilookup/wifilookup_plugin.h"
+#include "snmp/snmp_plugin.h"
 #include "../log/logger.h"
 
 #include <QHash>
@@ -31,6 +32,7 @@ public:
         addPlugin(new PingPlugin);
         addPlugin(new TraceroutePlugin);
         addPlugin(new WifiLookupPlugin);
+        addPlugin(new SnmpPlugin);
     }
 
     ~Private()

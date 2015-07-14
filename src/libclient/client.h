@@ -131,6 +131,14 @@ public slots:
                     const ping::PingType type);
     void wifiLookup();
     void measureIt();
+    void snmp();
+    void snmp(const QStringList &communityList,
+              const int retriesPerIp,
+              const int version,
+              const QString &ipRange,
+              const int measurementType,
+              const int sendInterval,
+              const int waitTime);
 
 signals:
     void statusChanged();

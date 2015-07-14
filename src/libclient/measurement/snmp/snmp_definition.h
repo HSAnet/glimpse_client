@@ -2,6 +2,7 @@
 #define SNMPDEFINITION_H
 
 #include "measurement/measurement.h"
+#include <QHostAddress>
 
 
 class SnmpDefinition;
@@ -12,15 +13,14 @@ typedef QList<SnmpDefinitionPtr> SnmpDefinitionList;
 class SnmpDefinition : public MeasurementDefinition
 {
 public:
-    SnmpDefinition(const QStringList &communityList, const int retriesPerIp, const int snmpVersion, const int startRangeIp,
-                   const int endRangeIp, const int measurementType, const int sendInterval, const int waitTime);
+    SnmpDefinition(const QStringList &communityList, const int retriesPerIp, const int snmpVersion, const QString &rangeStartIp, const QString &rangeEndIp, const int measurementType, const int sendInterval, const int waitTime);
     ~SnmpDefinition();
 
     QStringList m_communityList;
     int m_retriesPerIp;
     int m_snmpVersion;
-    int m_startRangeIp;
-    int m_endRangeIp;
+    QHostAddress m_startRangeIp;
+    QHostAddress m_endRangeIp;
     int m_measurementType;
     int m_sendInterval;
     int m_waitTime;
