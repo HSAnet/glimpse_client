@@ -22,6 +22,7 @@ class Settings;
 class QNetworkAccessManager;
 class TrafficBudgetManager;
 class ResultScheduler;
+class ConnectionTester;
 
 ////////////////////////////////////////////////////////////
 
@@ -42,6 +43,7 @@ class CLIENT_API Client : public QObject
     Q_PROPERTY(TaskController *taskController READ taskController CONSTANT)
     Q_PROPERTY(CrashController *crashController READ crashController CONSTANT)
     Q_PROPERTY(NtpController *ntpController READ ntpController CONSTANT)
+    Q_PROPERTY(ConnectionTester *connectionTester READ connectionTester CONSTANT)
 
     explicit Client(QObject *parent = 0);
     ~Client();
@@ -80,6 +82,8 @@ public:
 
     Settings *settings() const;
     TrafficBudgetManager *trafficBudgetManager() const;
+
+    ConnectionTester *connectionTester() const;
 
     /* Versioning
      *

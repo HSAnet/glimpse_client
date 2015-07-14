@@ -19,6 +19,7 @@
 #include "webrequester.h"
 #include "settings.h"
 #include "log/logmodel.h"
+#include "connectiontester.h"
 
 #if defined(Q_OS_ANDROID)
 #include "androidprocessmodel.h"
@@ -37,6 +38,7 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <qqml.h>
+#include <QTimer>
 
 class Time : public QObject
 {
@@ -69,6 +71,8 @@ void QmlModule::registerTypes()
 {
     qmlRegisterType<GAnalytics>("analytics", 1, 0, "Tracker");
 
+    qmlRegisterType<QTimer>(MODULE_URI, 1, 0, "QTimer");
+
     qmlRegisterUncreatableType<Units>(MODULE_URI, 1, 0, "Units", "Do not create units");
     qmlRegisterUncreatableType<Client>(MODULE_URI, 1, 0, "Client", "This is a singleton");
     qmlRegisterUncreatableType<LogModel>(MODULE_URI, 1, 0, "LogModel", "uncreatable type");
@@ -86,6 +90,7 @@ void QmlModule::registerTypes()
     qmlRegisterUncreatableType<ReportScheduler>(MODULE_URI, 1, 0, "ReportScheduler", "uncreatable type");
     qmlRegisterUncreatableType<ResultScheduler>(MODULE_URI, 1, 0, "ResultScheduler", "uncreatable type");
     qmlRegisterType<ResultModel>(MODULE_URI, 1, 0, "ResultModel");
+    qmlRegisterUncreatableType<ConnectionTester>(MODULE_URI, 1, 0, "ConnectionTester", "uncreatable type");
 
     // Requests
     qmlRegisterUncreatableType<Request>(MODULE_URI, 1, 0, "Request", "abstract class");
