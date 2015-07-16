@@ -5,6 +5,7 @@
 #include "controller/configcontroller.h"
 #include "controller/crashcontroller.h"
 #include "controller/ntpcontroller.h"
+#include "controller/resultcontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
 #include "task/taskstorage.h"
@@ -97,6 +98,7 @@ public:
     ConfigController configController;
     CrashController crashController;
     NtpController ntpController;
+    ResultController resultController;
 
     TrafficBudgetManager trafficBudgetManager;
     ConnectionTester connectionTester;
@@ -355,6 +357,7 @@ bool Client::init()
     d->reportController.init(&d->reportScheduler, &d->settings);
     d->loginController.init(&d->networkManager, &d->settings);
     d->crashController.init(&d->networkManager, &d->settings);
+    d->resultController.init(&d->resultScheduler, &d->settings);
     d->ntpController.init();
     d->trafficBudgetManager.init();
 
