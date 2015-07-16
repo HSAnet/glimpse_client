@@ -33,7 +33,8 @@ Precondition::Precondition()
 }
 
 Precondition::Precondition(const Precondition &other)
-: d(other.d)
+: QObject()
+, d(other.d)
 {
 }
 
