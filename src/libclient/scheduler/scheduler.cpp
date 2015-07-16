@@ -222,7 +222,7 @@ void Scheduler::addTask(const Task &task)
 
 int Scheduler::enqueue(const ScheduleDefinition &testDefinition)
 {
-    int pos = -2; // -1 is failur, -2 is "ondemand"
+    int pos = -2; // -1 is failure, -2 is "ondemand"
 
     if (testDefinition.timing()->type() != "ondemand")
     {

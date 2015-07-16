@@ -73,10 +73,9 @@ private slots:
         // empty queue
         scheduler.dequeue(ScheduleId(11));
         scheduler.dequeue(ScheduleId(12));
-        queue = scheduler.queue();
-        QCOMPARE(queue.length(), 0);
+        QCOMPARE(scheduler.queue().length(), 0);
 
-
+        // two schedules (hh:05 and hh:55)
         TimingPtr timingA = TimingPtr(new PeriodicTiming(1000*60*60, QDateTime(QDate::currentDate().addDays(-1), QTime(0,5,0))));
         TimingPtr timingB = TimingPtr(new PeriodicTiming(1000*60*60, QDateTime(QDate::currentDate().addDays(-1), QTime(0,55,0))));
         ScheduleDefinition scheduleA = ScheduleDefinition(ScheduleId(11), TaskId(1), "ping", timingA, PingDefinition::fromVariant(QVariant())->toVariant(), precondition);
@@ -89,7 +88,7 @@ private slots:
         int minute = now.time().minute();
 
         queue = scheduler.queue();
-        if (minute > 5 && minute < 55)
+        if (minute >= 5 && minute < 55)
         {
             QCOMPARE(queue.at(0).id(), ScheduleId(12));
             QCOMPARE(queue.at(1).id(), ScheduleId(11));
