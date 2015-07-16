@@ -32,8 +32,9 @@ Precondition::Precondition()
     d->locRadius = 0;
 }
 
-Precondition::Precondition(const Precondition &rhs)
-: d(rhs.d)
+Precondition::Precondition(const Precondition &other)
+: QObject(),
+  d(other.d)
 {
 }
 
