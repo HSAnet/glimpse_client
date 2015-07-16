@@ -63,6 +63,7 @@ bool ResultController::init(ResultScheduler *scheduler, Settings *settings)
     d->settings = settings;
 
     connect(d->scheduler, SIGNAL(resultAdded(const QVariantMap)), d, SLOT(rotate()));
+    connect(d->scheduler, SIGNAL(resultModified(const QVariantMap)), d, SLOT(rotate()));
 
     return true;
 }
