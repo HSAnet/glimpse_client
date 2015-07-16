@@ -220,11 +220,13 @@ void Scheduler::addTask(const Task &task)
     }
 }
 
-void Scheduler::enqueue(const ScheduleDefinition &testDefinition)
+int Scheduler::enqueue(const ScheduleDefinition &testDefinition)
 {
+    int pos = -2; // -1 is failure, -2 is "ondemand"
+
     if (testDefinition.timing()->type() != "ondemand")
     {
-        int pos = d->enqueue(testDefinition);
+        pos = d->enqueue(testDefinition);
 
         emit testAdded(testDefinition, pos);
     }
@@ -236,6 +238,8 @@ void Scheduler::enqueue(const ScheduleDefinition &testDefinition)
     }
 
     addTask(Task::fromVariant(testDefinition.task()));
+
+    return pos;
 }
 
 void Scheduler::dequeue(const ScheduleId &id)
@@ -289,6 +293,11 @@ Task Scheduler::taskByTaskId(const TaskId &id) const
     }
 
     return Task();
+}
+
+ScheduleDefinitionList Scheduler::queue() const
+{
+    return d->tests;
 }
 
 #include "scheduler.moc"

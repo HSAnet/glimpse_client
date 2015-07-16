@@ -22,7 +22,7 @@ public:
 
     void addTask(const Task &task);
 
-    void enqueue(const ScheduleDefinition &testDefinition);
+    int enqueue(const ScheduleDefinition &testDefinition);
     void dequeue(const ScheduleId &id);
 
     void execute(const ScheduleDefinition &testDefinition);
@@ -31,6 +31,8 @@ public:
     bool knownTestId(const ScheduleId &id);
 
     Task taskByTaskId(const TaskId &id) const;
+
+    ScheduleDefinitionList queue() const;
 
 signals:
     void testAdded(const ScheduleDefinition &test, int position);
