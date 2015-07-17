@@ -29,7 +29,7 @@ public slots:
 void ResultController::Private::rotate()
 {
     // <task-id>_yyyy-MM-dd.json
-    QRegExp regex("^\\d+_(\\d{4}-\\d{2}-\\d{2}).json$");
+    QRegExp regex("^(?:-)?\\d+_(\\d{4}-\\d{2}-\\d{2}).json$");
     QDir dir(StoragePaths().resultDirectory());
     QDate oldest = QDateTime::currentDateTime().addDays(-static_cast<qint64>(settings->backlog())).date();
 
