@@ -220,6 +220,15 @@ void Scheduler::addTask(const Task &task)
     }
 }
 
+void Scheduler::removeTask(const TaskId &taskId)
+{
+    if (d->taskIds.contains(taskId))
+    {
+        d->tasks.removeAll(this->taskByTaskId(taskId));
+        d->taskIds.remove(taskId);
+    }
+}
+
 int Scheduler::enqueue(const ScheduleDefinition &testDefinition)
 {
     int pos = -2; // -1 is failure, -2 is "ondemand"

@@ -357,7 +357,7 @@ bool Client::init()
     d->reportController.init(&d->reportScheduler, &d->settings);
     d->loginController.init(&d->networkManager, &d->settings);
     d->crashController.init(&d->networkManager, &d->settings);
-    d->resultController.init(&d->resultScheduler, &d->settings);
+    d->resultController.init(&d->resultScheduler, &d->scheduler, &d->settings);
     d->ntpController.init();
     d->trafficBudgetManager.init();
 

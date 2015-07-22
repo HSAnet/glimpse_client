@@ -21,6 +21,7 @@ public:
     TaskList tasks() const;
 
     void addTask(const Task &task);
+    void removeTask(const TaskId &taskId);
 
     int enqueue(const ScheduleDefinition &testDefinition);
     void dequeue(const ScheduleId &id);
