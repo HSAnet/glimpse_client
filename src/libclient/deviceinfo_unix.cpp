@@ -4,6 +4,7 @@
 #include "network/networkmanager.h"
 
 #include <QCryptographicHash>
+#include <QNetworkInterface>
 #include <QDir>
 #include <fstab.h>
 #include <unistd.h>
@@ -56,76 +57,103 @@ DeviceInfo::~DeviceInfo()
 
 QString DeviceInfo::deviceId() const
 {
-    if (int ret = setfsent() != 1)
+    QCryptographicHash hash(QCryptographicHash::Sha224);
+    bool foundUUID = false;
+    bool foundMac = false;
+
+    int ret = setfsent();
+
+    if (ret != 1)
     {
         LOG_DEBUG(QString("Error opening fstab: setfsent returned %1").arg(ret));
-        return QString();
     }
-
-    QByteArray uuid;
-
-    for (const char **fsentry = FSEntries; *fsentry != NULL; ++fsentry)
+    else
     {
-        fstab *tab = getfsfile(*fsentry);
+        QByteArray uuid;
 
-        if (!tab)
+        for (const char **fsentry = FSEntries; *fsentry != NULL; ++fsentry)
         {
-            continue;
+            fstab *tab = getfsfile(*fsentry);
+
+            if (!tab)
+            {
+                continue;
+            }
+
+            uuid = QByteArray::fromRawData(tab->fs_spec, strlen(tab->fs_spec));
+
+            if (uuid.indexOf("UUID=") == 0)
+            {
+                uuid.remove(0, 5);
+                break;
+            }
+            else
+            {
+                // No UUID in fstab
+                QString target;
+                QFileInfo info;
+
+                if (uuid.indexOf("LABEL=") == 0)
+                {
+                    uuid.remove(0, 6);
+                    info = QFileInfo(QString("/dev/disk/by-label/%1").arg(QString::fromUtf8(uuid)));
+                }
+                else
+                {
+                    info = QFileInfo(uuid);
+                }
+
+                uuid.clear();
+
+                if (info.isSymLink())
+                {
+                    target = info.symLinkTarget();
+                }
+                else
+                {
+                    target = info.absoluteFilePath();
+                }
+
+                uuid = uuidForDevice(target);
+
+                if (!uuid.isEmpty())
+                {
+                    break;
+                }
+            }
         }
 
-        uuid = QByteArray::fromRawData(tab->fs_spec, strlen(tab->fs_spec));
+        endfsent();
 
-        if (uuid.indexOf("UUID=") == 0)
+        if (uuid.isEmpty())
         {
-            uuid.remove(0, 5);
-            break;
+            LOG_DEBUG("No HDD UID found!");
         }
         else
         {
-            // No UUID in fstab
-            QString target;
-            QFileInfo info;
+            hash.addData(uuid);
+            foundUUID = true;
+        }
 
-            if (uuid.indexOf("LABEL=") == 0)
-            {
-                uuid.remove(0, 6);
-                info = QFileInfo(QString("/dev/disk/by-label/%1").arg(QString::fromUtf8(uuid)));
-            }
-            else
-            {
-                info = QFileInfo(uuid);
-            }
+    }
 
-            uuid.clear();
+    QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
 
-            if (info.isSymLink())
-            {
-                target = info.symLinkTarget();
-            }
-            else
-            {
-                target = info.absoluteFilePath();
-            }
 
-            uuid = uuidForDevice(target);
-
-            if (!uuid.isEmpty())
-            {
-                break;
-            }
+    foreach (const QNetworkInterface &inf, interfaces)
+    {
+        QString name = inf.name();
+        if (name.startsWith("eth") || name.startsWith("wifi") || name.startsWith("en") || name.startsWith("wl"))
+        {
+            hash.addData(inf.hardwareAddress().toUtf8());
+            foundMac = true;
         }
     }
 
-    endfsent();
-
-    if (uuid.isEmpty())
+    if (!foundUUID && !foundMac)
     {
-        LOG_DEBUG("No HDD UID found!");
         return QString();
     }
-
-    QCryptographicHash hash(QCryptographicHash::Sha224);
-    hash.addData(uuid);
 
     return QString::fromLatin1(hash.result().toHex());
 }

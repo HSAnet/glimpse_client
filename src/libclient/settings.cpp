@@ -23,12 +23,7 @@ public:
 void Settings::Private::sync()
 {
     settings.setValue("config", config.toVariant());
-
-    // remove password before sync so it is not written into storage
-    QVariant tmpPassword = settings.value("password");
-    settings.remove("password");
     settings.sync();
-    settings.setValue("password", tmpPassword);
 }
 
 Settings::Settings(QObject *parent)
@@ -153,20 +148,6 @@ QString Settings::hashedUserId() const
     return d->settings.value("hashed-user-id").toString();
 }
 
-void Settings::setPassword(const QString &password)
-{
-    if (this->password() != password)
-    {
-        d->settings.setValue("password", password);
-        emit passwordChanged(password);
-    }
-}
-
-QString Settings::password() const
-{
-    return d->settings.value("password").toString();
-}
-
 void Settings::setApiKey(const QString &apiKey)
 {
     if (this->apiKey() != apiKey)
@@ -263,6 +244,20 @@ void Settings::setTrafficBudgetManagerActive(bool active)
 bool Settings::trafficBudgetManagerActive() const
 {
     return d->settings.value("traffic-budget-manager-active", false).toBool();
+}
+
+void Settings::setBacklog(quint32 backlog)
+{
+    if (this->backlog() != backlog)
+    {
+        d->settings.setValue("backlog", backlog);
+        emit backlogChanged(backlog);
+    }
+}
+
+quint32 Settings::backlog() const
+{
+    return d->settings.value("backlog", 10).toUInt();
 }
 
 GetConfigResponse *Settings::config() const

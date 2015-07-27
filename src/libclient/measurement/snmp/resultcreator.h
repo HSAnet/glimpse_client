@@ -10,7 +10,7 @@ class ResultCreator : public QObject
 {
     Q_OBJECT
 public:
-    explicit ResultCreator(QObject *parent = 0);
+    explicit ResultCreator(const QString &gatewayAddr, QObject *parent = 0);
 
     QVariantMap resultMap() const                   { return m_resultMap; }
 
@@ -25,6 +25,7 @@ private:
     enum MibValues { IpForwarding, InterfaceNumber, PrinterValueOne, PrinterValueTwo };
     QStringList m_objectIdList;
     QVariantMap m_resultMap;
+    QString m_defaultGatewayAddr;
 
     // Methods
     bool isDevicePrinter(const SnmpPacket &packet) const;

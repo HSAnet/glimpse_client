@@ -6,7 +6,7 @@
 #include <QList>
 
 #include "../measurement.h"
-#include "../../task/task.h"
+#include "../../task/scheduledefinition.h"
 #include "../ping/ping.h"
 #include "../ping/ping_plugin.h"
 #include "../ping/ping_definition.h"

@@ -21,6 +21,8 @@ class TaskExecutor;
 class Settings;
 class QNetworkAccessManager;
 class TrafficBudgetManager;
+class ResultScheduler;
+class ConnectionTester;
 
 ////////////////////////////////////////////////////////////
 
@@ -32,6 +34,7 @@ class CLIENT_API Client : public QObject
     Q_PROPERTY(Scheduler *scheduler READ scheduler CONSTANT)
     Q_PROPERTY(Settings *settings READ settings CONSTANT)
     Q_PROPERTY(ReportScheduler *reportScheduler READ reportScheduler CONSTANT)
+    Q_PROPERTY(ResultScheduler *resultScheduler READ resultScheduler CONSTANT)
     Q_PROPERTY(NetworkManager *networkManager READ networkManager CONSTANT)
     Q_PROPERTY(TaskExecutor *taskExecutor READ taskExecutor CONSTANT)
     Q_PROPERTY(ReportController *reportController READ reportController CONSTANT)
@@ -40,6 +43,7 @@ class CLIENT_API Client : public QObject
     Q_PROPERTY(TaskController *taskController READ taskController CONSTANT)
     Q_PROPERTY(CrashController *crashController READ crashController CONSTANT)
     Q_PROPERTY(NtpController *ntpController READ ntpController CONSTANT)
+    Q_PROPERTY(ConnectionTester *connectionTester READ connectionTester CONSTANT)
 
     explicit Client(QObject *parent = 0);
     ~Client();
@@ -65,6 +69,7 @@ public:
 
     Scheduler *scheduler() const;
     ReportScheduler *reportScheduler() const;
+    ResultScheduler *resultScheduler() const;
     NetworkManager *networkManager() const;
     TaskExecutor *taskExecutor() const;
 
@@ -78,6 +83,8 @@ public:
     Settings *settings() const;
     TrafficBudgetManager *trafficBudgetManager() const;
 
+    ConnectionTester *connectionTester() const;
+
     /* Versioning
      *
      * MAJOR version when you make incompatible API changes,
@@ -87,8 +94,8 @@ public:
      * Source: http://semver.org
      */
     static const quint32 versionMajor = 2;
-    static const quint32 versionMinor = 4;
-    static const quint32 versionPatch = 0;
+    static const quint32 versionMinor = 5;
+    static const quint32 versionPatch = 1;
 
 public slots:
     bool init();
@@ -119,7 +126,7 @@ public slots:
               const quint16 &destinationPort,
               const quint16 &sourcePort,
               const quint32 &payload,
-              const ping::PingType &type);
+              const QString &type);
     void traceroute();
     void traceroute(const QString &url,
                     const quint32 &count,
@@ -128,7 +135,7 @@ public slots:
                     const quint16 &destinationPort,
                     const quint16 &sourcePort,
                     const quint32 &payload,
-                    const ping::PingType type);
+                    const QString &type);
     void wifiLookup();
     void measureIt();
     void snmp();

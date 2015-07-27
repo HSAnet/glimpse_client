@@ -3,19 +3,23 @@ package de.hsaugsburg.informatik.mplane;
 public class StorageHelper {
 	public StorageHelper() {
 	}
-	
+
 	private String getDataDirectory() {
                 return MobileActivity.instance.getFilesDir().getAbsolutePath();
 	}
-	
+
 	public String getSchedulerDirectory() {
 		return getDataDirectory() + "/scheduler";
 	}
-	
+
 	public String getReportDirectory() {
 		return getDataDirectory() + "/reports";
 	}
-	
+
+	public String getResultDirectory() {
+		return getDataDirectory() + "/results";
+	}
+
 	public String getCacheDirectory() {
                 return MobileActivity.instance.getCacheDir().getAbsolutePath();
 	}
@@ -26,5 +30,13 @@ public class StorageHelper {
 
         public String getCrashDumpDirectory() {
                 return getDataDirectory() + "/crashdumps";
+        }
+
+        public String getLocalCopyDirectory() {
+                return getDataDirectory() + "/results";
+		}
+
+        public String getTaskDirectory() {
+                return getDataDirectory() + "/tasks";
         }
 }

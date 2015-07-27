@@ -10,10 +10,14 @@
 #include "../timing/periodictiming.h"
 #include "../client.h"
 #include "../timing/timer.h"
+#include "../storage/storagepaths.h"
 
 #include <QPointer>
 #include <QStringList>
 #include <QTimer>
+#include <QDir>
+#include <QRegExp>
+#include <QDateTime>
 
 LOGGER(ReportController);
 

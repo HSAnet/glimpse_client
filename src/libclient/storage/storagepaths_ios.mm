@@ -56,3 +56,13 @@ QDir StoragePaths::crashDumpDirectory() const
 {
     return QDir(d->applicationRootPath + "/crashdumps");
 }
+
+QDir StoragePaths::resultDirectory() const
+{
+    return QDir(d->applicationRootPath + "/results");
+}
+
+QDir StoragePaths::taskDirectory() const
+{
+    return QDir(d->applicationRootPath + "/tasks");
+}

@@ -2,6 +2,7 @@
 #include "../../log/logger.h"
 #include "types.h"
 
+#include <QRegularExpression>
 #include <QtMath>
 #include <numeric>
 
@@ -87,7 +88,7 @@ void DownloadThread::startTCPConnection()
         //for the successfully connected sockets, we should track the disconnection
         connect(socket, &QTcpSocket::disconnected, this, &DownloadThread::disconnectionHandling);
         tStatus = ConnectedTCP;
-        LOG_INFO("Thread connected");
+        LOG_DEBUG("Thread connected");
         emit TCPConnected(true);
     }
     else
@@ -95,7 +96,6 @@ void DownloadThread::startTCPConnection()
         //something went wrong
         tStatus = FinishedError;
         emit TCPConnected(false);
-        socket->close();
     }
 }
 
@@ -145,7 +145,6 @@ void DownloadThread::startDownload()
         //on error
         if(writeResult < 0)
         {
-            socket->close();
             tStatus = FinishedError;
             emit firstByteReceived(false);
             return;
@@ -154,7 +153,7 @@ void DownloadThread::startDownload()
         bytesWritten += writeResult;
     }
 
-    LOG_INFO("Thread: get request sent");
+    LOG_DEBUG("Thread: get request sent");
 
     //start eplapsed timer for calculating the time slots
     measurementTimer.start();
@@ -164,36 +163,43 @@ void DownloadThread::startDownload()
     //do a blocking read for the first bytes or time-out if nothing is arriving
     if (socket->waitForReadyRead(firstByteReceivedTimeout))
     {
-        LOG_INFO("Thread: received response");
+        LOG_DEBUG("Thread: received response");
 
-        //TODO: check for HTTP status code and act intelligently on it
-        //currently, a 404 etc. is simply to little data
-        //to generate results, but a better checking would be great
         timeToFirstByte = measurementTimer.nsecsElapsed();
         tStatus = DownloadInProgress;
         //connect readyRead of the socket with read() for further reads
         connect(socket, &QTcpSocket::readyRead, this, &DownloadThread::read);
-        //call read
-        read();
-        LOG_INFO("Thread: emit signal firstByteReceived");
-        emit firstByteReceived(true);
+
+        //call read and check for HTTP response code
+        QRegularExpression re("HTTP/\\d\\.\\d\\s+(\\d+)\\s+.*");
+        QString HTTPResponseCode = re.match(read()).captured(1);
+
+        if (HTTPResponseCode == "200")
+        {
+            LOG_DEBUG("Thread: emit signal firstByteReceived");
+            emit firstByteReceived(true);
+        }
+        else
+        {
+            LOG_ERROR(QString("Thread: unexpected HTTP response code %1").arg(HTTPResponseCode));
+            tStatus = FinishedError;
+            emit firstByteReceived(false);
+        }
     }
     else
     {
-        LOG_INFO("Thread: no response received");
+        LOG_ERROR("Thread: no response received");
         tStatus = FinishedError;
-        socket->close();
         emit firstByteReceived(false);
     }
 }
 
-void DownloadThread::read()
+QByteArray DownloadThread::read()
 {
     bytesReceived << socket->bytesAvailable();
     timeIntervals << measurementTimer.nsecsElapsed();
 
-    socket->readAll();   //we don't need the actual data but need to free space in the
-                         //socket buffer
+    return socket->readAll();
 }
 
 qreal DownloadThread::averageThroughput(qint64 sTime, qint64 eTime) const
@@ -431,7 +437,7 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
     //now the actual measurement starts
     setStatus(HTTPDownload::Running);
 
-    LOG_INFO(QString("Started %1 threads").arg(definition->threads));
+    LOG_DEBUG(QString("Started %1 threads").arg(definition->threads));
 
     //tell the threads to do the 3way-handshake
     emit connectTCP();
@@ -470,6 +476,12 @@ void HTTPDownload::TCPConnectionTracking(bool success)
     {
         if(connectedThreads == 0)
         {
+            // quit threads before emitting
+            for (int i = 0; i < threads.size(); i++)
+            {
+                threads[i]->quit();
+            }
+
             emit error("Unable to establish a TCP connection");
             return;
         }
@@ -497,20 +509,26 @@ void HTTPDownload::downloadStartedTracking(bool success)
     {
         if(notDownloadingThreads == definition->threads)
         {
+            // quit threads before emitting
+            for (int i = 0; i < threads.size(); i++)
+            {
+                threads[i]->quit();
+            }
+
             emit error("No thread able to download after TCP connection was established.");
             return;
         }
 
         downloadStartTime = QDateTime::currentDateTime().addMSecs(definition->rampUpTime);
         //when this timer fires we stop all downloads
-        LOG_INFO("Start timer to wait for download");
+        LOG_DEBUG("Start timer to wait for download");
         downloadTimer.singleShot(definition->targetTime + definition->rampUpTime, this, SLOT(downloadFinished()));
     }
 }
 
 void HTTPDownload::downloadFinished()
 {
-    LOG_INFO("Download finished (timer timeout)");
+    LOG_DEBUG("Download finished (timer timeout)");
     bool resultsOK = false;
 
     //stop the timer if still running (e.g. the case if all
@@ -531,11 +549,11 @@ void HTTPDownload::downloadFinished()
         workers[i]->stopDownload();
     }
 
-    LOG_INFO("All workers stopped, calculting results");
+    LOG_DEBUG("All workers stopped, calculting results");
 
     resultsOK = calculateResults();
 
-    LOG_INFO("Waiting for threads to stop");
+    LOG_DEBUG("Waiting for threads to stop");
 
     //clean up (threads etc.) before emitting finished,
     //otherwise this thing can become deleted before the
@@ -547,7 +565,7 @@ void HTTPDownload::downloadFinished()
 
     threads.clear();
 
-    LOG_INFO("All threads stopped");
+    LOG_DEBUG("All threads stopped");
 
     if(resultsOK)
     {
@@ -603,19 +621,19 @@ bool HTTPDownload::calculateResults()
 {
     QVariantList threadResults;
     int num_threads = 0;
-    LOG_INFO("Check if results are trustable");
+    LOG_DEBUG("Check if results are trustable");
     bool resultsOK = resultsTrustable();
 
     for(int i = 0; i < workers.size(); i++)
     {
-        LOG_INFO("Check which treads to consider");
+        LOG_DEBUG("Check which treads to consider");
         //only consider threads that finished successfully
         if(workers[i]->threadStatus() != DownloadThread::FinishedSuccess)
         {
             continue;
         }
 
-        LOG_INFO("Calculate");
+        LOG_DEBUG("Calculate");
 
         num_threads++;
 

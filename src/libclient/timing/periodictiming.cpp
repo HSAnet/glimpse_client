@@ -62,8 +62,14 @@ QDateTime PeriodicTiming::nextRun(const QDateTime &tzero) const
         now = Client::instance()->ntpController()->currentDateTime();
     }
 
+    // Check if end time is reached
+    if (d->end.isValid() && d->end < now)
+    {
+        return QDateTime();
+    }
+
     // Check if the start time is reached
-    if (d->start > now)
+    if (d->start.isValid() && d->start > now)
     {
         return d->start;
     }

@@ -18,7 +18,6 @@ class CLIENT_API Settings : public QObject
     Q_PROPERTY(QString deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
     Q_PROPERTY(QString userId READ userId WRITE setUserId NOTIFY userIdChanged)
     Q_PROPERTY(QString hashedUserId READ hashedUserId NOTIFY hashedUserIdChanged)
-    Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
     Q_PROPERTY(QString apiKey READ apiKey WRITE setApiKey NOTIFY apiKeyChanged)
     Q_PROPERTY(quint32 availableTraffic READ availableTraffic WRITE setAvailableTraffic NOTIFY availableTrafficChanged)
     Q_PROPERTY(quint32 usedTraffic READ usedTraffic WRITE setUsedTraffic NOTIFY usedTrafficChanged)
@@ -27,6 +26,7 @@ class CLIENT_API Settings : public QObject
     Q_PROPERTY(quint32 usedMobileTraffic READ usedMobileTraffic WRITE setUsedMobileTraffic NOTIFY usedMobileTrafficChanged)
     Q_PROPERTY(bool trafficBudgetManagerActive READ trafficBudgetManagerActive WRITE setTrafficBudgetManagerActive
                NOTIFY trafficBudgetManagerActiveChanged)
+    Q_PROPERTY(quint32 backlog READ backlog WRITE setBacklog NOTIFY backlogChanged)
     Q_PROPERTY(GetConfigResponse *config READ config CONSTANT)
 
 public:
@@ -50,9 +50,6 @@ public:
     QString userId() const;
     QString hashedUserId() const;
 
-    void setPassword(const QString &password);
-    QString password() const;
-
     void setApiKey(const QString &apiKey);
     QString apiKey() const;
 
@@ -74,6 +71,9 @@ public:
     void setTrafficBudgetManagerActive(bool active);
     bool trafficBudgetManagerActive() const;
 
+    void setBacklog(quint32 backlog);
+    quint32 backlog() const;
+
     GetConfigResponse *config() const;
 
     void clear();
@@ -85,7 +85,6 @@ signals:
     void deviceIdChanged(const QString &deviceId);
     void userIdChanged(const QString &userId);
     void hashedUserIdChanged(const QString &hashedUserId);
-    void passwordChanged(const QString &password);
     void apiKeyChanged(const QString &apiKey);
     void passiveChanged(bool passive);
     void availableTrafficChanged(quint32 traffic);
@@ -93,6 +92,7 @@ signals:
     void availableMobileTrafficChanged(quint32 traffic);
     void usedMobileTrafficChanged(quint32 traffic);
     void trafficBudgetManagerActiveChanged(bool active);
+    void backlogChanged(quint32 backlog);
 
 protected:
     class Private;

@@ -183,12 +183,12 @@ QDateTime CalendarTiming::nextRun(const QDateTime &tzero) const
                                 // if the next run date is not today we can take the first items
                                 // as this is the earliest allowed time on that day
                                 nextRunTime = QTime(*d->hours.constBegin(), *d->minutes.constBegin(), *d->seconds.constBegin());
-                                nextRun = QDateTime(nextRunDate, nextRunTime);
+                                nextRun = QDateTime(nextRunDate, nextRunTime, Qt::UTC);
                                 found = true;
                             }
                             else if ((nextRunTime = d->findTime(time)).isValid())
                             {
-                                nextRun = QDateTime(nextRunDate, nextRunTime);
+                                nextRun = QDateTime(nextRunDate, nextRunTime, Qt::UTC);
 
                                 // check if the calculated next run was already executed
                                 if (!m_lastExecution.isValid() || m_lastExecution.secsTo(nextRun) > 1)

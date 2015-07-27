@@ -1,32 +1,33 @@
-#ifndef REPORTMODEL_H
-#define REPORTMODEL_H
+#ifndef RESULTMODEL_H
+#define RESULTMODEL_H
 
 #include "../export.h"
 #include "../ident.h"
 
 #include <QAbstractTableModel>
 
-class ReportScheduler;
+class ResultScheduler;
 
-class CLIENT_API ReportModel : public QAbstractTableModel
+class CLIENT_API ResultModel : public QAbstractTableModel
 {
     Q_OBJECT
     Q_ENUMS(Roles)
-    Q_PROPERTY(ReportScheduler *scheduler READ scheduler WRITE setScheduler NOTIFY schedulerChanged)
+    Q_PROPERTY(ResultScheduler *scheduler READ scheduler WRITE setScheduler NOTIFY schedulerChanged)
 
 public:
-    ReportModel(QObject *parent = 0);
-    ~ReportModel();
+    ResultModel(QObject *parent = 0);
+    ~ResultModel();
 
-    enum Roles
-    {
+    enum Roles {
         TaskIdRole = Qt::UserRole + 1,
         DateTimeRole,
-        ResultsRole
+        ResultsRole,
+        MeasurementRole,
+        SecondColumnRole
     };
 
-    void setScheduler(ReportScheduler *scheduler);
-    ReportScheduler *scheduler() const;
+    void setScheduler(ResultScheduler *scheduler);
+    ResultScheduler *scheduler() const;
 
     QModelIndex indexFromTaskId(const TaskId &taskId) const;
 
@@ -49,4 +50,4 @@ protected:
     Private *d;
 };
 
-#endif // REPORTMODEL_H
+#endif // RESULTMODEL_H

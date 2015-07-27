@@ -1,7 +1,9 @@
 #include "resultcreator.h"
 
 // Constructor
-ResultCreator::ResultCreator(QObject *parent) : QObject(parent)
+ResultCreator::ResultCreator(const QString &gatewayAddr, QObject *parent) :
+    QObject(parent),
+    m_defaultGatewayAddr(gatewayAddr)
 {
     // IMPORTANT: If you changes the order of these list then change it in enum 'MibValues' too.
     m_objectIdList << "ipForwarding.0"
@@ -48,6 +50,13 @@ void ResultCreator::createResult(const DeviceMap *scanResult)
         }
 
         m_resultMap.insert(device.host.toString(), deviceMap);
+    }
+
+    // Identify default gateway
+    QVariantMap &device = (QVariantMap&)m_resultMap[m_defaultGatewayAddr];
+    if (! device.isEmpty())
+    {
+        device.insert(QString("type"), QString("Gateway"));
     }
 
     emit scanResultReady();

@@ -1,8 +1,11 @@
 #include "snmp.h"
+#include "client.h"
+#include "connectiontester.h"
 
 Snmp::Snmp(QObject *parent) :
     Measurement(parent),
-    m_status(Unknown)
+    m_status(Unknown),
+    m_resultCreator(getDefaultGateway())
 {
 
 }
@@ -169,5 +172,8 @@ void Snmp::setStatus(Measurement::Status status)
 QString Snmp::getDefaultGateway()
 {
     Client *client = Client::instance();
+    ConnectionTester *tester = client->connectionTester();
+
+    return tester->findDefaultGateway();
 }
 

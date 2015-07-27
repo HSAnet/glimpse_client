@@ -25,7 +25,7 @@ win32 {
 android {
     CONFIG += breakpad-builtin
 
-    INCLUDEPATH += $$BREAKPAD_PATH/src/common/android/include
+    QMAKE_CXXFLAGS += -I$$BREAKPAD_PATH/src/common/android/include
 
     SOURCES += $$BREAKPAD_PATH/src/client/linux/crash_generation/crash_generation_client.cc \
                $$BREAKPAD_PATH/src/client/linux/handler/exception_handler.cc \

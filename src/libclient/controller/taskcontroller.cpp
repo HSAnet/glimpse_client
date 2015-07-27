@@ -4,7 +4,7 @@
 #include "../settings.h"
 #include "../webrequester.h"
 #include "../network/requests/resourcerequest.h"
-#include "../task/task.h"
+#include "../task/scheduledefinition.h"
 #include "../task/taskvalidator.h"
 #include "../log/logger.h"
 #include "../timing/periodictiming.h"

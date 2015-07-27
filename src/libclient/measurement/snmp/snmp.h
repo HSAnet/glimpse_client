@@ -5,7 +5,6 @@
 #include "snmp_definition.h"
 #include "snmpscanner.h"
 #include "resultcreator.h"
-#include "client.h"
 #include <QNetworkInterface>
 
 class Snmp : public Measurement

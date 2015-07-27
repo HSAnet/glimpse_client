@@ -2,6 +2,7 @@
 #include "client.h"
 #include "settings.h"
 #include "log/logger.h"
+#include "network/requests/loginrequest.h"
 
 #include <QTimer>
 #include <QPointer>
@@ -368,8 +369,19 @@ void WebRequester::start()
 
     if (authentication == "basic")
     {
+        // this has to be a login request
+        QPointer<LoginRequest> loginRequest = qobject_cast<LoginRequest*>(d->request);
+
+        if (loginRequest.isNull())
+        {
+            d->errorString = tr("Wrong Request used for Webrequester");
+            d->setStatus(Error);
+            LOG_ERROR("Wrong Request used for Webrequester");
+            return;
+        }
+
         url.setUserName(settings->hashedUserId());
-        url.setPassword(settings->password());
+        url.setPassword(loginRequest->password());
     }
     else if (authentication == "apikey")
     {

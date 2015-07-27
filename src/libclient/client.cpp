@@ -5,8 +5,10 @@
 #include "controller/configcontroller.h"
 #include "controller/crashcontroller.h"
 #include "controller/ntpcontroller.h"
+#include "controller/resultcontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
+#include "task/taskstorage.h"
 #include "scheduler/schedulerstorage.h"
 #include "report/reportstorage.h"
 #include "scheduler/scheduler.h"
@@ -14,6 +16,8 @@
 #include "log/logger.h"
 #include "types.h"
 #include "trafficbudgetmanager.h"
+#include "result/resultstorage.h"
+#include "connectiontester.h"
 
 #include <QCoreApplication>
 #include <QNetworkAccessManager>
@@ -35,7 +39,7 @@
 #include "timing/immediatetiming.h"
 #include "timing/ondemandtiming.h"
 #include "timing/timing.h"
-#include "task/task.h"
+#include "task/scheduledefinition.h"
 #include "measurement/btc/btc_definition.h"
 #include "measurement/http/httpdownload_definition.h"
 #include "measurement/dnslookup/dnslookup_definition.h"
@@ -57,7 +61,9 @@ public:
     , status(Client::Unregistered)
     , networkAccessManager(new QNetworkAccessManager(q))
     , schedulerStorage(&scheduler)
+    , taskStorage(&scheduler)
     , reportStorage(&reportScheduler)
+    , resultStorage(&resultScheduler, &reportScheduler)
     {
         executor.setNetworkManager(&networkManager);
         scheduler.setExecutor(&executor);
@@ -76,9 +82,13 @@ public:
 
     Scheduler scheduler;
     SchedulerStorage schedulerStorage;
+    TaskStorage taskStorage;
 
     ReportScheduler reportScheduler;
     ReportStorage reportStorage;
+
+    ResultScheduler resultScheduler;
+    ResultStorage resultStorage;
 
     Settings settings;
     NetworkManager networkManager;
@@ -89,8 +99,10 @@ public:
     ConfigController configController;
     CrashController crashController;
     NtpController ntpController;
+    ResultController resultController;
 
     TrafficBudgetManager trafficBudgetManager;
+    ConnectionTester connectionTester;
 
 #ifdef Q_OS_UNIX
     static int sigintFd[2];
@@ -335,6 +347,10 @@ bool Client::init()
     // Initialize storages
     d->schedulerStorage.loadData();
     d->reportStorage.loadData();
+    d->taskStorage.loadData();
+    d->resultStorage.loadData();
+    // init() must be called after reportStorage.loadData()
+    d->resultStorage.init();
 
     // Initialize controllers
     d->networkManager.init(&d->scheduler, &d->settings);
@@ -342,6 +358,7 @@ bool Client::init()
     d->reportController.init(&d->reportScheduler, &d->settings);
     d->loginController.init(&d->networkManager, &d->settings);
     d->crashController.init(&d->networkManager, &d->settings);
+    d->resultController.init(&d->resultScheduler, &d->settings);
     d->ntpController.init();
     d->trafficBudgetManager.init();
 
@@ -384,8 +401,8 @@ bool Client::init()
                                 precondition));
     tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", timing, QVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(12), TaskId(12), "wifilookup", timing, QVariant(), precondition));
-//    tests.append(ScheduleDefinition(ScheduleId(14), TaskId(14), "snmp", timing, SnmpDefinition(QStringList() << "public" << "private", 2, 1, QString(), QString(), 0, 2, 2).toVariant(),
-//                                    precondition));
+    tests.append(ScheduleDefinition(ScheduleId(14), TaskId(14), "snmp", timing, SnmpDefinition(QStringList() << "public" << "private", 2, 1, QString(), QString(), 0, 2, 2).toVariant(),
+                                    precondition));
 
     foreach (const ScheduleDefinition &test, tests)
     {
@@ -417,7 +434,7 @@ void Client::btc(const QString &host)
 {
     BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024, 10);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(9), TaskId(9), "btc_ma", timing,
+    ScheduleDefinition testDefinition(ScheduleId(2), TaskId(2), "btc_ma", timing,
                                   btcDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -432,7 +449,7 @@ void Client::http(const QString &url, bool avoidCaches, int threads, int targetT
 {
     HTTPDownloadDefinition httpDef(url, avoidCaches, threads , targetTime, rampUpTime, slotLength);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(3), TaskId(3), "httpdownload", timing,
+    ScheduleDefinition testDefinition(ScheduleId(7), TaskId(7), "httpdownload", timing,
                                   httpDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -463,7 +480,7 @@ void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint1
     PacketTrainsDefinition packetTrainsDef(host, port, packetSize, trainLength, iterations, rateMin, rateMax, delay);
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(11), TaskId(11), "packettrains_ma", timing,
+    ScheduleDefinition testDefinition(ScheduleId(8), TaskId(8), "packettrains_ma", timing,
                                   packetTrainsDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -475,12 +492,13 @@ void Client::ping()
 
 void Client::ping(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
                   const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload,
-                  const ping::PingType &type)
+                  const QString &type)
 {
-    PingDefinition pingDef(url, count, interval, receiveTimeout, ttl, destinationPort, sourcePort, payload, type);
+    PingDefinition pingDef(url, count, interval, receiveTimeout, ttl, destinationPort, sourcePort, payload,
+                           pingTypeFromString(type));
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(12), TaskId(12), "ping", timing,
+    ScheduleDefinition testDefinition(ScheduleId(1), TaskId(1), "ping", timing,
                                   pingDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -497,13 +515,13 @@ void Client::traceroute(const QString &url,
                         const quint16 &destinationPort,
                         const quint16 &sourcePort,
                         const quint32 &payload,
-                        const ping::PingType type)
+                        const QString &type)
 {
     TracerouteDefinition tracerouteDef(url, count, interval, receiveTimeout, destinationPort, sourcePort, payload,
-                                       type);
+                                       pingTypeFromString(type));
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(13), TaskId(13), "traceroute", timing,
+    ScheduleDefinition testDefinition(ScheduleId(10), TaskId(10), "traceroute", timing,
                                   tracerouteDef.toVariant(), Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -589,6 +607,11 @@ ReportScheduler *Client::reportScheduler() const
     return &d->reportScheduler;
 }
 
+ResultScheduler *Client::resultScheduler() const
+{
+    return &d->resultScheduler;
+}
+
 NetworkManager *Client::networkManager() const
 {
     return &d->networkManager;
@@ -637,6 +660,11 @@ Settings *Client::settings() const
 TrafficBudgetManager *Client::trafficBudgetManager() const
 {
     return &d->trafficBudgetManager;
+}
+
+ConnectionTester *Client::connectionTester() const
+{
+    return &d->connectionTester;
 }
 
 #include "client.moc"

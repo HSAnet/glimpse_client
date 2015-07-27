@@ -36,9 +36,11 @@ public:
 
     ScheduleDefinitionList tests;
     ScheduleDefinitionList onDemandTests;
+    TaskList tasks;
     QSet<ScheduleId> testIds;
     QSet<ScheduleId> onDemandTestIds;
     QSet<ScheduleId> allTestIds;
+    QSet<TaskId> taskIds;
 
     QPointer<TaskExecutor> executor;
 
@@ -203,11 +205,28 @@ ScheduleDefinitionList Scheduler::tests() const
     return d->tests;
 }
 
-void Scheduler::enqueue(const ScheduleDefinition &testDefinition)
+TaskList Scheduler::tasks() const
 {
+    return d->tasks;
+}
+
+void Scheduler::addTask(const Task &task)
+{
+    if (!d->taskIds.contains(task.id()))
+    {
+        d->tasks.append(task);
+        emit taskAdded(task);
+        d->taskIds.insert(task.id());
+    }
+}
+
+int Scheduler::enqueue(const ScheduleDefinition &testDefinition)
+{
+    int pos = -2; // -1 is failure, -2 is "ondemand"
+
     if (testDefinition.timing()->type() != "ondemand")
     {
-        int pos = d->enqueue(testDefinition);
+        pos = d->enqueue(testDefinition);
 
         emit testAdded(testDefinition, pos);
     }
@@ -217,6 +236,10 @@ void Scheduler::enqueue(const ScheduleDefinition &testDefinition)
         d->onDemandTestIds.insert(testDefinition.id());
         d->allTestIds.insert(testDefinition.id());
     }
+
+    addTask(Task::fromVariant(testDefinition.task()));
+
+    return pos;
 }
 
 void Scheduler::dequeue(const ScheduleId &id)
@@ -257,6 +280,24 @@ bool Scheduler::knownTestId(const ScheduleId &id)
     }
 
     return false;
+}
+
+Task Scheduler::taskByTaskId(const TaskId &id) const
+{
+    foreach (const Task &task, d->tasks)
+    {
+        if (task.id() == id)
+        {
+            return task;
+        }
+    }
+
+    return Task();
+}
+
+ScheduleDefinitionList Scheduler::queue() const
+{
+    return d->tests;
 }
 
 #include "scheduler.moc"

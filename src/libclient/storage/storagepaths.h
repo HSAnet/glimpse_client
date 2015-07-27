@@ -15,8 +15,9 @@ public:
     QDir reportDirectory() const;
     QDir cacheDirectory() const;
     QDir logDirectory() const;
-
+    QDir resultDirectory() const;
     QDir crashDumpDirectory() const;
+    QDir taskDirectory() const;
 
 protected:
     class Private;

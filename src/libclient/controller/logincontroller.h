@@ -22,7 +22,7 @@ public:
 
     Q_INVOKABLE void anonymousRegistration();
     Q_INVOKABLE void registration(const QString &username, const QString &password);
-    Q_INVOKABLE void login();
+    Q_INVOKABLE void login(const QString &username, const QString &password);
     Q_INVOKABLE void checkApiKey();
 
     // Controller interface
