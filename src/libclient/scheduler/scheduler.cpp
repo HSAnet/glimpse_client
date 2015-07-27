@@ -220,6 +220,15 @@ void Scheduler::addTask(const Task &task)
     }
 }
 
+void Scheduler::removeTask(const TaskId &taskId)
+{
+    if (d->taskIds.contains(taskId))
+    {
+        d->tasks.removeAll(this->taskByTaskId(taskId));
+        d->taskIds.remove(taskId);
+    }
+}
+
 int Scheduler::enqueue(const ScheduleDefinition &testDefinition)
 {
     int pos = -2; // -1 is failure, -2 is "ondemand"
@@ -298,6 +307,30 @@ Task Scheduler::taskByTaskId(const TaskId &id) const
 ScheduleDefinitionList Scheduler::queue() const
 {
     return d->tests;
+}
+
+Task Scheduler::nextImmidiateTask(const QString &method, const QVariant &measurementDefinition) const
+{
+    // check whether a task exists with the same method and definition
+    foreach (const Task &task, d->tasks)
+    {
+        if (task.method() == method && task.measurementDefinition() == measurementDefinition)
+        {
+            return task;
+        }
+    }
+
+    // add task with a negative toolbox taskId
+    // -1 is reserved as 'invalid'
+    for (int i = -2; i > INT_MIN; i--)
+    {
+        if (!d->taskIds.contains(TaskId(i)))
+        {
+            return Task(TaskId(i), method, measurementDefinition);
+        }
+    }
+
+    return Task();
 }
 
 #include "scheduler.moc"

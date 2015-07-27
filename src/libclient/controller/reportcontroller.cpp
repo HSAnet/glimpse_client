@@ -211,7 +211,21 @@ QString ReportController::errorString() const
 
 void ReportController::sendReports()
 {
-    ReportList reports = d->scheduler->reports();
+    ReportList reports;
+
+    foreach (const Report &report, d->scheduler->reports())
+    {
+        if (report.taskId().toInt() > 0)
+        {
+            // don't upload toolbox tasks
+            reports.append(report);
+        }
+        else
+        {
+            // remove toolbox tasks
+            d->scheduler->removeReport(report);
+        }
+    }
 
     if (reports.isEmpty())
     {

@@ -32,6 +32,16 @@ ScheduleDefinition::ScheduleDefinition(const ScheduleId &id, const TaskId& taskI
     d->task = Task(taskId, name, measurementDefinition);
 }
 
+ScheduleDefinition::ScheduleDefinition(const ScheduleId &id, const Task &task, const TimingPtr &timing,
+                               const Precondition &precondition)
+: d(new TaskData)
+{
+    d->id = id;
+    d->timing = timing;
+    d->precondition = precondition;
+    d->task = task;
+}
+
 ScheduleDefinition::~ScheduleDefinition()
 {
 }

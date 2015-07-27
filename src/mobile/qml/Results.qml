@@ -12,10 +12,18 @@ ListPage {
     }
 
     delegate: ResultsDelegate {
-        headline: model.taskId + "\t" + model.secondColumn
+        headline: getIdText(model.taskId) + "\t" + model.secondColumn
         onClicked: showResult(ListView.view.model.get(model.index))
         showBorder: false
         showArrow: false
+    }
+
+    function getIdText(id) {
+        if (id < -1) {
+            return "toolbox";
+        } else {
+            return id;
+        }
     }
 
     function getColumns(name) {

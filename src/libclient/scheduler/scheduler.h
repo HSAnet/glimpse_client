@@ -21,6 +21,7 @@ public:
     TaskList tasks() const;
 
     void addTask(const Task &task);
+    void removeTask(const TaskId &taskId);
 
     int enqueue(const ScheduleDefinition &testDefinition);
     void dequeue(const ScheduleId &id);
@@ -33,6 +34,8 @@ public:
     Task taskByTaskId(const TaskId &id) const;
 
     ScheduleDefinitionList queue() const;
+
+    Task nextImmidiateTask(const QString &method, const QVariant &measurementDefinition) const;
 
 signals:
     void testAdded(const ScheduleDefinition &test, int position);
