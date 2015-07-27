@@ -5,6 +5,7 @@
 #include "snmp_definition.h"
 #include "snmpscanner.h"
 #include "resultcreator.h"
+#include "client.h"
 #include <QNetworkInterface>
 
 class Snmp : public Measurement
@@ -38,6 +39,7 @@ private:
 
     // Private Methods
     void setStatus(Measurement::Status status);
+    QString getDefaultGateway();
 };
 
 #endif // SNMP_MEASUREMENT_H

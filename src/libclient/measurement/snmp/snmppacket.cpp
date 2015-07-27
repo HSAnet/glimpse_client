@@ -1,5 +1,4 @@
 #include "snmppacket.h"
-#include <QDebug>
 
 // Constructs a Simple Network Management Protocol
 SnmpPacket::SnmpPacket() :
@@ -64,6 +63,7 @@ void SnmpPacket::setCommunity(const QString &community)
 
 
 // Initialize net-snmp PDU structure.
+// Prior setted values will be deleted.
 void SnmpPacket::setCommand(const int command)
 {
     if (m_pdu != NULL)
@@ -76,12 +76,14 @@ void SnmpPacket::setCommand(const int command)
 // Get the SNMP datagram.
 QByteArray SnmpPacket::getDatagram()
 {
+    // Build PDU part of datagram.
     size_t bufferLength = approximatePduSize();
     size_t outLength = bufferLength;
     u_char *buffer = (u_char*)malloc(bufferLength);
     memset(buffer, 0, bufferLength);
     snmp_pdu_build(m_pdu, buffer, &outLength);
     size_t pduLength = bufferLength - outLength;
+    // Build datagram
     QByteArray version = m_version.getAsByteArray();
     QByteArray community = m_community.getAsByteArray();
     m_messageSequence.setLength(version.size() + community.size() + pduLength);
@@ -117,9 +119,8 @@ int SnmpPacket::intValueAt(const quint8 index) const
     variable_list *variable = variableAtIndex(index);
     if (variable == NULL)
         return 0;
-    int *value = (int *)variable->buf;
 
-    return *value;
+    return *variable->val.integer;
 }
 
 // Get a string value from PDU at a given index.
@@ -330,7 +331,8 @@ variable_list *SnmpPacket::variableAtIndex(const quint8 index) const
     return list;
 }
 
-
+// Class Sequence
+// ----------------
 // Getter and setter
 quint16 Sequence::length() const
 {
@@ -364,6 +366,8 @@ quint16 Sequence::fromByteArray(const QByteArray &datagram, quint16 position)
     return position;
 }
 
+// Class Triple
+// --------------
 // Getter and setter
 quint8 Triple::length() const
 {

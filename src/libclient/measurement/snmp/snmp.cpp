@@ -9,7 +9,8 @@ Snmp::Snmp(QObject *parent) :
 
 Snmp::~Snmp()
 {
-
+    // Shut down Net-Snmp library.
+    snmp_shutdown("glimpse");
 }
 
 // SLOT
@@ -85,6 +86,9 @@ bool Snmp::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         QObject::connect(&m_scanner, SIGNAL(reportError(const QString)), this, SLOT(snmpErrorReport(const QString)));
     }
 
+    // Init Net-Snmp library
+    init_snmp("glimpse");
+
     return true;
 }
 
@@ -159,5 +163,11 @@ Result Snmp::result() const
 void Snmp::setStatus(Measurement::Status status)
 {
     m_status = status;
+}
+
+// Get default gateway from client.
+QString Snmp::getDefaultGateway()
+{
+    Client *client = Client::instance();
 }
 
