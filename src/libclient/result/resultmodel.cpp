@@ -23,6 +23,24 @@ public:
         scheduler = Client::instance()->scheduler();
     }
 
+    void sort(ExtResultList &list)
+    {
+        for (int n = 0; n <list.count(); n++)
+        {
+            for (int i = n + 1; i < list.count(); i++)
+            {
+                QString valorN = scheduler->taskByTaskId(TaskId(list.at(n).value("task_id").toUInt())).method();
+                QString valorI = scheduler->taskByTaskId(TaskId(list.at(i).value("task_id").toUInt())).method();
+
+                if (valorN.toUpper() > valorI.toUpper())
+                {
+                    list.move(i, n);
+                    n = 0;
+                }
+            }
+        }
+    }
+
     ResultModel *q;
 
     QPointer<ResultScheduler> resultScheduler;
@@ -43,6 +61,7 @@ void ResultModel::Private::resultAdded(const QVariantMap &result)
     q->beginInsertRows(QModelIndex(), position, position);
     identToResult.insert(TaskId(result.value("task_id").toInt()), position);
     results = resultScheduler->results();
+    sort(results);
     q->endInsertRows();
 }
 
@@ -57,6 +76,7 @@ void ResultModel::Private::resultModified(const QVariantMap &result)
     }
 
     results = resultScheduler->results();
+    sort(results);
 
     QModelIndex index = q->indexFromTaskId(TaskId(result.value("task_id").toInt()));
 
@@ -131,6 +151,7 @@ void ResultModel::reset()
     if (!d->resultScheduler.isNull())
     {
         d->results = d->resultScheduler->results();
+        d->sort(d->results);
     }
 
     endResetModel();
