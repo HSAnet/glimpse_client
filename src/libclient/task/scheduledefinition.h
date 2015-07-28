@@ -5,6 +5,7 @@
 #include "../timing/timing.h"
 #include "../measurement/measurementdefinition.h"
 #include "../precondition.h"
+#include "../task/task.h"
 
 #include <QUuid>
 #include <QSharedDataPointer>
@@ -18,6 +19,8 @@ public:
     ScheduleDefinition();
     ScheduleDefinition(const ScheduleDefinition &other);
     ScheduleDefinition(const ScheduleId &id, const TaskId &taskId, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition, const Precondition &precondition);
+    ScheduleDefinition(const ScheduleId &id, const Task &task, const TimingPtr &timing,
+                       const Precondition &precondition);
     ~ScheduleDefinition();
 
     ScheduleDefinition &operator=(const ScheduleDefinition &rhs);

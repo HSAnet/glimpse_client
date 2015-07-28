@@ -3,7 +3,7 @@
 
 #include "controller.h"
 #include "../result/resultscheduler.h"
-
+#include "../scheduler/scheduler.h"
 class Settings;
 
 class CLIENT_API ResultController : public Controller
@@ -14,7 +14,7 @@ public:
     ResultController(QObject *parent = 0);
     ~ResultController();
 
-    bool init(ResultScheduler *scheduler, Settings *settings);
+    bool init(ResultScheduler *resultScheduler, Scheduler *scheduler, Settings *settings);
 
     // Controller interface
     Status status() const;

@@ -358,7 +358,7 @@ bool Client::init()
     d->reportController.init(&d->reportScheduler, &d->settings);
     d->loginController.init(&d->networkManager, &d->settings);
     d->crashController.init(&d->networkManager, &d->settings);
-    d->resultController.init(&d->resultScheduler, &d->settings);
+    d->resultController.init(&d->resultScheduler, &d->scheduler, &d->settings);
     d->ntpController.init();
     d->trafficBudgetManager.init();
 
@@ -434,8 +434,8 @@ void Client::btc(const QString &host)
 {
     BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024, 10);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(2), TaskId(2), "btc_ma", timing,
-                                  btcDef.toVariant(), Precondition());
+    ScheduleDefinition testDefinition(ScheduleId(2), d->scheduler.nextImmidiateTask("btc_ma", btcDef.toVariant()),
+                                      timing, Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -449,8 +449,8 @@ void Client::http(const QString &url, bool avoidCaches, int threads, int targetT
 {
     HTTPDownloadDefinition httpDef(url, avoidCaches, threads , targetTime, rampUpTime, slotLength);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(7), TaskId(7), "httpdownload", timing,
-                                  httpDef.toVariant(), Precondition());
+    ScheduleDefinition testDefinition(ScheduleId(7), d->scheduler.nextImmidiateTask("httpdownload", httpDef.toVariant()),
+                                      timing, Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -480,8 +480,8 @@ void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint1
     PacketTrainsDefinition packetTrainsDef(host, port, packetSize, trainLength, iterations, rateMin, rateMax, delay);
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(8), TaskId(8), "packettrains_ma", timing,
-                                  packetTrainsDef.toVariant(), Precondition());
+    ScheduleDefinition testDefinition(ScheduleId(8), d->scheduler.nextImmidiateTask("packettrains_ma", packetTrainsDef.toVariant()),
+                                      timing, Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -498,8 +498,8 @@ void Client::ping(const QString &url, const quint32 &count, const quint32 &inter
                            pingTypeFromString(type));
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(1), TaskId(1), "ping", timing,
-                                  pingDef.toVariant(), Precondition());
+    ScheduleDefinition testDefinition(ScheduleId(1), d->scheduler.nextImmidiateTask("ping" ,pingDef.toVariant()), timing,
+                                  Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
@@ -521,8 +521,8 @@ void Client::traceroute(const QString &url,
                                        pingTypeFromString(type));
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(10), TaskId(10), "traceroute", timing,
-                                  tracerouteDef.toVariant(), Precondition());
+    ScheduleDefinition testDefinition(ScheduleId(10), d->scheduler.nextImmidiateTask("traceroute", tracerouteDef.toVariant()),
+                                      timing, Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
