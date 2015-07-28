@@ -19,11 +19,30 @@ class ResultModel::Private : public QObject
 public:
     Private(ResultModel *q)
     : q(q)
+    , methodSort(this)
     {
         scheduler = Client::instance()->scheduler();
     }
 
+    struct MethodSort
+    {
+        ResultModel::Private *p;
+
+        MethodSort(ResultModel::Private *p)
+            : p(p)
+        {}
+
+        bool operator() (const QVariantMap &a, const QVariantMap &b)
+        {
+            // sort by method name, ascending
+            return (p->scheduler->taskByTaskId(TaskId(a.value("task_id").toUInt())).method() <
+                    p->scheduler->taskByTaskId(TaskId(b.value("task_id").toUInt())).method());
+        }
+    };
+
     ResultModel *q;
+
+    MethodSort methodSort;
 
     QPointer<ResultScheduler> resultScheduler;
     QPointer<Scheduler> scheduler;
@@ -43,6 +62,7 @@ void ResultModel::Private::resultAdded(const QVariantMap &result)
     q->beginInsertRows(QModelIndex(), position, position);
     identToResult.insert(TaskId(result.value("task_id").toInt()), position);
     results = resultScheduler->results();
+    std::sort(results.begin(), results.end(), methodSort);
     q->endInsertRows();
 }
 
@@ -57,6 +77,7 @@ void ResultModel::Private::resultModified(const QVariantMap &result)
     }
 
     results = resultScheduler->results();
+    std::sort(results.begin(), results.end(), methodSort);
 
     QModelIndex index = q->indexFromTaskId(TaskId(result.value("task_id").toInt()));
 
@@ -131,6 +152,7 @@ void ResultModel::reset()
     if (!d->resultScheduler.isNull())
     {
         d->results = d->resultScheduler->results();
+        std::sort(d->results.begin(), d->results.end(), d->methodSort);
     }
 
     endResetModel();
