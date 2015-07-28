@@ -171,7 +171,7 @@ void SnmpScanner::readResponse()
         {
             continue;
         }
-        SnmpDevice device(packet.stringValueAt(0), packet.community(), host);
+        SnmpDevice device(packet.stringValueAt(0), packet.community(), host, packet.version());
         m_pResultTable->addDevice(device);
     }
 }

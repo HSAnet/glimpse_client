@@ -4,8 +4,7 @@
 
 Snmp::Snmp(QObject *parent) :
     Measurement(parent),
-    m_status(Unknown),
-    m_resultCreator(getDefaultGateway())
+    m_status(Unknown)
 {
 
 }
@@ -87,6 +86,7 @@ bool Snmp::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         QObject::connect(&m_scanner, SIGNAL(scanFinished(const DeviceMap*)), &m_resultCreator, SLOT(createResult(const DeviceMap*)));
         QObject::connect(&m_resultCreator, SIGNAL(scanResultReady()), this, SLOT(snmpMeasurementFinished()));
         QObject::connect(&m_scanner, SIGNAL(reportError(const QString)), this, SLOT(snmpErrorReport(const QString)));
+        m_resultCreator.setDefaultGateway(getDefaultGateway());
     }
 
     // Init Net-Snmp library
@@ -176,4 +176,3 @@ QString Snmp::getDefaultGateway()
 
     return tester->findDefaultGateway();
 }
-

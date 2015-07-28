@@ -35,9 +35,10 @@ SnmpDevice::SnmpDevice()
 
 // Snmp Device
 // Constructor
-SnmpDevice::SnmpDevice(const QString &description, const QString &community, QHostAddress &host) :
+SnmpDevice::SnmpDevice(const QString &description, const QString &community, const QHostAddress &host, const int snmpVersion) :
     description(description),
-    host(host)
+    host(host),
+    snmpVersion(snmpVersion)
 {
     m_communityList << community;
 }

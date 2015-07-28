@@ -1,7 +1,17 @@
 #include "snmppacket.h"
+#include <QDebug>
 
 // Constructs a Simple Network Management Protocol
 SnmpPacket::SnmpPacket() :
+    m_pdu(NULL),
+    m_hasError(false)
+{
+
+}
+
+SnmpPacket::SnmpPacket(const QString error) :
+    m_hasError(true),
+    m_errorText(error),
     m_pdu(NULL)
 {
 
@@ -10,9 +20,22 @@ SnmpPacket::SnmpPacket() :
 // Copy constructor
 SnmpPacket::SnmpPacket(const SnmpPacket &rhs) :
     m_version(rhs.m_version),
-    m_community(rhs.m_community)
+    m_community(rhs.m_community),
+    m_host(rhs.m_host),
+    m_contextOid(rhs.m_contextOid),
+    m_username(rhs.m_username),
+    m_hasError(rhs.m_hasError),
+    m_errorText(rhs.m_errorText)
 {
-    m_pdu = snmp_clone_pdu(rhs.m_pdu);
+    // Clone PDU structure if is present in rhs.
+    if (rhs.isEmpty())
+    {
+        m_pdu = NULL;
+    }
+    else
+    {
+        m_pdu = snmp_clone_pdu(rhs.m_pdu);
+    }
 }
 
 // Destructor
@@ -28,42 +51,28 @@ SnmpPacket::~SnmpPacket()
 // SNMP_VERSION_1 is returned if version is not set.
 long SnmpPacket::version() const
 {
-    if (m_version.value().isEmpty())
-    {
-        return 0;
-    }
-    long version = (quint8)m_version.value().at(0);
-    for (int i=1; i<m_version.value().size(); ++i)
-    {
-        version = version << 8;
-        version += (quint8)m_version.value().at(i);
-    }
-
-    return version;
+    return m_version;
 }
 
 // Set Snmp version
 void SnmpPacket::setVersion(const long version)
 {
-    m_version.setType(ASN_INTEGER);
-    m_version.setValue(version);
+    m_version = version;
 }
 
 QString SnmpPacket::community() const
 {
-    return QString(m_community.value());
+    return m_community;
 }
 
 void SnmpPacket::setCommunity(const QString &community)
 {
-    m_community.setType(ASN_OCTET_STR);
-    m_community.setValue(community);
+    m_community = community;
 }
 
 
 
 // Initialize net-snmp PDU structure.
-// Prior setted values will be deleted.
 void SnmpPacket::setCommand(const int command)
 {
     if (m_pdu != NULL)
@@ -73,21 +82,50 @@ void SnmpPacket::setCommand(const int command)
     m_pdu = snmp_pdu_create(command);
 }
 
+QString SnmpPacket::username() const
+{
+    return QString(m_username);
+}
+
+void SnmpPacket::setUsername(const QString &username)
+{
+    m_username = username.toUtf8();
+}
+
+QHostAddress SnmpPacket::host() const
+{
+    return m_host;
+}
+
+void SnmpPacket::setHost(const QHostAddress &host)
+{
+    m_host = host;
+}
+
 // Get the SNMP datagram.
 QByteArray SnmpPacket::getDatagram()
 {
-    // Build PDU part of datagram.
+    // Build the PDU as byte array.
     size_t bufferLength = approximatePduSize();
     size_t outLength = bufferLength;
     u_char *buffer = (u_char*)malloc(bufferLength);
     memset(buffer, 0, bufferLength);
     snmp_pdu_build(m_pdu, buffer, &outLength);
     size_t pduLength = bufferLength - outLength;
-    // Build datagram
-    QByteArray version = m_version.getAsByteArray();
-    QByteArray community = m_community.getAsByteArray();
-    m_messageSequence.setLength(version.size() + community.size() + pduLength);
-    QByteArray sequence = m_messageSequence.getAsByteArray();
+    // Get version as byte array in BER.
+    TripleBER versionBER;
+    versionBER.setType(ASN_INTEGER);
+    versionBER.setValue(m_version);
+    QByteArray version = versionBER.getAsByteArray();
+    // Get the community string in BER.
+    TripleBER communityBER;
+    communityBER.setType(ASN_OCTET_STR);
+    communityBER.setValue(m_community);
+    QByteArray community = communityBER.getAsByteArray();
+    // Build the datagram.
+    Sequence packetSequence;
+    packetSequence.setLength(version.size() + community.size() + pduLength);
+    QByteArray sequence = packetSequence.getAsByteArray();
     QByteArray datagram(sequence);
     datagram.append(version).append(community).append((char*)buffer, pduLength);
     free(buffer);
@@ -101,15 +139,33 @@ QString SnmpPacket::pduValueAt(const quint8 index) const
 {
     variable_list *variable = variableAtIndex(index);
     if (variable == NULL)
+    {
         return QString();
-    size_t bufferLen = variable->val_len + 10;
-    char *buffer = (char*)malloc(bufferLen);
+    }
+    size_t bufferLen = variable->val_len + 20;
+    char buffer[bufferLen];
     memset(buffer, 0, bufferLen);
     snprint_value(buffer, bufferLen, variable->name, variable->name_length, variable);
     QString value(buffer);
-    free(buffer);
 
     return value;
+}
+
+// Tests if PDU has a value at the given index.
+// Returns false if index does not exist or has no value.
+bool SnmpPacket::hasPduValueAt(const quint8 index) const
+{
+    variable_list *variable = variableAtIndex(index);
+    if (variable == NULL)
+    {
+        return false;
+    }
+    if (variable->type == noSuchInstance || variable->type == noSuchObject || variable->type == endOfMibView)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 // Gets a integer value from PDU at a given index.
@@ -166,18 +222,66 @@ bool SnmpPacket::addNullValue(const QString &oidString)
     return true;
 }
 
+// Do a request with current settings.
+// Return a SnmpPacket with the response or an error message.
+SnmpPacket SnmpPacket::synchRequest()
+{
+    if (m_pdu == NULL)
+    {
+        return SnmpPacket(QString("Packet has no PDU."));
+    }
+    snmp_session *session = getSnmpSession();
+    if (session == NULL)
+    {
+        return SnmpPacket(QString("Could not create a session."));
+    }
+    snmp_pdu *response = 0;
+    snmp_pdu *request = snmp_clone_pdu(m_pdu);
+    int result = snmp_synch_response(session, request, &response);
+    snmp_close(session);
+    if (result != STAT_SUCCESS)
+    {
+        return SnmpPacket(QString("Didn't get a response."));
+    }
+
+    return SnmpPacket::fromPduStruct(response);
+}
+
+// Do a SNMP synchronous request with given parameter and a list of OID's.
+// Return a SnmpPacket with the response or an error message.
+SnmpPacket SnmpPacket::synchRequestGet(const QHostAddress &host, const long version, const QString &community, const QStringList &oidList)
+{
+    m_host = host;
+    m_version = version;
+    m_community = community;
+    setCommand(SNMP_MSG_GET);
+    // Set requested OID's to PDU.
+    foreach (QString objectId, oidList) {
+        if (! addNullValue(objectId))
+        {
+            return SnmpPacket(QString("Could not add these OID's."));
+        }
+    }
+
+    return synchRequest();
+}
+
 // Get a snmp session object pointer.
 // Can be used for a synchronous request.
-snmp_session *SnmpPacket::getSnmpSession(const QHostAddress &peerAddress) const
+snmp_session *SnmpPacket::getSnmpSession() const
 {
-    QByteArray community = m_community.value();
+    QByteArray community = m_community.toUtf8();
+    QByteArray host = m_host.toString().toUtf8();
     snmp_session session;
     snmp_sess_init(&session);
-    session.version = version();
+    session.version = m_version;
     session.community = (u_char*)community.data();
     session.community_len = community.length();
-    QByteArray address = peerAddress.toString().toUtf8();
-    session.peername = address.data();
+    session.peername = host.data();
+    if (m_version == SNMP_VERSION_3)
+    {
+        // Not yet supported.
+    }
 
     return snmp_open(&session);
 }
@@ -200,19 +304,10 @@ SnmpPacket SnmpPacket::snmpGetRequest(const long version, const QString &communi
     packet.setCommand(SNMP_MSG_GET);
     packet.setVersion(version);
     packet.setCommunity(community);
-    oid objectIdentifier[MAX_OID_LEN];
-    size_t identifierLength = MAX_OID_LEN;
-    int result = get_node(objectId.toUtf8().data(), objectIdentifier, &identifierLength);
-    if (! result)
+    if (! packet.addNullValue(objectId))
     {
-        result = read_objid(objectId.toUtf8().data(), objectIdentifier, &identifierLength);
-        if (! result)
-        {
-            // Error can not work with given ObjectID.
-            return SnmpPacket();
-        }
+        return SnmpPacket(QString("Could not add these OID."));
     }
-    snmp_add_null_var(packet.m_pdu, objectIdentifier, identifierLength);
 
     return packet;
 }
@@ -220,31 +315,35 @@ SnmpPacket SnmpPacket::snmpGetRequest(const long version, const QString &communi
 // Parse a received datagram.
 SnmpPacket SnmpPacket::fromDatagram(const QByteArray &datagram)
 {
-    SnmpPacket paket;
+    SnmpPacket packet;
     // Get protocoll head
-    quint16 position = paket.m_messageSequence.fromByteArray(datagram, 0);
+    Sequence sequence;
+    quint16 position = sequence.fromByteArray(datagram, 0);
     if (position == 0)
     {
-        // Is not a SNMP datagram it starts not with a sequence.
-        return paket;
+        return SnmpPacket(QString("Datagram is not a SNMP packet."));
     }
-    position = paket.m_version.fromByteArray(datagram, position);
-    position = paket.m_community.fromByteArray(datagram, position);
+    TripleBER version;
+    position = version.fromByteArray(datagram, position);
+    packet.m_version = version.intValue();
+    TripleBER community;
+    position = community.fromByteArray(datagram, position);
+    packet.m_community = community.stringValue();
     // Get Protocoll Data Unit.
     QByteArray pdu = datagram.mid(position);
     size_t pduLength = pdu.size();
-    paket.m_pdu = snmp_pdu_create(SNMP_MSG_RESPONSE);
-    int result = snmp_pdu_parse(paket.m_pdu, (u_char*)pdu.data(), &pduLength);
+    packet.m_pdu = snmp_pdu_create(SNMP_MSG_RESPONSE);
+    int result = snmp_pdu_parse(packet.m_pdu, (u_char*)pdu.data(), &pduLength);
     if (result != 0)
     {
-        // Could not parse PDU.
-        return SnmpPacket();
+        return SnmpPacket(QString("Could not parse PDU in datagram."));
     }
 
-    return paket;
+    return packet;
 }
 
-// Get the length value of a byte array. Value is distributed over some bytes.
+// Get the length value of a byte array. Reads the BER encoded length value.
+// Is used of Sequence and TripleBER classes.
 quint16 SnmpPacket::lengthValueFromByteArray(const QByteArray &array, quint16 &position)
 {
     quint8 higestBit = 128;
@@ -267,7 +366,9 @@ quint16 SnmpPacket::lengthValueFromByteArray(const QByteArray &array, quint16 &p
     return length;
 }
 
-// Get a length value as a byte array. A value higher then 127 must take more then one byte.
+// Get a length value as a byte array. Encode a length value to BER.
+// Length beneth 128 is set to one byte. Hihger values are spread over
+// more than one byte.
 QByteArray SnmpPacket::lengthValueToByteArray(const int length)
 {
     QByteArray array;
@@ -311,7 +412,7 @@ size_t SnmpPacket::approximatePduSize()
         pduSize += 2 + list->val_len;       // Type and Length field + value
         list = list->next_variable;
     }
-    pduSize += 20;                  // Add bytes as ensurense
+    pduSize += 20;                  // Add bytes to ensure that the buffer is not to small.
 
     return pduSize;
 }
@@ -331,8 +432,7 @@ variable_list *SnmpPacket::variableAtIndex(const quint8 index) const
     return list;
 }
 
-// Class Sequence
-// ----------------
+
 // Getter and setter
 quint16 Sequence::length() const
 {
@@ -366,29 +466,40 @@ quint16 Sequence::fromByteArray(const QByteArray &datagram, quint16 position)
     return position;
 }
 
-// Class Triple
-// --------------
 // Getter and setter
-quint8 Triple::length() const
+quint8 TripleBER::length() const
 {
     return m_value.size();
 }
 
-QByteArray Triple::value() const
+// Get a string value from byte array.
+QString TripleBER::stringValue() const
 {
-    return m_value;
+    return QString(m_value);
+}
+
+// Get a integer value from byte array.
+int TripleBER::intValue() const
+{
+    int value = (int)m_value.at(0);
+    for (int index=1; index<m_value.length(); ++index)
+    {
+        value = value * 255 + (int)m_value.at(index);
+    }
+
+    return value;
 }
 
 // Set a string value. (community string)
 // Set string into a byte array.
-void Triple::setValue(const QString &value)
+void TripleBER::setValue(const QString &value)
 {
-    m_value = QByteArray(value.toUtf8());
+    m_value = value.toUtf8();
 }
 
 // Set a long value. (snmp version)
 // Set long value into a byte array.
-void Triple::setValue(const long value)
+void TripleBER::setValue(const long value)
 {
     m_value.clear();
     long val = value;
@@ -401,33 +512,25 @@ void Triple::setValue(const long value)
 
 // Triple
 // Constructor
-Triple::Triple() :
+TripleBER::TripleBER() :
     m_type(0)
 {
 
 }
 
-// Triple
-// Copy constructor
-Triple::Triple(const Triple &rhs) :
-    m_type(rhs.m_type)
-{
-    m_value.append(rhs.m_value);
-}
-
-quint8 Triple::type() const
+quint8 TripleBER::type() const
 {
     return m_type;
 }
 
-void Triple::setType(const quint8 type)
+void TripleBER::setType(const quint8 type)
 {
     m_type = type;
 }
 
 // Get a TLV triple as byte array. (Type, Length, Value)
 // As describted in the Basic Encoding Roles
-QByteArray Triple::getAsByteArray() const
+QByteArray TripleBER::getAsByteArray() const
 {
     QByteArray array;
     array.append(m_type);
@@ -438,7 +541,7 @@ QByteArray Triple::getAsByteArray() const
 }
 
 // Parses the SNMP version or the community string from datagram.
-quint16 Triple::fromByteArray(const QByteArray &datagram, quint16 position)
+quint16 TripleBER::fromByteArray(const QByteArray &datagram, quint16 position)
 {
     m_type = datagram[position++];
     quint16 length = SnmpPacket::lengthValueFromByteArray(datagram, position);

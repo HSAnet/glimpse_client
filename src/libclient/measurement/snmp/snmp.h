@@ -28,7 +28,7 @@ public:
     bool stop();
     Result result() const;
 
-    enum Type { AutoScan, RangeScan, SingleRequest, GatewayRequest };
+    enum Type { AutoScan, RangeScan, SingleRequest, GatewayStatistics };
 
 private:
     Status m_status;

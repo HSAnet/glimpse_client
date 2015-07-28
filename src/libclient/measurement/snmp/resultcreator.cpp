@@ -1,15 +1,20 @@
 #include "resultcreator.h"
 
 // Constructor
-ResultCreator::ResultCreator(const QString &gatewayAddr, QObject *parent) :
-    QObject(parent),
-    m_defaultGatewayAddr(gatewayAddr)
+ResultCreator::ResultCreator(QObject *parent) :
+    QObject(parent)
 {
     // IMPORTANT: If you changes the order of these list then change it in enum 'MibValues' too.
     m_objectIdList << "ipForwarding.0"
                    << "ifNumber.0"
                    << ".1.3.6.1.2.1.43.5.1.1.1.1"       // Value in Printer-MIB.
                    << ".1.3.6.1.2.1.43.11.1.1.2.1.1";   // Value in Printer-MIB.
+}
+
+// Setter
+void ResultCreator::setDefaultGateway(const QString &gateway)
+{
+    m_defaultGatewayAddr = gateway;
 }
 
 // SLOT
@@ -19,28 +24,30 @@ ResultCreator::ResultCreator(const QString &gatewayAddr, QObject *parent) :
 void ResultCreator::createResult(const DeviceMap *scanResult)
 {
     m_resultMap.clear();
+    SnmpPacket request;
     foreach (SnmpDevice device, scanResult->deviceList()) {
         QVariantMap deviceMap;
         deviceMap.insert(QString("host"), device.host.toString());
         deviceMap.insert(QString("communityList"), device.m_communityList);
         deviceMap.insert(QString("description"), device.description);
-        SnmpPacket packet = sendSnmpRequest(device.host, device.communityName(), m_objectIdList);
-        if (packet.isEmpty())
+        deviceMap.insert(QString("snmpVersion"), device.snmpVersion);
+        SnmpPacket response = request.synchRequestGet(device.host, device.snmpVersion, device.communityName(), m_objectIdList);
+        if (response.hasError())
         {
             // Error. Could not communicate with agent. Is defined as 'unknown'.
             deviceMap.insert(QString("type"), QString("unknown"));
             m_resultMap.insert(device.host.toString(), deviceMap);
             continue;
         }
-        if (isDeviceRouter(packet))
+        if (isDeviceRouter(response))
         {
             deviceMap.insert(QString("type"), QString("Router"));
         }
-        else if (isDeviceSwitch(packet))
+        else if (isDeviceSwitch(response))
         {
             deviceMap.insert(QString("type"), QString("Switch"));
         }
-        else if (isDevicePrinter(packet))
+        else if (isDevicePrinter(response))
         {
             deviceMap.insert(QString("type"), QString("Printer"));
         }
@@ -65,18 +72,13 @@ void ResultCreator::createResult(const DeviceMap *scanResult)
 // Its a printer if at least one of two values in Printer MIB are present.
 bool ResultCreator::isDevicePrinter(const SnmpPacket &packet) const
 {
-    quint8 dataType1 = packet.valueTypeAt(PrinterValueOne);
-    quint8 dataType2 = packet.valueTypeAt(PrinterValueTwo);
-    // Data type shows if value is not available.
-    bool notMib1 = dataType1 == noSuchObject || dataType1 == noSuchInstance || dataType1 == endOfMibView;
-    bool notMib2 = dataType2 == noSuchObject || dataType2 == noSuchInstance || dataType2 == endOfMibView;
-    if (notMib1 && notMib2)
+    if (packet.hasPduValueAt(PrinterValueOne) || packet.hasPduValueAt(PrinterValueTwo))
     {
-        // None of the values are available. It is not a printer.
-        return false;
+        return true;
     }
 
-    return true;
+    // None of the values are available. It is not a printer.
+    return false;
 }
 
 // Its a router if 'ipForwarding.0' is set to 1
@@ -117,38 +119,4 @@ bool ResultCreator::isDeviceSwitch(const SnmpPacket &packet) const
     int numInterfaces = packet.intValueAt(InterfaceNumber);
 
     return ipForwarding != 1 && numInterfaces >= 4;
-}
-
-// Send one or more SNMP requests to a devices.
-SnmpPacket ResultCreator::sendSnmpRequest(const QHostAddress &host, const QString &community, const QStringList &oidList) const
-{
-    SnmpPacket packet = SnmpPacket::snmpGetRequest(SNMP_VERSION_1, community);
-    snmp_session *ss = packet.getSnmpSession(host);
-    if (ss == NULL)
-    {
-        // Could not open session.
-        return SnmpPacket();
-    }
-
-    // Set OID's to request.
-    foreach (QString objectId, oidList) {
-        if (! packet.addNullValue(objectId))
-        {
-            // Could not set OID.
-            return SnmpPacket();
-        }
-    }
-
-    snmp_pdu *pdu = packet.pduClone();
-
-    struct snmp_pdu *response = NULL;
-    int result = snmp_synch_response(ss, pdu, &response);
-    snmp_close(ss);
-    if (result != STAT_SUCCESS)
-    {
-        // Error could not communicate with agent.
-        return SnmpPacket();
-    }
-
-    return SnmpPacket::fromPduStruct(response);
 }

@@ -13,7 +13,8 @@ typedef QList<SnmpDefinitionPtr> SnmpDefinitionList;
 class SnmpDefinition : public MeasurementDefinition
 {
 public:
-    SnmpDefinition(const QStringList &communityList, const int retriesPerIp, const int snmpVersion, const QString &rangeStartIp, const QString &rangeEndIp, const int measurementType, const int sendInterval, const int waitTime);
+    SnmpDefinition(const QStringList &communityList, const int retriesPerIp, const int snmpVersion, const QString &rangeStartIp,
+                   const QString &rangeEndIp, const int measurementType, const int sendInterval, const int waitTime);
     ~SnmpDefinition();
 
     QStringList m_communityList;

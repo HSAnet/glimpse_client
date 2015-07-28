@@ -10,7 +10,7 @@ class SnmpDevice
 {
 public:
     SnmpDevice();
-    SnmpDevice(const QString &description, const QString &m_communityList, QHostAddress &host);
+    SnmpDevice(const QString &description, const QString &m_communityList, const QHostAddress &host, const int snmpVersion);
 
     QString communityName() const           { return m_communityList[0]; }
 
@@ -18,6 +18,7 @@ public:
     QString description;
     QStringList m_communityList;
     QHostAddress host;
+    int snmpVersion;
 };
 
 
