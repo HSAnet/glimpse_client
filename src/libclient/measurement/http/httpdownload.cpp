@@ -404,7 +404,7 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
     {
         //create a worker thread that starts an actual download
         QThread *workerThread = new QThread();
-        DownloadThread *worker = new DownloadThread(requestUrl, server, definition->targetTime, definition->avoidCaches, workerThread);
+        DownloadThread *worker = new DownloadThread(requestUrl, server, definition->targetTime, definition->avoidCaches);
 
         //store the references to the threads/workers
         workers.append(worker);
