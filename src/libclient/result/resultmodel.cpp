@@ -35,8 +35,8 @@ public:
         bool operator() (const QVariantMap &a, const QVariantMap &b)
         {
             // sort by method name, ascending
-            return (p->scheduler->taskByTaskId(TaskId(a.value("task_id").toUInt())).method() <
-                    p->scheduler->taskByTaskId(TaskId(b.value("task_id").toUInt())).method());
+            return (p->scheduler->taskByTaskId(TaskId(a.value("task_id").toInt())).method() <
+                    p->scheduler->taskByTaskId(TaskId(b.value("task_id").toInt())).method());
         }
     };
 
