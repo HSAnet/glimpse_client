@@ -57,37 +57,14 @@ public slots:
 
 void ResultModel::Private::resultAdded(const QVariantMap &result)
 {
-    int position = results.size();
-
-    q->beginInsertRows(QModelIndex(), position, position);
-    identToResult.insert(TaskId(result.value("task_id").toInt()), position);
-    results = resultScheduler->results();
-    std::sort(results.begin(), results.end(), methodSort);
-    q->endInsertRows();
+    Q_UNUSED(result);
+    q->reset();
 }
 
 void ResultModel::Private::resultModified(const QVariantMap &result)
 {
-    int pos = identToResult.value(TaskId(result.value("task_id").toInt()));
-
-    if (pos == -1)
-    {
-        LOG_ERROR("invalid ident");
-        return;
-    }
-
-    results = resultScheduler->results();
-    std::sort(results.begin(), results.end(), methodSort);
-
-    QModelIndex index = q->indexFromTaskId(TaskId(result.value("task_id").toInt()));
-
-    if (!index.isValid())
-    {
-        LOG_ERROR("invalid index");
-        return;
-    }
-
-    emit q->dataChanged(index, index);
+    Q_UNUSED(result);
+    q->reset();
 }
 
 ResultModel::ResultModel(QObject *parent)
@@ -129,20 +106,6 @@ void ResultModel::setScheduler(ResultScheduler *scheduler)
 ResultScheduler *ResultModel::scheduler() const
 {
     return d->resultScheduler;
-}
-
-QModelIndex ResultModel::indexFromTaskId(const TaskId &taskId) const
-{
-    int pos = d->identToResult.value(taskId);
-
-    if (pos == -1)
-    {
-        return QModelIndex();
-    }
-    else
-    {
-        return createIndex(pos, 0);
-    }
 }
 
 void ResultModel::reset()
