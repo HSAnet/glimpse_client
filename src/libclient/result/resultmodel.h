@@ -29,8 +29,6 @@ public:
     void setScheduler(ResultScheduler *scheduler);
     ResultScheduler *scheduler() const;
 
-    QModelIndex indexFromTaskId(const TaskId &taskId) const;
-
     Q_INVOKABLE void reset();
     Q_INVOKABLE QVariant get(int index) const;
 

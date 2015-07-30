@@ -14,8 +14,6 @@ ListPage {
     delegate: ResultsDelegate {
         headline: getIdText(model.taskId) + "\t" + model.secondColumn
         onClicked: showResult(ListView.view.model.get(model.index))
-        showBorder: false
-        showArrow: false
     }
 
     function getIdText(id) {
@@ -72,19 +70,28 @@ ListPage {
     section.property: "name"
     section.delegate: Component {
         id: sectionHeading
-        Rectangle {
-            width: parent.width
-            height: 21
-            color: "lightsteelblue"
 
-            Text {
-                id: header
-                text: getTitle(section)
-                font.bold: true
-                color: "#333333"
-                font.pixelSize: units.gu(30)
-                anchors.left: parent.left
-                anchors.leftMargin: units.gu(10)
+        Rectangle {
+            id: header
+            width: parent.width
+            height: units.gu(75)
+
+            Rectangle {
+                width: parent.width
+                height: 21
+                color: "lightsteelblue"
+                anchors {
+                    top: parent.top
+                }
+
+                Text {
+                    text: getTitle(section)
+                    font.bold: true
+                    color: "#333333"
+                    font.pixelSize: units.gu(30)
+                    anchors.left: parent.left
+                    anchors.leftMargin: units.gu(10)
+                }
             }
 
             Text {
@@ -92,9 +99,8 @@ ListPage {
                 anchors {
                     left: parent.left
                     leftMargin: units.gu(40)
-                    rightMargin: units.gu(40)
-                    top: header.bottom
-                    topMargin: units.gu(10)
+                    bottom: parent.bottom
+                    bottomMargin: units.gu(5)
                 }
                 font.pixelSize: units.gu(25)
             }
