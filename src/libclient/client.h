@@ -146,6 +146,15 @@ public slots:
               const int measurementType,
               const int sendInterval,
               const int waitTime);
+    void snmp(const int version,
+              const QStringList &communityList,
+              const QString &host,
+              const QString &objectIdentifier,
+              const int authentication,
+              const int privacy,
+              const QString &username,
+              const QString &password,
+              const QString &contextOID);
 
 signals:
     void statusChanged();

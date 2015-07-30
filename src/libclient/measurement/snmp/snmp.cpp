@@ -84,10 +84,12 @@ bool Snmp::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     if (m_definition->m_measurementType == AutoScan || m_definition->m_measurementType == RangeScan)
     {
         QObject::connect(&m_scanner, SIGNAL(scanFinished(const DeviceMap*)), &m_resultCreator, SLOT(createResult(const DeviceMap*)));
-        QObject::connect(&m_resultCreator, SIGNAL(scanResultReady()), this, SLOT(snmpMeasurementFinished()));
         QObject::connect(&m_scanner, SIGNAL(reportError(const QString)), this, SLOT(snmpErrorReport(const QString)));
         m_resultCreator.setDefaultGateway(getDefaultGateway());
     }
+
+    // Signal result ready.
+    QObject::connect(&m_resultCreator, SIGNAL(creatorResultReady()), this, SLOT(snmpMeasurementFinished()));
 
     // Init Net-Snmp library
     init_snmp("glimpse");
@@ -120,6 +122,9 @@ bool Snmp::start()
             return false;
         }
         break;
+    case GatewayStatistics:
+        return getGatewaySatistics();
+        break;
     default:
         setErrorString(QString("No measurement of this type available."));
         setStatus(Error);
@@ -134,10 +139,18 @@ bool Snmp::start()
 // is called when measurement has finished.
 bool Snmp::stop()
 {
-    if (m_scanner.stopScanner())
+    switch (m_definition->m_measurementType)
     {
-        setStatus(Unknown);
-        return true;
+    case AutoScan:
+    case RangeScan:
+        if (m_scanner.stopScanner())
+        {
+            setStatus(Unknown);
+            return true;
+        }
+        break;
+    default:
+        break;
     }
 
     return false;
@@ -146,20 +159,9 @@ bool Snmp::stop()
 // return the measurements result.
 Result Snmp::result() const
 {
-    Result result;
-    switch (m_definition->m_measurementType) {
-    case AutoScan:
-    case RangeScan:
-    {
-        QVariantMap resultMap = m_resultCreator.resultMap();
-        result = Result(resultMap);
-        break;
-    }
-    default:
-        break;
-    }
+    QVariantMap resultMap = m_resultCreator.resultMap();
 
-    return result;
+    return Result(resultMap);
 }
 
 // Change the current status.
@@ -175,4 +177,74 @@ QString Snmp::getDefaultGateway()
     ConnectionTester *tester = client->connectionTester();
 
     return tester->findDefaultGateway();
+}
+
+// Reads statistics of the default gateway if posible.
+bool Snmp::getGatewaySatistics()
+{
+    QHostAddress host(getDefaultGateway());
+    QString community("public");
+    QStringList oidList = QStringList() << "ifNumber.0" << "ipForwarding.0";
+    SnmpPacket request;
+    SnmpPacket response = request.synchRequestGet(host, SNMP_VERSION_2c, community, oidList);
+    if (response.hasError() || response.isEmpty())
+    {
+        setErrorString("Can not read Gateway statistics.");
+        return false;
+    }
+    if (response.intValueAt(1) != 1)
+    {
+        setErrorString("Default gateway addresses not a router.");
+        return false;
+    }
+    int ifNumber = response.intValueAt(0);
+
+    // Read interface index list from interface table.
+    response = request.synchRequestBulkGet(host, SNMP_VERSION_2c, community, QStringList() << "ifIndex", ifNumber, 0);
+    QVariantList indexList = response.valueList();
+    // Read interface operating status list.
+    response = request.synchRequestBulkGet(host, SNMP_VERSION_2c, community, QStringList() << "ifOperStatus", ifNumber, 0);
+    QVariantList operatingStatusList = response.valueList();
+    // Read out going octed statistics.
+    response = request.synchRequestBulkGet(host, SNMP_VERSION_2c, community, QStringList() << "ifOutOctets", ifNumber, 0);
+    QVariantList outOctetList = response.valueList();
+    // read in going octet statistics.
+    response = request.synchRequestBulkGet(host, SNMP_VERSION_2c, community, QStringList() << "ifInOctets", ifNumber, 0);
+    QVariantList inOctetList = response.valueList();
+
+    m_resultCreator.createResult(indexList, operatingStatusList, outOctetList, inOctetList);
+
+    return true;
+}
+
+// User wants to do a request to an agent.
+// (Use Glimpse as a tiny Management System)
+bool Snmp::userSingleRequest()
+{
+    SnmpPacket request;
+    request.setVersion(m_definition->m_snmpVersion);
+    if (! m_definition->m_communityList.isEmpty())
+    {
+        request.setCommunity(m_definition->m_communityList.at(0));
+    }
+    request.setHost(m_definition->m_startRangeIp);
+    request.setUsername(m_definition->m_username);
+    request.setAuthentication((SnmpPacket::Authentication)m_definition->m_authentication);
+    request.setPrivacy((SnmpPacket::Privacy)m_definition->m_privacy);
+    request.setContextOID(m_definition->m_contextOID);
+    SnmpPacket response = request.synchRequest(m_definition->m_password);
+    if (response.hasError())
+    {
+        setErrorString(response.errorString());
+        return false;
+    }
+    if (response.isEmpty())
+    {
+        setErrorString(QString("Unknown error."));
+        return false;
+    }
+
+    m_resultCreator.createResult(response, m_definition->m_startRangeIp);
+
+    return true;
 }

@@ -39,6 +39,8 @@ private:
     // Private Methods
     void setStatus(Measurement::Status status);
     QString getDefaultGateway();
+    bool getGatewaySatistics();
+    bool userSingleRequest();
 };
 
 #endif // SNMP_MEASUREMENT_H

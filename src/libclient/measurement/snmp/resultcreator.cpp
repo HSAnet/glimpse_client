@@ -66,7 +66,40 @@ void ResultCreator::createResult(const DeviceMap *scanResult)
         device.insert(QString("type"), QString("Gateway"));
     }
 
-    emit scanResultReady();
+    emit creatorResultReady();
+}
+
+// Create Gateway statistics result.
+// Stores of all interfaces with status 'up' the out going octets, in going octets and the index.
+void ResultCreator::createResult(const QVariantList &indexList, const QVariantList &operatingStatusList,
+                                 const QVariantList &outOctetList, const QVariantList &inOctetList)
+{
+    m_resultMap.clear();
+    for(int index=0; index<indexList.size(); ++index)
+    {
+        if (operatingStatusList[index].toInt() == Up)
+        {
+            QVariantMap interfaceInfo;
+            interfaceInfo.insert(QString("index"), indexList[index]);
+            interfaceInfo.insert(QString("outOctets"), outOctetList[index]);
+            interfaceInfo.insert(QString("inOctets"), inOctetList[index]);
+            m_resultMap.insert(indexList[index].toString(), interfaceInfo);
+        }
+    }
+
+    emit creatorResultReady();
+}
+
+// Create a result map of a response to a SingleRequest.
+void ResultCreator::createResult(const SnmpPacket &response, const QHostAddress &host)
+{
+    m_resultMap.clear();
+    QVariantMap result;
+    result.insert(QString("host"), host.toString());
+    result.insert(QString("valueList"), response.oidValueList());
+    m_resultMap.insert(host.toString(), result);
+
+    emit creatorResultReady();
 }
 
 // Its a printer if at least one of two values in Printer MIB are present.

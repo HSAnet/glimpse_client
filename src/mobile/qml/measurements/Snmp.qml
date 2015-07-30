@@ -60,7 +60,7 @@ Item {
                     model: ["none", "MD5"]
                 }
                 LabeledComboBox {
-                    id: privacyCombo
+                    id: privacyAlgoCombo
                     label: qsTr("Privacy")
                     controlScale: 0.3
                     model: ["none", "AES", "DES"]
@@ -260,8 +260,15 @@ Item {
     // ------------------------------------
     // Function :       startMeasurement()
     function startMeasurement() {
-        client.snmp(model.stringList, retrySlider.value, snmpVersionComboBox.currentIndex, ipRangeDialog.text,
-                    measurementType.currentIndex, intervalSlider.value, waitTimeSlider.value)
+        if (measurementType === 2) {
+            var snmpVersion3 = 3;
+            var communityList = [singleCommunityName.text]
+            client.snmp(snmpVersion3, communityList, host.text, objectId.text, authAlgoCombo.currentIndex,
+                        privacyAlgoCombo.currentIndex, usernameField.text, passwordField.text, contextOidField.text)
+        } else {
+            client.snmp(model.stringList, retrySlider.value, snmpVersionComboBox.currentIndex, ipRangeDialog.text,
+                        measurementType.currentIndex, intervalSlider.value, waitTimeSlider.value)
+        }
     }
 
     // -------------------------

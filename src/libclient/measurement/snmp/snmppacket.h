@@ -6,7 +6,7 @@
   Class SnmpPaket
   --------------------------------------------------------------------------
 
-  This class is manages SNMP requests. It can do a synchronous request using
+  This class manages SNMP requests. It can do a synchronous request using
   the net-snmp library and it can build datagrams to send via UDP.
   To use this class it is necassary to initialize the Net-SNMP library.
   Call 'init_snmp()' bevor. The class uses some function from the library.
@@ -71,8 +71,11 @@ public:
     ~SnmpPacket();
 
     enum ImplicitNull { noSuchObject = 128, noSuchInstance, endOfMibView };
+    enum Authentication { NoneAuth, MD5 };
+    enum Privacy { NonePrivacy, AES, DES };
 
 public:
+    // Getter and Setter
     long version() const;
     void setVersion(const long version);
     QString community() const;
@@ -82,6 +85,14 @@ public:
     void setUsername(const QString &username);
     QHostAddress host() const;
     void setHost(const QHostAddress &host);
+    void setAuthentication(Authentication auth);
+    Authentication authentication() const;
+    QString contextOID() const;
+    void setContextOID(const QString &contextObjID);
+    QString errorString() const;
+    void setPrivacy(const Privacy privacy);
+    Privacy privacy() const;
+    // Methods
     QByteArray getDatagram();
     QString pduValueAt(const quint8 index) const;
     bool hasPduValueAt(const quint8 index) const;
@@ -89,10 +100,16 @@ public:
     QString stringValueAt(const quint8 index) const;
     quint8 valueTypeAt(const quint8 index) const;
     bool addNullValue(const QString &oidString);
+    void setBulkGetRepeats(const int repeats);
+    void setBulkGetNonRepeaters(const int nonrepeaters);
+    QVariantList valueList() const;
+    QStringList oidValueList() const;
 
     // Send a request to an agent.
-    SnmpPacket synchRequest();
+    SnmpPacket synchRequest(const QString &password = QString());
     SnmpPacket synchRequestGet(const QHostAddress &host, const long version, const QString &community, const QStringList &oidList);
+    SnmpPacket synchRequestBulkGet(const QHostAddress &host, const long version, const QString &community,
+                                   const QStringList &oidList, const int repeaters, const int nonrepeaters);
 
     // Inline functions
     bool isEmpty() const                    { return m_pdu == NULL; }
@@ -115,11 +132,15 @@ private:
     struct snmp_pdu *m_pdu;
     bool m_hasError;
     QString m_errorText;
+    Authentication m_authentication;
+    Privacy m_privacy;
 
     // Methods
     size_t approximatePduSize();
     variable_list* variableAtIndex(const quint8 index) const;
-    snmp_session* getSnmpSession() const;
+    snmp_session* getSnmpSession(const QString &password) const;
+    QVariant variantValueOf(variable_list *variable) const;
+    QString oidValueString(const variable_list *variable) const;
 };
 
 #endif // SNMPROTOCOL_H

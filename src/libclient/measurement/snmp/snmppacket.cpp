@@ -102,6 +102,41 @@ void SnmpPacket::setHost(const QHostAddress &host)
     m_host = host;
 }
 
+void SnmpPacket::setAuthentication(SnmpPacket::Authentication auth)
+{
+    m_authentication = auth;
+}
+
+SnmpPacket::Authentication SnmpPacket::authentication() const
+{
+    return m_authentication;
+}
+
+QString SnmpPacket::contextOID() const
+{
+    return m_contextOid;
+}
+
+void SnmpPacket::setContextOID(const QString &contextObjID)
+{
+    m_contextOid = contextObjID;
+}
+
+QString SnmpPacket::errorString() const
+{
+    return m_errorText;
+}
+
+void SnmpPacket::setPrivacy(const SnmpPacket::Privacy privacy)
+{
+    m_privacy = privacy;
+}
+
+SnmpPacket::Privacy SnmpPacket::privacy() const
+{
+    return m_privacy;
+}
+
 // Get the SNMP datagram.
 QByteArray SnmpPacket::getDatagram()
 {
@@ -134,7 +169,8 @@ QByteArray SnmpPacket::getDatagram()
 }
 
 // Get a value of PDU at index.
-// Return a string which reads 'data type: value'.
+// Return a string which reads 'OID = data type: value'.
+// Like : IF-MIB::ifIndex.23 = INTEGER: 23
 QString SnmpPacket::pduValueAt(const quint8 index) const
 {
     variable_list *variable = variableAtIndex(index);
@@ -142,13 +178,8 @@ QString SnmpPacket::pduValueAt(const quint8 index) const
     {
         return QString();
     }
-    size_t bufferLen = variable->val_len + 20;
-    char buffer[bufferLen];
-    memset(buffer, 0, bufferLen);
-    snprint_value(buffer, bufferLen, variable->name, variable->name_length, variable);
-    QString value(buffer);
 
-    return value;
+    return oidValueString(variable);
 }
 
 // Tests if PDU has a value at the given index.
@@ -222,15 +253,78 @@ bool SnmpPacket::addNullValue(const QString &oidString)
     return true;
 }
 
+// Get bulk is meant to read table content from MIB.
+// Repeats are the number rows to read from MIB.
+// PDU command must be SNMP_MSG_GETBULK.
+// The PDU field errindex is used to define this value.
+void SnmpPacket::setBulkGetRepeats(const int repeats)
+{
+    if (m_pdu == NULL || m_pdu->command != SNMP_MSG_GETBULK)
+    {
+        return;
+    }
+    m_pdu->errindex = repeats;
+}
+
+// Get bulk is meant to read table content from MIB.
+// Non repeaters are single values to read. (Scalar Object)
+// PDU command must be SNMP_MSG_GETBULK.
+// The PDU field errstat is used to define this value.
+void SnmpPacket::setBulkGetNonRepeaters(const int nonrepeaters)
+{
+    if (m_pdu == NULL || m_pdu->command != SNMP_MSG_GETBULK)
+    {
+        return;
+    }
+    m_pdu->errstat = nonrepeaters;
+}
+
+// Get a list of all PDU var-bind content of a response.
+QVariantList SnmpPacket::valueList() const
+{
+    QVariantList list;
+    variable_list *variable = m_pdu->variables;
+    while (variable)
+    {
+        if (variable->type == noSuchObject || variable->type == noSuchInstance
+                || variable->type == endOfMibView || variable->type == ASN_NULL)
+        {
+            // Value in PDU is not available or is a NULL value.
+            list << QVariant();
+            continue;
+        }
+        list << variantValueOf(variable);
+
+        variable = variable->next_variable;
+    }
+
+    return list;
+}
+
+// Return the whole list of values in PDU.
+// An entry of list consists of OID and value.
+// Format:  'IF-MIB::ifIndex.12 = INTEGER: 12'
+QStringList SnmpPacket::oidValueList() const
+{
+    QStringList list;
+    variable_list *variable = m_pdu->variables;
+    while (variable) {
+        list << oidValueString(variable);
+        variable = variable->next_variable;
+    }
+
+    return list;
+}
+
 // Do a request with current settings.
 // Return a SnmpPacket with the response or an error message.
-SnmpPacket SnmpPacket::synchRequest()
+SnmpPacket SnmpPacket::synchRequest(const QString &password)
 {
     if (m_pdu == NULL)
     {
         return SnmpPacket(QString("Packet has no PDU."));
     }
-    snmp_session *session = getSnmpSession();
+    snmp_session *session = getSnmpSession(password);
     if (session == NULL)
     {
         return SnmpPacket(QString("Could not create a session."));
@@ -248,7 +342,7 @@ SnmpPacket SnmpPacket::synchRequest()
 }
 
 // Do a SNMP synchronous request with given parameter and a list of OID's.
-// Return a SnmpPacket with the response or an error message.
+// Return a SnmpPacket with the response or an instance with an error message.
 SnmpPacket SnmpPacket::synchRequestGet(const QHostAddress &host, const long version, const QString &community, const QStringList &oidList)
 {
     m_host = host;
@@ -259,7 +353,29 @@ SnmpPacket SnmpPacket::synchRequestGet(const QHostAddress &host, const long vers
     foreach (QString objectId, oidList) {
         if (! addNullValue(objectId))
         {
-            return SnmpPacket(QString("Could not add these OID's."));
+            return SnmpPacket(QString("Could not add these OID: ").append(objectId));
+        }
+    }
+
+    return synchRequest();
+}
+
+// Do a SNMP synchronous bulk get request with given parameter.
+// Return a SnmpPacket with the agents response or an instance with an error message.
+SnmpPacket SnmpPacket::synchRequestBulkGet(const QHostAddress &host, const long version, const QString &community,
+                                           const QStringList &oidList, const int repeaters, const int nonrepeaters)
+{
+    m_host = host;
+    m_version = version;
+    m_community = community;
+    setCommand(SNMP_MSG_GETBULK);
+    setBulkGetNonRepeaters(nonrepeaters);
+    setBulkGetRepeats(repeaters);
+    // Set requested OID's to PDU.
+    foreach (QString objectId, oidList) {
+        if (! addNullValue(objectId))
+        {
+            return SnmpPacket(QString("Could not add these OID: ").append(objectId));
         }
     }
 
@@ -268,10 +384,11 @@ SnmpPacket SnmpPacket::synchRequestGet(const QHostAddress &host, const long vers
 
 // Get a snmp session object pointer.
 // Can be used for a synchronous request.
-snmp_session *SnmpPacket::getSnmpSession() const
+snmp_session *SnmpPacket::getSnmpSession(const QString &password) const
 {
     QByteArray community = m_community.toUtf8();
     QByteArray host = m_host.toString().toUtf8();
+    QByteArray passwd = password.toUtf8();
     snmp_session session;
     snmp_sess_init(&session);
     session.version = m_version;
@@ -280,10 +397,82 @@ snmp_session *SnmpPacket::getSnmpSession() const
     session.peername = host.data();
     if (m_version == SNMP_VERSION_3)
     {
-        // Not yet supported.
+#ifdef NETSNMP_USE_OPENSSL
+        if (m_authentication == NoneAuth && m_privacy == NonePrivacy)
+            session.securityLevel = SNMP_SEC_LEVEL_NOAUTH;
+        if (m_authentication != NoneAuth && m_privacy == NonePrivacy)
+            session.securityLevel = SNMP_SEC_LEVEL_AUTHNOPRIV;
+        if (m_authentication != NoneAuth && m_privacy != NonePrivacy)
+            session.securityLevel SNMP_SEC_LEVEL_AUTHPRIV;
+        if (m_authentication = MD5)
+        {
+            session.securityAuthKey = usmHMACMD5AuthProtocol;
+            session.securityAuthProtoLen = sizeof(usmHMACMD5AuthProtocol)/sizeof(oid);
+            session.securityAuthKeyLen = USM_AUTH_KU_LEN;
+            generate_Ku(session.securityAuthProto,
+                               session.securityAuthProtoLen,
+                               (u_char *) passwd.data(), passwd.length(),
+                               session.securityAuthKey,
+                               &session.securityAuthKeyLen)
+        }
+        // Privacy should be implemented hier.
+#endif
     }
 
     return snmp_open(&session);
+}
+
+// Get a QVariant value from PDU variable.
+// Not all typse are implemented. If a value type is not
+// implemented the function returns an empty QVariant.
+QVariant SnmpPacket::variantValueOf(variable_list *variable) const
+{
+    switch (variable->type) {
+    case ASN_BIT_STR:
+        return QVariant(QString::fromUtf8((char*)variable->val.bitstring, variable->val_len));
+        break;
+    case ASN_OCTET_STR:
+        return QVariant(QString::fromUtf8((char*)variable->val.string, variable->val_len));
+        break;
+    case ASN_INTEGER:
+    case ASN_COUNTER:
+        return QVariant((int)*variable->val.integer);
+        break;
+    case ASN_COUNTER64:
+    {
+        quint64 counterVal = variable->val.counter64->high;
+        counterVal = counterVal << 32;
+        counterVal += variable->val.counter64->low;
+        return QVariant(counterVal);
+        break;
+    }
+    case ASN_OBJECT_ID:
+    {
+        QString objectId;
+        for (int i=0; i<variable->val_len; ++i)
+        {
+            QString position = QString(".%1").arg(variable->val.objid[i]);
+            objectId.append(position);
+        }
+        return QVariant(objectId);
+        break;
+    }
+    default:
+        break;
+    }
+
+    return QVariant();
+}
+
+// Return a string containing OID and Value.
+// Like :   IF-MIB::ifIndex.1 = INTEGER: 1
+QString SnmpPacket::oidValueString(const variable_list *variable) const
+{
+    size_t bufferLen = variable->val_len + 20;
+    char buffer[bufferLen];
+    int length = snprint_value(buffer, bufferLen, variable->name, variable->name_length, variable);
+
+    return QString::fromUtf8(buffer, length);
 }
 
 // Factory function. Creates a SNMP packet for a get request without PDU values.
