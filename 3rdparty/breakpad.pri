@@ -4,6 +4,7 @@ INCLUDEPATH += $$BREAKPAD_PATH \
                $$BREAKPAD_PATH/src
 
 android:INCLUDEPATH += $$BREAKPAD_PATH/src/common/android/include
+android:QMAKE_CXXFLAGS += -std=gnu++0x
 
 # Breakpad does not work on ios yet (for us)
 !ios {
