@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <arpa/inet.h>
 #include <linux/errqueue.h>
 #include <linux/icmp.h>
 #if defined(Q_OS_ANDROID)
@@ -329,20 +328,8 @@ Result Ping::result() const
     }
     else
     {
-        char address[m_destAddress.sa.sa_family == AF_INET ? INET_ADDRSTRLEN : INET6_ADDRSTRLEN];
-        memset(address, 0, sizeof(address));
-
-        switch (m_destAddress.sa.sa_family)
-        {
-        case AF_INET:
-            inet_ntop(m_destAddress.sa.sa_family, &(m_destAddress.sin.sin_addr), address, sizeof(address));
-            break;
-        case AF_INET6:
-            inet_ntop(m_destAddress.sa.sa_family, &(m_destAddress.sin6.sin6_addr), address, sizeof(address));
-            break;
-        }
-
-        res.insert("destination_ip", address);
+        QHostAddress addr(&m_destAddress.sa);
+        res.insert("destination_ip", addr.toString());
     }
 
     return Result(res);
