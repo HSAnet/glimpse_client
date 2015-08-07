@@ -386,7 +386,7 @@ Result Ping::result() const
     }
     else
     {
-        QHostAddress addr(m_destAddress.sa);
+        QHostAddress addr(&m_destAddress.sa);
         res.insert("destination_ip", addr.toString());
     }
 
