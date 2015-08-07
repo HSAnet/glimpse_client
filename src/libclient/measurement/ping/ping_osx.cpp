@@ -1,3 +1,4 @@
+#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -377,6 +378,29 @@ Result Ping::result() const
     else
     {
         res.insert("round_trip_loss", 0);
+    }
+
+    if (m_destIp.length() > 0)
+    {
+        // we're using system ping
+        res.insert("destination_ip", m_destIp);
+    }
+    else
+    {
+        char address[m_destAddress.sa.sa_family == AF_INET ? INET_ADDRSTRLEN : INET6_ADDRSTRLEN];
+        memset(address, 0, sizeof(address));
+
+        switch (m_destAddress.sa.sa_family)
+        {
+        case AF_INET:
+            inet_ntop(m_destAddress.sa.sa_family, &(m_destAddress.sin.sin_addr), address, sizeof(address));
+            break;
+        case AF_INET6:
+            inet_ntop(m_destAddress.sa.sa_family, &(m_destAddress.sin6.sin6_addr), address, sizeof(address));
+            break;
+        }
+
+        res.insert("destination_ip", address);
     }
 
     return Result(res);
@@ -937,6 +961,8 @@ void Ping::finished(int exitCode, QProcess::ExitStatus exitStatus)
 
 void Ping::readyRead()
 {
+    // PING measure-it.de (141.82.57.241) 56(84) bytes of data.
+    QRegExp ip("^PING .+ \\((.+)\\) \\d+\\(\\d+\\)");
     // 64 bytes from 193.99.144.80: icmp_seq=0 ttl=245 time=32.031 ms
     QRegExp re("time=(\\d+.*)ms");
     // 3 packets transmitted, 3 received, 0% packet loss, time 2002ms
@@ -944,6 +970,11 @@ void Ping::readyRead()
 
     for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine())
     {
+        if (ip.indexIn(line) > -1)
+        {
+            m_destIp = ip.cap(1);
+        }
+
         if (stats.indexIn(line) > -1)
         {
             m_pingsSent = stats.cap(1).toUInt();
