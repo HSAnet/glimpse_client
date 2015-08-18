@@ -16,7 +16,11 @@ INCLUDEPATH += $$PWD/include \
                 $$PWD/snmplib
 linux: INCLUDEPATH += $$PWD/debian-config
 mac: INCLUDEPATH += $$PWD/mac-config
+<<<<<<< HEAD
 
+=======
+win32: INCLUDEPATH += $$PWD/win-config
+>>>>>>> 6d21da6cec6767f858d929a9d4706cd5978818cc
 
 SOURCES += snmplib/snmp_client.c \
            snmplib/mib.c \
