@@ -12,8 +12,6 @@
 
 #include "snmppacket.h"
 #include "devicemap.h"
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
 
 class ResultCreator : public QObject
 {

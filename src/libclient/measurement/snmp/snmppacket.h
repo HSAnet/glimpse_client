@@ -37,7 +37,7 @@ public:
 };
 
 // TLV (Type, Length, Value) triple.
-// Encode values as described in the Basic Encoding Rules.
+// Encodes values as described in the Basic Encoding Rules.
 // Customiced for the values 'version' and 'community'.
 class TripleBER
 {

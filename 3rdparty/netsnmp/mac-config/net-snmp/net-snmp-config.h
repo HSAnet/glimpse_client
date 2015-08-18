@@ -1434,10 +1434,10 @@
 #define NETSNMP_TEMP_FILE_PATTERN "/tmp/snmpdXXXXXX"
 
 /* "Define if internal cryptography code should be used" */
-#undef NETSNMP_USE_INTERNAL_CRYPTO 1
+//#define NETSNMP_USE_INTERNAL_CRYPTO 1
 
 /* define if you are using the MD5 code ... */
-#undef NETSNMP_USE_INTERNAL_MD5 1
+//#define NETSNMP_USE_INTERNAL_MD5 1
 
 /* Define this if you're using Heimdal Kerberos */
 /* #undef NETSNMP_USE_KERBEROS_HEIMDAL */
@@ -1676,7 +1676,7 @@
 /* end of definitions added by configure on-the-fly */
 
 /* If you have openssl 0.9.7 or above, you likely have AES support. */
-// #define NETSNMP_USE_OPENSSL
+// #define NETSNMP_USE_OPENSSL 1
 #if (defined(NETSNMP_USE_OPENSSL) && defined(HAVE_OPENSSL_AES_H) && defined(HAVE_AES_CFB128_ENCRYPT)) || defined(NETSNMP_USE_INTERNAL_CRYPTO)
 #define HAVE_AES 1
 #endif

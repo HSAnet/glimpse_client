@@ -32,9 +32,9 @@ public:
     void addDevice(const SnmpDevice &device);
 
     // Inline functions
-    void clear()                            { m_deviceMap.clear(); }
-    int count() const                       { return m_deviceMap.count(); }
-    QList<SnmpDevice> deviceList() const      { return m_deviceMap.values(); }
+    void clear()                                { m_deviceMap.clear(); }
+    int count() const                           { return m_deviceMap.count(); }
+    QList<SnmpDevice> deviceList() const        { return m_deviceMap.values(); }
 
 private:
     QHash<QHostAddress, SnmpDevice> m_deviceMap;

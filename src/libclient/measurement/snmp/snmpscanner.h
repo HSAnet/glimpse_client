@@ -79,7 +79,7 @@ private slots:
     void handleError(QAbstractSocket::SocketError socketError);
 
 private:
-    QString m_objectId;
+    QString m_objectId;     // SNMP Object Identifier
     long m_snmpVersion;
     const int m_port;
     QList<QNetworkInterface> m_interfaceList;
@@ -88,10 +88,10 @@ private:
     quint32 m_lastIp;
     QStringList m_communityList;
     quint8 m_retriesPerIp;
-    quint8 m_retryCount;
+    quint8 m_currentRetry;
     quint8 m_currentCommunityIndex;
     QByteArray m_datagram;
-    DeviceMap *m_pResultTable;
+    DeviceMap *m_pScanResult;
     int m_timerId;
     int m_sendInterval;
     bool m_sentAllPackets;

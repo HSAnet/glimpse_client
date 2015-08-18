@@ -20,6 +20,7 @@ Snmp::~Snmp()
 void Snmp::snmpMeasurementFinished()
 {
     setStatus(Finished);
+    emit finished();
 }
 
 // SLOT
@@ -125,12 +126,16 @@ bool Snmp::start()
     case GatewayStatistics:
         return getGatewaySatistics();
         break;
+    case SingleRequest:
+        return userSingleRequest();
+        break;
     default:
         setErrorString(QString("No measurement of this type available."));
         setStatus(Error);
         return false;
         break;
     }
+    emit started();
 
     return true;
 }

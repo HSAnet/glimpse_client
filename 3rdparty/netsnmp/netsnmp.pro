@@ -14,12 +14,9 @@ DEFINES += OPENSSL_NO_INLINE_ASM
 
 INCLUDEPATH += $$PWD/include \
                 $$PWD/snmplib
-linux {
-    INCLUDEPATH += $$PWD/debian-config
-}
-mac {
-    INCLUDEPATH += $$PWD/mac-config
-}
+linux: INCLUDEPATH += $$PWD/debian-config
+mac: INCLUDEPATH += $$PWD/mac-config
+
 
 SOURCES += snmplib/snmp_client.c \
            snmplib/mib.c \
