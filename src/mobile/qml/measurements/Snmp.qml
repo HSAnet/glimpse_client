@@ -33,6 +33,11 @@ Item {
                 label: qsTr("Version")
                 model: ["SNMPv1", "SNMPv2c", "SNMPv3"]
             }
+            LabeledComboBox {
+                id: snmpRequestType
+                label: qsTr("Request")
+                model: ["GetRequest", "SetRequest"]
+            }
             LabeledTextField {
                 id: host
                 label: qsTr("Host")
@@ -40,6 +45,11 @@ Item {
             LabeledTextField {
                 id: objectId
                 label: qsTr("Object Id")
+            }
+            LabeledTextField {
+                id: objectValue
+                label: qsTr("Value")
+                visible: snmpRequestType.currentIndex === 1
             }
             // Community name dialog for request
             LabeledTextField {
@@ -261,11 +271,17 @@ Item {
     // Function :       startMeasurement()
     function startMeasurement() {
         if (measurementType === 2) {
-            var snmpVersion3 = 3;
-            var communityList = [singleCommunityName.text]
-            client.snmp(snmpVersion3, communityList, host.text, objectId.text, authAlgoCombo.currentIndex,
-                        privacyAlgoCombo.currentIndex, usernameField.text, passwordField.text, contextOidField.text)
+            // Measurement type SingleRequest
+            var snmpVersion = snmpVersionComboBox.currentIndex
+            if (snmpVersion === 2) {
+                // SNMPv1 = 0; SNMPv2c = 1; SNMPv3 = 3
+                snmpVersion = 3;
+            }
+            client.snmp(snmpVersion, snmpRequestType.currentIndex, singleCommunityName.text, host.text, objectId.text,
+                        objectValue, authAlgoCombo.currentIndex, privacyAlgoCombo.currentIndex, usernameField.text,
+                        passwordField.text, contextOidField.text)
         } else {
+            // Measurement type AutoScan or RangeScan
             client.snmp(model.stringList, retrySlider.value, snmpVersionComboBox.currentIndex, ipRangeDialog.text,
                         measurementType.currentIndex, intervalSlider.value, waitTimeSlider.value)
         }

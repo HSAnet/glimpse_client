@@ -29,6 +29,7 @@ public:
     Result result() const;
 
     enum Type { AutoScan, RangeScan, SingleRequest, GatewayStatistics };
+    enum RequestType { GetRequest, SetRequest };
 
 private:
     Status m_status;
@@ -41,6 +42,7 @@ private:
     QString getDefaultGateway();
     bool getGatewaySatistics();
     bool userSingleRequest();
+    QHostAddress dnsLookup(const QString &hostname) const;
 };
 
 #endif // SNMP_MEASUREMENT_H

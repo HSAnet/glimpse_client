@@ -401,7 +401,7 @@ bool Client::init()
                                 precondition));
     tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", timing, QVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(12), TaskId(12), "wifilookup", timing, QVariant(), precondition));
-    tests.append(ScheduleDefinition(ScheduleId(14), TaskId(14), "snmp", timing, SnmpDefinition(QStringList() << "public" << "private", 2, 1, QString(), QString(), 0, 2, 2).toVariant(),
+    tests.append(ScheduleDefinition(ScheduleId(14), TaskId(14), "snmp", timing, SnmpDefinition(QStringList() << "public" << "private", 2, 1, QString(), 0, 2, 2).toVariant(),
                                     precondition));
 
     foreach (const ScheduleDefinition &test, tests)
@@ -555,31 +555,27 @@ void Client::snmp()
 }
 
 // Scan subnet
-void Client::snmp(const QStringList &communityList, const int retriesPerIp, const int version, const QString &ipRange,
+void Client::snmp(const QStringList &communityList, const int retriesPerIp, const int version, const QString &hostAddresses,
                   const int measurementType, const int sendInterval, const int waitTime)
 {
-    // ipRange is a string like :   "192.168.1.1-192.168.1.255"
-    QStringList ipList = ipRange.split(QRegExp(QString("[-,;|]")), QString::SkipEmptyParts);
-    QString startIP, endIP;
-    if (ipList.size() == 2)
-    {
-        startIP = ipList[0];
-        endIP = ipList[1];
-    }
-    SnmpDefinition snmpDefinition(communityList, retriesPerIp, version, startIP, endIP, measurementType, sendInterval, waitTime);
+    SnmpDefinition snmpDefinition(communityList, retriesPerIp, version, hostAddresses, measurementType, sendInterval, waitTime);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(14), TaskId(14), "snmp", timing, snmpDefinition.toVariant(), Precondition());
+    ScheduleDefinition testDefinition(ScheduleId(14), d->scheduler.nextImmidiateTask("snmp", snmpDefinition.toVariant()), timing,
+                                      Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
 // User sends a request to an agent.
-void Client::snmp(const int version, const QStringList &communityList, const QString &host, const QString &objectIdentifier, const int authentication,
+void Client::snmp(const int version, const int requestType, const QString &communityName, const QString &host,
+                  const QString &objectIdentifier, const QString &objectValue, const int authentication,
                   const int privacy, const QString &username, const QString &password, const QString &contextOID)
 {
     // measurement type SingleRequest = 2
-    SnmpDefinition snmpDefinition(version, communityList, host, objectIdentifier, authentication, privacy, username, password, contextOID, 2);
+    SnmpDefinition snmpDefinition(version, requestType, communityName, host, objectIdentifier, objectValue, authentication,
+                                  privacy, username, password, contextOID, 2);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(14), TaskId(14), "snmp", timing, snmpDefinition.toVariant(), Precondition());
+    ScheduleDefinition testDefinition(ScheduleId(14), d->scheduler.nextImmidiateTask("snmp", snmpDefinition.toVariant()), timing,
+                                      Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 

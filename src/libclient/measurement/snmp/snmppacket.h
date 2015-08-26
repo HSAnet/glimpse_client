@@ -83,8 +83,8 @@ public:
     void setCommand(const int command);
     QString username() const;
     void setUsername(const QString &username);
-    QHostAddress host() const;
-    void setHost(const QHostAddress &host);
+    QString host() const;
+    void setHost(const QString &host);
     void setAuthentication(Authentication auth);
     Authentication authentication() const;
     QString contextOID() const;
@@ -100,6 +100,11 @@ public:
     QString stringValueAt(const quint8 index) const;
     quint8 valueTypeAt(const quint8 index) const;
     bool addNullValue(const QString &oidString);
+    bool addIntegerValue(const QString &oidString, const int type, const int value);
+    bool addIntegerValue(const QString &oidString, const int type, const qint64 value);
+    bool addStringValue(const QString &oidString, const int type, const QString value);
+    bool addValueWithType(const QString &oidString, const QString &value, const int type);
+    bool addObjectIdentifierValue(const QString &oidString, const QString value);
     void setBulkGetRepeats(const int repeats);
     void setBulkGetNonRepeaters(const int nonrepeaters);
     QVariantList valueList() const;
@@ -107,8 +112,8 @@ public:
 
     // Send a request to an agent.
     SnmpPacket synchRequest(const QString &password = QString());
-    SnmpPacket synchRequestGet(const QHostAddress &host, const long version, const QString &community, const QStringList &oidList);
-    SnmpPacket synchRequestBulkGet(const QHostAddress &host, const long version, const QString &community,
+    SnmpPacket synchRequestGet(const QString &host, const long version, const QString &community, const QStringList &oidList);
+    SnmpPacket synchRequestBulkGet(const QString &host, const long version, const QString &community,
                                    const QStringList &oidList, const int repeaters, const int nonrepeaters);
 
     // Inline functions
@@ -126,7 +131,7 @@ public:
 private:
     long m_version;
     QString m_community;
-    QHostAddress m_host;
+    QString m_host;
     QByteArray m_username;
     QString m_contextOid;
     struct snmp_pdu *m_pdu;
@@ -141,6 +146,7 @@ private:
     snmp_session* getSnmpSession(const QString &password) const;
     QVariant variantValueOf(variable_list *variable) const;
     QString oidValueString(const variable_list *variable) const;
+    bool getObjectIdentifier(const QString &oidString, oid *pObjectId, size_t *oidLength) const;
 };
 
 #endif // SNMPROTOCOL_H

@@ -13,7 +13,7 @@ void DeviceMap::addDevice(const SnmpDevice &device)
     if (m_deviceMap.contains(device.host))
     {
         SnmpDevice &listedDevice = m_deviceMap[device.host];
-        QString communityName = device.communityName();
+        QString communityName = device.firstCommunityName();
         if (!listedDevice.m_communityList.contains(communityName))
         {
             listedDevice.m_communityList << communityName;

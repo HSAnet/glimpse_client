@@ -92,12 +92,12 @@ void SnmpPacket::setUsername(const QString &username)
     m_username = username.toUtf8();
 }
 
-QHostAddress SnmpPacket::host() const
+QString SnmpPacket::host() const
 {
     return m_host;
 }
 
-void SnmpPacket::setHost(const QHostAddress &host)
+void SnmpPacket::setHost(const QString &host)
 {
     m_host = host;
 }
@@ -238,17 +238,116 @@ bool SnmpPacket::addNullValue(const QString &oidString)
 {
     size_t oidLength = MAX_OID_LEN;
     oid objectId[oidLength];
-    // Get ObjectID of MIB-Object name.
-    if (! get_node(oidString.toLocal8Bit().data(), objectId, &oidLength))
-    {
-        // Get ObjectID of string like ".1.3.6.2.1.1".
-        if (! read_objid(oidString.toLocal8Bit().data(), objectId, &oidLength))
-        {
-            // Error didn't get object ID.
-            return false;
-        }
+    if (!getObjectIdentifier(oidString, objectId, &oidLength)) {
+        return false;
     }
     snmp_add_null_var(m_pdu, objectId, oidLength);
+
+    return true;
+}
+
+// Set a value of type INTEGER, COUNTER, GAUGE, BOOL, TIMETICKS ... to the PDU.
+bool SnmpPacket::addIntegerValue(const QString &oidString, const int type, const int value)
+{
+    size_t oidLength = MAX_OID_LEN;
+    oid objectId[oidLength];
+    if (!getObjectIdentifier(oidString, objectId, &oidLength))
+    {
+        return false;
+    }
+    snmp_pdu_add_variable(m_pdu, objectId, oidLength, type, &value, sizeof(int));
+
+    return true;
+}
+
+// Set a value of type INTEGER64, COUNTER64, ... to the PDU.
+bool SnmpPacket::addIntegerValue(const QString &oidString, const int type, const qint64 value)
+{
+    size_t oidLength = MAX_OID_LEN;
+    oid objectId[oidLength];
+    if (!getObjectIdentifier(oidString, objectId, &oidLength))
+    {
+        return false;
+    }
+    snmp_pdu_add_variable(m_pdu, objectId, oidLength, type, &value, sizeof(qint64));
+
+    return true;
+}
+
+// Set a value of type OCTED_STRING, BIT_STRING to the PDU.
+bool SnmpPacket::addStringValue(const QString &oidString, const int type, const QString value)
+{
+    size_t oidLength = MAX_OID_LEN;
+    oid objectId[oidLength];
+    if (!getObjectIdentifier(oidString, objectId, &oidLength))
+    {
+        return false;
+    }
+    QByteArray val = value.toUtf8();
+    snmp_pdu_add_variable(m_pdu, objectId, oidLength, type, val.data(), val.size());
+
+    return true;
+}
+
+// Add a value to the PDU for a SetRequest.
+// Takes a string value and a SNMP value type definition.
+// It converts the string the appropriate value type
+// and sets these value to the PDU.
+bool SnmpPacket::addValueWithType(const QString &oidString, const QString &value, const int type)
+{
+    switch (type)
+    {
+    case ASN_UNSIGNED64:
+    case ASN_COUNTER64:
+    case ASN_INTEGER64: {
+        qlonglong val = value.toLongLong();
+        return addIntegerValue(oidString, type, val);
+        break;
+    }
+    case ASN_TIMETICKS:
+    case ASN_GAUGE:
+    case ASN_COUNTER:
+    case ASN_INTEGER:
+    case ASN_BOOLEAN: {
+        int val = value.toInt();
+        return addIntegerValue(oidString, type, val);
+        break;
+    }
+    case ASN_BIT_STR:
+    case ASN_OCTET_STR:
+        return addStringValue(oidString, type, value);
+        break;
+    case ASN_OBJECT_ID:
+        return addObjectIdentifierValue(oidString, value);
+        break;
+    case ASN_IPADDRESS: {
+        int val = QHostAddress(value).toIPv4Address();
+        return addIntegerValue(oidString, type, val);
+        break;
+    }
+    default:
+        return false;
+    }
+
+    return true;
+}
+
+// Set an Object Identifier value to the PDU.
+bool SnmpPacket::addObjectIdentifierValue(const QString &oidString, const QString value)
+{
+    size_t oidLength = MAX_OID_LEN;
+    oid objectId[oidLength];
+    if (!getObjectIdentifier(oidString, objectId, &oidLength))
+    {
+        return false;
+    }
+    size_t valOidLength = MAX_OID_LEN;
+    oid valObjectId[valOidLength];
+    if (!getObjectIdentifier(value, valObjectId, &valOidLength))
+    {
+        return false;
+    }
+    snmp_pdu_add_variable(m_pdu, objectId, oidLength, ASN_OBJECT_ID, valObjectId, valOidLength);
 
     return true;
 }
@@ -343,7 +442,7 @@ SnmpPacket SnmpPacket::synchRequest(const QString &password)
 
 // Do a SNMP synchronous request with given parameter and a list of OID's.
 // Return a SnmpPacket with the response or an instance with an error message.
-SnmpPacket SnmpPacket::synchRequestGet(const QHostAddress &host, const long version, const QString &community, const QStringList &oidList)
+SnmpPacket SnmpPacket::synchRequestGet(const QString &host, const long version, const QString &community, const QStringList &oidList)
 {
     m_host = host;
     m_version = version;
@@ -362,7 +461,7 @@ SnmpPacket SnmpPacket::synchRequestGet(const QHostAddress &host, const long vers
 
 // Do a SNMP synchronous bulk get request with given parameter.
 // Return a SnmpPacket with the agents response or an instance with an error message.
-SnmpPacket SnmpPacket::synchRequestBulkGet(const QHostAddress &host, const long version, const QString &community,
+SnmpPacket SnmpPacket::synchRequestBulkGet(const QString &host, const long version, const QString &community,
                                            const QStringList &oidList, const int repeaters, const int nonrepeaters)
 {
     m_host = host;
@@ -387,7 +486,7 @@ SnmpPacket SnmpPacket::synchRequestBulkGet(const QHostAddress &host, const long 
 snmp_session *SnmpPacket::getSnmpSession(const QString &password) const
 {
     QByteArray community = m_community.toUtf8();
-    QByteArray host = m_host.toString().toUtf8();
+    QByteArray host = m_host.toUtf8();
     QByteArray passwd = password.toUtf8();
     snmp_session session;
     snmp_sess_init(&session);
@@ -434,11 +533,13 @@ QVariant SnmpPacket::variantValueOf(variable_list *variable) const
     case ASN_OCTET_STR:
         return QVariant(QString::fromUtf8((char*)variable->val.string, variable->val_len));
         break;
+    case ASN_GAUGE:
     case ASN_INTEGER:
     case ASN_COUNTER:
         return QVariant((int)*variable->val.integer);
         break;
     case ASN_COUNTER64:
+    case ASN_INTEGER64:
     {
         quint64 counterVal = variable->val.counter64->high;
         counterVal = counterVal << 32;
@@ -457,6 +558,14 @@ QVariant SnmpPacket::variantValueOf(variable_list *variable) const
         return QVariant(objectId);
         break;
     }
+    case ASN_FLOAT:
+        return QVariant((float)*variable->val.floatVal);
+        break;
+    case ASN_DOUBLE:
+        return QVariant((double)*variable->val.floatVal);
+        break;
+    case ASN_BOOLEAN:
+        return QVariant((*variable->val.integer == 1) ? true : false );
     default:
         break;
     }
@@ -473,6 +582,22 @@ QString SnmpPacket::oidValueString(const variable_list *variable) const
     int length = snprint_value(buffer, bufferLen, variable->name, variable->name_length, variable);
 
     return QString::fromUtf8(buffer, length);
+}
+
+// Get the OID out of a string. The oid array of pObjectId must have size of oidLength.
+bool SnmpPacket::getObjectIdentifier(const QString &oidString, oid *pObjectId, size_t *oidLength) const
+{
+    QByteArray array = oidString.toLocal8Bit();
+    // Get ObjectID of MIB-Object name.
+    if (! get_node(array.data(), pObjectId, oidLength))
+    {
+        // Get ObjectID of string like ".1.3.6.2.1.1".
+        if (! read_objid(array.data(), pObjectId, oidLength))
+        {
+            // Error didn't get object ID.
+            return false;
+        }
+    }
 }
 
 // Factory function. Creates a SNMP packet for a get request without PDU values.

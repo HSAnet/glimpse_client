@@ -20,18 +20,20 @@ void ResultCreator::setDefaultGateway(const QString &gateway)
 // SLOT
 // Takes a pointer to the scan result and creates the probes result.
 // It does a request to each device to distinguish between printer,
-// switches and router.
+// switches and router. It searches in scan result for the default
+// gateway and marks the device in the result as gateway.
 void ResultCreator::createResult(const DeviceMap *scanResult)
 {
     m_resultMap.clear();
     SnmpPacket request;
     foreach (SnmpDevice device, scanResult->deviceList()) {
+        QString host = device.host.toString();
         QVariantMap deviceMap;
-        deviceMap.insert(QString("host"), device.host.toString());
+        deviceMap.insert(QString("host"), host);
         deviceMap.insert(QString("communityList"), device.m_communityList);
         deviceMap.insert(QString("description"), device.description);
         deviceMap.insert(QString("snmpVersion"), device.snmpVersion);
-        SnmpPacket response = request.synchRequestGet(device.host, device.snmpVersion, device.communityName(), m_objectIdList);
+        SnmpPacket response = request.synchRequestGet(host, device.snmpVersion, device.firstCommunityName(), m_objectIdList);
         if (response.hasError())
         {
             // Error. Could not communicate with agent. Is defined as 'unknown'.
@@ -60,6 +62,7 @@ void ResultCreator::createResult(const DeviceMap *scanResult)
     }
 
     // Identify default gateway
+    // Has map (scan result) a device with the IP of the default gateway?
     QVariantMap &device = (QVariantMap&)m_resultMap[m_defaultGatewayAddr];
     if (! device.isEmpty())
     {

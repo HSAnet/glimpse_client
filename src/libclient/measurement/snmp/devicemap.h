@@ -12,7 +12,7 @@ public:
     SnmpDevice();
     SnmpDevice(const QString &description, const QString &m_communityList, const QHostAddress &host, const int snmpVersion);
 
-    QString communityName() const           { return m_communityList[0]; }
+    QString firstCommunityName() const           { return m_communityList[0]; }
 
     // Members
     QString description;

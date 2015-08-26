@@ -1,6 +1,7 @@
 #include "snmp.h"
 #include "client.h"
 #include "connectiontester.h"
+#include <QHostInfo>
 
 Snmp::Snmp(QObject *parent) :
     Measurement(parent),
@@ -56,8 +57,7 @@ bool Snmp::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     }
     // Check for SNMP community names if SNMP version is 1 or 2c.
     // Community name is not used in other versions.
-    if (m_definition->m_communityList.isEmpty() &&
-            (m_definition->m_snmpVersion == SNMP_VERSION_1 || m_definition->m_snmpVersion == SNMP_VERSION_2c))
+    if (m_definition->m_communityList.isEmpty() && m_definition->m_measurementType < SingleRequest)
     {
         setErrorString(QString("No community names defined."));
         return false;
@@ -72,8 +72,16 @@ bool Snmp::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
     // Check IP address range if measurment scans a range of IP addresses. (measurement type is 'ScanRange').
     if (m_definition->m_measurementType == RangeScan)
     {
-        if (m_definition->m_startRangeIp.protocol() == QAbstractSocket::IPv4Protocol)
-            if (m_definition->m_startRangeIp.toIPv4Address() >= m_definition->m_endRangeIp.toIPv4Address()) {
+        QStringList ipList = m_definition->m_hostAddresses.split(QRegExp("[,;|-]"), QString::SkipEmptyParts);
+        if (ipList.size() != 2)
+        {
+            setErrorString("Given IP range is wrong.");
+            return false;
+        }
+        m_definition->m_startIP = QHostAddress(ipList[0]);
+        m_definition->m_endIP = QHostAddress(ipList[1]);
+        if (m_definition->m_startIP.protocol() == QAbstractSocket::IPv4Protocol)
+            if (m_definition->m_endIP.toIPv4Address() >= m_definition->m_startIP.toIPv4Address()) {
                 setErrorString(QString("Start IP address is higher then end IP of range."));
                 return false;
             } else {
@@ -115,7 +123,7 @@ bool Snmp::start()
         break;
     case RangeScan:
         if (m_scanner.scanRange(m_definition->m_snmpVersion, m_definition->m_communityList, QString("sysDescr.0"),
-                                m_definition->m_retriesPerIp, m_definition->m_startRangeIp, m_definition->m_endRangeIp,
+                                m_definition->m_retriesPerIp, m_definition->m_startIP, m_definition->m_endIP,
                                 m_definition->m_sendInterval, m_definition->m_waitTime))
         {
             setErrorString(QString("Could not create SNMP packet."));
@@ -187,7 +195,7 @@ QString Snmp::getDefaultGateway()
 // Reads statistics of the default gateway if posible.
 bool Snmp::getGatewaySatistics()
 {
-    QHostAddress host(getDefaultGateway());
+    QString host = getDefaultGateway();
     QString community("public");
     QStringList oidList = QStringList() << "ifNumber.0" << "ipForwarding.0";
     SnmpPacket request;
@@ -226,30 +234,65 @@ bool Snmp::getGatewaySatistics()
 // (Use Glimpse as a tiny Management System)
 bool Snmp::userSingleRequest()
 {
-    SnmpPacket request;
-    request.setVersion(m_definition->m_snmpVersion);
-    if (! m_definition->m_communityList.isEmpty())
-    {
-        request.setCommunity(m_definition->m_communityList.at(0));
-    }
-    request.setHost(m_definition->m_startRangeIp);
+    // Do GetRequest.
+    // Read value even if SetRequest is chosen to get the values type.
+    SnmpPacket request = SnmpPacket::snmpGetRequest(m_definition->m_snmpVersion, m_definition->m_communityName,
+                                                    m_definition->m_objectIdentifier);
+    request.setHost(m_definition->m_hostAddresses);
     request.setUsername(m_definition->m_username);
     request.setAuthentication((SnmpPacket::Authentication)m_definition->m_authentication);
     request.setPrivacy((SnmpPacket::Privacy)m_definition->m_privacy);
     request.setContextOID(m_definition->m_contextOID);
     SnmpPacket response = request.synchRequest(m_definition->m_password);
-    if (response.hasError())
+    if (response.hasError() || response.isEmpty())
     {
-        setErrorString(response.errorString());
+        setErrorString((response.errorString().isEmpty()) ? QString("Unknown Error.") : response.errorString());
         return false;
     }
-    if (response.isEmpty())
+    // Do SetRequest if chosen.
+    if (m_definition->m_requestType == SetRequest)
     {
-        setErrorString(QString("Unknown error."));
-        return false;
+        if (!response.hasPduValueAt(0))
+        {
+            setErrorString(QString("Agent do not have this value."));
+            return false;
+        }
+        int dataType = response.valueTypeAt(0);
+        request.setCommand(SNMP_MSG_SET);
+        request.addValueWithType(m_definition->m_objectIdentifier, m_definition->m_requestValue, dataType);
+        response = request.synchRequest(m_definition->m_password);
+        if (response.hasError() || response.isEmpty())
+        {
+            setErrorString(QString("Could not write value to the device."));
+            return false;
+        }
     }
-
-    m_resultCreator.createResult(response, m_definition->m_startRangeIp);
+    QHostAddress host(m_definition->m_hostAddresses);
+    if (host.protocol() == -1)
+    {
+        host = dnsLookup(m_definition->m_hostAddresses);
+    }
+    m_resultCreator.createResult(response, host);
 
     return true;
+}
+
+// Does a DNS lookup and returns a QHostAddress.
+QHostAddress Snmp::dnsLookup(const QString &hostname) const
+{
+    QHostInfo hostInfo = QHostInfo::fromName(hostname);
+    if (hostInfo.addresses().isEmpty())
+    {
+        return QHostAddress();
+    }
+    QHostAddress host;
+    foreach (QHostAddress address, hostInfo.addresses()) {
+        if (address.protocol() == 0)
+        {
+            host = address;
+            break;
+        }
+    }
+
+    return host;
 }
