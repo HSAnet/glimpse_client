@@ -1,20 +1,28 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
-DUMP_SYMS="$1"/3rdparty/breakpad/src/tools/linux/dump_syms/dump_syms
-SYM_DIR="$1"/symbols
-TARBALL="$1"/glimpse-dbg.tar.gz
+# goto source directory
+cd "$(dirname "$0")"/..
+
+# default to 0 if no build number is provided via first argument
+BUILD="${1:-0}"
+DUMP_SYMS=./3rdparty/breakpad/src/tools/linux/dump_syms/dump_syms
+SYM_DIR=./symbols
+# library name: libglimpse.so.<version>
+LIBGLIMPSE="$(find src -type f -name 'libglimpse.so.*')"
+# glimpse_<version>-<build>-dbg.tar.gz
+TARBALL="glimpse_$(sed -nr 's/libglimpse\.so\.(.+)/\1/p' <<< ${LIBGLIMPSE##*/})-${BUILD}-dbg.tar.gz"
 
 files=(
-"$(find $1 -type f -name glimpse-gui)"
-"$(find $1 -type f -name glimpse-console)"
-"$(find $1 -type f -name 'libglimpse.*')"
+"$(find src -type f -name glimpse-gui)"
+"$(find src -type f -name glimpse-console)"
+"${LIBGLIMPSE}"
 )
 
 # remove old symbols
 rm -rf "${SYM_DIR}"
 
 for f in ${files[*]}; do
-    sym_file=/tmp/"${f##*/}".sym
+    sym_file="${f##*/}.sym"
     # dump debug symbols
     ${DUMP_SYMS} "${f}" > "${sym_file}"
     # create directory structure: $SYM_DIR/<file>/<id>
