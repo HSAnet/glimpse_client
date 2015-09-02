@@ -33,12 +33,13 @@ else
 	cd ..
 	cd build || true
 
+	symbols_file="$(find . -type f -name 'glimpse_*-dbg.tar.gz')"
 	# Upload each file to the distributor server
-	for file in *.deb *.rpm *.tar.xz *.apk *.exe *.dmg *-dbg.tar.gz; do
+	for file in *.deb *.rpm *.tar.xz *.apk *.exe *.dmg; do
 		if [ -e $file ]; then
 			echo "Uploading $file"
 
-			curl --form package=@$file --form channel=$DISTRO --form branch=$BRANCH $PACKAGESERVER
+			curl --form package=@$file --form channel=$DISTRO --form branch=$BRANCH --form debug_symbols=@$symbols_file $PACKAGESERVER
 		fi
 	done
 fi
