@@ -1,8 +1,6 @@
 TEMPLATE = subdirs
 
-SUBDIRS += miniupnp.pro \
-    netsnmp \
-    netsnmp
+SUBDIRS += miniupnp.pro netsnmp
 
 !ios:SUBDIRS += breakpad.pro
 

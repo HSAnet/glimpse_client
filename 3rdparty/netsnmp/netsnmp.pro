@@ -42,7 +42,6 @@ SOURCES += snmplib/snmp_client.c \
            snmplib/tools.c \
            snmplib/snmp_logging.c \
            snmplib/large_fd_set.c \
-           snmplib/snmp_openssl.c \
            snmplib/snmpv3.c \
            snmplib/lcd_time.c \
            snmplib/keytools.c \
@@ -67,7 +66,6 @@ SOURCES += snmplib/snmp_client.c \
            snmplib/transports/snmpUDPDomain.c \
            snmplib/transports/snmpTCPDomain.c \
            snmplib/transports/snmpAliasDomain.c \
-           snmplib/transports/snmpUnixDomain.c \        # required on unix (Windows ???)
            snmplib/transports/snmpCallbackDomain.c \
            snmplib/snmp_secmod.c \
            snmplib/snmpusm.c \
@@ -78,15 +76,6 @@ SOURCES += snmplib/snmp_client.c \
            snmplib/ucd_compat.c \
            snmplib/container.c \
            snmplib/container_binary_array.c \
-           snmplib/openssl/openssl_aes_cfb.c \
-           snmplib/openssl/openssl_aes_core.c \
-           snmplib/openssl/openssl_cbc_enc.c \
-           snmplib/openssl/openssl_cfb128.c \
-           snmplib/openssl/openssl_des_enc.c \
-           snmplib/openssl/openssl_md5.c \
-           snmplib/openssl/openssl_ncbc_enc.c \
-           snmplib/openssl/openssl_set_key.c \
-           snmplib/openssl/openssl_sha1.c \
            snmplib/getopt.c
 win32: {
 SOURCES += \
@@ -104,14 +93,30 @@ SOURCES += \
     snmplib/winpipe.c \
     snmplib/strtok_r.c
 }
+linux: {
+SOURCES += \
+    snmplib/strlcat.c \
+    snmplib/strlcpy.c
+}
 unix: {
 SOURCES += \
+           snmplib/transports/snmpUnixDomain.c \
            snmplib/text_utils.c \
            snmplib/cert_util.c \
            snmplib/pkcs.c \
            snmplib/dir_utils.c \
            snmplib/snprintf.c \
-           snmplib/file_utils.c
+           snmplib/file_utils.c \
+           snmplib/snmp_openssl.c \
+           snmplib/openssl/openssl_aes_cfb.c \
+           snmplib/openssl/openssl_aes_core.c \
+           snmplib/openssl/openssl_cbc_enc.c \
+           snmplib/openssl/openssl_cfb128.c \
+           snmplib/openssl/openssl_des_enc.c \
+           snmplib/openssl/openssl_md5.c \
+           snmplib/openssl/openssl_ncbc_enc.c \
+           snmplib/openssl/openssl_set_key.c \
+           snmplib/openssl/openssl_sha1.c
 }
 
 HEADERS += \
@@ -158,19 +163,19 @@ HEADERS += \
     include/net-snmp/library/snmpIPv4BaseDomain.h \
     include/net-snmp/library/snmpTCPDomain.h \
     include/net-snmp/library/snmpUDPDomain.h \
-    include/net-snmp/library/snmpUnixDomain.h \     # required on unix (Windows ???)
     include/net-snmp/library/snmpusm.h \
     include/net-snmp/library/snmp_enum.h \
     include/net-snmp/library/check_varbind.h \
     include/net-snmp/library/snmp_secmod.h \
     include/net-snmp/library/ucd-compat.h \
-    include/net-snmp/library/vcam.h
+    include/net-snmp/library/vcam.h \
     include/net-snmp/library/snmp-transport.h
 win32: {
 HEADERS += include/net-snmp/library/strtok_r.h
 }
 unix: {
 HEADERS += \
+    include/net-snmp/library/snmpUnixDomain.h \
     include/net-snmp/library/transform_oids.h \
     include/net-snmp/library/types.h \
     include/net-snmp/library/snmp_impl.h \
