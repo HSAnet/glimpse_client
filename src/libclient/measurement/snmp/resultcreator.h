@@ -29,7 +29,7 @@ public slots:
     void createResult(const DeviceMap *scanResult);
     void createResult(const QVariantList &indexList, const QVariantList &operatingStatusList,
                       const QVariantList &outOctetList, const QVariantList &inOctetList);
-    void createResult(const SnmpPacket &response, const QHostAddress &host);
+    void createResult(const SnmpPacket &response, const QString &host);
 
 private:
     enum MibValues { IpForwarding, InterfaceNumber, PrinterValueOne, PrinterValueTwo };

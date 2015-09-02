@@ -42,7 +42,6 @@ private:
     QString getDefaultGateway();
     bool getGatewaySatistics();
     bool userSingleRequest();
-    QHostAddress dnsLookup(const QString &hostname) const;
 };
 
 #endif // SNMP_MEASUREMENT_H

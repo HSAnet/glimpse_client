@@ -272,32 +272,7 @@ bool Snmp::userSingleRequest()
             return false;
         }
     }
-    QHostAddress host(m_definition->m_hostAddresses);
-    if (host.protocol() == -1)
-    {
-        host = dnsLookup(m_definition->m_hostAddresses);
-    }
-    m_resultCreator.createResult(response, host);
+    m_resultCreator.createResult(response, m_definition->m_hostAddresses);
 
     return true;
-}
-
-// Does a DNS lookup and returns a QHostAddress.
-QHostAddress Snmp::dnsLookup(const QString &hostname) const
-{
-    QHostInfo hostInfo = QHostInfo::fromName(hostname);
-    if (hostInfo.addresses().isEmpty())
-    {
-        return QHostAddress();
-    }
-    QHostAddress host;
-    foreach (QHostAddress address, hostInfo.addresses()) {
-        if (address.protocol() == 0)
-        {
-            host = address;
-            break;
-        }
-    }
-
-    return host;
 }

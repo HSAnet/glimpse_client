@@ -94,13 +94,11 @@ void ResultCreator::createResult(const QVariantList &indexList, const QVariantLi
 }
 
 // Create a result map of a response to a SingleRequest.
-void ResultCreator::createResult(const SnmpPacket &response, const QHostAddress &host)
+void ResultCreator::createResult(const SnmpPacket &response, const QString &host)
 {
     m_resultMap.clear();
-    QVariantMap result;
-    result.insert(QString("host"), host.toString());
-    result.insert(QString("valueList"), response.oidValueList());
-    m_resultMap.insert(host.toString(), result);
+    m_resultMap.insert(QString("host"), host);
+    m_resultMap.insert(QString("valueList"), response.oidValueList());
 
     emit creatorResultReady();
 }
