@@ -599,6 +599,8 @@ bool Ping::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         return false;
     }
 
+    m_destIp = address;
+
     if (pcap_createsrcstr(source, PCAP_SRC_IFLOCAL, address, NULL, NULL, errbuf) != 0)
     {
         setErrorString("pcap_createsrcstr: " + QString(errbuf));
@@ -781,6 +783,8 @@ Result Ping::result() const
     {
         res.insert("round_trip_loss", 0);
     }
+
+    res.insert("destination_ip", m_destIp);
 
     return Result(res);
 }
@@ -1294,6 +1298,8 @@ void Ping::finished(int exitCode, QProcess::ExitStatus exitStatus)
 
 void Ping::readyRead()
 {
+    // Pinging google.com [173.194.113.5] with 32 bytes of data:
+    QRegExp ip("\\[(.+)\\]");
     // Antwort von 193.99.144.80: Bytes=32 Zeit=32ms TTL=245
     QRegExp re("=(\\d+)ms");
     // Packets: Sent = 3, Received = 3, Lost = 0 (0% loss),
@@ -1301,6 +1307,11 @@ void Ping::readyRead()
 
     for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine())
     {
+        if (ip.indexIn(line) > -1)
+        {
+            m_destIp = ip.cap(1);
+        }
+
         if (stats.indexIn(line) > -1)
         {
             m_pingsSent = stats.cap(1).toUInt();
