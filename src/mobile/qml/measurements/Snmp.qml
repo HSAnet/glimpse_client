@@ -270,7 +270,7 @@ Item {
     // ------------------------------------
     // Function :       startMeasurement()
     function startMeasurement() {
-        if (measurementType === 2) {
+        if (measurementType.currentIndex === 2) {
             // Measurement type SingleRequest
             var snmpVersion = snmpVersionComboBox.currentIndex
             if (snmpVersion === 2) {

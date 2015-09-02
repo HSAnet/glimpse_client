@@ -36,7 +36,8 @@ public:
     QString m_contextOID;
     int m_requestType;
     QString m_requestValue;
-    // Not needed to in 'fromVariant()' and 'toVariant()'
+    // Not needed in 'fromVariant()' and 'toVariant()'
+    // Required in 'prepare()'.
     QHostAddress m_startIP;
     QHostAddress m_endIP;
 

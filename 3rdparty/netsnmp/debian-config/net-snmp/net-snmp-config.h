@@ -643,7 +643,7 @@
 #define HAVE_PREAD64 1
 
 /* Set if /etc/printcap exists */
-/* #undef HAVE_PRINTCAP */
+#define HAVE_PRINTCAP 1
 
 /* Define to 1 if you have the <pthread.h> header file. */
 #define HAVE_PTHREAD_H 1
@@ -1328,11 +1328,11 @@
 /* #undef NETSNMP_CAN_USE_SYSCTL */
 
 /* configure options specified */
-#define NETSNMP_CONFIGURE_OPTIONS " '--disable-agent' '--disable-applications' '--disable-manuals' '--disable-scripts' '--prefix=/home/christian/net-snmp-lib'"
+#define NETSNMP_CONFIGURE_OPTIONS " '--disable-agent' '--disable-manuals' '--disable-scripts' '--disable-applications'"
 
 /* default location to look for mibs to load using the above tokens and/or
    those in the MIBS envrionment variable */
-#define NETSNMP_DEFAULT_MIBDIRS "$HOME/.snmp/mibs:/home/christian/net-snmp-lib/share/snmp/mibs"
+//#define NETSNMP_DEFAULT_MIBDIRS "$HOME/.snmp/mibs:/usr/local/share/snmp/mibs"
 
 /* default mib files to load, specified by path. */
 /* #undef NETSNMP_DEFAULT_MIBFILES */
@@ -1434,10 +1434,10 @@
 #define NETSNMP_TEMP_FILE_PATTERN "/tmp/snmpdXXXXXX"
 
 /* "Define if internal cryptography code should be used" */
-//#define NETSNMP_USE_INTERNAL_CRYPTO 1
+#define NETSNMP_USE_INTERNAL_CRYPTO 1
 
 /* define if you are using the MD5 code ... */
-//#define NETSNMP_USE_INTERNAL_MD5 1
+/* #undef NETSNMP_USE_INTERNAL_MD5 */
 
 /* Define this if you're using Heimdal Kerberos */
 /* #undef NETSNMP_USE_KERBEROS_HEIMDAL */
@@ -1676,7 +1676,7 @@
 /* end of definitions added by configure on-the-fly */
 
 /* If you have openssl 0.9.7 or above, you likely have AES support. */
-/* #undef NETSNMP_USE_OPENSSL */
+#undef NETSNMP_USE_OPENSSL
 #if (defined(NETSNMP_USE_OPENSSL) && defined(HAVE_OPENSSL_AES_H) && defined(HAVE_AES_CFB128_ENCRYPT)) || defined(NETSNMP_USE_INTERNAL_CRYPTO)
 #define HAVE_AES 1
 #endif
@@ -1772,10 +1772,10 @@
 /* #undef NETSNMP_DEFAULT_CLIENT_RECV_BUF */
 
 /* net-snmp's major path names */
-#define SNMPLIBPATH "/home/christian/net-snmp-lib/lib/snmp"
-#define SNMPSHAREPATH "/home/christian/net-snmp-lib/share/snmp"
-#define SNMPCONFPATH "/home/christian/net-snmp-lib/etc/snmp"
-#define SNMPDLMODPATH "/home/christian/net-snmp-lib/lib/snmp/dlmod"
+#define SNMPLIBPATH "/usr/local/lib/snmp"
+#define SNMPSHAREPATH "/usr/local/share/snmp"
+#define SNMPCONFPATH "/usr/local/etc/snmp"
+#define SNMPDLMODPATH "/usr/local/lib/snmp/dlmod"
 
 /* NETSNMP_LOGFILE:  If defined it closes stdout/err/in and opens this in 
    out/err's place.  (stdin is closed so that sh scripts won't wait for it) */

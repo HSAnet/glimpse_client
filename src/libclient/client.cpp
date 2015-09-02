@@ -570,9 +570,9 @@ void Client::snmp(const int version, const int requestType, const QString &commu
                   const QString &objectIdentifier, const QString &objectValue, const int authentication,
                   const int privacy, const QString &username, const QString &password, const QString &contextOID)
 {
-    // measurement type SingleRequest = 2
+    int measurementType = 2;    // SingleRequest = 2
     SnmpDefinition snmpDefinition(version, requestType, communityName, host, objectIdentifier, objectValue, authentication,
-                                  privacy, username, password, contextOID, 2);
+                                  privacy, username, password, contextOID, measurementType);
     TimingPtr timing(new ImmediateTiming());
     ScheduleDefinition testDefinition(ScheduleId(14), d->scheduler.nextImmidiateTask("snmp", snmpDefinition.toVariant()), timing,
                                       Precondition());

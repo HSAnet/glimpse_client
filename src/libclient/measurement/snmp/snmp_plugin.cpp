@@ -17,6 +17,6 @@ MeasurementPtr SnmpPlugin::createMeasurement(const QString &name)
 MeasurementDefinitionPtr SnmpPlugin::createMeasurementDefinition(const QString &name, const QVariant &data)
 {
     Q_UNUSED(name);
-    return SnmpDefinition::fromVariant(&data);
+    return SnmpDefinition::fromVariant(data);
 }
 

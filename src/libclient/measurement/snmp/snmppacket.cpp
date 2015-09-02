@@ -122,7 +122,7 @@ void SnmpPacket::setContextOID(const QString &contextObjID)
     m_contextOid = contextObjID;
 }
 
-QString SnmpPacket::errorString() const
+QString SnmpPacket::errorText() const
 {
     return m_errorText;
 }
@@ -585,7 +585,7 @@ QString SnmpPacket::oidValueString(const variable_list *variable) const
 }
 
 // Get the OID out of a string. The oid array of pObjectId must have size of oidLength.
-bool SnmpPacket::getObjectIdentifier(const QString &oidString, oid *pObjectId, size_t *oidLength) const
+bool SnmpPacket::getObjectIdentifier(const QString &oidString, oid *pObjectId, size_t *oidLength)
 {
     QByteArray array = oidString.toLocal8Bit();
     // Get ObjectID of MIB-Object name.
@@ -594,10 +594,12 @@ bool SnmpPacket::getObjectIdentifier(const QString &oidString, oid *pObjectId, s
         // Get ObjectID of string like ".1.3.6.2.1.1".
         if (! read_objid(array.data(), pObjectId, oidLength))
         {
-            // Error didn't get object ID.
+            setErrorText(QString("Could not set Object Identifier."));
             return false;
         }
     }
+
+    return true;
 }
 
 // Factory function. Creates a SNMP packet for a get request without PDU values.
@@ -618,10 +620,7 @@ SnmpPacket SnmpPacket::snmpGetRequest(const long version, const QString &communi
     packet.setCommand(SNMP_MSG_GET);
     packet.setVersion(version);
     packet.setCommunity(community);
-    if (! packet.addNullValue(objectId))
-    {
-        return SnmpPacket(QString("Could not add these OID."));
-    }
+    packet.addNullValue(objectId);
 
     return packet;
 }

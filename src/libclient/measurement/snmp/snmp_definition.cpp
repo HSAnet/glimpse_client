@@ -43,8 +43,9 @@ SnmpDefinition::~SnmpDefinition()
 SnmpDefinitionPtr SnmpDefinition::fromVariant(const QVariant &variant)
 {
     QVariantMap map = variant.toMap();
+    int measurementType = map.value(QString("measurementType")).toInt();
 
-    if (map.value(QString("measurementType")).toInt() == 2)     // User send a request to an agent (SingleRequest).
+    if (measurementType == 2)     // User send a request to an agent (SingleRequest).
     {
         return SnmpDefinitionPtr(new SnmpDefinition(map.value(QString("snmpVersion")).toInt(),
                                                     map.value(QString("requestType")).toInt(),

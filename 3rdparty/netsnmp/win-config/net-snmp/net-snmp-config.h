@@ -68,7 +68,7 @@
 
 /* default location to look for mibs to load using the above tokens
    and/or those in the MIBS envrionment variable*/
-#define NETSNMP_DEFAULT_MIBDIRS INSTALL_BASE ## "/share/snmp/mibs"
+//#define NETSNMP_DEFAULT_MIBDIRS INSTALL_BASE ## "/share/snmp/mibs"
 
 /* default mib files to load, specified by path. */
 /* #undef NETSNMP_DEFAULT_MIBFILES */
@@ -1382,7 +1382,7 @@
 #else /* ! NETSNMP_USE_OPENSSL */
 
 /* define if you are using the MD5 code ...*/
-//#define NETSNMP_USE_INTERNAL_MD5 1
+#define NETSNMP_USE_INTERNAL_MD5 1
 
 #endif /* ! NETSNMP_USE_OPENSSL */
 

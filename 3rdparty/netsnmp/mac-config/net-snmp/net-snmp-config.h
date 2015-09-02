@@ -1332,7 +1332,7 @@
 
 /* default location to look for mibs to load using the above tokens and/or
    those in the MIBS envrionment variable */
-#define NETSNMP_DEFAULT_MIBDIRS "$HOME/.snmp/mibs:/Users/Christian/net-snmp-mac/share/snmp/mibs"
+//#define NETSNMP_DEFAULT_MIBDIRS "$HOME/.snmp/mibs:/Users/Christian/net-snmp-mac/share/snmp/mibs"
 
 /* default mib files to load, specified by path. */
 /* #undef NETSNMP_DEFAULT_MIBFILES */
@@ -1744,7 +1744,7 @@
 /* PERSISTENT_DIRECTORY: If defined, the library is capabile of saving
    persisant information to this directory in the form of configuration
    lines: PERSISTENT_DIRECTORY/NAME.persistent.conf */
-#define NETSNMP_PERSISTENT_DIRECTORY "/var/snmp"
+#define NETSNMP_PERSISTENT_DIRECTORY ""
 
 /* AGENT_DIRECTORY_MODE: the mode the agents should use to create
    directories with. Since the data stored here is probably sensitive, it

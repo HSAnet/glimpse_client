@@ -238,6 +238,11 @@ bool Snmp::userSingleRequest()
     // Read value even if SetRequest is chosen to get the values type.
     SnmpPacket request = SnmpPacket::snmpGetRequest(m_definition->m_snmpVersion, m_definition->m_communityName,
                                                     m_definition->m_objectIdentifier);
+    if (request.hasError())
+    {
+        setErrorString(request.errorText());
+        return false;
+    }
     request.setHost(m_definition->m_hostAddresses);
     request.setUsername(m_definition->m_username);
     request.setAuthentication((SnmpPacket::Authentication)m_definition->m_authentication);
@@ -246,7 +251,7 @@ bool Snmp::userSingleRequest()
     SnmpPacket response = request.synchRequest(m_definition->m_password);
     if (response.hasError() || response.isEmpty())
     {
-        setErrorString((response.errorString().isEmpty()) ? QString("Unknown Error.") : response.errorString());
+        setErrorString((response.errorText().isEmpty()) ? QString("Unknown Error.") : response.errorText());
         return false;
     }
     // Do SetRequest if chosen.

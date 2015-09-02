@@ -89,7 +89,7 @@ public:
     Authentication authentication() const;
     QString contextOID() const;
     void setContextOID(const QString &contextObjID);
-    QString errorString() const;
+    QString errorText() const;
     void setPrivacy(const Privacy privacy);
     Privacy privacy() const;
     // Methods
@@ -146,7 +146,8 @@ private:
     snmp_session* getSnmpSession(const QString &password) const;
     QVariant variantValueOf(variable_list *variable) const;
     QString oidValueString(const variable_list *variable) const;
-    bool getObjectIdentifier(const QString &oidString, oid *pObjectId, size_t *oidLength) const;
+    bool getObjectIdentifier(const QString &oidString, oid *pObjectId, size_t *oidLength);
+    void setErrorText(const QString &errorString)       { m_errorText = errorString; m_hasError = true; }
 };
 
 #endif // SNMPROTOCOL_H
