@@ -12,6 +12,14 @@ LIBGLIMPSE="$(find src -type f -name 'libglimpse.so.*')"
 # glimpse_<version>-<build>-dbg.tar.gz
 TARBALL="glimpse_$(sed -nr 's/libglimpse\.so\.(.+)/\1/p' <<< ${LIBGLIMPSE##*/})-${BUILD}-dbg.tar.gz"
 
+# build dump_syms if necessary
+if [[ ! -x "${DUMP_SYMS}" ]]; then
+	cd 3rdparty/breakpad
+	./configure
+	make
+	cd -
+fi
+
 files=(
 "$(find src -type f -name glimpse-gui)"
 "$(find src -type f -name glimpse-console)"
