@@ -114,6 +114,7 @@ bool TrafficBudgetManager::addUsedTraffic(quint32 traffic)
         if (d->availableMobileTraffic >= traffic)
         {
             d->usedMobileTraffic += traffic;
+            d->availableMobileTraffic -= traffic;
             saveTraffic();
             return true;
         }
@@ -123,6 +124,7 @@ bool TrafficBudgetManager::addUsedTraffic(quint32 traffic)
         if (d->availableTraffic >= traffic)
         {
             d->usedTraffic += traffic;
+            d->availableTraffic -= traffic;
             saveTraffic();
             return true;
         }
