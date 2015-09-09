@@ -246,6 +246,20 @@ bool Settings::trafficBudgetManagerActive() const
     return d->settings.value("traffic-budget-manager-active", false).toBool();
 }
 
+void Settings::setMobileMeasurementsActive(bool active)
+{
+    if (this->mobileMeasurementsActive() != active)
+    {
+        d->settings.setValue("mobile-measurements-active", active);
+        emit mobileMeasurementsActiveChanged(active);
+    }
+}
+
+bool Settings::mobileMeasurementsActive() const
+{
+    return d->settings.value("mobile-measurements-active", false).toBool();
+}
+
 void Settings::setBacklog(quint32 backlog)
 {
     if (this->backlog() != backlog)
