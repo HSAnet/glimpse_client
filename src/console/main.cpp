@@ -392,8 +392,8 @@ int main(int argc, char *argv[])
         int setTraffic = parser.value(trafficOption).toInt();
         if (setTraffic != 0)
         {
-            client->settings()->setAvailableTraffic(setTraffic * 1024 * 1024);
-            client->settings()->setAvailableMobileTraffic(setTraffic * 1024 * 1024);
+            client->settings()->setAllowedTraffic(setTraffic * 1024 * 1024);
+            client->settings()->setAllowedMobileTraffic(setTraffic * 1024 * 1024);
             client->settings()->setTrafficBudgetManagerActive(true);
         }
         else

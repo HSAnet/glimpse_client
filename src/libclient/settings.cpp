@@ -176,32 +176,32 @@ void Settings::setPassive(bool passive)
     }
 }
 
-void Settings::setAvailableTraffic(quint32 traffic)
+void Settings::setAllowedTraffic(quint32 traffic)
 {
-    if (this->availableTraffic() != traffic)
+    if (this->allowedTraffic() != traffic)
     {
-        d->settings.setValue("available-traffic", traffic);
-        emit availableTrafficChanged(traffic);
+        d->settings.setValue("allowed-traffic", traffic);
+        emit allowedTrafficChanged(traffic);
     }
 }
 
-quint32 Settings::availableTraffic() const
+quint32 Settings::allowedTraffic() const
 {
-    return d->settings.value("available-traffic", 31457280).toUInt(); // defaults to 30 MB
+    return d->settings.value("allowed-traffic", 31457280).toUInt(); // defaults to 30 MB
 }
 
-void Settings::setAvailableMobileTraffic(quint32 traffic)
+void Settings::setAllowedMobileTraffic(quint32 traffic)
 {
-    if (this->availableMobileTraffic() != traffic)
+    if (this->allowedMobileTraffic() != traffic)
     {
-        d->settings.setValue("available-mobile-traffic", traffic);
-        emit availableMobileTrafficChanged(traffic);
+        d->settings.setValue("allowed-mobile-traffic", traffic);
+        emit allowedMobileTrafficChanged(traffic);
     }
 }
 
-quint32 Settings::availableMobileTraffic() const
+quint32 Settings::allowedMobileTraffic() const
 {
-    return d->settings.value("available-mobile-traffic", 20971520).toUInt(); // defaults to 20 MB
+    return d->settings.value("allowed-mobile-traffic", 20971520).toUInt(); // defaults to 20 MB
 }
 
 void Settings::setUsedTraffic(quint32 traffic)

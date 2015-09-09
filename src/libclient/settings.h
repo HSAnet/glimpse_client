@@ -19,10 +19,10 @@ class CLIENT_API Settings : public QObject
     Q_PROPERTY(QString userId READ userId WRITE setUserId NOTIFY userIdChanged)
     Q_PROPERTY(QString hashedUserId READ hashedUserId NOTIFY hashedUserIdChanged)
     Q_PROPERTY(QString apiKey READ apiKey WRITE setApiKey NOTIFY apiKeyChanged)
-    Q_PROPERTY(quint32 availableTraffic READ availableTraffic WRITE setAvailableTraffic NOTIFY availableTrafficChanged)
+    Q_PROPERTY(quint32 allowedTraffic READ allowedTraffic WRITE setAllowedTraffic NOTIFY allowedTrafficChanged)
     Q_PROPERTY(quint32 usedTraffic READ usedTraffic WRITE setUsedTraffic NOTIFY usedTrafficChanged)
-    Q_PROPERTY(quint32 availableMobileTraffic READ availableMobileTraffic WRITE setAvailableMobileTraffic NOTIFY
-               availableMobileTrafficChanged)
+    Q_PROPERTY(quint32 allowedMobileTraffic READ allowedMobileTraffic WRITE setAllowedMobileTraffic NOTIFY
+               allowedMobileTrafficChanged)
     Q_PROPERTY(quint32 usedMobileTraffic READ usedMobileTraffic WRITE setUsedMobileTraffic NOTIFY usedMobileTrafficChanged)
     Q_PROPERTY(bool trafficBudgetManagerActive READ trafficBudgetManagerActive WRITE setTrafficBudgetManagerActive
                NOTIFY trafficBudgetManagerActiveChanged)
@@ -58,11 +58,11 @@ public:
     bool isPassive() const;
     void setPassive(bool passive);
 
-    void setAvailableTraffic(quint32 traffic);
-    quint32 availableTraffic() const;
+    void setAllowedTraffic(quint32 traffic);
+    quint32 allowedTraffic() const;
 
-    void setAvailableMobileTraffic(quint32 traffic);
-    quint32 availableMobileTraffic() const;
+    void setAllowedMobileTraffic(quint32 traffic);
+    quint32 allowedMobileTraffic() const;
 
     void setUsedTraffic(quint32 traffic);
     quint32 usedTraffic() const;
@@ -92,9 +92,9 @@ signals:
     void hashedUserIdChanged(const QString &hashedUserId);
     void apiKeyChanged(const QString &apiKey);
     void passiveChanged(bool passive);
-    void availableTrafficChanged(quint32 traffic);
+    void allowedTrafficChanged(quint32 traffic);
     void usedTrafficChanged(quint32 traffic);
-    void availableMobileTrafficChanged(quint32 traffic);
+    void allowedMobileTrafficChanged(quint32 traffic);
     void usedMobileTrafficChanged(quint32 traffic);
     void trafficBudgetManagerActiveChanged(bool active);
     void mobileMeasurementsActiveChanged(bool active);

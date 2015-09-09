@@ -18,8 +18,8 @@ QVariantMap LocalInformation::getVariables() const
     map.insert("available_disk_space", deviceInfo.availableDiskSpace());
     map.insert("connection_mode", networkMangager.connectionMode());
     map.insert("tbm_active", settings->trafficBudgetManagerActive());
-    map.insert("available_traffic", settings->availableTraffic());
-    map.insert("available_mobile_traffic", settings->availableMobileTraffic());
+    map.insert("allowed_traffic", settings->allowedTraffic());
+    map.insert("allowed_mobile_traffic", settings->allowedMobileTraffic());
     map.insert("used_traffic", settings->usedTraffic());
     map.insert("used_mobile_traffic", settings->usedMobileTraffic());
 
