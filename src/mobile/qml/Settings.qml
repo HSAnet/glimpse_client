@@ -6,9 +6,56 @@ import "controls"
 Page {
     property string title: qsTr("Settings")
 
+    function enableTrafficBudgetManager(state) {
+        if (state == true) {
+            grid2.enabled = grid3.enabled = true;
+            grid2.opacity = grid3.opacity = 1;
+            if (mobileMeasurementsCheckbox.checked) {
+                grid4.enabled = true;
+                grid4.opacity = 1;
+            }
+        } else {
+            grid2.enabled = grid3.enabled = grid4.enabled = false;
+            grid2.opacity = grid3.opacity = grid4.opacity = 0.5;
+        }
+    }
+
+    function enableMobileMeasurements(state) {
+        if (state == true) {
+            grid4.enabled = true;
+            grid4.opacity = 1;
+        } else {
+            grid4.enabled = false;
+            grid4.opacity = 0.5;
+        }
+    }
+
+    Component.onCompleted: {
+        enableMobileMeasurements(client.settings.mobileMeasurementsActive);
+        enableTrafficBudgetManager(client.settings.trafficBudgetManagerActive);
+    }
+
     Rectangle {
-        anchors.fill: parent
-        color: "#ffffff"
+        id: listBackground
+        width: app.width - units.gu(50)
+        height: parent.height
+
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            horizontalCenter: parent.horizontalCenter
+            topMargin: units.gu(20)
+            bottomMargin: units.gu(20)
+        }
+
+        Image {
+            id: flap
+            anchors.right: parent.right
+            anchors.top: parent.top
+            source: "images/flap_small.png"
+            height: units.gu(60)
+            fillMode: Image.PreserveAspectFit
+        }
 
         Column {
             id: column
@@ -27,7 +74,7 @@ Page {
 
 
             GridLayout {
-                id: grid
+                id: grid1
                 anchors {
                     left: parent.left
                     right: parent.right
@@ -39,12 +86,48 @@ Page {
                 columns: 2
 
                 Label {
-                    text: qsTr("Max. monthly traffic volume:\n%1MB").arg(trafficSlider.value)
+                    text: qsTr("Enable traffic budget manager")
+                    color: "#333333"
+                    font.pixelSize: units.gu(35)
+                }
+
+                CheckBox {
+                    id: trafficBudgetManagerCheckbox
+                    checked: client.settings.trafficBudgetManagerActive
+                    onCheckedChanged: enableTrafficBudgetManager(checked)
+                }
+            }
+
+            Rectangle {
+                height: 1
+                color: "#e2e2e2"
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    topMargin: units.gu(20)
+                    bottomMargin: units.gu(20)
+                    leftMargin: units.gu(40)
+                    rightMargin: units.gu(40)
+                }
+            }
+
+            GridLayout {
+                id: grid2
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: units.gu(20)
+                    rightMargin: units.gu(20)
+                    //margins: units.gu(10)
+                }
+                columnSpacing: units.gu(50)
+                columns: 1
+
+                Label {
+                    text: qsTr("Max. monthly traffic volume: %1MB").arg(trafficSlider.value)
                     wrapMode: Text.Wrap
-                    font {
-                        pixelSize: units.gu(30)
-                    }
-                    color: "#727277"
+                    color: "#333333"
+                    font.pixelSize: units.gu(35)
                     Layout.maximumWidth: Layout.minimumWidth
                 }
 
@@ -57,14 +140,62 @@ Page {
                     Layout.fillWidth: true
                 }
 
+            }
 
+            Rectangle {
+                height: 1
+                color: "#e2e2e2"
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    topMargin: units.gu(20)
+                    bottomMargin: units.gu(20)
+                    leftMargin: units.gu(40)
+                    rightMargin: units.gu(40)
+                }
+            }
+
+            GridLayout {
+                id: grid3
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: units.gu(20)
+                    rightMargin: units.gu(20)
+                    //margins: units.gu(10)
+                }
+                columnSpacing: units.gu(50)
+                columns: 2
 
                 Label {
-                    text: qsTr("Max. monthly traffic volume\n(mobile/cellular): %1MB").arg(trafficMobileSlider.value)
-                    font {
-                        pixelSize: units.gu(30)
-                    }
-                    color: "#727277"
+                    text: qsTr("Allow mobile measurements")
+                    color: "#333333"
+                    font.pixelSize: units.gu(35)
+                }
+
+                CheckBox {
+                    id: mobileMeasurementsCheckbox
+                    checked: client.settings.mobileMeasurementsActive
+                    onCheckedChanged: enableMobileMeasurements(checked)
+                }
+            }
+
+            GridLayout {
+                id: grid4
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: units.gu(20)
+                    rightMargin: units.gu(20)
+                    //margins: units.gu(10)
+                }
+                columnSpacing: units.gu(50)
+                columns: 1
+
+                Label {
+                    text: qsTr("Max. monthly mobile traffic volume: %1MB").arg(trafficMobileSlider.value)
+                    color: "#333333"
+                    font.pixelSize: units.gu(35)
                 }
 
                 Slider {
@@ -75,39 +206,37 @@ Page {
                     stepSize: 1
                     Layout.fillWidth: true
                 }
+            }
 
-                Label {
-                    text: qsTr("Allow mobile/cellular\nmeasurements")
-                    font {
-                        pixelSize: units.gu(30)
-                    }
-                    color: "#727277"
+            Rectangle {
+                height: 1
+                color: "#e2e2e2"
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    topMargin: units.gu(20)
+                    bottomMargin: units.gu(20)
+                    leftMargin: units.gu(40)
+                    rightMargin: units.gu(40)
                 }
+            }
 
-                CheckBox {
-                    id: mobileMeasurementsCheckbox
-                    checked: true
+            GridLayout {
+                id: grid5
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: units.gu(20)
+                    rightMargin: units.gu(20)
+                    //margins: units.gu(10)
                 }
-
-                Label {
-                    text: qsTr("Enable traffic budget\nmanager")
-                    font {
-                        pixelSize: units.gu(30)
-                    }
-                    color: "#727277"
-                }
-
-                CheckBox {
-                    id: trafficBudgetManagerCheckbox
-                    checked: true
-                }
+                columnSpacing: units.gu(50)
+                columns: 1
 
                 Label {
                     text: qsTr("Keep logs for %1 days").arg(backlogSlider.value)
-                    font {
-                        pixelSize: units.gu(30)
-                    }
-                    color: "#727277"
+                    color: "#333333"
+                    font.pixelSize: units.gu(35)
                 }
 
                 Slider {
@@ -117,6 +246,19 @@ Page {
                     value: 5
                     stepSize: 1
                     Layout.fillWidth: true
+                }
+            }
+
+            Rectangle {
+                height: 1
+                color: "#e2e2e2"
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    topMargin: units.gu(20)
+                    bottomMargin: units.gu(20)
+                    leftMargin: units.gu(40)
+                    rightMargin: units.gu(40)
                 }
             }
 
