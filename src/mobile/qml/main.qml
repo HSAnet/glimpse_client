@@ -61,6 +61,8 @@ Rectangle {
             item: Qt.resolvedUrl("MainPage.qml"),
         }
 
+        settings.visible = true;
+
         if ( pageStack.depth > 0 ) {
             pageStack.insert(0, params);
             pageStack.pop(null);
@@ -98,7 +100,7 @@ Rectangle {
                 item: Qt.resolvedUrl(componentName),
                 properties: properties
             }
-
+            settings.visible = false;
             pageStack.push(params);
         } else {
             pageStack.push(componentName);
@@ -210,7 +212,12 @@ Rectangle {
             }
 
             arrowVisible: pageStack.depth > 1
-            onClicked: pageStack.pop()
+            onClicked: {
+                pageStack.pop();
+                if (pageTitle.text == "glimpse.") {
+                    settings.visible = true;
+                }
+            }
 
             text: {
                 if (pageStack.depth == 1)
@@ -237,6 +244,38 @@ Rectangle {
                     return item.title;
                 else
                     return "";
+            }
+        }
+
+        Item {
+            id: settings
+            width: 30
+            height: 30
+            anchors {
+                top: parent.top
+                topMargin: units.gu(20)
+                right: parent.right
+                rightMargin: units.gu(20)
+            }
+
+            Image {
+                id: settingsImage
+                anchors.fill: parent
+                source: "images/gear_wheel.svg"
+                visible: settings.visible
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: nextPage("Settings.qml")
+                onPressed: {
+                    settingsImage.opacity = 0.9
+                    settingsImage.scale = 0.9
+                }
+                onReleased: {
+                    settingsImage.opacity = 1
+                    settingsImage.scale = 1
+                }
             }
         }
 
