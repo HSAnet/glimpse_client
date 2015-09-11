@@ -9,22 +9,24 @@ Page {
 
     function enableTrafficBudgetManager(state) {
         if (state == true) {
-            grid2.enabled = grid3.enabled = true;
-            grid2.opacity = grid3.opacity = 1;
+            grid2.enabled = true;
+            grid2.opacity = 1;
             if (mobileMeasurementsCheckbox.checked) {
                 grid4.enabled = true;
                 grid4.opacity = 1;
             }
         } else {
-            grid2.enabled = grid3.enabled = grid4.enabled = false;
-            grid2.opacity = grid3.opacity = grid4.opacity = 0.5;
+            grid2.enabled = grid4.enabled = false;
+            grid2.opacity = grid4.opacity = 0.5;
         }
     }
 
     function enableMobileMeasurements(state) {
         if (state == true) {
-            grid4.enabled = true;
-            grid4.opacity = 1;
+            if (trafficBudgetManagerCheckbox.checked) {
+                grid4.enabled = true;
+                grid4.opacity = 1;
+            }
         } else {
             grid4.enabled = false;
             grid4.opacity = 0.5;
