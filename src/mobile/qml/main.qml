@@ -366,7 +366,9 @@ Rectangle {
         }
 
         onAnalyticsTitleChanged: {
-            tracker.sendAppView(analyticsTitle);
+            if (client.settings.googleAnalyticsActive) {
+                tracker.sendAppView(analyticsTitle);
+            }
         }
     }
 

@@ -5,6 +5,7 @@
 #include "client.h"
 #include "controller/ntpcontroller.h"
 #include "localinformation.h"
+#include "settings.h"
 
 #include <QThread>
 #include <QPointer>
@@ -249,8 +250,8 @@ void TaskExecutor::execute(const ScheduleDefinition &test, MeasurementObserver *
         return;
     }
 
-    // Abort if we are on a mobile connection
-    if (d->executor.networkManager->onMobileConnection())
+    // Abort if mobile measurements are disallowed and we are on a mobile connection
+    if (!Client::instance()->settings()->mobileMeasurementsActive() && d->executor.networkManager->onMobileConnection())
     {
         LOG_ERROR(QString("Unable to execute measurement, we are on a mobile connection or no interface is up: %1").arg(test.name()));
         return;
