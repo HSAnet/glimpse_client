@@ -112,6 +112,20 @@ bool Settings::hasLoginData() const
     return !userId().isEmpty() && !apiKey().isEmpty();
 }
 
+void Settings::setDeviceName(const QString &deviceName)
+{
+    if (this->deviceName() != deviceName)
+    {
+        d->settings.setValue("device-name", deviceName);
+        emit deviceNameChanged(deviceName);
+    }
+}
+
+QString Settings::deviceName() const
+{
+    return d->settings.value("device-name").toString();
+}
+
 void Settings::setDeviceId(const QString &deviceId)
 {
     if (this->deviceId() != deviceId)

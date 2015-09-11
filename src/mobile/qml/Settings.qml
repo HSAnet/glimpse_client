@@ -60,7 +60,7 @@ Page {
 
         Column {
             id: column
-            spacing: 20
+            spacing: 15
             anchors.top: parent.top
             anchors.topMargin: units.gu(50)
             anchors.left: parent.left
@@ -74,6 +74,46 @@ Page {
             }
 
 
+            GridLayout {
+                id: grid0
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: units.gu(20)
+                    rightMargin: units.gu(20)
+                    //margins: units.gu(10)
+                }
+                columnSpacing: units.gu(50)
+                columns: 2
+
+                Label {
+                    id: deviceName
+                    text: qsTr("Device name")
+                    color: "#333333"
+                    font.pixelSize: units.gu(35)
+                }
+
+                TextField {
+                    id: deviceNameTextField
+                    text: client.settings.deviceName
+                    anchors{
+                        left: deviceName.right
+                        right: parent.right
+                        leftMargin: units.gu(20)
+                    }
+                }
+            }
+
+            Rectangle {
+                height: 1
+                color: "#e2e2e2"
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: units.gu(40)
+                    rightMargin: units.gu(40)
+                }
+            }
             GridLayout {
                 id: grid1
                 anchors {
@@ -311,6 +351,7 @@ Page {
                     client.settings.trafficBudgetManagerActive = trafficBudgetManagerCheckbox.checked
                     client.settings.mobileMeasurementsActive = mobileMeasurementsCheckbox.checked
                     client.settings.googleAnalyticsActive = googleAnalyticsCheckbox.checked
+                    client.settings.deviceName = deviceNameTextField.text
                 }
             }
         }

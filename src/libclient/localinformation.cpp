@@ -41,6 +41,7 @@ QVariantMap LocalInformation::getConstants() const
     map.insert("board", deviceInfo.board());
     map.insert("manufacturer", deviceInfo.manufacturer());
     map.insert("model", deviceInfo.model());
+    map.insert("name", settings->deviceName());
     //map.insert("group_id", nullptr); // set for a release if needed
 
     return map;
