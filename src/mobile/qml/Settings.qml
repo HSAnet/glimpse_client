@@ -5,6 +5,7 @@ import "controls"
 
 Page {
     property string title: qsTr("Settings")
+    analyticsTitle: "Settings"
 
     function enableTrafficBudgetManager(state) {
         if (state == true) {
