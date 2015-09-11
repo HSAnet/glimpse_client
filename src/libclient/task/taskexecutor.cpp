@@ -253,7 +253,7 @@ void TaskExecutor::execute(const ScheduleDefinition &test, MeasurementObserver *
     // Abort if mobile measurements are disallowed and we are on a mobile connection
     if (!Client::instance()->settings()->mobileMeasurementsActive() && d->executor.networkManager->onMobileConnection())
     {
-        LOG_ERROR(QString("Unable to execute measurement, we are on a mobile connection or no interface is up: %1").arg(test.name()));
+        LOG_DEBUG(QString("Mobile measurements prohibited by settings: %1").arg(test.name()));
         return;
     }
 
