@@ -249,8 +249,8 @@ Rectangle {
 
         Item {
             id: settings
-            width: 20
-            height: 20
+            width: units.gu(40)
+            height: units.gu(40)
             anchors {
                 top: parent.top
                 topMargin: units.gu(26)
@@ -261,7 +261,7 @@ Rectangle {
             Image {
                 id: settingsImage
                 anchors.fill: parent
-                source: "images/gear_wheel.svg"
+                source: "images/gear_wheel.png"
                 visible: settings.visible
             }
 
