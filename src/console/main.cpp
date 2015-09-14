@@ -252,11 +252,11 @@ int main(int argc, char *argv[])
     QCommandLineOption passiveOption("passive", "Passive probe which does not receive tasks", "0/1");
     parser.addOption(passiveOption);
 
-    QCommandLineOption trafficOption("traffic", "Traffic limit per month", "MB");
-    parser.addOption(trafficOption);
-
     QCommandLineOption trafficBudgetOption("tbm", "Enable traffic budget manager", "0/1");
     parser.addOption(trafficBudgetOption);
+
+    QCommandLineOption trafficOption("traffic", "Traffic limit per month", "MB");
+    parser.addOption(trafficOption);
 
     QCommandLineOption mobileTrafficOption("mobile-traffic", "Mobile traffic limit per month", "MB");
     parser.addOption(mobileTrafficOption);
@@ -404,16 +404,25 @@ int main(int argc, char *argv[])
 
     if (parser.isSet(trafficBudgetOption))
     {
-        client->settings()->setTrafficBudgetManagerActive(true);
+        uint val = parser.value(trafficBudgetOption).toUInt();
 
-        if (parser.isSet(trafficOption))
+        if (val != 0)
         {
-            client->settings()->setAllowedTraffic(parser.value(trafficOption).toInt() * 1024 * 1024);
+            client->settings()->setTrafficBudgetManagerActive(true);
+
+            if (parser.isSet(trafficOption))
+            {
+                client->settings()->setAllowedTraffic(parser.value(trafficOption).toInt() * 1024 * 1024);
+            }
+
+            if (parser.isSet(mobileTrafficOption))
+            {
+                client->settings()->setAllowedMobileTraffic(parser.value(mobileTrafficOption).toInt() * 1024 * 1024);
+            }
         }
-
-        if (parser.isSet(mobileTrafficOption))
+        else
         {
-            client->settings()->setAllowedMobileTraffic(parser.value(mobileTrafficOption).toInt() * 1024 * 1024);
+            client->settings()->setTrafficBudgetManagerActive(false);
         }
     }
     else
@@ -421,12 +430,19 @@ int main(int argc, char *argv[])
         client->settings()->setTrafficBudgetManagerActive(false);
     }
 
-    client->settings()->setAllowedMobileTraffic(parser.isSet(allowMobileOption));
+    if (parser.isSet(allowMobileOption))
+    {
+        uint val = parser.value(allowMobileOption).toUInt();
+        client->settings()->setAllowedMobileTraffic((bool) val);
+    }
+    else
+    {
+        client->settings()->setAllowedMobileTraffic(false);
+    }
 
     if (parser.isSet(deviceNameOption))
     {
         client->settings()->setDeviceName(parser.value(deviceNameOption));
-
     }
 
     if (parser.isSet(backlogOption))
