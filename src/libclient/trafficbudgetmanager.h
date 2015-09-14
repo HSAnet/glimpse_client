@@ -16,8 +16,6 @@ public:
     void init();
     void saveTraffic();
 
-    quint32 availableTraffic() const;
-
     bool addUsedTraffic(quint32 traffic);
     quint32 usedTraffic() const;
 
