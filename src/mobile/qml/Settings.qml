@@ -116,6 +116,7 @@ Page {
                     rightMargin: units.gu(40)
                 }
             }
+
             GridLayout {
                 id: grid1
                 anchors {
