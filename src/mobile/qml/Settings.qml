@@ -9,22 +9,24 @@ Page {
 
     function enableTrafficBudgetManager(state) {
         if (state == true) {
-            grid2.enabled = grid3.enabled = true;
-            grid2.opacity = grid3.opacity = 1;
+            grid2.enabled = true;
+            grid2.opacity = 1;
             if (mobileMeasurementsCheckbox.checked) {
                 grid4.enabled = true;
                 grid4.opacity = 1;
             }
         } else {
-            grid2.enabled = grid3.enabled = grid4.enabled = false;
-            grid2.opacity = grid3.opacity = grid4.opacity = 0.5;
+            grid2.enabled = grid4.enabled = false;
+            grid2.opacity = grid4.opacity = 0.5;
         }
     }
 
     function enableMobileMeasurements(state) {
         if (state == true) {
-            grid4.enabled = true;
-            grid4.opacity = 1;
+            if (trafficBudgetManagerCheckbox.checked) {
+                grid4.enabled = true;
+                grid4.opacity = 1;
+            }
         } else {
             grid4.enabled = false;
             grid4.opacity = 0.5;
@@ -60,7 +62,7 @@ Page {
 
         Column {
             id: column
-            spacing: 20
+            spacing: 15
             anchors.top: parent.top
             anchors.topMargin: units.gu(50)
             anchors.left: parent.left
@@ -73,6 +75,47 @@ Page {
                 color: "#ff0000"
             }
 
+
+            GridLayout {
+                id: grid0
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: units.gu(20)
+                    rightMargin: units.gu(20)
+                    //margins: units.gu(10)
+                }
+                columnSpacing: units.gu(50)
+                columns: 2
+
+                Label {
+                    id: deviceName
+                    text: qsTr("Device name")
+                    color: "#333333"
+                    font.pixelSize: units.gu(35)
+                }
+
+                TextField {
+                    id: deviceNameTextField
+                    text: client.settings.deviceName
+                    anchors{
+                        left: deviceName.right
+                        right: parent.right
+                        leftMargin: units.gu(20)
+                    }
+                }
+            }
+
+            Rectangle {
+                height: 1
+                color: "#e2e2e2"
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: units.gu(40)
+                    rightMargin: units.gu(40)
+                }
+            }
 
             GridLayout {
                 id: grid1
@@ -311,6 +354,7 @@ Page {
                     client.settings.trafficBudgetManagerActive = trafficBudgetManagerCheckbox.checked
                     client.settings.mobileMeasurementsActive = mobileMeasurementsCheckbox.checked
                     client.settings.googleAnalyticsActive = googleAnalyticsCheckbox.checked
+                    client.settings.deviceName = deviceNameTextField.text
                 }
             }
         }

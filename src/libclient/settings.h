@@ -15,6 +15,7 @@ class CLIENT_API Settings : public QObject
 {
     Q_OBJECT
     Q_ENUMS(StorageType)
+    Q_PROPERTY(QString deviceName READ deviceName WRITE setDeviceName NOTIFY deviceNameChanged)
     Q_PROPERTY(QString deviceId READ deviceId WRITE setDeviceId NOTIFY deviceIdChanged)
     Q_PROPERTY(QString userId READ userId WRITE setUserId NOTIFY userIdChanged)
     Q_PROPERTY(QString hashedUserId READ hashedUserId NOTIFY hashedUserIdChanged)
@@ -46,6 +47,9 @@ public:
     StorageType init();
 
     bool hasLoginData() const;
+
+    void setDeviceName(const QString &deviceName);
+    QString deviceName() const;
 
     void setDeviceId(const QString &deviceId);
     QString deviceId() const;
@@ -92,6 +96,7 @@ public slots:
     void sync();
 
 signals:
+    void deviceNameChanged(const QString &deviceName);
     void deviceIdChanged(const QString &deviceId);
     void userIdChanged(const QString &userId);
     void hashedUserIdChanged(const QString &hashedUserId);

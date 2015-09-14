@@ -95,20 +95,15 @@ void TrafficBudgetManager::saveTraffic()
     }
 }
 
-quint32 TrafficBudgetManager::availableTraffic() const
-{
-    QReadLocker locker(&d->lock);
-
-    return Client::instance()->networkManager()->onMobileConnection()
-            ? (d->settings->allowedMobileTraffic() - d->usedMobileTraffic)
-            : (d->settings->allowedTraffic() - d->usedTraffic);
-}
-
 bool TrafficBudgetManager::addUsedTraffic(quint32 traffic)
 {
     QWriteLocker locker(&d->lock);
 
-    if (availableTraffic() >= traffic)
+    quint32 availableTraffic = Client::instance()->networkManager()->onMobileConnection()
+            ? (d->settings->allowedMobileTraffic() - d->usedMobileTraffic)
+            : (d->settings->allowedTraffic() - d->usedTraffic);
+
+    if (availableTraffic >= traffic)
     {
         if (Client::instance()->networkManager()->onMobileConnection())
         {
