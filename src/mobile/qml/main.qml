@@ -249,13 +249,13 @@ Rectangle {
 
         Item {
             id: settings
-            width: 30
-            height: 30
+            width: 20
+            height: 20
             anchors {
                 top: parent.top
-                topMargin: units.gu(20)
-                right: parent.right
-                rightMargin: units.gu(20)
+                topMargin: units.gu(26)
+                left: parent.left
+                leftMargin: units.gu(20)
             }
 
             Image {
@@ -366,7 +366,9 @@ Rectangle {
         }
 
         onAnalyticsTitleChanged: {
-            tracker.sendAppView(analyticsTitle);
+            if (client.settings.googleAnalyticsActive) {
+                tracker.sendAppView(analyticsTitle);
+            }
         }
     }
 

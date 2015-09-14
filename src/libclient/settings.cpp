@@ -274,6 +274,20 @@ quint32 Settings::backlog() const
     return d->settings.value("backlog", 10).toUInt();
 }
 
+void Settings::setGoogleAnalyticsActive(bool active)
+{
+    if (this->googleAnalyticsActive() != active)
+    {
+        d->settings.setValue("google-analytics-active", active);
+        emit googleAnalyticsActiveChanged(active);
+    }
+}
+
+bool Settings::googleAnalyticsActive() const
+{
+    return d->settings.value("google-analytics-active", false).toBool();
+}
+
 GetConfigResponse *Settings::config() const
 {
     return &d->config;

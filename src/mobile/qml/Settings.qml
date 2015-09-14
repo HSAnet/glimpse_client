@@ -5,6 +5,7 @@ import "controls"
 
 Page {
     property string title: qsTr("Settings")
+    analyticsTitle: "Settings"
 
     function enableTrafficBudgetManager(state) {
         if (state == true) {
@@ -262,6 +263,43 @@ Page {
                 }
             }
 
+            GridLayout {
+                id: grid6
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: units.gu(20)
+                    rightMargin: units.gu(20)
+                    //margins: units.gu(10)
+                }
+                columnSpacing: units.gu(50)
+                columns: 2
+
+                Label {
+                    text: qsTr("Enable Google Analytics")
+                    color: "#333333"
+                    font.pixelSize: units.gu(35)
+                }
+
+                CheckBox {
+                    id: googleAnalyticsCheckbox
+                    checked: client.settings.googleAnalyticsActive
+                }
+            }
+
+            Rectangle {
+                height: 1
+                color: "#e2e2e2"
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    topMargin: units.gu(20)
+                    bottomMargin: units.gu(20)
+                    leftMargin: units.gu(40)
+                    rightMargin: units.gu(40)
+                }
+            }
+
             BigButton {
                 text: qsTr("Save")
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -272,6 +310,7 @@ Page {
                     client.settings.backlog = backlogSlider.value
                     client.settings.trafficBudgetManagerActive = trafficBudgetManagerCheckbox.checked
                     client.settings.mobileMeasurementsActive = mobileMeasurementsCheckbox.checked
+                    client.settings.googleAnalyticsActive = googleAnalyticsCheckbox.checked
                 }
             }
         }

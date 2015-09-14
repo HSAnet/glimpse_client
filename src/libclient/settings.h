@@ -29,6 +29,8 @@ class CLIENT_API Settings : public QObject
     Q_PROPERTY(bool mobileMeasurementsActive READ mobileMeasurementsActive WRITE setMobileMeasurementsActive
                NOTIFY mobileMeasurementsActiveChanged)
     Q_PROPERTY(quint32 backlog READ backlog WRITE setBacklog NOTIFY backlogChanged)
+    Q_PROPERTY(bool googleAnalyticsActive READ googleAnalyticsActive WRITE setGoogleAnalyticsActive
+               NOTIFY googleAnalyticsActiveChanged)
     Q_PROPERTY(GetConfigResponse *config READ config CONSTANT)
 
 public:
@@ -79,6 +81,9 @@ public:
     void setBacklog(quint32 backlog);
     quint32 backlog() const;
 
+    void setGoogleAnalyticsActive(bool active);
+    bool googleAnalyticsActive() const;
+
     GetConfigResponse *config() const;
 
     void clear();
@@ -99,6 +104,7 @@ signals:
     void trafficBudgetManagerActiveChanged(bool active);
     void mobileMeasurementsActiveChanged(bool active);
     void backlogChanged(quint32 backlog);
+    void googleAnalyticsActiveChanged(bool active);
 
 protected:
     class Private;
