@@ -27,9 +27,7 @@ public:
 
     TrafficBudgetManager *q;
     Settings *settings;
-    quint32 availableTraffic;
     quint32 usedTraffic;
-    quint32 availableMobileTraffic;
     quint32 usedMobileTraffic;
     QReadWriteLock lock;
     bool active;
@@ -45,8 +43,10 @@ void TrafficBudgetManager::Private::timeout()
     if (active)
     {
         LOG_INFO("Reset traffic budget for new month");
-        LOG_INFO(QString("Traffic: Used %1 of %2 MB").arg(usedTraffic/(1024*1024)).arg(availableTraffic/(1024*1024)));
-        LOG_INFO(QString("Traffic (mobile): Used %1 of %2 MB").arg(usedMobileTraffic/(1024*1024)).arg(availableMobileTraffic/(1024*1024)));
+        LOG_INFO(QString("Traffic: Used %1 of %2 MB").arg(usedTraffic/(1024*1024)).arg(
+                     settings->allowedTraffic()/(1024*1024)));
+        LOG_INFO(QString("Traffic (mobile): Used %1 of %2 MB").arg(usedMobileTraffic/(1024*1024)).arg(
+                     settings->allowedMobileTraffic()/(1024*1024)));
     }
 
     q->reset();
@@ -66,8 +66,6 @@ TrafficBudgetManager::~TrafficBudgetManager()
 void TrafficBudgetManager::init()
 {
     d->settings = Client::instance()->settings();
-    d->availableMobileTraffic = d->settings->availableMobileTraffic();
-    d->availableTraffic = d->settings->availableTraffic();
     d->usedMobileTraffic = d->settings->usedMobileTraffic();
     d->usedTraffic = d->settings->usedTraffic();
     d->active = d->settings->trafficBudgetManagerActive();
@@ -76,8 +74,10 @@ void TrafficBudgetManager::init()
 
     if (d->active)
     {
-        LOG_INFO(QString("Traffic: Used %1 of %2 MB").arg(d->usedTraffic/(1024*1024)).arg(d->availableTraffic/(1024*1024)));
-        LOG_INFO(QString("Traffic (mobile): Used %1 of %2 MB").arg(d->usedMobileTraffic/(1024*1024)).arg(d->availableMobileTraffic/(1024*1024)));
+        LOG_INFO(QString("Traffic: Used %1 of %2 MB").arg(d->usedTraffic/(1024*1024)).arg(
+                     d->settings->allowedTraffic()/(1024*1024)));
+        LOG_INFO(QString("Traffic (mobile): Used %1 of %2 MB").arg(d->usedMobileTraffic/(1024*1024)).arg(
+                     d->settings->allowedMobileTraffic()/(1024*1024)));
     }
 
     d->timer.start();
@@ -87,12 +87,10 @@ void TrafficBudgetManager::saveTraffic()
 {
     if (Client::instance()->networkManager()->onMobileConnection())
     {
-        d->settings->setAvailableMobileTraffic(d->availableMobileTraffic);
         d->settings->setUsedMobileTraffic(d->usedMobileTraffic);
     }
     else
     {
-        d->settings->setAvailableTraffic(d->availableTraffic);
         d->settings->setUsedTraffic(d->usedTraffic);
     }
 }
@@ -101,26 +99,24 @@ quint32 TrafficBudgetManager::availableTraffic() const
 {
     QReadLocker locker(&d->lock);
 
-    return Client::instance()->networkManager()->onMobileConnection() ? d->availableMobileTraffic :
-           d->availableTraffic;
+    return Client::instance()->networkManager()->onMobileConnection()
+            ? (d->settings->allowedMobileTraffic() - d->usedMobileTraffic)
+            : (d->settings->allowedTraffic() - d->usedTraffic);
 }
 
 bool TrafficBudgetManager::addUsedTraffic(quint32 traffic)
 {
     QWriteLocker locker(&d->lock);
 
-    if (Client::instance()->networkManager()->onMobileConnection())
+    if (availableTraffic() >= traffic)
     {
-        if (d->availableMobileTraffic >= traffic)
+        if (Client::instance()->networkManager()->onMobileConnection())
         {
             d->usedMobileTraffic += traffic;
             saveTraffic();
             return true;
         }
-    }
-    else
-    {
-        if (d->availableTraffic >= traffic)
+        else
         {
             d->usedTraffic += traffic;
             saveTraffic();
