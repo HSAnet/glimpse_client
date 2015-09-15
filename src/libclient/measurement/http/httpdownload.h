@@ -31,7 +31,7 @@ public:
     };
 
     DownloadThread (const QUrl &url, const QHostInfo &server, int targetTimeMs = 10000,
-                    bool avoidCaches = false, quint16 sourcePort = 1234, QObject *parent = 0);
+                    bool avoidCaches = false, quint16 sourcePort = 0, QObject *parent = 0);
     ~DownloadThread();
 
     DownloadThreadStatus threadStatus() const;

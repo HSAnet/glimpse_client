@@ -388,7 +388,7 @@ bool Client::init()
                                                                   ping::Tcp).toVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(6), TaskId(6), "dnslookup", timing, DnslookupDefinition("measure-it.net").toVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(7), TaskId(7), "httpdownload", timing,
-                                HTTPDownloadDefinition("http://www.measure-it.net:80/static/measurement/67108864", false, 1, 10000, 3000, 1000, 1234).toVariant(),
+                                HTTPDownloadDefinition("http://www.measure-it.net:80/static/measurement/67108864", false, 1, 10000, 3000, 1000, 0).toVariant(),
                                 precondition));
     tests.append(ScheduleDefinition(ScheduleId(8), TaskId(8), "packettrains_ma", timing, PacketTrainsDefinition("141.82.57.241", 5106, 1000, 48, 1,
                                                                                      10485760, 262144000, 200000000).toVariant(),

@@ -61,7 +61,7 @@ Base {
         {
             "label": "Source port",
             "type": "TextField",
-            "text": "1234"
+            "text": ""
         }
     ]
 }

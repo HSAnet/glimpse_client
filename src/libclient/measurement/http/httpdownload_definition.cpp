@@ -28,7 +28,7 @@ HTTPDownloadDefinitionPtr HTTPDownloadDefinition::fromVariant(const QVariant &va
                                                                 map.value("target_time", 10000).toInt(),
                                                                 map.value("ramp_up_time", 3000).toInt(),
                                                                 map.value("slot_length", 1000).toInt(),
-                                                                map.value("source_port", 1234).toUInt()));
+                                                                map.value("source_port", 0).toUInt()));
 }
 
 QVariant HTTPDownloadDefinition::toVariant() const
