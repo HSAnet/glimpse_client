@@ -79,7 +79,7 @@ void DownloadThread::startTCPConnection()
 
     socket = new QTcpSocket();
 
-    if (!socket->bind(sourcePort))
+    if (sourcePort > 0 && !socket->bind(sourcePort))
     {
         LOG_ERROR("Could not bind port");
 
