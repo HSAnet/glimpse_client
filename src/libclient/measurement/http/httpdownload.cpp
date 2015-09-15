@@ -8,12 +8,14 @@
 
 LOGGER(HTTPDownload);
 
-DownloadThread::DownloadThread (const QUrl &url, const QHostInfo &server, int targetTimeMs, bool cacheTest, QObject *parent)
+DownloadThread::DownloadThread (const QUrl &url, const QHostInfo &server, int targetTimeMs,
+                                bool cacheTest, quint16 sourcePort, QObject *parent)
 : QObject(parent)
 , url(url)
 , server(server)
 , targetTime(targetTimeMs)
 , avoidCaches(cacheTest)
+, sourcePort(sourcePort)
 , socket(NULL)
 , tStatus(Inactive)
 {
@@ -76,6 +78,20 @@ void DownloadThread::startTCPConnection()
     }
 
     socket = new QTcpSocket();
+
+    if (!socket->bind(sourcePort))
+    {
+        LOG_ERROR("Could not bind port");
+
+        if (socket->state() != QAbstractSocket::ConnectedState)
+        {
+            socket->close();
+        }
+
+        tStatus = FinishedError;
+        emit TCPConnected(false);
+        return;
+    }
 
     //so let's connect now (if no port as part of the URL use 80 as default)
     socket->connectToHost(server.addresses().first(), url.port(defaultPort));
@@ -404,7 +420,8 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
     {
         //create a worker thread that starts an actual download
         QThread *workerThread = new QThread();
-        DownloadThread *worker = new DownloadThread(requestUrl, server, definition->targetTime, definition->avoidCaches, workerThread);
+        DownloadThread *worker = new DownloadThread(requestUrl, server, definition->targetTime, definition->avoidCaches,
+                                                    definition->sourcePort, workerThread);
 
         //store the references to the threads/workers
         workers.append(worker);

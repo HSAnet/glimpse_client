@@ -30,7 +30,8 @@ public:
         FinishedError
     };
 
-    DownloadThread (const QUrl &url, const QHostInfo &server, int targetTimeMs = 10000, bool avoidCaches = false, QObject *parent = 0);
+    DownloadThread (const QUrl &url, const QHostInfo &server, int targetTimeMs = 10000,
+                    bool avoidCaches = false, quint16 sourcePort = 1234, QObject *parent = 0);
     ~DownloadThread();
 
     DownloadThreadStatus threadStatus() const;
@@ -53,6 +54,8 @@ private:
     int targetTime;
     //testCaches? true: don't randomize URL, false: randomize URL
     bool avoidCaches;
+    //local/source port
+    quint16 sourcePort;
 
     //the socket from which to read/write, to be created after moved to thread!
     //that's why we need a pointer here
