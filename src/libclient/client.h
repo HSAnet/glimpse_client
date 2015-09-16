@@ -94,8 +94,8 @@ public:
      * Source: http://semver.org
      */
     static const quint32 versionMajor = 2;
-    static const quint32 versionMinor = 5;
-    static const quint32 versionPatch = 4;
+    static const quint32 versionMinor = 6;
+    static const quint32 versionPatch = 0;
 
 public slots:
     bool init();
@@ -104,7 +104,7 @@ public slots:
     void btc(const QString &host);
     void http();
     void http(const QString &url, bool avoidCaches, int threads, int targetTime,
-              int rampUpTime, int slotLength);
+              int rampUpTime, int slotLength, quint16 sourcePort);
     void upnp();
     void packetTrains();
     void packetTrains(const QString host,
