@@ -79,18 +79,31 @@ void DownloadThread::startTCPConnection()
 
     socket = new QTcpSocket();
 
-    if (sourcePort > 0 && !socket->bind(sourcePort))
+    if (sourcePort > 0)
     {
-        LOG_ERROR("Could not bind port");
+        bool ret = false;
 
-        if (socket->state() != QAbstractSocket::ConnectedState)
+        for (uint i = 0; i < 16; i++)
         {
-            socket->close();
+            if ((ret = socket->bind(sourcePort + i)))
+            {
+                break;
+            }
         }
 
-        tStatus = FinishedError;
-        emit TCPConnected(false);
-        return;
+        if (!ret)
+        {
+            LOG_ERROR("Could not bind port");
+
+            if (socket->isOpen())
+            {
+                socket->close();
+            }
+
+            tStatus = FinishedError;
+            emit TCPConnected(false);
+            return;
+        }
     }
 
     //so let's connect now (if no port as part of the URL use 80 as default)
