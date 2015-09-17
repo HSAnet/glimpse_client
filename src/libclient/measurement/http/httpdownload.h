@@ -148,6 +148,8 @@ private:
 
     int finishedThreads;    //number of threads that have finished the download
 
+    QHostAddress destinationIP;
+
     //some more or less magic constants
     static const int maxRampUpTime = 10000; //max ramp-up time in milli-seconds for TCP to grow the CWND
     static const int minRampUpTime = 1000;
