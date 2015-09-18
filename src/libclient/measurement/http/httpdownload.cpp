@@ -426,6 +426,9 @@ bool HTTPDownload::startThreads(const QHostInfo &server)
         return false;
     }
 
+    // save (first) destination IP for the results
+    destinationIP = server.addresses().first();
+
     int n = 0;
 
     //start all threads
@@ -703,6 +706,7 @@ bool HTTPDownload::calculateResults()
     results.insert("results_ok", resultsOK);
     results.insert("bandwidth_bps_avg", overallBandwidth);
     results.insert("bandwidth_bps_per_thread", threadResults);
+    results.insert("destination_ip", destinationIP.toString());
 
     return true;
 }
