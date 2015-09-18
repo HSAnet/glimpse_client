@@ -22,6 +22,13 @@
 #define NET_SNMP_CONFIG_H
 
 
+/* Android does not know some data types. */
+#ifdef OPERATING_SYS_ANDROID
+typedef unsigned int    in_addr_t;
+#include <sys/select.h>
+#endif
+
+
 /* ********* NETSNMP_MARK_BEGIN_AUTOCONF_DEFINITIONS ********* */
 /*
  * put all autoconf-specific definitions below here
@@ -169,7 +176,9 @@
 #define HAVE_FCNTL_H 1
 
 /* Define to 1 if you have the `fgetc_unlocked' function. */
+#ifndef OPERATING_SYS_ANDROID
 #define HAVE_FGETC_UNLOCKED 1
+#endif
 
 /* Define to 1 if you have the `flockfile' function. */
 #define HAVE_FLOCKFILE 1
@@ -199,7 +208,9 @@
 /* #undef HAVE_GETFSSTAT */
 
 /* Define to 1 if you have the `getgrnam' function. */
+#ifndef OPERATING_SYS_ANDROID
 #define HAVE_GETGRNAM 1
+#endif
 
 /* Define to 1 if you have the `gethostbyaddr' function. */
 #define HAVE_GETHOSTBYADDR 1
@@ -1141,7 +1152,9 @@
 #define HAVE_SYS_SWAP_H 1
 
 /* Define to 1 if you have the <sys/sysctl.h> header file. */
+#ifndef OPERATING_SYS_ANDROID
 #define HAVE_SYS_SYSCTL_H 1
+#endif
 
 /* Define to 1 if you have the <sys/sysget.h> header file. */
 /* #undef HAVE_SYS_SYSGET_H */

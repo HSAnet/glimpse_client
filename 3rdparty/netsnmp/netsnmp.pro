@@ -4,14 +4,14 @@
 #
 #-------------------------------------------------
 
-QT       -= core gui
-
 TARGET = netsnmp
 TEMPLATE = lib
 CONFIG += staticlib
+CONFIG -= qt
 
 DEFINES += OPENSSL_NO_INLINE_ASM \
             NETSNMP_DEFAULT_MIBDIRS=\\\"$$PWD/mibs\\\"
+android: DEFINES += OPERATING_SYS_ANDROID
 
 # Disable warnings
 *clang*|*g++*|*llvm* {
