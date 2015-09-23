@@ -15,7 +15,7 @@ win32 {
     else:BUILDCONFIG = "debug"
 
     LIBS += -L$$BUILD_DIRECTORY/3rdparty/netsnmp/$$BUILDCONFIG -lnetsnmp
-    PRE_TARGETDEPS = $$BUILD_DIRECTORY/3rdparty/netsnmp/$$BUILDCONFIG/libnetsnmp.a
+    PRE_TARGETDEPS = $$BUILD_DIRECTORY/3rdparty/netsnmp/$$BUILDCONFIG/netsnmp.lib
 } else {
     # Other systems
     LIBS += -L$$BUILD_DIRECTORY/3rdparty/netsnmp -lnetsnmp
