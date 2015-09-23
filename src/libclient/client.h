@@ -138,6 +138,25 @@ public slots:
                     const QString &type);
     void wifiLookup();
     void measureIt();
+    void snmp();
+    void snmp(const QStringList &communityList,
+              const int retriesPerIp,
+              const int version,
+              const QString &hostAddresses,
+              const int measurementType,
+              const int sendInterval,
+              const int waitTime);
+    void snmp(const int version,
+              const int requestType,
+              const QString &communityName,
+              const QString &host,
+              const QString &objectIdentifier,
+              const QString &objectValue,
+              const int authentication,
+              const int privacy,
+              const QString &username,
+              const QString &password,
+              const QString &contextOID);
 
 signals:
     void statusChanged();

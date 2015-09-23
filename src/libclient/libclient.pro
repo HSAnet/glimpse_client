@@ -44,6 +44,7 @@ include($$SOURCE_DIRECTORY/3rdparty/miniupnpc.pri)
 include($$SOURCE_DIRECTORY/3rdparty/breakpad.pri)
 include($$SOURCE_DIRECTORY/3rdparty/winpcap.pri)
 include($$SOURCE_DIRECTORY/3rdparty/qtsystems.pri)
+include($$SOURCE_DIRECTORY/3rdparty/netsnmp.pri)
 
 android {
     QT += androidextras
@@ -174,6 +175,13 @@ SOURCES +=  \
     storage/storage.cpp \
     timing/timer.cpp \
     controller/ntpcontroller.cpp \
+    measurement/snmp/snmp.cpp \
+    measurement/snmp/snmp_definition.cpp \
+    measurement/snmp/snmp_plugin.cpp \
+    measurement/snmp/snmppacket.cpp \
+    measurement/snmp/snmpscanner.cpp \
+    measurement/snmp/devicemap.cpp \
+    measurement/snmp/resultcreator.cpp \
     result/result.cpp \
     result/resultstorage.cpp \
     result/resultscheduler.cpp \
@@ -277,6 +285,13 @@ HEADERS += \
     storage/storage.h \
     timing/timer.h \
     controller/ntpcontroller.h \
+    measurement/snmp/snmp.h \
+    measurement/snmp/snmp_definition.h \
+    measurement/snmp/snmp_plugin.h \
+    measurement/snmp/snmppacket.h \
+    measurement/snmp/snmpscanner.h \
+    measurement/snmp/devicemap.h \
+    measurement/snmp/resultcreator.h \
     result/result.h \
     result/resultstorage.h \
     result/resultscheduler.h \

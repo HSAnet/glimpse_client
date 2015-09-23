@@ -32,3 +32,4 @@ qrc_*.cpp
 .qmake.*
 .vimrc
 3rdparty/qtsystems_fixes/QtSystemInfo
+*.DS_Store

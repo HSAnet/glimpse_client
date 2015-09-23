@@ -47,6 +47,7 @@
 #include "measurement/packettrains/packettrainsdefinition.h"
 #include "measurement/ping/ping_definition.h"
 #include "measurement/traceroute/traceroute_definition.h"
+#include "measurement/snmp/snmp_definition.h"
 
 LOGGER(Client);
 
@@ -400,6 +401,8 @@ bool Client::init()
                                 precondition));
     tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", timing, QVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(12), TaskId(12), "wifilookup", timing, QVariant(), precondition));
+    tests.append(ScheduleDefinition(ScheduleId(14), TaskId(14), "snmp", timing, SnmpDefinition(QStringList() << "public" << "private", 2, 1, QString(), 0, 2, 2).toVariant(),
+                                    precondition));
 
     foreach (const ScheduleDefinition &test, tests)
     {
@@ -544,6 +547,36 @@ void Client::measureIt()
 
     // Traceroute
     d->scheduler.executeOnDemandTest(ScheduleId(10));
+}
+
+void Client::snmp()
+{
+    d->scheduler.executeOnDemandTest(ScheduleId(14));
+}
+
+// Scan subnet
+void Client::snmp(const QStringList &communityList, const int retriesPerIp, const int version, const QString &hostAddresses,
+                  const int measurementType, const int sendInterval, const int waitTime)
+{
+    SnmpDefinition snmpDefinition(communityList, retriesPerIp, version, hostAddresses, measurementType, sendInterval, waitTime);
+    TimingPtr timing(new ImmediateTiming());
+    ScheduleDefinition testDefinition(ScheduleId(14), d->scheduler.nextImmidiateTask("snmp", snmpDefinition.toVariant()), timing,
+                                      Precondition());
+    d->scheduler.enqueue(testDefinition);
+}
+
+// User sends a request to an agent.
+void Client::snmp(const int version, const int requestType, const QString &communityName, const QString &host,
+                  const QString &objectIdentifier, const QString &objectValue, const int authentication,
+                  const int privacy, const QString &username, const QString &password, const QString &contextOID)
+{
+    int measurementType = 2;    // SingleRequest = 2
+    SnmpDefinition snmpDefinition(version, requestType, communityName, host, objectIdentifier, objectValue, authentication,
+                                  privacy, username, password, contextOID, measurementType);
+    TimingPtr timing(new ImmediateTiming());
+    ScheduleDefinition testDefinition(ScheduleId(14), d->scheduler.nextImmidiateTask("snmp", snmpDefinition.toVariant()), timing,
+                                      Precondition());
+    d->scheduler.enqueue(testDefinition);
 }
 
 void Client::setStatus(Client::Status status)

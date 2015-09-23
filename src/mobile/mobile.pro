@@ -128,3 +128,7 @@ OTHER_FILES += $$files(qml/*) \
                qt.conf \
                Info.plist
 
+DISTFILES += \
+    qml/controls/LabeledComboBox.qml \
+    qml/controls/LabeledTextField.qml
+
