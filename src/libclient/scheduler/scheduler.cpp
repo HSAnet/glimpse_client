@@ -314,7 +314,8 @@ Task Scheduler::nextImmidiateTask(const QString &method, const QVariant &measure
     // check whether a task exists with the same method and definition
     foreach (const Task &task, d->tasks)
     {
-        if (task.method() == method && task.measurementDefinition() == measurementDefinition)
+        // ignore positive (non-immidiate) task IDs
+        if (task.id().toInt() < -1 && task.method() == method && task.measurementDefinition() == measurementDefinition)
         {
             return task;
         }
