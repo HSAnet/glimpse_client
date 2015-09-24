@@ -430,7 +430,7 @@ void Client::btc(const QString &host)
 {
     BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024, 10);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(2), d->scheduler.nextImmidiateTask("btc_ma", btcDef.toVariant()),
+    ScheduleDefinition testDefinition(ScheduleId(2), d->scheduler.nextImmediateTask("btc_ma", btcDef.toVariant()),
                                       timing, Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -440,7 +440,7 @@ void Client::http(const QString &url, bool avoidCaches, int threads, int targetT
 {
     HTTPDownloadDefinition httpDef(url, avoidCaches, threads, targetTime, rampUpTime, slotLength, sourcePort);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(7), d->scheduler.nextImmidiateTask("httpdownload", httpDef.toVariant()),
+    ScheduleDefinition testDefinition(ScheduleId(7), d->scheduler.nextImmediateTask("httpdownload", httpDef.toVariant()),
                                       timing, Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -449,7 +449,7 @@ void Client::upnp()
 {
     UpnpDefinition upnpDef;
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(11), d->scheduler.nextImmidiateTask("upnp", upnpDef.toVariant()),
+    ScheduleDefinition testDefinition(ScheduleId(11), d->scheduler.nextImmediateTask("upnp", upnpDef.toVariant()),
                                       timing, Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -458,7 +458,7 @@ void Client::dnslookup(const QString &url, const QString &dnsServer)
 {
     DnslookupDefinition dnsLookupDef(url, dnsServer);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(6), d->scheduler.nextImmidiateTask("dnslookup",
+    ScheduleDefinition testDefinition(ScheduleId(6), d->scheduler.nextImmediateTask("dnslookup",
                                                                                     dnsLookupDef.toVariant()),
                                       timing, Precondition());
     d->scheduler.enqueue(testDefinition);
@@ -468,7 +468,7 @@ void Client::reverseDnslookup(const QString &ip)
 {
     ReverseDnslookupDefinition reverseDnsLookupDef(ip);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(9), d->scheduler.nextImmidiateTask("reversednslookup",
+    ScheduleDefinition testDefinition(ScheduleId(9), d->scheduler.nextImmediateTask("reversednslookup",
                                                                                     reverseDnsLookupDef.toVariant()),
                                       timing, Precondition());
     d->scheduler.enqueue(testDefinition);
@@ -480,7 +480,7 @@ void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint1
     PacketTrainsDefinition packetTrainsDef(host, port, packetSize, trainLength, iterations, rateMin, rateMax, delay);
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(8), d->scheduler.nextImmidiateTask("packettrains_ma", packetTrainsDef.toVariant()),
+    ScheduleDefinition testDefinition(ScheduleId(8), d->scheduler.nextImmediateTask("packettrains_ma", packetTrainsDef.toVariant()),
                                       timing, Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -493,7 +493,7 @@ void Client::ping(const QString &url, const quint32 &count, const quint32 &inter
                            pingTypeFromString(type));
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(1), d->scheduler.nextImmidiateTask("ping" ,pingDef.toVariant()), timing,
+    ScheduleDefinition testDefinition(ScheduleId(1), d->scheduler.nextImmediateTask("ping" ,pingDef.toVariant()), timing,
                                   Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -511,7 +511,7 @@ void Client::traceroute(const QString &url,
                                        pingTypeFromString(type));
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(10), d->scheduler.nextImmidiateTask("traceroute", tracerouteDef.toVariant()),
+    ScheduleDefinition testDefinition(ScheduleId(10), d->scheduler.nextImmediateTask("traceroute", tracerouteDef.toVariant()),
                                       timing, Precondition());
     d->scheduler.enqueue(testDefinition);
 }
@@ -520,7 +520,7 @@ void Client::wifiLookup()
 {
     WifiLookupDefinition wifiLookupDef;
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(12), d->scheduler.nextImmidiateTask("wifilookup",
+    ScheduleDefinition testDefinition(ScheduleId(12), d->scheduler.nextImmediateTask("wifilookup",
                                                                                      wifiLookupDef.toVariant()),
                                       timing, Precondition());
     d->scheduler.enqueue(testDefinition);
