@@ -100,13 +100,10 @@ public:
 public slots:
     bool init();
     bool autoLogin();
-    void btc();
     void btc(const QString &host);
-    void http();
     void http(const QString &url, bool avoidCaches, int threads, int targetTime,
               int rampUpTime, int slotLength, quint16 sourcePort);
     void upnp();
-    void packetTrains();
     void packetTrains(const QString host,
                       quint16 port,
                       quint16 packetSize,
@@ -115,9 +112,8 @@ public slots:
                       quint64 rateMin,
                       quint64 rateMax,
                       quint64 delay);
-    void dnslookup();
-    void reverseDnslookup();
-    void ping();
+    void dnslookup(const QString &url, const QString &dnsServer);
+    void reverseDnslookup(const QString &ip);
     void ping(const QString &url,
               const quint32 &count,
               const quint32 &interval,
@@ -127,7 +123,6 @@ public slots:
               const quint16 &sourcePort,
               const quint32 &payload,
               const QString &type);
-    void traceroute();
     void traceroute(const QString &url,
                     const quint32 &count,
                     const quint32 &interval,

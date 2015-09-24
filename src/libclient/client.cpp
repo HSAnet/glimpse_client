@@ -47,6 +47,10 @@
 #include "measurement/packettrains/packettrainsdefinition.h"
 #include "measurement/ping/ping_definition.h"
 #include "measurement/traceroute/traceroute_definition.h"
+#include "measurement/upnp/upnp_definition.h"
+#include "measurement/wifilookup/wifilookup_definition.h"
+#include "measurement/dnslookup/dnslookup_definition.h"
+#include "measurement/reverse_dnslookup/reverseDnslookup_definition.h"
 
 LOGGER(Client);
 
@@ -422,11 +426,6 @@ bool Client::autoLogin()
     return false;
 }
 
-void Client::btc()
-{
-    d->scheduler.executeOnDemandTest(ScheduleId(2));
-}
-
 void Client::btc(const QString &host)
 {
     BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024, 10);
@@ -434,11 +433,6 @@ void Client::btc(const QString &host)
     ScheduleDefinition testDefinition(ScheduleId(2), d->scheduler.nextImmidiateTask("btc_ma", btcDef.toVariant()),
                                       timing, Precondition());
     d->scheduler.enqueue(testDefinition);
-}
-
-void Client::http()
-{
-    d->scheduler.executeOnDemandTest(ScheduleId(7));
 }
 
 void Client::http(const QString &url, bool avoidCaches, int threads, int targetTime,
@@ -453,22 +447,31 @@ void Client::http(const QString &url, bool avoidCaches, int threads, int targetT
 
 void Client::upnp()
 {
-    d->scheduler.executeOnDemandTest(ScheduleId(11));
+    UpnpDefinition upnpDef;
+    TimingPtr timing(new ImmediateTiming());
+    ScheduleDefinition testDefinition(ScheduleId(11), d->scheduler.nextImmidiateTask("upnp", upnpDef.toVariant()),
+                                      timing, Precondition());
+    d->scheduler.enqueue(testDefinition);
 }
 
-void Client::dnslookup()
+void Client::dnslookup(const QString &url, const QString &dnsServer)
 {
-    d->scheduler.executeOnDemandTest(ScheduleId(6));
+    DnslookupDefinition dnsLookupDef(url, dnsServer);
+    TimingPtr timing(new ImmediateTiming());
+    ScheduleDefinition testDefinition(ScheduleId(6), d->scheduler.nextImmidiateTask("dnslookup",
+                                                                                    dnsLookupDef.toVariant()),
+                                      timing, Precondition());
+    d->scheduler.enqueue(testDefinition);
 }
 
-void Client::reverseDnslookup()
+void Client::reverseDnslookup(const QString &ip)
 {
-    d->scheduler.executeOnDemandTest(ScheduleId(9));
-}
-
-void Client::packetTrains()
-{
-    d->scheduler.executeOnDemandTest(ScheduleId(8));
+    ReverseDnslookupDefinition reverseDnsLookupDef(ip);
+    TimingPtr timing(new ImmediateTiming());
+    ScheduleDefinition testDefinition(ScheduleId(9), d->scheduler.nextImmidiateTask("reversednslookup",
+                                                                                    reverseDnsLookupDef.toVariant()),
+                                      timing, Precondition());
+    d->scheduler.enqueue(testDefinition);
 }
 
 void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint16 trainLength, quint8 iterations,
@@ -482,11 +485,6 @@ void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint1
     d->scheduler.enqueue(testDefinition);
 }
 
-void Client::ping()
-{
-    d->scheduler.executeOnDemandTest(ScheduleId(1));
-}
-
 void Client::ping(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
                   const int &ttl, const quint16 &destinationPort, const quint16 &sourcePort, const quint32 &payload,
                   const QString &type)
@@ -498,11 +496,6 @@ void Client::ping(const QString &url, const quint32 &count, const quint32 &inter
     ScheduleDefinition testDefinition(ScheduleId(1), d->scheduler.nextImmidiateTask("ping" ,pingDef.toVariant()), timing,
                                   Precondition());
     d->scheduler.enqueue(testDefinition);
-}
-
-void Client::traceroute()
-{
-    d->scheduler.executeOnDemandTest(ScheduleId(10));
 }
 
 void Client::traceroute(const QString &url,
@@ -525,7 +518,12 @@ void Client::traceroute(const QString &url,
 
 void Client::wifiLookup()
 {
-    d->scheduler.executeOnDemandTest(ScheduleId(12));
+    WifiLookupDefinition wifiLookupDef;
+    TimingPtr timing(new ImmediateTiming());
+    ScheduleDefinition testDefinition(ScheduleId(12), d->scheduler.nextImmidiateTask("wifilookup",
+                                                                                     wifiLookupDef.toVariant()),
+                                      timing, Precondition());
+    d->scheduler.enqueue(testDefinition);
 }
 
 void Client::measureIt()

@@ -281,7 +281,8 @@ HEADERS += \
     result/resultstorage.h \
     result/resultscheduler.h \
     result/resultmodel.h \
-    controller/resultcontroller.h
+    controller/resultcontroller.h \
+    measurement/upnp/upnp_definition.h
 
 OTHER_FILES += \
     libclient.pri
