@@ -309,12 +309,13 @@ ScheduleDefinitionList Scheduler::queue() const
     return d->tests;
 }
 
-Task Scheduler::nextImmidiateTask(const QString &method, const QVariant &measurementDefinition) const
+Task Scheduler::nextImmediateTask(const QString &method, const QVariant &measurementDefinition) const
 {
     // check whether a task exists with the same method and definition
     foreach (const Task &task, d->tasks)
     {
-        if (task.method() == method && task.measurementDefinition() == measurementDefinition)
+        // ignore positive (non-immediate) task IDs
+        if (task.id().toInt() < -1 && task.method() == method && task.measurementDefinition() == measurementDefinition)
         {
             return task;
         }

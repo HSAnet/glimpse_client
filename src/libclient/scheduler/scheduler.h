@@ -35,7 +35,7 @@ public:
 
     ScheduleDefinitionList queue() const;
 
-    Task nextImmidiateTask(const QString &method, const QVariant &measurementDefinition) const;
+    Task nextImmediateTask(const QString &method, const QVariant &measurementDefinition) const;
 
 signals:
     void testAdded(const ScheduleDefinition &test, int position);
