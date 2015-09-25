@@ -37,6 +37,20 @@ ListPage {
         }
 
         ListElement {
+         title: "DNS Lookup"
+         group: "Public peer measurements"
+         measurement: "DnsLookup"
+         description: "Retrieve the IP of a hostname"
+         }
+
+         ListElement {
+         title: "Reverse DNS Lookup"
+         group: "Public peer measurements"
+         measurement: "ReverseDnsLookup"
+         description: "Retrieve the DNS name of an IP"
+         }
+
+        ListElement {
             title: "Bulk Transfer Capacity"
             group: "Glimpse peer measurements"
             measurement: "Btc"
