@@ -454,7 +454,7 @@ void Client::upnp()
     d->scheduler.enqueue(testDefinition);
 }
 
-void Client::dnslookup(const QString &url, const QString &dnsServer)
+void Client::dnsLookup(const QString &url, const QString &dnsServer)
 {
     DnslookupDefinition dnsLookupDef(url, dnsServer);
     TimingPtr timing(new ImmediateTiming());
@@ -464,7 +464,7 @@ void Client::dnslookup(const QString &url, const QString &dnsServer)
     d->scheduler.enqueue(testDefinition);
 }
 
-void Client::reverseDnslookup(const QString &ip)
+void Client::reverseDnsLookup(const QString &ip)
 {
     ReverseDnslookupDefinition reverseDnsLookupDef(ip);
     TimingPtr timing(new ImmediateTiming());

@@ -112,8 +112,8 @@ public slots:
                       quint64 rateMin,
                       quint64 rateMax,
                       quint64 delay);
-    void dnslookup(const QString &url, const QString &dnsServer);
-    void reverseDnslookup(const QString &ip);
+    void dnsLookup(const QString &url, const QString &dnsServer);
+    void reverseDnsLookup(const QString &ip);
     void ping(const QString &url,
               const quint32 &count,
               const quint32 &interval,
