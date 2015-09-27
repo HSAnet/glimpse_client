@@ -95,7 +95,7 @@ public:
      */
     static const quint32 versionMajor = 2;
     static const quint32 versionMinor = 7;
-    static const quint32 versionPatch = 0;
+    static const quint32 versionPatch = 1;
 
 public slots:
     bool init();
