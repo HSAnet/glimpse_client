@@ -1,10 +1,7 @@
-#include <miniupnpc/miniupnpc.h>
-#include <miniupnpc/upnpcommands.h>
-#include <miniupnpc/miniwget.h>
-
 #include "localinformation.h"
 #include "client.h"
 #include "settings.h"
+#include "measurement/upnp/upnp.h"
 
 LocalInformation::LocalInformation()
 {
@@ -28,11 +25,23 @@ QVariantMap LocalInformation::getVariables() const
     map.insert("used_mobile_traffic", settings->usedMobileTraffic());
     map.insert("mm_active", settings->mobileMeasurementsActive());
 
-    QVariantMap bytes = getTotalBytes();
+    UPnP measurement;
 
-    foreach (const QString &key, bytes.keys())
+    measurement.start();
+    QVariantList result = measurement.result().toVariant().toMap().value("probe_result").toMap().value("data").toList();
+
+    if (result.length() > 0)
     {
-        map.insert(key, bytes.value(key));
+        // we only care about the first result
+        QVariantMap data = result[0].toMap();
+
+        foreach (const QString &key, data.keys())
+        {
+            if (key == "total_bytes_sent" || key == "total_bytes_received")
+            {
+                map.insert(key, data.value(key));
+            }
+        }
     }
 
     return map;
@@ -54,42 +63,6 @@ QVariantMap LocalInformation::getConstants() const
     map.insert("model", deviceInfo.model());
     map.insert("name", settings->deviceName());
     //map.insert("group_id", nullptr); // set for a release if needed
-
-    return map;
-}
-
-QVariantMap LocalInformation::getTotalBytes() const
-{
-    QVariantMap map;
-    int error = 0;
-    UPNPDev *devlist = ::upnpDiscover(1000, NULL, NULL, 0, 0, &error);
-    quint32 bytesSent, bytesReceived;
-    UPNPUrls urls;
-    IGDdatas data;
-    char lanaddr[64];
-
-    int code = UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr));
-
-    if (code > 0)   // TODO maybe distinguish between the return codes (1,2,3) to add information what happend to the result
-    {
-        bytesSent = UPNP_GetTotalBytesSent(urls.controlURL_CIF,
-                                           data.CIF.servicetype);
-
-        if ((unsigned int)UPNPCOMMAND_HTTP_ERROR != bytesSent)
-        {
-            map.insert("total_bytes_sent", bytesSent);
-        }
-
-        bytesReceived = UPNP_GetTotalBytesReceived(urls.controlURL_CIF,
-                                                   data.CIF.servicetype);
-
-        if ((unsigned int)UPNPCOMMAND_HTTP_ERROR != bytesReceived)
-        {
-            map.insert("total_bytes_received", bytesReceived);
-        }
-    }
-
-    freeUPNPDevlist(devlist);
 
     return map;
 }
