@@ -112,6 +112,7 @@ int Scheduler::Private::enqueue(const ScheduleDefinition &testDefinition)
 
     tests.append(testDefinition);
     testIds.insert(testDefinition.id());
+    allTestIds.insert(testDefinition.id());
 
     // update the timer if the list was empty
     if (tests.size() == 1)
