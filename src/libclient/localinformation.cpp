@@ -1,6 +1,7 @@
 #include "localinformation.h"
 #include "client.h"
 #include "settings.h"
+#include "measurement/upnp/upnp.h"
 
 LocalInformation::LocalInformation()
 {
@@ -23,6 +24,25 @@ QVariantMap LocalInformation::getVariables() const
     map.insert("used_traffic", settings->usedTraffic());
     map.insert("used_mobile_traffic", settings->usedMobileTraffic());
     map.insert("mm_active", settings->mobileMeasurementsActive());
+
+    UPnP measurement;
+
+    measurement.start();
+    QVariantList result = measurement.result().toVariant().toMap().value("probe_result").toMap().value("data").toList();
+
+    if (result.length() > 0)
+    {
+        // we only care about the first result
+        QVariantMap data = result[0].toMap();
+
+        foreach (const QString &key, data.keys())
+        {
+            if (key == "total_bytes_sent" || key == "total_bytes_received")
+            {
+                map.insert(key, data.value(key));
+            }
+        }
+    }
 
     return map;
 }
