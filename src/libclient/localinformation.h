@@ -16,6 +16,8 @@ public:
     QVariantMap getConstants() const;
 
 private:
+    QVariantMap getTotalBytes() const;
+
     DeviceInfo deviceInfo;
     NetworkManager networkMangager;
 };
