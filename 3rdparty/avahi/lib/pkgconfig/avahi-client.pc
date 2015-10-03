@@ -1,0 +1,10 @@
+prefix=/storage/avahi/avahi-lib
+exec_prefix=${prefix}
+libdir=/storage/avahi/avahi-lib/lib
+includedir=${prefix}/include
+
+Name: avahi-client
+Description: Avahi Multicast DNS Responder (Client Support)
+Version: 0.6.31
+Libs: -L${libdir} -lavahi-common -lavahi-client
+Cflags: -D_REENTRANT -I${includedir}

@@ -1,0 +1,10 @@
+prefix=/storage/avahi/avahi-lib
+exec_prefix=${prefix}
+libdir=/storage/avahi/avahi-lib/lib
+includedir=${prefix}/include
+
+Name: avahi-core
+Description: Avahi Multicast DNS Responder (Embeddable Stack)
+Version: 0.6.31
+Libs: -L${libdir} -lavahi-common -lavahi-core
+Cflags: -D_REENTRANT -I${includedir}

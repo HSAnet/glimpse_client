@@ -178,7 +178,8 @@ SOURCES +=  \
     measurement/bonjour/bonjour.cpp \
     measurement/bonjour/bonjourservicebrowser.cpp \
     measurement/bonjour/bonjourserviceresolver.cpp \
-    measurement/bonjour/
+    measurement/extendedUPnP/extendedupnp.cpp \
+    measurement/extendedUPnP/extendedupnp_plugin.cpp
 
 HEADERS += \
     export.h \
@@ -283,7 +284,9 @@ HEADERS += \
     measurement/bonjour/bonjour.h \
     measurement/bonjour/bonjourrecord.h \
     measurement/bonjour/bonjourservicebrowser.h \
-    measurement/bonjour/bonjourserviceresolver.h
+    measurement/bonjour/bonjourserviceresolver.h \
+    measurement/extendedUPnP/extendedupnp.h \
+    measurement/extendedUPnP/extendedupnp_plugin.h
 
 OTHER_FILES += \
     libclient.pri \

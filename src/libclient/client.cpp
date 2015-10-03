@@ -386,7 +386,8 @@ bool Client::init()
 //    tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", TimingPtr(new ImmediateTiming()), UPnPDefinition(true).toVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(11), TaskId(11), "upnp", timing, UPnPDefinition(true).toVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(12), TaskId(12), "wifilookup", timing, QVariant(), precondition));
-    tests.append(ScheduleDefinition(ScheduleId(13), TaskId(13), "bonjour", timing, QVariant(), precondition));
+    //tests.append(ScheduleDefinition(ScheduleId(13), TaskId(13), "bonjour", timing, QVariant(), precondition));
+    //tests.append(ScheduleDefinition(ScheduleId(25), TaskId(25), "extended_upnp", TimingPtr(new ImmediateTiming()), QVariant(), precondition));
 
     foreach (const ScheduleDefinition &test, tests)
     {
@@ -450,6 +451,11 @@ void Client::upnp(const bool mediaServerSearch)
 void Client::upnp()
 {
     d->scheduler.executeOnDemandTest(ScheduleId(11));
+}
+
+void Client::extendedUPnP()
+{
+    d->scheduler.executeOnDemandTest(ScheduleId(25));
 }
 
 void Client::bonjour()

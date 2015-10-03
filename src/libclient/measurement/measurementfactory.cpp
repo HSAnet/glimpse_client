@@ -2,6 +2,7 @@
 #include "btc/btc_plugin.h"
 #include "http/httpdownload_plugin.h"
 #include "upnp/upnp_plugin.h"
+#include "extendedUPnP/extendedupnp_plugin.h"
 #include "ping/ping_plugin.h"
 #include "dnslookup/dnslookup_plugin.h"
 #include "reverse_dnslookup/reverseDnslookup_plugin.h"
@@ -24,6 +25,7 @@ public:
         addPlugin(new BulkTransportCapacityPlugin);
         addPlugin(new HTTPDownloadPlugin);
         addPlugin(new UPnPPlugin);
+        addPlugin(new extendedUPnP_plugin);
         addPlugin(new PingPlugin);
         addPlugin(new DnslookupPlugin);
         addPlugin(new ReverseDnslookupPlugin);

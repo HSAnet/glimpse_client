@@ -1,6 +1,6 @@
 #include "bonjour.h"
 
-Bonjour::Bonjour()
+Bonjour::Bonjour(QObject *parent)
     : Measurement(parent)
 {
 
@@ -20,14 +20,15 @@ bool Bonjour::prepare(NetworkManager *networkManager, const MeasurementDefinitio
 {
     Q_UNUSED(networkManager);
 
-    definition = measurementDefinition.dynamicCast<UPnPDefinition>();
+//    definition = measurementDefinition.dynamicCast<UPnPDefinition>();
 
-    if (definition.isNull())
-    {
-        //setErrorString("received NULL definition");
-        //return false;
-        return true;
-    }
+//    if (definition.isNull())
+//    {
+//        //setErrorString("received NULL definition");
+//        //return false;
+//        return true;
+//    }
+    return true;
 }
 
 bool Bonjour::start()
@@ -38,10 +39,10 @@ bool Bonjour::start()
     connect(_bonjourBrowser,  SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)), this, SLOT(updateRecords(const QList<BonjourRecord> &)));
     connect(_bonjourBrowser,  SIGNAL(error(DNSServiceErrorType)),                 _bonjourBrowser,      SLOT(handleError(DNSServiceErrorType)));
     connect(_bonjourResolver, SIGNAL(error(DNSServiceErrorType)),                 _bonjourResolver,     SLOT(handleError(DNSServiceErrorType)));
-    connect(_bonjourBrowser,  SIGNAL(finished()),                                 this,                 SLOT(startRecordResolve()));
+    connect(_bonjourBrowser,  SIGNAL(done()),                                 this,                 SLOT(startRecordResolve()));
     connect(_bonjourResolver, SIGNAL(bonjourRecordResolved(const QHostInfo &)),   this,                 SLOT(saveHostInformation(QHostInfo)));
     connect(_bonjourResolver, SIGNAL(cleanedUp()),                                this,                 SLOT(prepareForNextRecord()));
-    connect(this,             SIGNAL(finished()),                                 this,                 SLOT(displayResults()));
+    connect(this,             SIGNAL(done()),                                 this,                 SLOT(displayResults()));
 
     QTimer::singleShot(_exploreInterval, this, SLOT(checkResults()));
     _bonjourBrowser->browseForServiceType(QLatin1String("_services._dns-sd._udp"));
@@ -115,7 +116,7 @@ void Bonjour::getRecord()
 
     }else{
         qDebug() << "Done";
-        emit finished();
+        emit done();
     }
 }
 
@@ -146,6 +147,6 @@ void Bonjour::displayResults()
         }
     }
     qDebug() << "Found a total of " << _results.size() << "elements in " << keys.length() << "different categories.";
-    QCoreApplication::exit(0);
+    //QCoreApplication::exit(0);
 }
 

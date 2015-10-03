@@ -47,7 +47,8 @@ public:
         ServiceType,
         FoundContent,
         URL,
-        RootDescUrl
+        RootDescUrl,
+        UDN
     };
     typedef QHash<DataType, QVariant> UPnPHash;
 

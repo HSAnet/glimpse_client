@@ -19,7 +19,7 @@ UPnP::UPnP(QObject *parent)
 : Measurement(parent)
 {
 }
-
+ 
 UPnP::~UPnP()
 {
 }
@@ -75,35 +75,27 @@ bool UPnP::start()
         /* The following devices are important */
         static const char * const deviceList[] = {
             "urn:schemas-upnp-org:device:MediaServer:1",
-//            "urn:schemas-upnp-org:service:ContentDirectory:1",
-            /*"urn:schemas-upnp-org:device:InternetGatewayDevice:1",
-            "ssdp:all"*/
+            /* ContentDirectory is another service of many media servers */
+            /* "urn:schemas-upnp-org:service:ContentDirectory:1", */
+
+            /*  The following services belong to IGDs */
+            /*  "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
+                "urn:schemas-upnp-org:device:InternetGatewayDevice:2",
+                "urn:schemas-upnp-org:service:ConnectionManager:1",
+                "urn:schemas-upnp-org:service:WANIPConnection:1",
+                "urn:schemas-upnp-org:service:WANIPConnection:2",
+                "urn:schemas-upnp-org:service:WANPPPConnection:1", */
+
+            /* The following string triggers a search for all devices as in upnpDiscover() (see below) */
+            /* "ssdp:all" */
             0
         };
-        // TODO test other devices from upnp.org
-        /* more or less important:
-        "urn:schemas-upnp-org:service:ConnectionManager:1",
-        "urn:schemas-upnp-org:device:InternetGatewayDevice:2",
-        "urn:schemas-upnp-org:service:WANIPConnection:2",
-        "urn:schemas-upnp-org:service:WANIPConnection:1",
-        "urn:schemas-upnp-org:service:WANPPPConnection:1",
-        "upnp:rootdevice",*/
         UPNPDev *devices = upnpDiscoverDevices(deviceList,
                                                2000, NULL, NULL, FALSE,
                                                FALSE, &error);
-        UPNPDev *dev = devices;
-        int x = 0;
-        while(devices != NULL)
-        {
-            qDebug() << x << " " << devices->descURL;
-            devices = devices->pNext;
-            x++;
-        }
-        qDebug() << x;
-        devices = dev;
         QString descriptionUrl, eventSubUrl, controlUrl, serviceType, modelName;
         QList<UPnPHash> mediaServerList = quickDevicesCheck(devices);
-        qDebug() << "-- Going through devices --";
+
         UPnPHash mServer;
         foreach(mServer, mediaServerList)
         {
@@ -144,7 +136,6 @@ bool UPnP::start()
                 results.append(mServer);
                 m_handler->cleanup();
             }
-            ret = 0;
         }
         emit finished();
     }else{
@@ -296,7 +287,9 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
                 {
                     resultHash.insert(FriendlyName, friendlyName.last());
                 }
-                qDebug() << friendlyName;// + modelName + manufacturer;
+
+
+                qDebug() << friendlyName + modelName + manufacturer + UDNs;
 
                 ClearNameValueList(&pdata);
             }
@@ -408,6 +401,12 @@ QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
                 if (!friendlyName.isEmpty())
                 {
                     resultHash.insert(FriendlyName, friendlyName.last());
+                }
+                QStringList UDNs = GetValuesFromNameValueList(&pdata, "UDN");
+
+                if (!UDNs.isEmpty())
+                {
+                    resultHash.insert(UDN, UDNs.last());
                 }
                 qDebug() << friendlyName << modelName << manufacturer;
 
