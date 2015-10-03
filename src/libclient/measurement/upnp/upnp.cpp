@@ -4,6 +4,8 @@
 #include <QMetaEnum>
 #include "../../types.h"
 
+#include <QUrl>
+
 LOGGER(UPnP);
 
 #include <miniupnpc/miniupnpc.h>
@@ -19,7 +21,7 @@ UPnP::UPnP(QObject *parent)
 : Measurement(parent)
 {
 }
- 
+
 UPnP::~UPnP()
 {
 }
@@ -41,10 +43,6 @@ bool UPnP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPt
         return false;
     }
     m_mediaServerSearch = definition->mediaServerSearch;
-    if(m_mediaServerSearch)
-    {
-        m_handler = new UPnPHandler();
-    }
     return true;
 }
 
@@ -93,50 +91,7 @@ bool UPnP::start()
         UPNPDev *devices = upnpDiscoverDevices(deviceList,
                                                2000, NULL, NULL, FALSE,
                                                FALSE, &error);
-        QString descriptionUrl, eventSubUrl, controlUrl, serviceType, modelName;
         QList<UPnPHash> mediaServerList = quickDevicesCheck(devices);
-
-        UPnPHash mServer;
-        foreach(mServer, mediaServerList)
-        {
-            QList<QMap<QString, QString> > resultsOfSniff;
-            descriptionUrl = mServer.value(RootDescUrl).toString();
-            eventSubUrl = mServer.value(EventSubUrl).toString();
-            controlUrl = mServer.value(ControlUrl).toString();
-            serviceType = mServer.value(ServiceType).toString();
-            modelName = mServer.value(ModelName).toString();
-            int ret = m_handler->init(descriptionUrl, eventSubUrl, controlUrl, serviceType);
-            if(ret < 0)
-            {
-                qDebug() << "ret" << ret << "Unsuccessfull on " << modelName << "at" << descriptionUrl;
-                if(mServer.value(ControlUrl) != m_handler->actionUrl().path())
-                {
-                    mServer.insert(ControlUrl, m_handler->actionUrl().path());
-                }
-                if(mServer.value(EventSubUrl) != m_handler->subscribeUrl().path())
-                {
-                    mServer.insert(EventSubUrl, m_handler->subscribeUrl().path());
-                }
-                results.append(mServer);
-                m_handler->cleanup();
-            }else{
-                qDebug() << "ret" << ret << "Successfull on " << modelName << "at" << descriptionUrl;
-                resultsOfSniff = m_handler->totalTableOfContents();
-                printResultsToMap(&additional_res);
-                QVariant res(additional_res);
-                mServer.insert(FoundContent, res);
-                if(mServer.value(ControlUrl) != m_handler->actionUrl().path())
-                {
-                    mServer.insert(ControlUrl, m_handler->actionUrl().path());
-                }
-                if(mServer.value(EventSubUrl) != m_handler->subscribeUrl().path())
-                {
-                    mServer.insert(EventSubUrl, m_handler->subscribeUrl().path());
-                }
-                results.append(mServer);
-                m_handler->cleanup();
-            }
-        }
         emit finished();
     }else{
         /* This is the old measurement about Internet Gateway Devices*/
@@ -288,46 +243,8 @@ QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
                     resultHash.insert(FriendlyName, friendlyName.last());
                 }
 
-
-                qDebug() << friendlyName + modelName + manufacturer + UDNs;
-
                 ClearNameValueList(&pdata);
             }
-        }
-        /* These URLs will be needed for accessing and controlling Mediaservers with SOAP */
-        QString controlURL = data.tmp.controlurl;
-        if(!controlURL.isEmpty())
-        {
-            resultHash.insert(ControlUrl, controlURL);
-        }
-
-        QString eventSubUrl = data.tmp.eventsuburl;
-        if(!eventSubUrl.isEmpty())
-        {
-            resultHash.insert(EventSubUrl, eventSubUrl);
-        }
-
-        QString scpdUrl = data.tmp.scpdurl;
-        if(!scpdUrl.isEmpty())
-        {
-            resultHash.insert(ScpdUrl, scpdUrl);
-        }
-
-        QString serviceType = data.tmp.servicetype;
-        if(!serviceType.isEmpty())
-        {
-            resultHash.insert(ScpdUrl, serviceType);
-        }
-
-        QString url = urls.controlURL;
-        if(!url.isEmpty())
-        {
-            resultHash.insert(URL, url);
-        }
-        QString rootDescURL = urls.rootdescURL;
-        if(!rootDescURL.isEmpty())
-        {
-            resultHash.insert(RootDescUrl, rootDescURL);
         }
         FreeUPNPUrls(&urls);
         results.append(resultHash);
@@ -347,29 +264,27 @@ QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
         IGDdatas data;
         char lanaddr[64];
         UPnPHash resultHash;
-        qDebug() << "Checking " << l->descURL;
         int xmlFound = UPNP_GetIGDFromUrl(l->descURL, &urls, &data, lanaddr, sizeof(lanaddr));
-        qDebug() << "Result:" << xmlFound;
         if(xmlFound)
         {
             /* These URLs will be needed for accessing and controlling Mediaservers with SOAP */
-            QString controlURL = data.tmp.controlurl;
-            if(!controlURL.isEmpty())
-            {
-                resultHash.insert(ControlUrl, controlURL);
-            }
+//            QString controlURL = data.tmp.controlurl;
+//            if(!controlURL.isEmpty())
+//            {
+//                resultHash.insert(ControlUrl, controlURL);
+//            }
 
-            QString eventSubUrl = data.tmp.eventsuburl;
-            if(!eventSubUrl.isEmpty())
-            {
-                resultHash.insert(EventSubUrl, eventSubUrl);
-            }
+//            QString eventSubUrl = data.tmp.eventsuburl;
+//            if(!eventSubUrl.isEmpty())
+//            {
+//                resultHash.insert(EventSubUrl, eventSubUrl);
+//            }
 
-            QString serviceType = data.tmp.servicetype;
-            if(!serviceType.isEmpty())
-            {
-                resultHash.insert(ServiceType, serviceType);
-            }
+//            QString serviceType = data.tmp.servicetype;
+//            if(!serviceType.isEmpty())
+//            {
+//                resultHash.insert(ServiceType, serviceType);
+//            }
 
             QString rootDescURL = urls.rootdescURL;
             if(!rootDescURL.isEmpty())
@@ -408,42 +323,17 @@ QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
                 {
                     resultHash.insert(UDN, UDNs.last());
                 }
-                qDebug() << friendlyName << modelName << manufacturer;
+                qDebug() << friendlyName << modelName << manufacturer << UDNs;
 
                 ClearNameValueList(&pdata);
             }
             FreeUPNPUrls(&urls);
+            results.append(resultHash);
             myResults.append(resultHash);
         }
     }
     freeUPNPDevlist(list);
     return myResults;
-}
-
-void UPnP::printResultsToMap(QVariantList *list)
-{
-    QMap<QString, QString> m;
-
-    foreach (m, m_handler->totalTableOfContents()) {
-        QVariantMap entry;
-        foreach(QString key, m.keys())
-        {
-            entry.insertMulti(key, m.value(key));
-        }
-        list->append(entry);
-    }
-}
-
-void UPnP::waitUntilFinished()
-{
-    //TODO wait for all mediaservers, then ...
-    QList<QMap<QString, QString> > mediaResults;
-    int i = 0;
-    while(i == 0)
-    {
-        mediaResults = m_handler->foundContent();
-    }
-    emit finished();
 }
 
 bool UPnP::stop()

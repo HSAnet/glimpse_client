@@ -1,8 +1,6 @@
 #ifndef UPNP_H
 #define UPNP_H
 
-#include "../upnpSniffer/UPnPHandler.h"
-
 #include "../measurement.h"
 #include "upnp_definition.h"
 #include <miniupnpc/miniupnpc.h>
@@ -59,13 +57,9 @@ public:
     Result result() const;
     QList<UPnPHash> goThroughDeviceList(UPNPDev * list);
     QList<UPnPHash> quickDevicesCheck(UPNPDev * list);
-    void printResultsToMap(QVariantList *list);
 
 signals:
     void done();
-
-public slots:
-    void waitUntilFinished();
 
 private:
     QList<UPnPHash> results;
@@ -73,7 +67,6 @@ private:
 
     UPnPDefinitionPtr definition;
     bool m_mediaServerSearch;
-    UPnPHandler * m_handler;
 };
 
 #endif // UPNP_H

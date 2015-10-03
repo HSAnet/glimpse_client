@@ -173,13 +173,6 @@ SOURCES +=  \
     timing/timer.cpp \
     controller/ntpcontroller.cpp \
     measurement/upnp/upnp_definition.cpp \
-    measurement/upnpSniffer/UPnPHandler.cpp \
-    measurement/upnpSniffer/parser.cpp \
-    measurement/bonjour/bonjour.cpp \
-    measurement/bonjour/bonjourservicebrowser.cpp \
-    measurement/bonjour/bonjourserviceresolver.cpp \
-    measurement/extendedUPnP/extendedupnp.cpp \
-    measurement/extendedUPnP/extendedupnp_plugin.cpp
 
 HEADERS += \
     export.h \
@@ -278,19 +271,8 @@ HEADERS += \
     storage/storage.h \
     timing/timer.h \
     controller/ntpcontroller.h \
-    measurement/upnp/upnp_definition.h \
-    measurement/upnpSniffer/UPnPHandler.h \
-    measurement/upnpSniffer/parser.h \
-    measurement/bonjour/bonjour.h \
-    measurement/bonjour/bonjourrecord.h \
-    measurement/bonjour/bonjourservicebrowser.h \
-    measurement/bonjour/bonjourserviceresolver.h \
-    measurement/extendedUPnP/extendedupnp.h \
-    measurement/extendedUPnP/extendedupnp_plugin.h
+    measurement/upnp/upnp_definition.h
 
 OTHER_FILES += \
-    libclient.pri \
-    measurement/upnpSniffer/soapData.xml
+    libclient.pri
 
-RESOURCES += \
-    measurement/upnpSniffer/soap.qrc
