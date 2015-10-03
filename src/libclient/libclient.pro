@@ -37,7 +37,6 @@ defineReplace(getVersion) {
 !win32:VERSION = $$getVersion()
 
 include($$SOURCE_DIRECTORY/dist.pri)
-include($$SOURCE_DIRECTORY/3rdparty/avahi.pri)
 include($$SOURCE_DIRECTORY/3rdparty/miniupnpc.pri)
 include($$SOURCE_DIRECTORY/3rdparty/breakpad.pri)
 include($$SOURCE_DIRECTORY/3rdparty/winpcap.pri)
