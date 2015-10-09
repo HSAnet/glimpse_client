@@ -15,6 +15,5 @@ MeasurementPtr UPnPPlugin::createMeasurement(const QString &name)
 MeasurementDefinitionPtr UPnPPlugin::createMeasurementDefinition(const QString &name, const QVariant &data)
 {
     Q_UNUSED(name);
-    Q_UNUSED(data);
-    return MeasurementDefinitionPtr();
+    return UPnPDefinition::fromVariant(data);
 }

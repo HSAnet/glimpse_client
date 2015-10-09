@@ -4,6 +4,8 @@
 #include <QMetaEnum>
 #include "../../types.h"
 
+#include <QUrl>
+
 LOGGER(UPnP);
 
 #include <miniupnpc/miniupnpc.h>
@@ -32,7 +34,15 @@ Measurement::Status UPnP::status() const
 bool UPnP::prepare(NetworkManager *networkManager, const MeasurementDefinitionPtr &measurementDefinition)
 {
     Q_UNUSED(networkManager);
-    Q_UNUSED(measurementDefinition);
+
+    definition = measurementDefinition.dynamicCast<UPnPDefinition>();
+
+    if (definition.isNull())
+    {
+        setErrorString("received NULL definition");
+        return false;
+    }
+    m_mediaServerSearch = definition->mediaServerSearch;
     return true;
 }
 
@@ -58,27 +68,52 @@ QStringList GetValuesFromNameValueList(struct NameValueParserData *pdata,
 bool UPnP::start()
 {
     int error = 0;
+    if(m_mediaServerSearch)
+    {
+        /* The following devices are important */
+        static const char * const deviceList[] = {
+            "urn:schemas-upnp-org:device:MediaServer:1",
+            /* ContentDirectory is another service of many media servers */
+            /* "urn:schemas-upnp-org:service:ContentDirectory:1", */
 
-    UPNPDev *devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
-    UPNPDev *devlistBegin = devlist;
+            /*  The following services belong to IGDs */
+            /*  "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
+                "urn:schemas-upnp-org:device:InternetGatewayDevice:2",
+                "urn:schemas-upnp-org:service:ConnectionManager:1",
+                "urn:schemas-upnp-org:service:WANIPConnection:1",
+                "urn:schemas-upnp-org:service:WANIPConnection:2",
+                "urn:schemas-upnp-org:service:WANPPPConnection:1", */
 
-    // get interface list
-    /*foreach(interface, interfaces) {
-        newdevlist = ::upnpDiscover(2000, interface, NULL, FALSE, FALSE, &error);
+            /* The following string triggers a search for all devices as in upnpDiscover() (see below) */
+            /* "ssdp:all" */
+            0
+        };
+        UPNPDev *devices = upnpDiscoverDevices(deviceList,
+                                               2000, NULL, NULL, FALSE,
+                                               FALSE, &error, TRUE);
+        QList<UPnPHash> mediaServerList = quickDevicesCheck(devices);
+        emit finished();
+    }else{
+        /* This is the old measurement about Internet Gateway Devices*/
+        UPNPDev *devlist = ::upnpDiscover(2000, NULL, NULL, FALSE, FALSE, &error);
+        QList<UPnPHash> list = goThroughDeviceList(devlist);
+        emit finished();
+    }
+	//TODO return false if something went wrong or if there are no results
+	return true;
+}
 
-        // go to end of list and append
-    }*/
+QList<UPnP::UPnPHash> UPnP::goThroughDeviceList(UPNPDev *list)
+{
+    QList<UPnPHash> myResults;
 
-    while (devlist)
+    for (UPNPDev *l = list; l; l = l->pNext)
     {
         UPNPUrls urls;
         IGDdatas data;
         char lanaddr[64];
         UPnPHash resultHash;
-
-        int code = UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr));
-
-        if (code > 0)   // TODO maybe distinguish between the return codes (1,2,3) to add information what happend to the result
+        if(UPNP_GetValidIGD(l, &urls, &data, lanaddr, sizeof(lanaddr)) > 0)
         {
             resultHash.insert(LanIpAddress, QLatin1String(lanaddr));
 
@@ -170,8 +205,6 @@ bool UPnP::start()
                 resultHash.insert(NumberOfPortMappings, num);
             }
 
-            // TODO GetListOfPortMappings do we need this?
-
             int firewallEnabled, inboundPinholeAllowed;
 
             if (UPNPCOMMAND_SUCCESS == UPNP_GetFirewallStatus(urls.controlURL,
@@ -184,14 +217,11 @@ bool UPnP::start()
             }
 
             int bufferSize = 0;
-
             if (char *buffer = (char *)miniwget(urls.rootdescURL, &bufferSize, 0))
             {
                 NameValueParserData pdata;
                 ParseNameValue(buffer, bufferSize, &pdata);
                 free(buffer);
-                buffer = NULL;
-
                 QStringList modelName = GetValuesFromNameValueList(&pdata, "modelName");
 
                 if (!modelName.isEmpty())
@@ -216,17 +246,94 @@ bool UPnP::start()
                 ClearNameValueList(&pdata);
             }
         }
-
         FreeUPNPUrls(&urls);
-
         results.append(resultHash);
-        devlist = devlist->pNext;
+        myResults.append(resultHash);
     }
+    freeUPNPDevlist(list);
+    return myResults;
+}
 
-    freeUPNPDevlist(devlistBegin);
+QList<UPnP::UPnPHash> UPnP::quickDevicesCheck(UPNPDev *list)
+{
+    QList<UPnPHash> myResults;
 
-    emit finished();
-    return true; // TODO return false if something went wrong or if there are no results
+    for (UPNPDev *l = list; l; l = l->pNext)
+    {
+        UPNPUrls urls;
+        IGDdatas data;
+        char lanaddr[64];
+        UPnPHash resultHash;
+        int xmlFound = UPNP_GetIGDFromUrl(l->descURL, &urls, &data, lanaddr, sizeof(lanaddr));
+        if(xmlFound)
+        {
+            /* These URLs will be needed for accessing and controlling Mediaservers with SOAP */
+//            QString controlURL = data.tmp.controlurl;
+//            if(!controlURL.isEmpty())
+//            {
+//                resultHash.insert(ControlUrl, controlURL);
+//            }
+
+//            QString eventSubUrl = data.tmp.eventsuburl;
+//            if(!eventSubUrl.isEmpty())
+//            {
+//                resultHash.insert(EventSubUrl, eventSubUrl);
+//            }
+
+//            QString serviceType = data.tmp.servicetype;
+//            if(!serviceType.isEmpty())
+//            {
+//                resultHash.insert(ServiceType, serviceType);
+//            }
+
+            QString rootDescURL = urls.rootdescURL;
+            if(!rootDescURL.isEmpty())
+            {
+                resultHash.insert(RootDescUrl, rootDescURL);
+            }
+            int bufferSize = 0;
+            if (char *buffer = (char *)miniwget(urls.rootdescURL, &bufferSize, 0))
+            {
+                NameValueParserData pdata;
+                ParseNameValue(buffer, bufferSize, &pdata);
+                free(buffer);
+                QStringList modelName = GetValuesFromNameValueList(&pdata, "modelName");
+
+                if (!modelName.isEmpty())
+                {
+                    resultHash.insert(ModelName, modelName.last());
+                }
+
+                QStringList manufacturer = GetValuesFromNameValueList(&pdata, "manufacturer");
+
+                if (!manufacturer.isEmpty())
+                {
+                    resultHash.insert(Manufacturer, manufacturer.last());
+                }
+
+                QStringList friendlyName = GetValuesFromNameValueList(&pdata, "friendlyName");
+
+                if (!friendlyName.isEmpty())
+                {
+                    resultHash.insert(FriendlyName, friendlyName.last());
+                }
+                QStringList UDNs = GetValuesFromNameValueList(&pdata, "UDN");
+
+                if (!UDNs.isEmpty())
+                {
+                    resultHash.insert(UDN, UDNs.last());
+                }
+                qDebug() << friendlyName << modelName << manufacturer << UDNs;
+
+                ClearNameValueList(&pdata);
+            }
+            FreeUPNPUrls(&urls);
+            results.append(resultHash);
+            myResults.append(resultHash);
+        }
+    }
+    freeUPNPDevlist(list);
+    return myResults;
 }
 
 bool UPnP::stop()
@@ -237,8 +344,8 @@ bool UPnP::stop()
 Result UPnP::result() const
 {
      // List for all results
-    QVariantList deviceResultList;
-
+    //QVariantList deviceResultList;
+    QVariantMap res;
     foreach (UPnPHash resultHash, results)
     {
         QHashIterator<UPnP::DataType, QVariant> iter(resultHash);
@@ -255,11 +362,18 @@ Result UPnP::result() const
 
             deviceResult.insert(name, iter.value());
         }
+        QUrl rootUrl = QUrl(resultHash.value(RootDescUrl).toString());
+        QString ipFull = rootUrl.host();
+        ipFull.append(':');
+        QString p;
+        p.setNum(rootUrl.port());
+        ipFull.append(p);
+        res.insertMulti(ipFull, deviceResult);
 
-        deviceResultList.append(deviceResult);
+        //deviceResultList.append(deviceResult);
     }
 
-    QVariantMap res;
-    res.insert("data", deviceResultList);
+    //QVariantMap res;
+    //res.insert("data", deviceResultList);
     return Result(res);
 }
