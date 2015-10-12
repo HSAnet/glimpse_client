@@ -103,7 +103,7 @@ public slots:
     void btc(const QString &host);
     void http(const QString &url, bool avoidCaches, int threads, int targetTime,
               int rampUpTime, int slotLength, quint16 sourcePort);
-    void upnp();
+    void upnp(const bool mediaServerSearch);
     void packetTrains(const QString host,
                       quint16 port,
                       quint16 packetSize,

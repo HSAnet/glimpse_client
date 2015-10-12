@@ -178,7 +178,8 @@ SOURCES +=  \
     result/resultstorage.cpp \
     result/resultscheduler.cpp \
     result/resultmodel.cpp \
-    controller/resultcontroller.cpp
+    controller/resultcontroller.cpp \
+    measurement/upnp/upnp_definition.cpp
 
 HEADERS += \
     export.h \

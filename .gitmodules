@@ -1,6 +1,6 @@
 [submodule "3rdparty/miniupnp"]
 	path = 3rdparty/miniupnp
-	url = https://github.com/miniupnp/miniupnp.git
+	url = https://github.com/HSAnet/miniupnp.git
 [submodule "src/mobile/qml/controls/charts"]
 	path = src/mobile/qml/controls/charts
 	url = https://github.com/HSAnet/glimpse_data_visualization.git

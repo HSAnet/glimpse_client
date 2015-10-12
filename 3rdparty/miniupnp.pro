@@ -11,7 +11,7 @@ CONFIG -= qt
     PRE_TARGETDEPS += miniupnp/miniupnpc/miniupnpcstrings.h
 }
 
-DEFINES += HAVE_UPNP MINIUPNP_STATICLIB
+DEFINES += HAVE_UPNP MINIUPNP_STATICLIB USE_GETHOSTBYNAME MINIUPNPC_SET_SOCKET_TIMEOUT
 
 # Disable warnings
 *clang*|*g++*|*llvm* {
@@ -46,6 +46,7 @@ android|mac|win32|linux {
         $$PWD/miniupnp/miniupnpc/upnperrors.h \
         $$PWD/miniupnp/miniupnpc/upnpreplyparse.h
 
+
     SOURCES += \
         $$PWD/miniupnp/miniupnpc/connecthostport.c \
         $$PWD/miniupnp/miniupnpc/igd_desc_parse.c \
@@ -66,7 +67,7 @@ android|mac|win32|linux {
     #    $$PWD/miniupnp/miniupnpc/upnpc.c \
         $$PWD/miniupnp/miniupnpc/upnpcommands.c \
         $$PWD/miniupnp/miniupnpc/upnperrors.c \
-        $$PWD/miniupnp/miniupnpc/upnpreplyparse.c \
+        $$PWD/miniupnp/miniupnpc/upnpreplyparse.c
     #    $$PWD/miniupnp/miniupnpc/wingenminiupnpcstrings.c
 }
 

@@ -1,31 +1,27 @@
-#ifndef UPNPDEFINITION_H
-#define UPNPDEFINITION_H
+#ifndef UPNP_DEFINITION_H
+#define UPNP_DEFINITION_H
 
 #include "../measurementdefinition.h"
-#include "../../types.h"
 
-class UpnpDefinition;
+class UPnPDefinition;
 
-typedef QSharedPointer<UpnpDefinition> UpnpDefinitionPtr;
-typedef QList<UpnpDefinitionPtr> UpnpDefinitionList;
+typedef QSharedPointer<UPnPDefinition> UPnPDefinitionPtr;
+typedef QList<UPnPDefinitionPtr> UpnpDefinitionList;
 
-class CLIENT_API UpnpDefinition : public MeasurementDefinition
+class UPnPDefinition : public MeasurementDefinition
 {
 public:
-    ~UpnpDefinition() {}
-    UpnpDefinition() {}
+    UPnPDefinition(const bool mediaServerSearch);
+    ~UPnPDefinition();
 
-    static UpnpDefinitionPtr fromVariant(const QVariant &variant)
-    {
-        Q_UNUSED(variant);
-        return UpnpDefinitionPtr();
-    }
+    // Storage
+    static UPnPDefinitionPtr fromVariant(const QVariant &variant);
+
+    // Getters
+    bool mediaServerSearch;
 
     // Serializable interface
-    QVariant toVariant() const
-    {
-        return QVariant();
-    }
+    QVariant toVariant() const;
 };
 
-#endif // UPNPDEFINITION_H
+#endif // UPNP_DEFINITION_H
