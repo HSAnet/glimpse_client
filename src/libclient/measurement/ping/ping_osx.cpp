@@ -381,6 +381,17 @@ Result Ping::result() const
         res.insert("round_trip_loss", 0);
     }*/
 
+    if (m_destIp.length() > 0)
+    {
+        // we're using system ping
+        res.insert("destination_ip", m_destIp);
+    }
+    else
+    {
+        QHostAddress addr(&m_destAddress.sa);
+        res.insert("destination_ip", addr.toString());
+    }
+
     return Result(res);
 }
 
@@ -939,6 +950,8 @@ void Ping::finished(int exitCode, QProcess::ExitStatus exitStatus)
 
 void Ping::readyRead()
 {
+    // PING measure-it.de (141.82.57.241) 56(84) bytes of data.
+    QRegExp ip("^PING .+ \\((.+)\\) \\d+\\(\\d+\\)");
     // 64 bytes from 193.99.144.80: icmp_seq=0 ttl=245 time=32.031 ms
     QRegExp re("time=(\\d+.*)ms");
     // 3 packets transmitted, 3 received, 0% packet loss, time 2002ms
@@ -946,6 +959,11 @@ void Ping::readyRead()
 
     for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine())
     {
+        if (ip.indexIn(line) > -1)
+        {
+            m_destIp = ip.cap(1);
+        }
+
         if (stats.indexIn(line) > -1)
         {
             m_pingsSent = stats.cap(1).toUInt();

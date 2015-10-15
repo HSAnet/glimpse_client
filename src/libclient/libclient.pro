@@ -182,7 +182,9 @@ SOURCES +=  \
     result/result.cpp \
     result/resultstorage.cpp \
     result/resultscheduler.cpp \
-    result/resultmodel.cpp
+    result/resultmodel.cpp \
+    controller/resultcontroller.cpp
+
 HEADERS += \
     export.h \
     client.h \
@@ -288,7 +290,9 @@ HEADERS += \
     result/result.h \
     result/resultstorage.h \
     result/resultscheduler.h \
-    result/resultmodel.h
+    result/resultmodel.h \
+    controller/resultcontroller.h \
+    measurement/upnp/upnp_definition.h
 
 OTHER_FILES += \
     libclient.pri

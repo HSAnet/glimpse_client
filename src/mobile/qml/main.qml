@@ -9,6 +9,7 @@ Rectangle {
     width: units.gu(768)
     height: units.gu(1200)
     color: "#d1e0e0"
+    property bool started: false
 
     Component.onCompleted: {
         // Initialize the client
@@ -18,12 +19,7 @@ Rectangle {
         }
 
         // Maybe we can log in automatically from here
-        if (client.autoLogin()) {
-            autoLoginWatcher.enabled = true;
-            menuPage();
-        } else {
-            nextPage("WelcomePage.qml");
-        }
+        autoLogin();
     }
 
     Component.onDestruction: {
@@ -52,10 +48,20 @@ Rectangle {
         trackingID: "UA-51299738-2"
     }
 
+    Timer {
+        id: autoLoginTimer
+        interval: 30000
+        onTriggered :{
+            autoLogin();
+        }
+    }
+
     function menuPage() {
         var params = {
             item: Qt.resolvedUrl("MainPage.qml"),
         }
+
+        settings.visible = true;
 
         if ( pageStack.depth > 0 ) {
             pageStack.insert(0, params);
@@ -65,13 +71,36 @@ Rectangle {
         }
     }
 
+    function autoLogin() {
+        // check if we have internet access
+        if (!client.connectionTester.checkOnline() && !client.connectionTester.canPingGoogleDomain()) {
+            // set timer to check again once we have internet access
+            autoLoginTimer.start();
+            console.log("Internet not available at the moment, doing login/registration later.");
+            if (!started)
+            {
+                started = true;
+                menuPage();
+            }
+
+            return;
+        }
+
+        if (client.autoLogin()) {
+            autoLoginWatcher.enabled = true;
+            menuPage();
+        } else {
+            nextPage("WelcomePage.qml");
+        }
+    }
+
     function nextPage(componentName, properties) {
         if (typeof(componentName) == "string") {
             var params = {
                 item: Qt.resolvedUrl(componentName),
                 properties: properties
             }
-
+            settings.visible = false;
             pageStack.push(params);
         } else {
             pageStack.push(componentName);
@@ -183,7 +212,12 @@ Rectangle {
             }
 
             arrowVisible: pageStack.depth > 1
-            onClicked: pageStack.pop()
+            onClicked: {
+                pageStack.pop();
+                if (pageTitle.text == "glimpse.") {
+                    settings.visible = true;
+                }
+            }
 
             text: {
                 if (pageStack.depth == 1)
@@ -210,6 +244,38 @@ Rectangle {
                     return item.title;
                 else
                     return "";
+            }
+        }
+
+        Item {
+            id: settings
+            width: units.gu(40)
+            height: units.gu(40)
+            anchors {
+                top: parent.top
+                topMargin: units.gu(26)
+                left: parent.left
+                leftMargin: units.gu(20)
+            }
+
+            Image {
+                id: settingsImage
+                anchors.fill: parent
+                source: "images/gear_wheel.png"
+                visible: settings.visible
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: nextPage("Settings.qml")
+                onPressed: {
+                    settingsImage.opacity = 0.9
+                    settingsImage.scale = 0.9
+                }
+                onReleased: {
+                    settingsImage.opacity = 1
+                    settingsImage.scale = 1
+                }
             }
         }
 
@@ -300,7 +366,9 @@ Rectangle {
         }
 
         onAnalyticsTitleChanged: {
-            tracker.sendAppView(analyticsTitle);
+            if (client.settings.googleAnalyticsActive) {
+                tracker.sendAppView(analyticsTitle);
+            }
         }
     }
 

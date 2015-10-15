@@ -112,6 +112,7 @@ int Scheduler::Private::enqueue(const ScheduleDefinition &testDefinition)
 
     tests.append(testDefinition);
     testIds.insert(testDefinition.id());
+    allTestIds.insert(testDefinition.id());
 
     // update the timer if the list was empty
     if (tests.size() == 1)
@@ -220,11 +221,22 @@ void Scheduler::addTask(const Task &task)
     }
 }
 
-void Scheduler::enqueue(const ScheduleDefinition &testDefinition)
+void Scheduler::removeTask(const TaskId &taskId)
 {
+    if (d->taskIds.contains(taskId))
+    {
+        d->tasks.removeAll(this->taskByTaskId(taskId));
+        d->taskIds.remove(taskId);
+    }
+}
+
+int Scheduler::enqueue(const ScheduleDefinition &testDefinition)
+{
+    int pos = -2; // -1 is failure, -2 is "ondemand"
+
     if (testDefinition.timing()->type() != "ondemand")
     {
-        int pos = d->enqueue(testDefinition);
+        pos = d->enqueue(testDefinition);
 
         emit testAdded(testDefinition, pos);
     }
@@ -236,6 +248,8 @@ void Scheduler::enqueue(const ScheduleDefinition &testDefinition)
     }
 
     addTask(Task::fromVariant(testDefinition.task()));
+
+    return pos;
 }
 
 void Scheduler::dequeue(const ScheduleId &id)
@@ -285,6 +299,36 @@ Task Scheduler::taskByTaskId(const TaskId &id) const
         if (task.id() == id)
         {
             return task;
+        }
+    }
+
+    return Task();
+}
+
+ScheduleDefinitionList Scheduler::queue() const
+{
+    return d->tests;
+}
+
+Task Scheduler::nextImmediateTask(const QString &method, const QVariant &measurementDefinition) const
+{
+    // check whether a task exists with the same method and definition
+    foreach (const Task &task, d->tasks)
+    {
+        // ignore positive (non-immediate) task IDs
+        if (task.id().toInt() < -1 && task.method() == method && task.measurementDefinition() == measurementDefinition)
+        {
+            return task;
+        }
+    }
+
+    // add task with a negative toolbox taskId
+    // -1 is reserved as 'invalid'
+    for (int i = -2; i > INT_MIN; i--)
+    {
+        if (!d->taskIds.contains(TaskId(i)))
+        {
+            return Task(TaskId(i), method, measurementDefinition);
         }
     }
 

@@ -6,6 +6,7 @@
 #include "controller/crashcontroller.h"
 #include "controller/ntpcontroller.h"
 #include "controller/mplanecontroller.h"
+#include "controller/resultcontroller.h"
 #include "network/networkmanager.h"
 #include "task/taskexecutor.h"
 #include "task/taskstorage.h"
@@ -17,6 +18,7 @@
 #include "types.h"
 #include "trafficbudgetmanager.h"
 #include "result/resultstorage.h"
+#include "connectiontester.h"
 
 #include <QCoreApplication>
 #include <QNetworkAccessManager>
@@ -46,6 +48,10 @@
 #include "measurement/packettrains/packettrainsdefinition.h"
 #include "measurement/ping/ping_definition.h"
 #include "measurement/traceroute/traceroute_definition.h"
+#include "measurement/upnp/upnp_definition.h"
+#include "measurement/wifilookup/wifilookup_definition.h"
+#include "measurement/dnslookup/dnslookup_definition.h"
+#include "measurement/reverse_dnslookup/reverseDnslookup_definition.h"
 
 LOGGER(Client);
 
@@ -98,8 +104,10 @@ public:
     CrashController crashController;
     NtpController ntpController;
     MPlaneController mPlaneController;
+    ResultController resultController;
 
     TrafficBudgetManager trafficBudgetManager;
+    ConnectionTester connectionTester;
 
 #ifdef Q_OS_UNIX
     static int sigintFd[2];
@@ -355,6 +363,7 @@ bool Client::init()
     d->reportController.init(&d->reportScheduler, &d->settings);
     //d->loginController.init(&d->networkManager, &d->settings);
     //d->crashController.init(&d->networkManager, &d->settings);
+    //d->resultController.init(&d->resultScheduler, &d->scheduler, &d->settings);
     d->ntpController.init();
     d->trafficBudgetManager.init();
 
@@ -386,7 +395,7 @@ bool Client::init()
                                                                   ping::Tcp).toVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(6), TaskId(6), "dnslookup", timing, DnslookupDefinition("measure-it.net").toVariant(), precondition));
     tests.append(ScheduleDefinition(ScheduleId(7), TaskId(7), "httpdownload", timing,
-                                HTTPDownloadDefinition("http://www.measure-it.net:80/static/measurement/67108864", false, 1, 10000, 3000, 1000).toVariant(),
+                                HTTPDownloadDefinition("http://www.measure-it.net:80/static/measurement/67108864", false, 1, 10000, 3000, 1000, 0).toVariant(),
                                 precondition));
     tests.append(ScheduleDefinition(ScheduleId(8), TaskId(8), "packettrains_ma", timing, PacketTrainsDefinition("141.82.57.241", 5106, 1000, 48, 1,
                                                                                      10485760, 262144000, 200000000).toVariant(),
@@ -421,53 +430,52 @@ bool Client::autoLogin()
     return false;
 }
 
-void Client::btc()
-{
-    d->scheduler.executeOnDemandTest(ScheduleId(2));
-}
-
 void Client::btc(const QString &host)
 {
     BulkTransportCapacityDefinition btcDef(host, 5106, 1024 * 1024, 10);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(2), TaskId(2), "btc_ma", timing,
-                                  btcDef.toVariant(), Precondition());
+    ScheduleDefinition testDefinition(ScheduleId(2), d->scheduler.nextImmediateTask("btc_ma", btcDef.toVariant()),
+                                      timing, Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
-void Client::http()
-{
-    d->scheduler.executeOnDemandTest(ScheduleId(7));
-}
-
 void Client::http(const QString &url, bool avoidCaches, int threads, int targetTime,
-                  int rampUpTime, int slotLength)
+                  int rampUpTime, int slotLength, quint16 sourcePort)
 {
-    HTTPDownloadDefinition httpDef(url, avoidCaches, threads , targetTime, rampUpTime, slotLength);
+    HTTPDownloadDefinition httpDef(url, avoidCaches, threads, targetTime, rampUpTime, slotLength, sourcePort);
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(7), TaskId(7), "httpdownload", timing,
-                                  httpDef.toVariant(), Precondition());
+    ScheduleDefinition testDefinition(ScheduleId(7), d->scheduler.nextImmediateTask("httpdownload", httpDef.toVariant()),
+                                      timing, Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
 void Client::upnp()
 {
-    d->scheduler.executeOnDemandTest(ScheduleId(11));
+    UpnpDefinition upnpDef;
+    TimingPtr timing(new ImmediateTiming());
+    ScheduleDefinition testDefinition(ScheduleId(11), d->scheduler.nextImmediateTask("upnp", upnpDef.toVariant()),
+                                      timing, Precondition());
+    d->scheduler.enqueue(testDefinition);
 }
 
-void Client::dnslookup()
+void Client::dnsLookup(const QString &url, const QString &dnsServer)
 {
-    d->scheduler.executeOnDemandTest(ScheduleId(6));
+    DnslookupDefinition dnsLookupDef(url, dnsServer);
+    TimingPtr timing(new ImmediateTiming());
+    ScheduleDefinition testDefinition(ScheduleId(6), d->scheduler.nextImmediateTask("dnslookup",
+                                                                                    dnsLookupDef.toVariant()),
+                                      timing, Precondition());
+    d->scheduler.enqueue(testDefinition);
 }
 
-void Client::reverseDnslookup()
+void Client::reverseDnsLookup(const QString &ip)
 {
-    d->scheduler.executeOnDemandTest(ScheduleId(9));
-}
-
-void Client::packetTrains()
-{
-    d->scheduler.executeOnDemandTest(ScheduleId(8));
+    ReverseDnslookupDefinition reverseDnsLookupDef(ip);
+    TimingPtr timing(new ImmediateTiming());
+    ScheduleDefinition testDefinition(ScheduleId(9), d->scheduler.nextImmediateTask("reversednslookup",
+                                                                                    reverseDnsLookupDef.toVariant()),
+                                      timing, Precondition());
+    d->scheduler.enqueue(testDefinition);
 }
 
 void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint16 trainLength, quint8 iterations,
@@ -476,14 +484,9 @@ void Client::packetTrains(QString host, quint16 port, quint16 packetSize, quint1
     PacketTrainsDefinition packetTrainsDef(host, port, packetSize, trainLength, iterations, rateMin, rateMax, delay);
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(8), TaskId(8), "packettrains_ma", timing,
-                                  packetTrainsDef.toVariant(), Precondition());
+    ScheduleDefinition testDefinition(ScheduleId(8), d->scheduler.nextImmediateTask("packettrains_ma", packetTrainsDef.toVariant()),
+                                      timing, Precondition());
     d->scheduler.enqueue(testDefinition);
-}
-
-void Client::ping()
-{
-    d->scheduler.executeOnDemandTest(ScheduleId(1));
 }
 
 void Client::ping(const QString &url, const quint32 &count, const quint32 &interval, const quint32 &receiveTimeout,
@@ -494,14 +497,9 @@ void Client::ping(const QString &url, const quint32 &count, const quint32 &inter
                            pingTypeFromString(type));
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(1), TaskId(1), "ping", timing,
-                                  pingDef.toVariant(), Precondition());
+    ScheduleDefinition testDefinition(ScheduleId(1), d->scheduler.nextImmediateTask("ping" ,pingDef.toVariant()), timing,
+                                  Precondition());
     d->scheduler.enqueue(testDefinition);
-}
-
-void Client::traceroute()
-{
-    d->scheduler.executeOnDemandTest(ScheduleId(10));
 }
 
 void Client::traceroute(const QString &url,
@@ -517,14 +515,19 @@ void Client::traceroute(const QString &url,
                                        pingTypeFromString(type));
 
     TimingPtr timing(new ImmediateTiming());
-    ScheduleDefinition testDefinition(ScheduleId(10), TaskId(10), "traceroute", timing,
-                                  tracerouteDef.toVariant(), Precondition());
+    ScheduleDefinition testDefinition(ScheduleId(10), d->scheduler.nextImmediateTask("traceroute", tracerouteDef.toVariant()),
+                                      timing, Precondition());
     d->scheduler.enqueue(testDefinition);
 }
 
 void Client::wifiLookup()
 {
-    d->scheduler.executeOnDemandTest(ScheduleId(12));
+    WifiLookupDefinition wifiLookupDef;
+    TimingPtr timing(new ImmediateTiming());
+    ScheduleDefinition testDefinition(ScheduleId(12), d->scheduler.nextImmediateTask("wifilookup",
+                                                                                     wifiLookupDef.toVariant()),
+                                      timing, Precondition());
+    d->scheduler.enqueue(testDefinition);
 }
 
 void Client::measureIt()
@@ -639,6 +642,11 @@ Settings *Client::settings() const
 TrafficBudgetManager *Client::trafficBudgetManager() const
 {
     return &d->trafficBudgetManager;
+}
+
+ConnectionTester *Client::connectionTester() const
+{
+    return &d->connectionTester;
 }
 
 #include "client.moc"

@@ -6,7 +6,7 @@ import "../"
 Base {
     id: root
 
-    title: qsTr("Upnp")
+    title: qsTr("UPnP")
 
     measurement: "upnp"
 }

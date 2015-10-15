@@ -113,6 +113,20 @@ bool Settings::hasLoginData() const
     return !userId().isEmpty() && !apiKey().isEmpty();
 }
 
+void Settings::setDeviceName(const QString &deviceName)
+{
+    if (this->deviceName() != deviceName)
+    {
+        d->settings.setValue("device-name", deviceName);
+        emit deviceNameChanged(deviceName);
+    }
+}
+
+QString Settings::deviceName() const
+{
+    return d->settings.value("device-name").toString();
+}
+
 void Settings::setDeviceId(const QString &deviceId)
 {
     if (this->deviceId() != deviceId)
@@ -177,32 +191,32 @@ void Settings::setPassive(bool passive)
     }
 }
 
-void Settings::setAvailableTraffic(quint32 traffic)
+void Settings::setAllowedTraffic(quint32 traffic)
 {
-    if (this->availableTraffic() != traffic)
+    if (this->allowedTraffic() != traffic)
     {
-        d->settings.setValue("available-traffic", traffic);
-        emit availableTrafficChanged(traffic);
+        d->settings.setValue("allowed-traffic", traffic);
+        emit allowedTrafficChanged(traffic);
     }
 }
 
-quint32 Settings::availableTraffic() const
+quint32 Settings::allowedTraffic() const
 {
-    return d->settings.value("available-traffic", 31457280).toUInt(); // defaults to 30 MB
+    return d->settings.value("allowed-traffic", 524288000).toUInt(); // defaults to 500 MB
 }
 
-void Settings::setAvailableMobileTraffic(quint32 traffic)
+void Settings::setAllowedMobileTraffic(quint32 traffic)
 {
-    if (this->availableMobileTraffic() != traffic)
+    if (this->allowedMobileTraffic() != traffic)
     {
-        d->settings.setValue("available-mobile-traffic", traffic);
-        emit availableMobileTrafficChanged(traffic);
+        d->settings.setValue("allowed-mobile-traffic", traffic);
+        emit allowedMobileTrafficChanged(traffic);
     }
 }
 
-quint32 Settings::availableMobileTraffic() const
+quint32 Settings::allowedMobileTraffic() const
 {
-    return d->settings.value("available-mobile-traffic", 20971520).toUInt(); // defaults to 20 MB
+    return d->settings.value("allowed-mobile-traffic", 31457280).toUInt(); // defaults to 30 MB
 }
 
 void Settings::setUsedTraffic(quint32 traffic)
@@ -247,6 +261,20 @@ bool Settings::trafficBudgetManagerActive() const
     return d->settings.value("traffic-budget-manager-active", false).toBool();
 }
 
+void Settings::setMobileMeasurementsActive(bool active)
+{
+    if (this->mobileMeasurementsActive() != active)
+    {
+        d->settings.setValue("mobile-measurements-active", active);
+        emit mobileMeasurementsActiveChanged(active);
+    }
+}
+
+bool Settings::mobileMeasurementsActive() const
+{
+    return d->settings.value("mobile-measurements-active", false).toBool();
+}
+
 void Settings::setBacklog(quint32 backlog)
 {
     if (this->backlog() != backlog)
@@ -259,6 +287,20 @@ void Settings::setBacklog(quint32 backlog)
 quint32 Settings::backlog() const
 {
     return d->settings.value("backlog", 10).toUInt();
+}
+
+void Settings::setGoogleAnalyticsActive(bool active)
+{
+    if (this->googleAnalyticsActive() != active)
+    {
+        d->settings.setValue("google-analytics-active", active);
+        emit googleAnalyticsActiveChanged(active);
+    }
+}
+
+bool Settings::googleAnalyticsActive() const
+{
+    return d->settings.value("google-analytics-active", true).toBool();
 }
 
 GetConfigResponse *Settings::config() const

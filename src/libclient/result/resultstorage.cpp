@@ -45,7 +45,6 @@ public:
 
     // Functions
     void store(const Report &report);
-    void store(const QVariantMap &result);
     QVariantList loadResults(const Report &report) const;
     QString fileNameForResult(const Report &report) const;
 

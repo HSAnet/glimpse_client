@@ -96,7 +96,6 @@ public slots:
     void onError();
     void onReportAdded();
     void onTimingChanged();
-    void rotate();
 };
 
 void ReportController::Private::updateTimer()
@@ -149,25 +148,6 @@ void ReportController::Private::onTimingChanged()
               .arg(timer.timing()->timeLeft() / 1000));
 }
 
-void ReportController::Private::rotate()
-{
-    // <task-id>_yyyy-MM-dd.json
-    QRegExp regex("^\\d+_(\\d{4}-\\d{2}-\\d{2}).json$");
-    QDir dir(StoragePaths().resultDirectory());
-    QDate oldest = QDateTime::currentDateTime().addDays(-static_cast<qint64>(settings->backlog())).date();
-
-    foreach (const QString &file, dir.entryList(QDir::Files))
-    {
-        if (regex.exactMatch(file))
-        {
-            if (QDateTime::fromString(regex.cap(1), "yyyy-MM-dd").date() < oldest)
-            {
-                dir.remove(file);
-            }
-        }
-    }
-}
-
 ReportController::ReportController(QObject *parent)
 : Controller(parent)
 , d(new Private(this))
@@ -176,7 +156,6 @@ ReportController::ReportController(QObject *parent)
 
 ReportController::~ReportController()
 {
-    d->rotate();
     delete d;
 }
 
@@ -192,9 +171,7 @@ bool ReportController::init(ReportScheduler *scheduler, Settings *settings)
 
     connect(settings->config(), SIGNAL(responseChanged()), d, SLOT(updateTimer()));
     connect(d->scheduler, SIGNAL(reportAdded(Report)), d, SLOT(onReportAdded()));
-    connect(d->scheduler, SIGNAL(reportAdded(Report)), d, SLOT(rotate()));
     connect(d->scheduler, SIGNAL(reportModified(Report)), d, SLOT(onReportAdded()));
-    connect(d->scheduler, SIGNAL(reportModified(Report)), d, SLOT(rotate()));
 
     d->updateTimer();
 
@@ -208,7 +185,12 @@ QString ReportController::errorString() const
 
 void ReportController::sendReports()
 {
-    ReportList reports = d->scheduler->reports();
+    ReportList reports;
+
+    foreach (const Report &report, d->scheduler->reports())
+    {
+            reports.append(report);
+    }
 
     if (reports.isEmpty())
     {

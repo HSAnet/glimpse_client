@@ -1,6 +1,7 @@
 #!/bin/bash
 
 PACKAGESERVER="https://distributor.measure-it.net/api/upload/"
+SYMBOLSERVER="https://distributor.measure-it.net/api/upload_debug_symbols/"
 
 if [ $# -ne 2 ]; then
 	echo "Usage: $0 <branch> <distribution>"
@@ -23,21 +24,24 @@ fi
 if [ "$OS" == "Windows_NT" ]; then
 	cd setup
 	cd Output
-	
+
 	for file in *.exe; do
 		echo "Uploading $file"
-		
+
 		curl --form package=@$file --form channel=$DISTRO --form branch=$BRANCH $PACKAGESERVER
 	done
 else
 	cd ..
 	cd build || true
 
+	symbols_file="$(find . -type f -name 'glimpse_*-dbg.tar.gz')"
+	curl --form debug_symbols=@$symbols_file $SYMBOLSERVER
+
 	# Upload each file to the distributor server
 	for file in *.deb *.rpm *.tar.xz *.apk *.exe *.dmg; do
 		if [ -e $file ]; then
 			echo "Uploading $file"
-			
+
 			curl --form package=@$file --form channel=$DISTRO --form branch=$BRANCH $PACKAGESERVER
 		fi
 	done

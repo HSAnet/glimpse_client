@@ -505,12 +505,12 @@ QNetworkInfo::NetworkMode NetworkManager::connectionMode() const
         {
             QString name = conf.name();
 
-            if (name.contains("enp"))
+            if (name.startsWith("en"))
             {
                 return QNetworkInfo::EthernetMode;
             }
 
-            if (name.contains("wlp"))
+            if (name.startsWith("wl"))
             {
                 return QNetworkInfo::WlanMode;
             }

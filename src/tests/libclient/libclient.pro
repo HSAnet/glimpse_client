@@ -1,4 +1,6 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-	timing
+        timing \
+        scheduler \
+        tasks

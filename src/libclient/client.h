@@ -23,6 +23,7 @@ class QNetworkAccessManager;
 class TrafficBudgetManager;
 class MPlaneController;
 class ResultScheduler;
+class ConnectionTester;
 
 ////////////////////////////////////////////////////////////
 
@@ -44,6 +45,7 @@ class CLIENT_API Client : public QObject
     Q_PROPERTY(CrashController *crashController READ crashController CONSTANT)
     Q_PROPERTY(NtpController *ntpController READ ntpController CONSTANT)
     Q_PROPERTY(MPlaneController *mPlaneController READ mPlaneController CONSTANT)
+    Q_PROPERTY(ConnectionTester *connectionTester READ connectionTester CONSTANT)
 
     explicit Client(QObject *parent = 0);
     ~Client();
@@ -84,6 +86,8 @@ public:
     Settings *settings() const;
     TrafficBudgetManager *trafficBudgetManager() const;
 
+    ConnectionTester *connectionTester() const;
+
     /* Versioning
      *
      * MAJOR version when you make incompatible API changes,
@@ -93,19 +97,16 @@ public:
      * Source: http://semver.org
      */
     static const quint32 versionMajor = 2;
-    static const quint32 versionMinor = 5;
-    static const quint32 versionPatch = 0;
+    static const quint32 versionMinor = 7;
+    static const quint32 versionPatch = 1;
 
 public slots:
     bool init();
     bool autoLogin();
-    void btc();
     void btc(const QString &host);
-    void http();
     void http(const QString &url, bool avoidCaches, int threads, int targetTime,
-              int rampUpTime, int slotLength);
+              int rampUpTime, int slotLength, quint16 sourcePort);
     void upnp();
-    void packetTrains();
     void packetTrains(const QString host,
                       quint16 port,
                       quint16 packetSize,
@@ -114,9 +115,8 @@ public slots:
                       quint64 rateMin,
                       quint64 rateMax,
                       quint64 delay);
-    void dnslookup();
-    void reverseDnslookup();
-    void ping();
+    void dnsLookup(const QString &url, const QString &dnsServer);
+    void reverseDnsLookup(const QString &ip);
     void ping(const QString &url,
               const quint32 &count,
               const quint32 &interval,
@@ -126,7 +126,6 @@ public slots:
               const quint16 &sourcePort,
               const quint32 &payload,
               const QString &type);
-    void traceroute();
     void traceroute(const QString &url,
                     const quint32 &count,
                     const quint32 &interval,

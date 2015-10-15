@@ -4,16 +4,19 @@
 #include <QList>
 #include <QVariant>
 #include <QSharedDataPointer>
+#include "export.h"
 
 class PreconditionData;
 class Precondition;
 typedef QList<Precondition> PreconditionList;
 
-class Precondition
+class CLIENT_API Precondition : public QObject
 {
+    Q_OBJECT
+
 public:
     Precondition();
-    Precondition(const Precondition &rhs);
+    Precondition(const Precondition &other);
     Precondition(bool onWireless, bool onWire, bool onCellular, quint16 minCharge, double locLat, double locLong, double locRadius);
     ~Precondition();
 

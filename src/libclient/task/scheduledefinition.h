@@ -5,6 +5,7 @@
 #include "../timing/timing.h"
 #include "../measurement/measurementdefinition.h"
 #include "../precondition.h"
+#include "../task/task.h"
 
 #include <QUuid>
 #include <QSharedDataPointer>
@@ -17,7 +18,9 @@ class CLIENT_API ScheduleDefinition : public Serializable
 public:
     ScheduleDefinition();
     ScheduleDefinition(const ScheduleDefinition &other);
-    ScheduleDefinition(const ScheduleId &id, const TaskId &taskId, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition, const Precondition &precondition, QVariantMap specification = QVariantMap());
+    ScheduleDefinition(const ScheduleId &id, const TaskId &taskId, const QString &name, const TimingPtr &timing, const QVariant &measurementDefinition, const Precondition &precondition, const QVariantMap specification = QVariantMap());
+    ScheduleDefinition(const ScheduleId &id, const Task &task, const TimingPtr &timing,
+                       const Precondition &precondition, const QVariantMap specification =  QVariantMap());
     ~ScheduleDefinition();
 
     ScheduleDefinition &operator=(const ScheduleDefinition &rhs);

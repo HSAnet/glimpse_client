@@ -1,4 +1,5 @@
 #include "uploadrequest.h"
+#include "client.h"
 
 class UploadRequest::Private
 {
@@ -17,6 +18,7 @@ QVariant UploadRequest::toVariant() const
     QVariantMap map;
     map.insert("device_id", deviceId());
     map.insert("data", d->resourceList);
+    map.insert("version", Client::version());
     return map;
 }
 

@@ -57,5 +57,11 @@ Base {
             "maximumValue": 1000,
             "value": 1000
         },
+
+        {
+            "label": "Source port",
+            "type": "TextField",
+            "text": ""
+        }
     ]
 }

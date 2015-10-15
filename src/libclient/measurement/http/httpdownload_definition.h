@@ -12,7 +12,8 @@ class HTTPDownloadDefinition : public MeasurementDefinition
 {
 public:
     HTTPDownloadDefinition(const QString &url, const bool avoidCaches, const int threads,
-                           const int targetTime, const int rampUpTime, const int slotLength);
+                           const int targetTime, const int rampUpTime, const int slotLength,
+                           const quint16 sourcePort);
     ~HTTPDownloadDefinition();
 
     // Storage
@@ -27,6 +28,7 @@ public:
     int targetTime;
     int rampUpTime;
     int slotLength;
+    int sourcePort;
 
     // Serializable interface
     QVariant toVariant() const;
