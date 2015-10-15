@@ -784,9 +784,9 @@ Result Ping::result() const
     else
     {
         res.insert("round_trip_loss", 0);
-    }*/
+    }
 
-    res.insert("destination_ip", m_destIp);
+    res.insert("destination_ip", m_destIp);*/
 
     return Result(resList);
 }
