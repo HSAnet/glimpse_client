@@ -19,11 +19,30 @@ class ResultModel::Private : public QObject
 public:
     Private(ResultModel *q)
     : q(q)
+    , methodSort(this)
     {
         scheduler = Client::instance()->scheduler();
     }
 
+    struct MethodSort
+    {
+        ResultModel::Private *p;
+
+        MethodSort(ResultModel::Private *p)
+            : p(p)
+        {}
+
+        bool operator() (const QVariantMap &a, const QVariantMap &b)
+        {
+            // sort by method name, ascending
+            return (p->scheduler->taskByTaskId(TaskId(a.value("task_id").toInt())).method() <
+                    p->scheduler->taskByTaskId(TaskId(b.value("task_id").toInt())).method());
+        }
+    };
+
     ResultModel *q;
+
+    MethodSort methodSort;
 
     QPointer<ResultScheduler> resultScheduler;
     QPointer<Scheduler> scheduler;
@@ -38,35 +57,14 @@ public slots:
 
 void ResultModel::Private::resultAdded(const QVariantMap &result)
 {
-    int position = results.size();
-
-    q->beginInsertRows(QModelIndex(), position, position);
-    identToResult.insert(TaskId(result.value("task_id").toInt()), position);
-    results = resultScheduler->results();
-    q->endInsertRows();
+    Q_UNUSED(result);
+    q->reset();
 }
 
 void ResultModel::Private::resultModified(const QVariantMap &result)
 {
-    int pos = identToResult.value(TaskId(result.value("task_id").toInt()));
-
-    if (pos == -1)
-    {
-        LOG_ERROR("invalid ident");
-        return;
-    }
-
-    results = resultScheduler->results();
-
-    QModelIndex index = q->indexFromTaskId(TaskId(result.value("task_id").toInt()));
-
-    if (!index.isValid())
-    {
-        LOG_ERROR("invalid index");
-        return;
-    }
-
-    emit q->dataChanged(index, index);
+    Q_UNUSED(result);
+    q->reset();
 }
 
 ResultModel::ResultModel(QObject *parent)
@@ -110,20 +108,6 @@ ResultScheduler *ResultModel::scheduler() const
     return d->resultScheduler;
 }
 
-QModelIndex ResultModel::indexFromTaskId(const TaskId &taskId) const
-{
-    int pos = d->identToResult.value(taskId);
-
-    if (pos == -1)
-    {
-        return QModelIndex();
-    }
-    else
-    {
-        return createIndex(pos, 0);
-    }
-}
-
 void ResultModel::reset()
 {
     beginResetModel();
@@ -131,6 +115,7 @@ void ResultModel::reset()
     if (!d->resultScheduler.isNull())
     {
         d->results = d->resultScheduler->results();
+        std::sort(d->results.begin(), d->results.end(), d->methodSort);
     }
 
     endResetModel();

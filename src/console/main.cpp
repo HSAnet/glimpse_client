@@ -255,11 +255,26 @@ int main(int argc, char *argv[])
     parser.addOption(passiveOption);
     */
 
-    QCommandLineOption trafficOption("traffic", "Traffic limit per month (0 to deactivate traffic limit)", "MB");
+    QCommandLineOption trafficBudgetOption("tbm", "Enable traffic budget manager", "0/1");
+    parser.addOption(trafficBudgetOption);
+
+    QCommandLineOption trafficOption("traffic", "Traffic limit per month", "MB");
     parser.addOption(trafficOption);
 
     QCommandLineOption supervisorOption("supervisor", "Supervisor address", "address");
     parser.addOption(supervisorOption);
+
+    QCommandLineOption mobileTrafficOption("mobile-traffic", "Mobile traffic limit per month", "MB");
+    parser.addOption(mobileTrafficOption);
+
+    QCommandLineOption allowMobileOption("allow-mobile", "Allow mobile measurements", "0/1");
+    parser.addOption(allowMobileOption);
+
+    //QCommandLineOption deviceNameOption("name", "Name of device", "name");
+    //parser.addOption(deviceNameOption);
+
+    QCommandLineOption backlogOption("backlog", "Number of days to keep log files", "days");
+    parser.addOption(backlogOption);
 
     parser.process(app);
 
@@ -397,19 +412,52 @@ int main(int argc, char *argv[])
     }
     */
 
-    if (parser.isSet(trafficOption))
+    if (parser.isSet(trafficBudgetOption))
     {
-        int setTraffic = parser.value(trafficOption).toInt();
-        if (setTraffic != 0)
+        uint val = parser.value(trafficBudgetOption).toUInt();
+
+        if (val != 0)
         {
-            client->settings()->setAvailableTraffic(setTraffic * 1024 * 1024);
-            client->settings()->setAvailableMobileTraffic(setTraffic * 1024 * 1024);
             client->settings()->setTrafficBudgetManagerActive(true);
+
+            if (parser.isSet(trafficOption))
+            {
+                client->settings()->setAllowedTraffic(parser.value(trafficOption).toInt() * 1024 * 1024);
+            }
+
+            if (parser.isSet(mobileTrafficOption))
+            {
+                client->settings()->setAllowedMobileTraffic(parser.value(mobileTrafficOption).toInt() * 1024 * 1024);
+            }
         }
         else
         {
             client->settings()->setTrafficBudgetManagerActive(false);
         }
+    }
+    else
+    {
+        client->settings()->setTrafficBudgetManagerActive(false);
+    }
+
+    if (parser.isSet(allowMobileOption))
+    {
+        uint val = parser.value(allowMobileOption).toUInt();
+        client->settings()->setAllowedMobileTraffic((bool) val);
+    }
+    else
+    {
+        client->settings()->setAllowedMobileTraffic(false);
+    }
+
+    /*if (parser.isSet(deviceNameOption))
+    {
+        client->settings()->setDeviceName(parser.value(deviceNameOption));
+    }*/
+
+    if (parser.isSet(backlogOption))
+    {
+        client->settings()->setBacklog(parser.value(backlogOption).toUInt());
     }
 
     if (!client->init())

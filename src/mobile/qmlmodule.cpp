@@ -19,6 +19,7 @@
 #include "webrequester.h"
 #include "settings.h"
 #include "log/logmodel.h"
+#include "connectiontester.h"
 
 #if defined(Q_OS_ANDROID)
 #include "androidprocessmodel.h"
@@ -86,6 +87,7 @@ void QmlModule::registerTypes()
     qmlRegisterUncreatableType<ReportScheduler>(MODULE_URI, 1, 0, "ReportScheduler", "uncreatable type");
     qmlRegisterUncreatableType<ResultScheduler>(MODULE_URI, 1, 0, "ResultScheduler", "uncreatable type");
     qmlRegisterType<ResultModel>(MODULE_URI, 1, 0, "ResultModel");
+    qmlRegisterUncreatableType<ConnectionTester>(MODULE_URI, 1, 0, "ConnectionTester", "uncreatable type");
 
     // Requests
     qmlRegisterUncreatableType<Request>(MODULE_URI, 1, 0, "Request", "abstract class");

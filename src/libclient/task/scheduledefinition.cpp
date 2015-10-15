@@ -24,13 +24,24 @@ ScheduleDefinition::ScheduleDefinition(const ScheduleDefinition &other)
 }
 
 ScheduleDefinition::ScheduleDefinition(const ScheduleId &id, const TaskId& taskId, const QString &name, const TimingPtr &timing,
-                               const QVariant &measurementDefinition, const Precondition &precondition, QVariantMap specification)
+                               const QVariant &measurementDefinition, const Precondition &precondition, const QVariantMap specification)
 : d(new TaskData)
 {
     d->id = id;
     d->timing = timing;
     d->precondition = precondition;
     d->task = Task(taskId, name, measurementDefinition);
+    d->specification = specification;
+}
+
+ScheduleDefinition::ScheduleDefinition(const ScheduleId &id, const Task &task, const TimingPtr &timing,
+                               const Precondition &precondition, const QVariantMap specification)
+: d(new TaskData)
+{
+    d->id = id;
+    d->timing = timing;
+    d->precondition = precondition;
+    d->task = task;
     d->specification = specification;
 }
 

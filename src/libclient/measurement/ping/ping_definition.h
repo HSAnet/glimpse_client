@@ -10,7 +10,7 @@ class PingDefinition;
 typedef QSharedPointer<PingDefinition> PingDefinitionPtr;
 typedef QList<PingDefinitionPtr> PingDefinitionList;
 
-class PingDefinition : public MeasurementDefinition
+class CLIENT_API PingDefinition : public MeasurementDefinition
 {
 public:
     ~PingDefinition();

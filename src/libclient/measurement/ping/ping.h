@@ -147,6 +147,7 @@ private:
     QList<float> pingTime;
     quint32 m_pingsSent;
     quint32 m_pingsReceived;
+    QString m_destIp;
 
     pcap_if_t *m_device;
     pcap_t *m_capture;
