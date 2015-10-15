@@ -788,7 +788,7 @@ Result Ping::result() const
 
     res.insert("destination_ip", m_destIp);
 
-    return Result(res);
+    return Result(resList);
 }
 
 quint32 Ping::estimateTraffic() const

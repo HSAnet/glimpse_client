@@ -379,7 +379,7 @@ Result Ping::result() const
     else
     {
         res.insert("round_trip_loss", 0);
-    }*/
+    }
 
     if (m_destIp.length() > 0)
     {
@@ -390,9 +390,9 @@ Result Ping::result() const
     {
         QHostAddress addr(&m_destAddress.sa);
         res.insert("destination_ip", addr.toString());
-    }
+    }*/
 
-    return Result(res);
+    return Result(resList);
 }
 
 quint32 Ping::estimateTraffic() const
