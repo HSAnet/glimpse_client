@@ -101,7 +101,7 @@ public slots:
 void ReportController::Private::updateTimer()
 {
     // Set the new url
-    QString newUrl = QString("http://%1").arg(settings->config()->supervisorAddress());
+    QString newUrl = QString("%1").arg(settings->config()->supervisorAddress());
 
     if (requester.url() != newUrl)
     {

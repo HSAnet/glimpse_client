@@ -12,6 +12,8 @@
 #include <QJsonDocument>
 #include <QMetaClassInfo>
 #include <QDebug>
+#include <QFile>
+#include <QSslKey>
 
 LOGGER(WebRequester);
 
@@ -387,6 +389,35 @@ void WebRequester::start()
 
     }
 
+    // load the certificate if needed
+    if (!settings->clientCert().isEmpty() && !settings->caCert().isEmpty() &&
+            !settings->privateKey().isEmpty())
+    {
+        QSslConfiguration configuration;
+        QFile certFile(settings->clientCert()); //"/home/mike/tmp/certs/Client-SSB.crt");
+        certFile.open(QFile::ReadOnly);
+        QSslCertificate cert(&certFile);
+        certFile.close();
+        configuration.setLocalCertificate(cert);
+
+        QList<QSslCertificate> certs;
+        certFile.setFileName(settings->caCert()); //"/home/mike/tmp/certs/root-ca.crt");
+        certFile.open(QFile::ReadOnly);
+        QSslCertificate caCert(&certFile);
+        certFile.close();
+        certs.append(caCert);
+
+        configuration.setCaCertificates(certs);
+
+        QFile keyFile(settings->privateKey()); // "/home/mike/tmp/certs/Client-SSB-plaintext.key");
+        keyFile.open(QFile::ReadOnly);
+        QSslKey key(&keyFile, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey);
+        configuration.setPrivateKey(key);
+        keyFile.close();
+
+        request.setSslConfiguration(configuration);
+    }
+
     if (httpMethod == "get")
     {
         QUrlQuery query(url);
@@ -421,11 +452,21 @@ void WebRequester::start()
         return;
     }
 
+    connect(reply, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
     connect(reply, SIGNAL(finished()), d, SLOT(requestFinished()));
 
     // Wait for timeout
     d->currentReply = reply;
     d->timer.start();
+}
+
+void WebRequester::sslErrors(QList<QSslError> errors)
+{
+    foreach (QSslError error, errors)
+    {
+        LOG_ERROR(QString("SSL-Error: %1").arg(error.errorString()));
+
+    }
 }
 
 #include "webrequester.moc"
