@@ -88,6 +88,15 @@ public:
     void setGoogleAnalyticsActive(bool active);
     bool googleAnalyticsActive() const;
 
+    void setCaCert(QString caCert);
+    QString caCert() const;
+
+    void setClientCert(QString clientCert);
+    QString clientCert() const;
+
+    void setPrivateKey(QString privateKey);
+    QString privateKey() const;
+
     GetConfigResponse *config() const;
 
     void clear();
@@ -110,6 +119,9 @@ signals:
     void mobileMeasurementsActiveChanged(bool active);
     void backlogChanged(quint32 backlog);
     void googleAnalyticsActiveChanged(bool active);
+    void caCertChanged(QString caCert);
+    void clientCertChanged(QString clientCert);
+    void privateKeyChanged(QString privateKey);
 
 protected:
     class Private;

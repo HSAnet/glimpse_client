@@ -276,6 +276,15 @@ int main(int argc, char *argv[])
     QCommandLineOption backlogOption("backlog", "Number of days to keep log files", "days");
     parser.addOption(backlogOption);
 
+    QCommandLineOption caCertOption("ca-cert", "CA-certificate", "path-to-file");
+    parser.addOption(caCertOption);
+
+    QCommandLineOption clientCertOption("client-cert", "Client-certificate", "path-to-file");
+    parser.addOption(clientCertOption);
+
+    QCommandLineOption privateKeyOption("private-key", "Private key for the certificate authentification", "path-to-file");
+    parser.addOption(privateKeyOption);
+
     parser.process(app);
 
     /*
@@ -458,6 +467,21 @@ int main(int argc, char *argv[])
     if (parser.isSet(backlogOption))
     {
         client->settings()->setBacklog(parser.value(backlogOption).toUInt());
+    }
+
+    if (parser.isSet(caCertOption))
+    {
+        client->settings()->setCaCert(parser.value(caCertOption));
+    }
+
+    if (parser.isSet(clientCertOption))
+    {
+        client->settings()->setClientCert(parser.value(clientCertOption));
+    }
+
+    if (parser.isSet(privateKeyOption))
+    {
+        client->settings()->setPrivateKey(parser.value(privateKeyOption));
     }
 
     if (!client->init())

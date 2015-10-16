@@ -303,6 +303,48 @@ bool Settings::googleAnalyticsActive() const
     return d->settings.value("google-analytics-active", true).toBool();
 }
 
+void Settings::setCaCert(QString caCert)
+{
+    if (this->caCert() != caCert)
+    {
+        d->settings.setValue("ca-cert", caCert);
+        emit caCertChanged(caCert);
+    }
+}
+
+QString Settings::caCert() const
+{
+    return d->settings.value("ca-cert").toString();
+}
+
+void Settings::setClientCert(QString clientCert)
+{
+    if (this->clientCert() != clientCert)
+    {
+        d->settings.setValue("client-cert", clientCert);
+        emit clientCertChanged(clientCert);
+    }
+}
+
+QString Settings::clientCert() const
+{
+    return d->settings.value("client-cert").toString();
+}
+
+void Settings::setPrivateKey(QString privateKey)
+{
+    if (this->privateKey() != privateKey)
+    {
+        d->settings.setValue("private-key", privateKey);
+        emit privateKeyChanged(privateKey);
+    }
+}
+
+QString Settings::privateKey() const
+{
+    return d->settings.value("private-key").toString();
+}
+
 GetConfigResponse *Settings::config() const
 {
     return &d->config;

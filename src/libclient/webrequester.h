@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QJsonObject>
 #include <QUrl>
+#include <QSslError>
 
 class CLIENT_API WebRequester : public QObject
 {
@@ -54,6 +55,7 @@ public:
 
 public slots:
     void start();
+    void sslErrors(QList<QSslError> errors);
 
 signals:
     void statusChanged(WebRequester::Status status);

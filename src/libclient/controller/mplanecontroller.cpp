@@ -73,7 +73,7 @@ public slots:
 
 void MPlaneController::Private::updateTimer()
 {
-    QString newUrl = QString("http://%1").arg(settings->config()->supervisorAddress());
+    QString newUrl = QString("%1").arg(settings->config()->supervisorAddress());
 
     if (capabilityRequester.url() != newUrl)
     {
