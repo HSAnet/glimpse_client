@@ -73,7 +73,7 @@ Base {
             "minimumValue": 1000000,
             "maximumValue": 1000000000,
             "value": 200000000,
-            "format": qsTr("%1 nanoseconds")
+            "format": qsTr("%1 ns")
         },
     ]
 }

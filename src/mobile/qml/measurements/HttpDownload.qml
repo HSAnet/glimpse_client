@@ -23,7 +23,7 @@ Base {
         },
 
         {
-            "label": "Num Threads",
+            "label": "Threads",
             "type": "Slider",
             "stepSize": 1,
             "minimumValue": 1,
@@ -32,21 +32,23 @@ Base {
         },
 
         {
-            "label": "Target time [ms]",
+            "label": "Target time",
             "type": "Slider",
             "stepSize": 250,
             "minimumValue": 2000,
             "maximumValue": 45000,
-            "value": 10000
+            "value": 10000,
+            "format": qsTr("%1 ms")
         },
 
         {
-            "label": "Ramp-up time [ms]",
+            "label": "Ramp-up time",
             "type": "Slider",
             "stepSize": 500,
             "minimumValue": 1000,
             "maximumValue": 10000,
-            "value": 3000
+            "value": 3000,
+            "format": qsTr("%1 ms")
         },
 
         {
@@ -55,7 +57,8 @@ Base {
             "stepSize": 250,
             "minimumValue": 250,
             "maximumValue": 1000,
-            "value": 1000
+            "value": 1000,
+            "format": qsTr("%1 ms")
         },
 
         {

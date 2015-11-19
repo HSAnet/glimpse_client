@@ -225,6 +225,12 @@ void DownloadThread::startDownload()
 
 QByteArray DownloadThread::read()
 {
+    if (!socket->isOpen())
+    {
+        disconnectionHandling();
+        return QByteArray();
+    }
+
     bytesReceived << socket->bytesAvailable();
     timeIntervals << measurementTimer.nsecsElapsed();
 
