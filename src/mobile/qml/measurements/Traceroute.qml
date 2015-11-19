@@ -32,7 +32,7 @@ Base {
             "minimumValue": 25,
             "maximumValue": 10000,
             "value": 1000,
-            "format": qsTr("%1 milliseconds")
+            "format": qsTr("%1 ms")
         },
 
         {
@@ -42,7 +42,7 @@ Base {
             "minimumValue": 25,
             "maximumValue": 20000,
             "value": 1000,
-            "format": qsTr("%1 milliseconds")
+            "format": qsTr("%1 ms")
         },
 
         {
