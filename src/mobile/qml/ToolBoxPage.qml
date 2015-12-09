@@ -54,7 +54,7 @@ ListPage {
             title: "Bulk Transfer Capacity"
             group: "Glimpse peer measurements"
             measurement: "Btc"
-            description: "Bulk transfer capacity measurement (over a single TCP connection)"
+            description: "Bulk transfer capacity measurement (experimental)"
         }
 
         ListElement {
